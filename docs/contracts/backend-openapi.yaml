@@ -1,0 +1,2350 @@
+openapi: 3.1.0
+info:
+  title: Instabarato Platform Backend API
+  version: 1.0.0-draft
+  summary: Draft contract for Instabarato Platform Backend V1
+  description: |
+    Draft OpenAPI contract for the public and admin APIs of Instabarato Platform Backend V1.
+    This file is intentionally incomplete and must evolve with implementation.
+servers:
+  - url: http://localhost:3001/v1
+    description: Local development
+tags:
+  - name: Auth
+  - name: Users
+  - name: Wallet
+  - name: Payments
+  - name: Catalog
+  - name: Supplier
+  - name: Orders
+  - name: Dashboard
+  - name: Alerts
+  - name: Audits
+  - name: Health
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Refreshed session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '204':
+          description: Session revoked
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /catalog/services:
+    get:
+      tags: [Catalog]
+      summary: Catalog service list
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: socialNetwork
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated catalog service list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCatalogServicesResponse'
+  /catalog/services/{serviceId}:
+    get:
+      tags: [Catalog]
+      summary: Catalog service detail
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+      responses:
+        '200':
+          description: Catalog service detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogServiceResource'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /me:
+    get:
+      tags: [Users]
+      summary: Current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+    patch:
+      tags: [Users]
+      summary: Update current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Updated user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+  /me/wallet:
+    get:
+      tags: [Wallet]
+      summary: Wallet summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Wallet summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletSummary'
+  /me/wallet/transactions:
+    get:
+      tags: [Wallet]
+      summary: Wallet transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated wallet transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWalletTransactionsResponse'
+  /me/payments/pix:
+    post:
+      tags: [Payments]
+      summary: Create PIX payment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePixPaymentRequest'
+      responses:
+        '201':
+          description: PIX charge created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResource'
+  /me/payments:
+    get:
+      tags: [Payments]
+      summary: Payment list for current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated payments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentsResponse'
+  /me/payments/{paymentId}:
+    get:
+      tags: [Payments]
+      summary: Payment detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Payment resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResource'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /webhooks/payments/{provider}:
+    post:
+      tags: [Payments]
+      summary: Payment webhook receiver
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: webhookSecret
+          in: query
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Webhook accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookAckResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /me/orders:
+    post:
+      tags: [Orders]
+      summary: Create order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '402':
+          $ref: '#/components/responses/InsufficientWalletBalanceError'
+    get:
+      tags: [Orders]
+      summary: Current user orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrdersResponse'
+  /me/orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Current user order detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResource'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/dashboard/summary:
+    get:
+      tags: [Dashboard]
+      summary: Admin dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummaryResponse'
+  /admin/users:
+    get:
+      tags: [Users]
+      summary: Admin user list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: Paginated user list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsersResponse'
+    post:
+      tags: [Users]
+      summary: Admin create user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+  /admin/users/{userId}:
+    get:
+      tags: [Users]
+      summary: Admin user detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    patch:
+      tags: [Users]
+      summary: Admin update user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
+  /admin/catalog/services:
+    get:
+      tags: [Catalog]
+      summary: Admin catalog service list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive]
+        - name: socialNetwork
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated catalog service list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCatalogServicesResponse'
+    post:
+      tags: [Catalog]
+      summary: Admin create catalog service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCatalogServiceUpsertRequest'
+      responses:
+        '201':
+          description: Catalog service created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogServiceResource'
+  /admin/catalog/services/{serviceId}:
+    patch:
+      tags: [Catalog]
+      summary: Admin update catalog service
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ServiceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCatalogServiceUpdateRequest'
+      responses:
+        '200':
+          description: Catalog service updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogServiceResource'
+  /admin/orders:
+    get:
+      tags: [Orders]
+      summary: Admin order list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, submitted, queued_supplier_balance, in_progress, completed, partial, canceled, failed]
+        - name: userId
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paginated admin order list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminOrdersResponse'
+  /admin/orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Admin order detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminOrderResource'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/orders/{orderId}/sync:
+    post:
+      tags: [Orders]
+      summary: Admin manual single-order sync
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncOrdersResponse'
+  /admin/orders/sync:
+    post:
+      tags: [Orders]
+      summary: Admin bulk order sync
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncOrdersRequest'
+      responses:
+        '200':
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncOrdersResponse'
+  /admin/wallets/{userId}/adjustments:
+    post:
+      tags: [Wallet]
+      summary: Admin wallet adjustment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminWalletAdjustmentRequest'
+      responses:
+        '201':
+          description: Wallet adjustment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminWalletAdjustmentResponse'
+  /admin/payments:
+    get:
+      tags: [Payments]
+      summary: Admin payment list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, expired, failed, cancelled]
+        - name: provider
+          in: query
+          schema:
+            type: string
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Paginated admin payment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminPaymentsResponse'
+  /admin/payments/summary:
+    get:
+      tags: [Payments]
+      summary: Admin payment summary
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Search'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, expired, failed, cancelled]
+        - name: provider
+          in: query
+          schema:
+            type: string
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Admin payment summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPaymentsSummaryResponse'
+  /admin/payments/reconcile:
+    post:
+      tags: [Payments]
+      summary: Admin bulk payment reconciliation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                provider:
+                  type: string
+      responses:
+        '200':
+          description: Bulk payment reconciliation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReconciliationResponse'
+  /admin/payments/{paymentId}:
+    get:
+      tags: [Payments]
+      summary: Admin payment detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Admin payment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPaymentDetailResource'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/payments/{paymentId}/reconcile:
+    post:
+      tags: [Payments]
+      summary: Admin single payment reconciliation
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Single payment reconciliation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePaymentReconciliationResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/transactions:
+    get:
+      tags: [Wallet]
+      summary: Admin transaction list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: direction
+          in: query
+          schema:
+            type: string
+            enum: [credit, debit]
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Paginated transaction list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminWalletTransactionsResponse'
+  /admin/supplier/providers:
+    get:
+      tags: [Supplier]
+      summary: Supplier provider status list
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Supplier provider statuses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierProviderStatusesResponse'
+  /admin/supplier/providers/refresh:
+    post:
+      tags: [Supplier]
+      summary: Refresh supplier provider statuses
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Refreshed supplier provider statuses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierProviderStatusesResponse'
+  /admin/supplier/balance:
+    get:
+      tags: [Supplier]
+      summary: Supplier balance
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: supplierName
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Supplier balance resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierBalanceResource'
+  /admin/supplier/services:
+    get:
+      tags: [Supplier]
+      summary: Supplier service list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - name: supplierName
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: isActiveAtSupplier
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Supplier services
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupplierServicesResponse'
+  /admin/supplier/services/sync:
+    post:
+      tags: [Supplier]
+      summary: Trigger supplier service sync
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                supplierName:
+                  type: string
+      responses:
+        '200':
+          description: Supplier sync result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierServicesSyncResponse'
+  /admin/supplier/sync-logs:
+    get:
+      tags: [Supplier]
+      summary: Supplier sync logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: supplierName
+          in: query
+          schema:
+            type: string
+        - name: syncType
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: targetType
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Supplier sync log list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupplierSyncLogsResponse'
+  /admin/alerts:
+    get:
+      tags: [Alerts]
+      summary: Admin alert list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, resolved]
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [info, warning, critical]
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated alert list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAlertsResponse'
+  /admin/alerts/{alertId}/resolve:
+    patch:
+      tags: [Alerts]
+      summary: Resolve alert
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AlertId'
+      responses:
+        '200':
+          description: Alert updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResource'
+  /admin/audits:
+    get:
+      tags: [Audits]
+      summary: Admin audit list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: adminId
+          in: query
+          schema:
+            type: integer
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: entityType
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated audit list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditsResponse'
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: Health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /ready:
+    get:
+      tags: [Health]
+      summary: Readiness check
+      responses:
+        '200':
+          description: Readiness response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Search:
+      name: search
+      in: query
+      schema:
+        type: string
+    SortBy:
+      name: sortBy
+      in: query
+      schema:
+        type: string
+    SortOrder:
+      name: sortOrder
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: string
+    ServiceId:
+      name: serviceId
+      in: path
+      required: true
+      schema:
+        type: string
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+    AlertId:
+      name: alertId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InsufficientWalletBalanceError:
+      description: Insufficient wallet balance
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+          required: [code, message]
+      required: [error]
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        phone:
+          type: string
+      required: [name, email, password, phone]
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required: [email, password]
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required: [refreshToken]
+    AuthSessionResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserSummary'
+      required: [accessToken, refreshToken, user]
+    UserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: [customer, admin]
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        status:
+          type: string
+      required: [id, role, name, email, status]
+    AdminCreateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [customer, admin]
+        status:
+          type: string
+          enum: [active, disabled]
+      required: [name, email, password]
+    AdminUpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+          format: password
+        phone:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [customer, admin]
+        status:
+          type: string
+          enum: [active, disabled]
+    Money:
+      type: object
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+      required: [amount, currency]
+    UserReference:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+      required: [id, name, email]
+    WalletSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        availableBalance:
+          $ref: '#/components/schemas/Money'
+      required: [id, availableBalance]
+    AdminWalletAdjustmentRequest:
+      type: object
+      properties:
+        amount:
+          type: string
+        direction:
+          type: string
+          enum: [credit, debit]
+        type:
+          type: string
+          enum: [wallet_adjustment_admin, wallet_reversal_admin]
+        reason:
+          type: string
+      required: [amount, direction]
+    AdminWalletAdjustmentResponse:
+      type: object
+      properties:
+        wallet:
+          $ref: '#/components/schemas/WalletSummary'
+        transaction:
+          $ref: '#/components/schemas/WalletTransactionResource'
+      required: [wallet, transaction]
+    WalletTransactionResource:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        direction:
+          type: string
+          enum: [credit, debit]
+        amount:
+          $ref: '#/components/schemas/Money'
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, type, direction, amount, createdAt]
+    AdminWalletTransactionResource:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        direction:
+          type: string
+          enum: [credit, debit]
+        amount:
+          $ref: '#/components/schemas/Money'
+        balanceBefore:
+          $ref: '#/components/schemas/Money'
+        balanceAfter:
+          $ref: '#/components/schemas/Money'
+        referenceType:
+          type: string
+          nullable: true
+        referenceId:
+          type: string
+          nullable: true
+        metadata:
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        wallet:
+          type: object
+          properties:
+            id:
+              type: string
+          required: [id]
+        user:
+          $ref: '#/components/schemas/UserReference'
+      required:
+        [id, type, direction, amount, balanceBefore, balanceAfter, createdAt, wallet, user]
+    CreatePixPaymentRequest:
+      type: object
+      properties:
+        amount:
+          oneOf:
+            - type: string
+            - type: number
+      required: [amount]
+    PaymentResource:
+      type: object
+      properties:
+        id:
+          type: string
+        provider:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Money'
+        status:
+          type: string
+          enum: [pending, confirmed, expired, failed, cancelled]
+        brCode:
+          type: string
+          nullable: true
+        brCodeBase64:
+          type: string
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        confirmedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        [id, provider, amount, status, brCode, brCodeBase64, expiresAt, confirmedAt, createdAt, updatedAt]
+    AdminPaymentResource:
+      allOf:
+        - $ref: '#/components/schemas/PaymentResource'
+        - type: object
+          properties:
+            providerPaymentId:
+              type: string
+            walletCreditedAt:
+              type: string
+              format: date-time
+              nullable: true
+            user:
+              oneOf:
+                - $ref: '#/components/schemas/UserReference'
+                - type: 'null'
+          required: [providerPaymentId, walletCreditedAt, user]
+    PaymentEventResource:
+      type: object
+      properties:
+        id:
+          type: string
+        eventType:
+          type: string
+        providerEventId:
+          type: string
+          nullable: true
+        providerPaymentId:
+          type: string
+          nullable: true
+        processingStatus:
+          type: string
+        processedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        [id, eventType, providerEventId, providerPaymentId, processingStatus, processedAt, createdAt]
+    AdminPaymentDetailResource:
+      allOf:
+        - $ref: '#/components/schemas/AdminPaymentResource'
+        - type: object
+          properties:
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentEventResource'
+          required: [events]
+    CatalogAvailabilityResource:
+      type: object
+      properties:
+        providerStatus:
+          type: string
+          enum: [unknown, healthy, degraded_low_balance, unavailable]
+        isPurchasable:
+          type: boolean
+        reason:
+          type: string
+          enum:
+            [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
+      required: [providerStatus, isPurchasable, reason]
+    ProviderStatusSummaryResource:
+      type: object
+      properties:
+        providerStatus:
+          type: string
+          enum: [unknown, healthy, degraded_low_balance, unavailable]
+        isPurchasable:
+          type: boolean
+        reason:
+          type: string
+          enum:
+            [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
+        lastCheckedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastErrorCode:
+          type: string
+          nullable: true
+        lastErrorMessage:
+          type: string
+          nullable: true
+      required:
+        [providerStatus, isPurchasable, reason, lastCheckedAt, lastErrorCode, lastErrorMessage]
+    CatalogSupplierServiceReference:
+      type: object
+      properties:
+        supplierName:
+          type: string
+        supplierServiceId:
+          type: integer
+        name:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        rate:
+          type: string
+          nullable: true
+        refill:
+          type: boolean
+          nullable: true
+        cancel:
+          type: boolean
+          nullable: true
+        providerStatus:
+          oneOf:
+            - $ref: '#/components/schemas/ProviderStatusSummaryResource'
+            - type: 'null'
+      required: [supplierName, supplierServiceId]
+    CatalogServiceResource:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        publicPrice:
+          $ref: '#/components/schemas/Money'
+        status:
+          type: string
+        sortOrder:
+          type: integer
+        socialNetwork:
+          type: string
+        category:
+          type: string
+        type:
+          type: string
+        minQuantity:
+          type: integer
+        maxQuantity:
+          type: integer
+        availability:
+          $ref: '#/components/schemas/CatalogAvailabilityResource'
+        metadata:
+          nullable: true
+        supplierService:
+          $ref: '#/components/schemas/CatalogSupplierServiceReference'
+      required:
+        [id, name, description, publicPrice, status, sortOrder, socialNetwork, category, type, minQuantity, maxQuantity, availability, metadata, supplierService]
+    AdminCatalogServiceUpsertRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        publicPrice:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
+        sortOrder:
+          type: integer
+        socialNetwork:
+          type: string
+        category:
+          type: string
+        type:
+          type: string
+        minQuantity:
+          type: integer
+        maxQuantity:
+          type: integer
+        supplierName:
+          type: string
+        supplierServiceId:
+          type: integer
+        metadata:
+          nullable: true
+      required:
+        [name, publicPrice, socialNetwork, category, type, minQuantity, maxQuantity, supplierServiceId]
+    AdminCatalogServiceUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        publicPrice:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
+        sortOrder:
+          type: integer
+        socialNetwork:
+          type: string
+        category:
+          type: string
+        type:
+          type: string
+        minQuantity:
+          type: integer
+        maxQuantity:
+          type: integer
+        supplierName:
+          type: string
+        supplierServiceId:
+          type: integer
+        metadata:
+          nullable: true
+    CreateOrderRequest:
+      type: object
+      properties:
+        catalogServiceId:
+          type: integer
+        link:
+          type: string
+        quantity:
+          type: integer
+        runs:
+          type: integer
+        interval:
+          type: integer
+        comments:
+          type: array
+          items:
+            type: string
+        answerNumber:
+          oneOf:
+            - type: string
+            - type: integer
+      required: [catalogServiceId, link, quantity]
+    CatalogServiceReference:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required: [id, name]
+    SupplierOrderStateResource:
+      type: object
+      properties:
+        provider:
+          type: string
+        serviceId:
+          type: integer
+        apiOrderId:
+          type: integer
+          nullable: true
+        serviceType:
+          type: string
+          nullable: true
+        estimatedCharge:
+          oneOf:
+            - $ref: '#/components/schemas/Money'
+            - type: 'null'
+        actualCharge:
+          oneOf:
+            - $ref: '#/components/schemas/Money'
+            - type: 'null'
+        remains:
+          type: integer
+          nullable: true
+        errorCode:
+          type: string
+          nullable: true
+        errorMessage:
+          type: string
+          nullable: true
+      required:
+        [provider, serviceId, apiOrderId, serviceType, estimatedCharge, actualCharge, remains, errorCode, errorMessage]
+    OrderEventResource:
+      type: object
+      properties:
+        id:
+          type: string
+        eventType:
+          type: string
+        fromStatus:
+          type: string
+          nullable: true
+        toStatus:
+          type: string
+          nullable: true
+        metadata:
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, eventType, fromStatus, toStatus, metadata, createdAt]
+    OrderResource:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - submitted
+            - queued_supplier_balance
+            - in_progress
+            - completed
+            - partial
+            - canceled
+            - failed
+        link:
+          type: string
+        quantity:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        catalogService:
+          oneOf:
+            - $ref: '#/components/schemas/CatalogServiceReference'
+            - type: 'null'
+        customerCharge:
+          oneOf:
+            - $ref: '#/components/schemas/Money'
+            - type: 'null'
+        supplier:
+          $ref: '#/components/schemas/SupplierOrderStateResource'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderEventResource'
+      required:
+        [id, status, link, quantity, createdAt, updatedAt, catalogService, customerCharge, supplier]
+    AdminOrderResource:
+      allOf:
+        - $ref: '#/components/schemas/OrderResource'
+        - type: object
+          properties:
+            user:
+              oneOf:
+                - $ref: '#/components/schemas/UserReference'
+                - type: 'null'
+          required: [user]
+    SupplierBalanceResource:
+      type: object
+      properties:
+        supplierName:
+          type: string
+        balance:
+          type: string
+        currency:
+          type: string
+      required: [supplierName, balance, currency]
+    SupplierServiceResource:
+      type: object
+      properties:
+        id:
+          type: string
+        supplierName:
+          type: string
+        supplierServiceId:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        type:
+          type: string
+        rate:
+          type: string
+        min:
+          type: integer
+        max:
+          type: integer
+        refill:
+          type: boolean
+        cancel:
+          type: boolean
+        isActiveAtSupplier:
+          type: boolean
+        syncedAt:
+          type: string
+          format: date-time
+      required:
+        [id, supplierName, supplierServiceId, name, category, type, rate, min, max, refill, cancel, isActiveAtSupplier, syncedAt]
+    SupplierProviderStatusResource:
+      type: object
+      properties:
+        supplierName:
+          type: string
+        isDefaultProvider:
+          type: boolean
+        isAvailable:
+          type: boolean
+        isLowBalance:
+          type: boolean
+        operationalStatus:
+          type: string
+          enum: [healthy, degraded_low_balance, unavailable]
+        balance:
+          oneOf:
+            - $ref: '#/components/schemas/Money'
+            - type: 'null'
+        minimumBalance:
+          oneOf:
+            - type: object
+              properties:
+                amount:
+                  type: string
+              required: [amount]
+            - type: 'null'
+        lastCheckedAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastSuccessAt:
+          type: string
+          format: date-time
+          nullable: true
+        lastErrorCode:
+          type: string
+          nullable: true
+        lastErrorMessage:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        [supplierName, isDefaultProvider, isAvailable, isLowBalance, operationalStatus, balance, minimumBalance, lastCheckedAt, lastSuccessAt, lastErrorCode, lastErrorMessage, updatedAt]
+    SupplierSyncLogResource:
+      type: object
+      properties:
+        id:
+          type: string
+        supplierName:
+          type: string
+          nullable: true
+        syncType:
+          type: string
+        targetType:
+          type: string
+        targetId:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [success, failed]
+        requestPayload:
+          nullable: true
+        responsePayload:
+          nullable: true
+        errorMessage:
+          type: string
+          nullable: true
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        [id, supplierName, syncType, targetType, targetId, status, requestPayload, responsePayload, errorMessage, startedAt, finishedAt, createdAt]
+    AlertResource:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        severity:
+          type: string
+        status:
+          type: string
+          enum: [open, resolved]
+        fingerprint:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        context:
+          nullable: true
+        occurrenceCount:
+          type: integer
+        firstOccurredAt:
+          type: string
+          format: date-time
+        lastOccurredAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        [id, type, severity, status, fingerprint, title, message, context, occurrenceCount, firstOccurredAt, lastOccurredAt, resolvedAt, createdAt, updatedAt]
+    AuditResource:
+      type: object
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type: string
+          nullable: true
+        payloadSummary:
+          nullable: true
+        ip:
+          type: string
+          nullable: true
+        userAgent:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        admin:
+          $ref: '#/components/schemas/UserReference'
+      required: [id, action, entityType, entityId, payloadSummary, ip, userAgent, createdAt, admin]
+    DashboardSummaryResponse:
+      type: object
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        users:
+          type: object
+          properties:
+            total: { type: integer }
+            customers: { type: integer }
+            admins: { type: integer }
+            active: { type: integer }
+            disabled: { type: integer }
+          required: [total, customers, admins, active, disabled]
+        catalog:
+          type: object
+          properties:
+            total: { type: integer }
+            active: { type: integer }
+            inactive: { type: integer }
+          required: [total, active, inactive]
+        wallet:
+          type: object
+          properties:
+            totalAvailableBalance:
+              $ref: '#/components/schemas/Money'
+          required: [totalAvailableBalance]
+        orders:
+          type: object
+          properties:
+            counts:
+              type: object
+              properties:
+                pending: { type: integer }
+                submitted: { type: integer }
+                queued_supplier_balance: { type: integer }
+                in_progress: { type: integer }
+                completed: { type: integer }
+                partial: { type: integer }
+                canceled: { type: integer }
+                failed: { type: integer }
+              required:
+                [pending, submitted, queued_supplier_balance, in_progress, completed, partial, canceled, failed]
+            mutableCount:
+              type: integer
+          required: [counts, mutableCount]
+        payments:
+          type: object
+          properties:
+            counts:
+              type: object
+              properties:
+                pending: { type: integer }
+                confirmed: { type: integer }
+                expired: { type: integer }
+                failed: { type: integer }
+                cancelled: { type: integer }
+              required: [pending, confirmed, expired, failed, cancelled]
+            confirmedVolume:
+              $ref: '#/components/schemas/Money'
+          required: [counts, confirmedVolume]
+        alerts:
+          type: object
+          properties:
+            counts:
+              type: object
+              properties:
+                open: { type: integer }
+                resolved: { type: integer }
+              required: [open, resolved]
+            openBySeverity:
+              type: object
+              properties:
+                info: { type: integer }
+                warning: { type: integer }
+                critical: { type: integer }
+              required: [info, warning, critical]
+            latestOpen:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: string }
+                  type: { type: string }
+                  severity: { type: string }
+                  title: { type: string }
+                  message: { type: string }
+                  occurrenceCount: { type: integer }
+                  lastOccurredAt:
+                    type: string
+                    format: date-time
+                required: [id, type, severity, title, message, occurrenceCount, lastOccurredAt]
+          required: [counts, openBySeverity, latestOpen]
+        suppliers:
+          type: object
+          properties:
+            counts:
+              type: object
+              properties:
+                total: { type: integer }
+                healthy: { type: integer }
+                degraded: { type: integer }
+                unavailable: { type: integer }
+              required: [total, healthy, degraded, unavailable]
+            providers:
+              type: array
+              items:
+                type: object
+                properties:
+                  supplierName: { type: string }
+                  isDefaultProvider: { type: boolean }
+                  operationalStatus:
+                    type: string
+                    enum: [healthy, degraded_low_balance, unavailable]
+                  balance:
+                    oneOf:
+                      - $ref: '#/components/schemas/Money'
+                      - type: 'null'
+                  lastCheckedAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  lastSuccessAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  lastErrorCode:
+                    type: string
+                    nullable: true
+                  lastErrorMessage:
+                    type: string
+                    nullable: true
+                required:
+                  [supplierName, isDefaultProvider, operationalStatus, balance, lastCheckedAt, lastSuccessAt, lastErrorCode, lastErrorMessage]
+          required: [counts, providers]
+      required: [generatedAt, users, catalog, wallet, orders, payments, alerts, suppliers]
+    WebhookAckResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required: [ok]
+    SyncOrdersRequest:
+      type: object
+      properties:
+        limit:
+          type: integer
+      additionalProperties: false
+    SyncOrdersResponse:
+      type: object
+      properties:
+        found:
+          type: integer
+        synced:
+          type: integer
+        skipped:
+          type: integer
+      required: [found, synced, skipped]
+    AdminPaymentsSummaryResponse:
+      type: object
+      properties:
+        counts:
+          type: object
+          properties:
+            pending: { type: integer }
+            confirmed: { type: integer }
+            expired: { type: integer }
+            failed: { type: integer }
+            cancelled: { type: integer }
+          required: [pending, confirmed, expired, failed, cancelled]
+        confirmedVolume:
+          $ref: '#/components/schemas/Money'
+      required: [counts, confirmedVolume]
+    PaymentReconciliationResponse:
+      type: object
+      properties:
+        found:
+          type: integer
+        reconciled:
+          type: integer
+        unchanged:
+          type: integer
+        errors:
+          type: integer
+        statusCounts:
+          type: object
+          properties:
+            pending: { type: integer }
+            confirmed: { type: integer }
+            expired: { type: integer }
+            failed: { type: integer }
+            cancelled: { type: integer }
+          required: [pending, confirmed, expired, failed, cancelled]
+      required: [found, reconciled, unchanged, errors, statusCounts]
+    SinglePaymentReconciliationResponse:
+      type: object
+      properties:
+        paymentId:
+          type: string
+        provider:
+          type: string
+        providerPaymentId:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, expired, failed, cancelled]
+        reconciled:
+          type: boolean
+        unchanged:
+          type: boolean
+      required: [paymentId, provider, providerPaymentId, status, reconciled, unchanged]
+    SupplierServicesSyncResponse:
+      type: object
+      properties:
+        fetched:
+          type: integer
+        created:
+          type: integer
+        updated:
+          type: integer
+        inactiveCount:
+          type: integer
+        syncedAt:
+          type: string
+          format: date-time
+      required: [fetched, created, updated, inactiveCount, syncedAt]
+    SupplierProviderStatusesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierProviderStatusResource'
+      required: [items]
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+    PaginatedUsersResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSummary'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedOrdersResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminOrdersResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminOrderResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedCatalogServicesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogServiceResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedPaymentsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminPaymentsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPaymentResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedWalletTransactionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WalletTransactionResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminWalletTransactionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminWalletTransactionResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedSupplierServicesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierServiceResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedSupplierSyncLogsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierSyncLogResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAlertsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAuditsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
