@@ -1,14 +1,8 @@
-export default function HomePage() {
-  return (
-    <main className="app-shell">
-      <section className="hero-card">
-        <p className="eyebrow">Instabarato</p>
-        <h1>Frontend bootstrapado para a próxima sessão do Codex.</h1>
-        <p className="lede">
-          Esta página é só uma casca inicial. A próxima etapa é implementar foundation,
-          sessão, auth e consumo real da API.
-        </p>
-      </section>
-    </main>
-  );
+import { getServerSession } from '@/lib/auth/cookies';
+import { PublicHome } from '@/modules/app-shell/public-home';
+
+export default async function HomePage() {
+  const session = await getServerSession();
+
+  return <PublicHome session={session} />;
 }

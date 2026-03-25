@@ -2,7 +2,7 @@
 
 ## Mandatory Startup Routine
 
-Toda nova sessão do Codex neste repositório deve:
+Toda nova sessao do Codex neste repositorio deve:
 
 1. ler `AGENTS.md`
 2. ler `docs/README.md`
@@ -14,14 +14,17 @@ Toda nova sessão do Codex neste repositório deve:
 
 ## What The Next Session Should Know
 
-- este repo ainda está em bootstrap
-- nenhuma tela funcional foi implementada
-- o backend já existe e o contrato local foi copiado para `docs/contracts/backend-openapi.yaml`
-- a primeira tarefa real recomendada é fundação do app e sessão/auth
+- a foundation inicial do frontend ja foi implementada
+- ainda nao existem telas completas de negocio
+- o backend ja existe e o contrato local foi copiado para `docs/contracts/backend-openapi.yaml`
+- ja existem `/`, `/app` e `/admin` com shell visual e guardas por papel
+- ja existem `/login` e `/register` com server actions conectadas ao backend
+- `src/lib/api` centraliza o client HTTP e os endpoints iniciais de auth
+- `src/lib/auth` centraliza leitura de sessao em cookies e guards server-side
+- `src/middleware.ts` tenta refresh quando existe `refreshToken` sem sessao completa
 
 ## Expected First Implementation Step
 
-- criar shell visual inicial
-- configurar cliente HTTP/base URL
-- montar sessão e guardas
-- iniciar auth screens
+- encaixar o design final das telas de auth e shells quando ele estiver disponivel
+- iniciar catalogo publico e dashboards iniciais sobre os shells ja existentes
+- adicionar estados mais ricos de erro e retorno para auth/logout
