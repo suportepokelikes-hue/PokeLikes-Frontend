@@ -55,6 +55,10 @@ export type WalletTransactionResource = {
   createdAt: string;
 };
 
+export type CreatePixPaymentRequest = {
+  amount: string | number;
+};
+
 export type CatalogAvailabilityResource = {
   providerStatus: 'unknown' | 'healthy' | 'degraded_low_balance' | 'unavailable';
   isPurchasable: boolean;
@@ -168,6 +172,16 @@ export type OrderResource = {
 
 export type AdminOrderResource = OrderResource & {
   user: UserReference | null;
+};
+
+export type CreateOrderRequest = {
+  catalogServiceId: number;
+  link: string;
+  quantity: number;
+  runs?: number;
+  interval?: number;
+  comments?: string[];
+  answerNumber?: string | number;
 };
 
 export type AlertSummary = {

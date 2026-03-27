@@ -1,4 +1,6 @@
 import type {
+  CreateOrderRequest,
+  CreatePixPaymentRequest,
   OrderResource,
   PaginatedResponse,
   PaymentResource,
@@ -35,6 +37,38 @@ export function listCustomerOrders({ accessToken }: AuthOptions) {
 export function listWalletTransactions({ accessToken }: AuthOptions) {
   return apiRequest<PaginatedResponse<WalletTransactionResource>>({
     path: '/me/wallet/transactions?page=1&pageSize=10&sortOrder=desc',
+    accessToken,
+  });
+}
+
+export function createPixPayment({ accessToken }: AuthOptions, payload: CreatePixPaymentRequest) {
+  return apiRequest<PaymentResource>({
+    path: '/me/payments/pix',
+    method: 'POST',
+    accessToken,
+    body: payload,
+  });
+}
+
+export function getCustomerPaymentDetail({ accessToken }: AuthOptions, paymentId: string) {
+  return apiRequest<PaymentResource>({
+    path: `/me/payments/${paymentId}`,
+    accessToken,
+  });
+}
+
+export function createCustomerOrder({ accessToken }: AuthOptions, payload: CreateOrderRequest) {
+  return apiRequest<OrderResource>({
+    path: '/me/orders',
+    method: 'POST',
+    accessToken,
+    body: payload,
+  });
+}
+
+export function getCustomerOrderDetail({ accessToken }: AuthOptions, orderId: string) {
+  return apiRequest<OrderResource>({
+    path: `/me/orders/${orderId}`,
     accessToken,
   });
 }

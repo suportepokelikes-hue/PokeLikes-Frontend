@@ -1,12 +1,17 @@
+import Link from 'next/link';
+
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { listCustomerPayments } from '@/lib/api/customer';
+import { getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
+import { TransactionField, TransactionForm } from '@/modules/customer-transactions/transaction-form';
+import { initialTransactionFormState } from '@/modules/customer-transactions/types';
 
 type CustomerPaymentsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -14,7 +19,10 @@ type CustomerPaymentsPageProps = {
 
 export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProps) {
   try {
-    const payments = await listCustomerPayments({ accessToken: session.accessToken });
+    const [wallet, payments] = await Promise.all([
+      getWalletSummary({ accessToken: session.accessToken }),
+      listCustomerPayments({ accessToken: session.accessToken }),
+    ]);
 
     return (
       <main className="page page-customer">
@@ -24,13 +32,29 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
           description="A listagem reflete os estados assincronos oficiais do backend sem inventar confirmacao antecipada."
         />
 
+        <section className="dashboard-grid">
+          <TransactionForm
+            title="Gerar cobranca PIX"
+            description={`Seu saldo atual e ${formatMoney(wallet.availableBalance)}. O PIX criado nao significa pagamento confirmado.`}
+            action={createPixPaymentAction}
+            initialState={initialTransactionFormState}
+            submitLabel="Criar PIX"
+          >
+            <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
+          </TransactionForm>
+        </section>
+
         {payments.items.length === 0 ? (
-          <EmptyState title="Nenhum pagamento encontrado" description="Crie uma cobranca PIX para começar a acompanhar seu ciclo." />
+          <EmptyState title="Nenhum pagamento encontrado" description="Crie uma cobranca PIX para comecar a acompanhar seu ciclo." />
         ) : (
           <DataTable columns={['ID', 'Provider', 'Valor', 'Status', 'Expira em']}>
             {payments.items.map((payment) => (
               <tr key={payment.id}>
-                <td>{payment.id}</td>
+                <td>
+                  <Link href={`/app/payments/${payment.id}`} className="table-link">
+                    {payment.id}
+                  </Link>
+                </td>
                 <td>{payment.provider}</td>
                 <td>{formatMoney(payment.amount)}</td>
                 <td>

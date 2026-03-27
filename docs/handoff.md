@@ -21,6 +21,8 @@ Toda nova sessao do Codex neste repositorio deve:
 - ja existem `/login` e `/register` com server actions conectadas ao backend
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
 - ja existem `/app/wallet`, `/app/payments`, `/app/orders`, `/admin/users`, `/admin/payments` e `/admin/orders`
+- `/app/payments` cria PIX real e `/app/payments/[paymentId]` mostra o detalhe do pagamento
+- `/catalog/[serviceId]` cria pedido real para cliente autenticado e `/app/orders/[orderId]` mostra o detalhe do pedido
 - `src/lib/api` centraliza o client HTTP e os endpoints iniciais de auth
 - `src/lib/auth` centraliza leitura de sessao em cookies e guards server-side
 - `src/middleware.ts` tenta refresh quando existe `refreshToken` sem sessao completa
@@ -29,8 +31,8 @@ Toda nova sessao do Codex neste repositorio deve:
 ## Expected First Implementation Step
 
 - encaixar o design final das telas de auth e shells quando ele estiver disponivel
-- implementar checkout, detalhe de pedido e criacao de PIX
 - expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
+- expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
 - adicionar estados mais ricos de erro e retorno para auth/logout quando os designs finais chegarem
 
 

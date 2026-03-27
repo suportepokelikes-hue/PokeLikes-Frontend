@@ -60,6 +60,9 @@ Consolidar a arquitetura inicial do frontend da plataforma Instabarato.
 - um design system interno em codigo foi introduzido em `src/components/ui` usando o padrao dominante do Stitch
 - o catalogo publico agora existe em `/catalog` e `/catalog/[serviceId]` usando os endpoints reais do dominio de catalogo
 - `/app`, `/app/wallet`, `/app/payments` e `/app/orders` consomem endpoints reais do cliente
+- `/app/payments` agora tambem cria cobranca PIX por `POST /me/payments/pix`
+- `/catalog/[serviceId]` agora permite criar pedido por `POST /me/orders` quando o cliente estiver autenticado
+- `/app/payments/[paymentId]` e `/app/orders/[orderId]` exibem detalhes reais do cliente
 - `/admin`, `/admin/users`, `/admin/payments` e `/admin/orders` consomem endpoints reais do admin
 
 ## Implemented Structure
@@ -98,7 +101,11 @@ src/
 - `/app` -> `GET /me/wallet`, `GET /me/payments`, `GET /me/orders`
 - `/app/wallet` -> `GET /me/wallet`, `GET /me/wallet/transactions`
 - `/app/payments` -> `GET /me/payments`
+- `/app/payments` -> `POST /me/payments/pix`
+- `/app/payments/[paymentId]` -> `GET /me/payments/{paymentId}`
 - `/app/orders` -> `GET /me/orders`
+- `/catalog/[serviceId]` -> `POST /me/orders`
+- `/app/orders/[orderId]` -> `GET /me/orders/{orderId}`
 - `/admin` -> `GET /admin/dashboard/summary`
 - `/admin/users` -> `GET /admin/users`
 - `/admin/payments` -> `GET /admin/payments`

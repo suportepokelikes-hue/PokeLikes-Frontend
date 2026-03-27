@@ -562,6 +562,17 @@ a {
   font-weight: 700;
 }
 
+.table-link {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.code-block {
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.84rem;
+}
+
 .skeleton-block {
   min-height: 18rem;
   background:
@@ -612,6 +623,12 @@ a {
   gap: 0.9rem;
 }
 
+.transaction-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 .auth-field {
   display: grid;
   gap: 0.45rem;
@@ -632,6 +649,29 @@ a {
   background: rgba(255, 255, 255, 0.74);
   color: var(--ink);
   font: inherit;
+}
+
+.transaction-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.transaction-input,
+.transaction-textarea {
+  width: 100%;
+  min-height: 3.2rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(195, 198, 215, 0.22);
+  background: rgba(242, 244, 246, 0.9);
+  color: var(--ink);
+  font: inherit;
+}
+
+.transaction-textarea {
+  min-height: 7.5rem;
+  resize: vertical;
 }
 
 .auth-error {
@@ -666,7 +706,8 @@ a {
   .catalog-grid,
   .dashboard-grid,
   .detail-grid,
-  .catalog-stats {
+  .catalog-stats,
+  .transaction-grid {
     grid-template-columns: 1fr;
   }
 

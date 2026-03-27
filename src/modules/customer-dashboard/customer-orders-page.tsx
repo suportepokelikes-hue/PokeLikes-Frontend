@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -30,7 +32,11 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
           <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
             {orders.items.map((order) => (
               <tr key={order.id}>
-                <td>{order.id}</td>
+                <td>
+                  <Link href={`/app/orders/${order.id}`} className="table-link">
+                    {order.id}
+                  </Link>
+                </td>
                 <td>{order.catalogService?.name || 'Servico nao associado'}</td>
                 <td>
                   <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />

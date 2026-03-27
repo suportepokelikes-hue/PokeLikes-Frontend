@@ -70,16 +70,17 @@ Tasks:
 
 - [x] saldo
 - [x] extrato
-- [ ] criar PIX
+- [x] criar PIX
 - [x] acompanhar status do PIX na listagem existente
+- [x] detalhe do pagamento PIX
 
 ## Phase 4: Orders
 
 Tasks:
 
-- [ ] checkout
+- [x] checkout
 - [x] meus pedidos
-- [ ] detalhe do pedido
+- [x] detalhe do pedido
 
 ## Phase 5: Admin
 
@@ -100,6 +101,6 @@ Tasks:
 Na proxima sessao do Codex:
 
 - encaixar o design final das telas de auth e shells quando ele estiver pronto
-- implementar checkout, detalhe de pedido e criacao de PIX
 - expandir o admin para catalogo, fornecedores, alertas, auditoria e transacoes
+- expandir o cliente para editar perfil e criar fluxos mais completos de order/payment com refinamento visual final
 - refinar visualmente as telas ja conectadas ao backend com os exports finais do Stitch

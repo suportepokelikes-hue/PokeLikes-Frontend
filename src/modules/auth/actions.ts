@@ -19,13 +19,17 @@ export async function loginAction(_: AuthFormState, formData: FormData): Promise
     };
   }
 
+  let role: 'customer' | 'admin';
+
   try {
     const session = await login({ email, password });
     await writeServerSessionCookies(session);
-    redirect(session.user.role === 'admin' ? '/admin' : '/app');
+    role = session.user.role;
   } catch (error) {
     return mapAuthError(error, 'Nao foi possivel autenticar com as credenciais informadas.');
   }
+
+  redirect(role === 'admin' ? '/admin' : '/app');
 }
 
 export async function registerAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -41,13 +45,17 @@ export async function registerAction(_: AuthFormState, formData: FormData): Prom
     };
   }
 
+  let role: 'customer' | 'admin';
+
   try {
     const session = await registerCustomer({ name, email, phone, password });
     await writeServerSessionCookies(session);
-    redirect(session.user.role === 'admin' ? '/admin' : '/app');
+    role = session.user.role;
   } catch (error) {
     return mapAuthError(error, 'Nao foi possivel concluir o cadastro agora.');
   }
+
+  redirect(role === 'admin' ? '/admin' : '/app');
 }
 
 export async function logoutAction() {

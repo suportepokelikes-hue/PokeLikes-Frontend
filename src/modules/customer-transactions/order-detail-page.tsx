@@ -1,0 +1,127 @@
+import { notFound } from 'next/navigation';
+
+import { ErrorState } from '@/components/ui/error-state';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { getCustomerOrderDetail } from '@/lib/api/customer';
+import { ApiClientError } from '@/lib/api/http';
+import type { SessionState } from '@/lib/auth/session';
+import { formatDateTime, formatMoney } from '@/lib/format';
+
+type OrderDetailPageProps = {
+  session: Extract<SessionState, { status: 'authenticated' }>;
+  orderId: string;
+};
+
+export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps) {
+  try {
+    const order = await getCustomerOrderDetail({ accessToken: session.accessToken }, orderId);
+
+    return (
+      <main className="page page-customer">
+        <PageHeader
+          eyebrow="Detalhe do pedido"
+          title={`Pedido ${order.id}`}
+          description="O detalhe do pedido mostra status, carga financeira e estado tecnico do fornecedor sem mascarar erros."
+          actions={<StatusBadge label={order.status} tone={mapOrderTone(order.status)} />}
+        />
+
+        <section className="detail-grid">
+          <article className="detail-card">
+            <h2>Resumo comercial</h2>
+            <dl className="detail-list">
+              <div>
+                <dt>Servico</dt>
+                <dd>{order.catalogService?.name || 'Servico nao associado'}</dd>
+              </div>
+              <div>
+                <dt>Link</dt>
+                <dd className="code-block">{order.link}</dd>
+              </div>
+              <div>
+                <dt>Quantidade</dt>
+                <dd>{order.quantity}</dd>
+              </div>
+              <div>
+                <dt>Cobranca do cliente</dt>
+                <dd>{formatMoney(order.customerCharge)}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article className="detail-card">
+            <h2>Estado tecnico</h2>
+            <dl className="detail-list">
+              <div>
+                <dt>Provider</dt>
+                <dd>{order.supplier.provider}</dd>
+              </div>
+              <div>
+                <dt>Service ID</dt>
+                <dd>{order.supplier.serviceId}</dd>
+              </div>
+              <div>
+                <dt>API order ID</dt>
+                <dd>{order.supplier.apiOrderId ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>Remains</dt>
+                <dd>{order.supplier.remains ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>Ultimo erro</dt>
+                <dd>{order.supplier.errorMessage || '-'}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article className="detail-card detail-card-wide">
+            <h2>Timeline</h2>
+            {order.events && order.events.length > 0 ? (
+              <div className="stack-list">
+                {order.events.map((event) => (
+                  <div key={event.id} className="stack-item">
+                    <div className="stack-item-head">
+                      <strong>{event.eventType}</strong>
+                      <span>{formatDateTime(event.createdAt)}</span>
+                    </div>
+                    <p>
+                      {event.fromStatus || '-'} {'->'} {event.toStatus || '-'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="section-copy">O backend ainda nao retornou eventos para este pedido.</p>
+            )}
+          </article>
+        </section>
+      </main>
+    );
+  } catch (error) {
+    if (error instanceof ApiClientError && error.status === 404) {
+      notFound();
+    }
+
+    return (
+      <main className="page page-customer">
+        <ErrorState
+          title="Nao foi possivel carregar o pedido"
+          description="A API nao retornou os dados esperados para este pedido."
+        />
+      </main>
+    );
+  }
+}
+
+function mapOrderTone(status: string) {
+  if (status === 'completed') {
+    return 'success';
+  }
+
+  if (status === 'pending' || status === 'submitted' || status === 'queued_supplier_balance' || status === 'in_progress') {
+    return 'warning';
+  }
+
+  return 'danger';
+}

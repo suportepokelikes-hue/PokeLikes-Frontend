@@ -6,7 +6,11 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { getCatalogService } from '@/lib/api/catalog';
 import { ApiClientError } from '@/lib/api/http';
+import { getServerSession } from '@/lib/auth/cookies';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { createOrderAction } from '@/modules/customer-transactions/actions';
+import { TransactionField, TransactionForm, TransactionTextarea } from '@/modules/customer-transactions/transaction-form';
+import { initialTransactionFormState } from '@/modules/customer-transactions/types';
 
 type CatalogDetailPageProps = {
   serviceId: string;
@@ -14,6 +18,7 @@ type CatalogDetailPageProps = {
 
 export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
   try {
+    const session = await getServerSession();
     const service = await getCatalogService(serviceId);
 
     return (
@@ -100,6 +105,63 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                 <dd>{service.supplierService.providerStatus?.lastErrorMessage || '-'}</dd>
               </div>
             </dl>
+          </article>
+
+          <article className="detail-card detail-card-wide">
+            {session.status === 'authenticated' && session.user.role === 'customer' ? (
+              <TransactionForm
+                title="Criar pedido"
+                description="O checkout usa apenas os campos suportados pelo contrato atual de criacao de pedidos."
+                action={createOrderAction}
+                initialState={initialTransactionFormState}
+                submitLabel="Confirmar pedido"
+              >
+                <input type="hidden" name="catalogServiceId" value={service.id} />
+                <div className="transaction-grid">
+                  <TransactionField label="Servico" name="serviceName" defaultValue={service.name} readOnly />
+                  <TransactionField
+                    label="Quantidade"
+                    name="quantity"
+                    type="number"
+                    required
+                    min={service.minQuantity}
+                    max={service.maxQuantity}
+                  />
+                </div>
+                <div className="transaction-grid">
+                  <TransactionField
+                    label="Link do destino"
+                    name="link"
+                    type="url"
+                    required
+                    placeholder="https://instagram.com/seu-perfil"
+                  />
+                  <TransactionField label="Runs" name="runs" type="number" placeholder="Opcional" />
+                </div>
+                <div className="transaction-grid">
+                  <TransactionField label="Intervalo" name="interval" type="number" placeholder="Opcional" />
+                  <TransactionField label="Answer number" name="answerNumber" placeholder="Opcional" />
+                </div>
+                <TransactionTextarea
+                  label="Comments"
+                  name="comments"
+                  placeholder="Um comentario por linha, se o servico exigir."
+                />
+              </TransactionForm>
+            ) : (
+              <div className="stack-item">
+                <strong>Quer comprar este servico?</strong>
+                <p>Entre como cliente para criar um pedido real a partir deste item do catalogo.</p>
+                <div className="page-actions">
+                  <Link href="/login" className="primary-action">
+                    Entrar
+                  </Link>
+                  <Link href="/register" className="secondary-action">
+                    Criar conta
+                  </Link>
+                </div>
+              </div>
+            )}
           </article>
         </section>
       </main>
