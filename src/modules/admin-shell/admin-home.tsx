@@ -15,9 +15,14 @@ const adminMetrics = (user: UserSummary): ShellMetric[] => [
 
 const adminLinks = [
   {
-    href: '/admin/users',
-    label: 'Usuarios',
-    description: 'Cadastro, status e governanca de acesso administrativo.',
+    href: '/admin/catalog',
+    label: 'Catalogo',
+    description: 'Preco publico, disponibilidade e acoplamento com o servico do fornecedor.',
+  },
+  {
+    href: '/admin/orders',
+    label: 'Pedidos',
+    description: 'Entrada para sincronizacao, auditoria e tratamento operacional.',
   },
   {
     href: '/admin/payments',
@@ -25,9 +30,29 @@ const adminLinks = [
     description: 'Base para conciliacao e leitura de estados assincronos do PIX.',
   },
   {
-    href: '/admin/orders',
-    label: 'Pedidos',
-    description: 'Entrada para sincronizacao, auditoria e tratamento operacional.',
+    href: '/admin/supplier',
+    label: 'Fornecedores',
+    description: 'Status operacional, servicos sincronizados e logs tecnicos.',
+  },
+  {
+    href: '/admin/alerts',
+    label: 'Alertas',
+    description: 'Fila priorizada de ocorrencias abertas e resolvidas.',
+  },
+  {
+    href: '/admin/audits',
+    label: 'Auditoria',
+    description: 'Rastro de acoes administrativas com payload resumido.',
+  },
+  {
+    href: '/admin/transactions',
+    label: 'Transacoes',
+    description: 'Ledger financeiro com creditos, debitos e referencias.',
+  },
+  {
+    href: '/admin/users',
+    label: 'Usuarios',
+    description: 'Cadastro, status e governanca de acesso administrativo.',
   },
 ];
 

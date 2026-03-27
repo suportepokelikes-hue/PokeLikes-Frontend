@@ -88,19 +88,22 @@ Tasks:
 
 - [x] dashboard
 - [x] users
-- [ ] catalog
+- [x] catalog
 - [x] payments
 - [x] orders
-- supplier
-- alerts
-- audits
-- transactions
+- [x] supplier
+- [x] alerts
+- [x] audits
+- [x] transactions
+- [ ] adicionar mutacoes operacionais reais no admin para alertas, sync e refresh onde a API ja suporta acao
+- [ ] aprofundar filtros, paginacao navegavel e detalhes drill-down nas listas administrativas
 
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
 - encaixar o design final das telas de auth e shells quando ele estiver pronto
-- expandir o admin para catalogo, fornecedores, alertas, auditoria e transacoes
+- adicionar mutacoes operacionais do admin com feedback server-side, comecando por resolve de alertas e refresh/sync de fornecedores
+- expandir detalhes drill-down admin para pagamento, pedido, usuario e catalogo usando os endpoints individuais existentes
 - expandir o cliente para editar perfil e criar fluxos mais completos de order/payment com refinamento visual final
 - refinar visualmente as telas ja conectadas ao backend com os exports finais do Stitch

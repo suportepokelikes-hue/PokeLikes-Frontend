@@ -64,6 +64,9 @@ Consolidar a arquitetura inicial do frontend da plataforma Instabarato.
 - `/catalog/[serviceId]` agora permite criar pedido por `POST /me/orders` quando o cliente estiver autenticado
 - `/app/payments/[paymentId]` e `/app/orders/[orderId]` exibem detalhes reais do cliente
 - `/admin`, `/admin/users`, `/admin/payments` e `/admin/orders` consomem endpoints reais do admin
+- `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits` e `/admin/transactions` agora tambem consomem endpoints reais do admin
+- a navegacao da area admin passou a expor os modulos operacionais completos no shell compartilhado
+- as novas telas admin adotam o padrao dominante do Stitch ja convertido no design system interno: page header editorial, cards de resumo, tabelas densas e estados explicitados de loading, empty e server error
 
 ## Implemented Structure
 
@@ -110,15 +113,22 @@ src/
 - `/admin/users` -> `GET /admin/users`
 - `/admin/payments` -> `GET /admin/payments`
 - `/admin/orders` -> `GET /admin/orders`
+- `/admin/catalog` -> `GET /admin/catalog/services`
+- `/admin/supplier` -> `GET /admin/supplier/providers`, `GET /admin/supplier/services`, `GET /admin/supplier/sync-logs`
+- `/admin/alerts` -> `GET /admin/alerts`
+- `/admin/audits` -> `GET /admin/audits`
+- `/admin/transactions` -> `GET /admin/transactions`
 
 ## Operational UX Direction
 
 - status de sessao, disponibilidade e estados assincronos continuam sendo parte central da UX
 - a area do cliente deve priorizar clareza de fluxo para wallet, PIX e pedidos
 - a area admin deve priorizar densidade informacional e observabilidade operacional
+- a area admin consolidou um shell unico com navegacao por modulo e tabelas reutilizaveis para catalogo, fornecedores, alertas, auditoria e transacoes
 
 ## Remaining Direction
 
 - a proxima etapa deve refinar UX de auth com o design final e cobrir estados operacionais do backend
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
+- o proximo refinamento recomendado no admin e adicionar mutacoes operacionais reais nos endpoints ja disponiveis, como resolver alerta, refresh de providers e sync de servicos/pedidos
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend

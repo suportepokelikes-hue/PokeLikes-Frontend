@@ -21,17 +21,21 @@ Toda nova sessao do Codex neste repositorio deve:
 - ja existem `/login` e `/register` com server actions conectadas ao backend
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
 - ja existem `/app/wallet`, `/app/payments`, `/app/orders`, `/admin/users`, `/admin/payments` e `/admin/orders`
+- ja existem `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits` e `/admin/transactions` conectados ao backend real
 - `/app/payments` cria PIX real e `/app/payments/[paymentId]` mostra o detalhe do pagamento
 - `/catalog/[serviceId]` cria pedido real para cliente autenticado e `/app/orders/[orderId]` mostra o detalhe do pedido
 - `src/lib/api` centraliza o client HTTP e os endpoints iniciais de auth
 - `src/lib/auth` centraliza leitura de sessao em cookies e guards server-side
 - `src/middleware.ts` tenta refresh quando existe `refreshToken` sem sessao completa
 - `src/components/ui` concentra o design system interno derivado do Stitch
+- o shell admin agora contem navegacao por modulo para dashboard, usuarios, catalogo, pagamentos, pedidos, fornecedores, alertas, auditoria e transacoes
+- `src/app/admin/loading.tsx` cobre o loading visual do segmento admin
 
 ## Expected First Implementation Step
 
 - encaixar o design final das telas de auth e shells quando ele estiver disponivel
 - expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
+- implementar mutacoes administrativas reais com feedback server-side, priorizando resolve de alertas e refresh/sync de fornecedores
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
 - adicionar estados mais ricos de erro e retorno para auth/logout quando os designs finais chegarem
 

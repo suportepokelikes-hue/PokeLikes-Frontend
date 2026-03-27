@@ -205,6 +205,112 @@ export type SupplierProviderSummary = {
   lastErrorMessage: string | null;
 };
 
+export type AdminWalletTransactionResource = {
+  id: string;
+  type: string;
+  direction: 'credit' | 'debit';
+  amount: Money;
+  balanceBefore: Money;
+  balanceAfter: Money;
+  referenceType: string | null;
+  referenceId: string | null;
+  metadata: unknown;
+  createdAt: string;
+  wallet: {
+    id: string;
+  };
+  user: UserReference;
+};
+
+export type SupplierMinimumBalance = {
+  amount: string;
+} | null;
+
+export type SupplierProviderStatusResource = {
+  supplierName: string;
+  isDefaultProvider: boolean;
+  isAvailable: boolean;
+  isLowBalance: boolean;
+  operationalStatus: 'healthy' | 'degraded_low_balance' | 'unavailable';
+  balance: Money | null;
+  minimumBalance: SupplierMinimumBalance;
+  lastCheckedAt: string | null;
+  lastSuccessAt: string | null;
+  lastErrorCode: string | null;
+  lastErrorMessage: string | null;
+  updatedAt: string;
+};
+
+export type SupplierProviderStatusesResponse = {
+  items: SupplierProviderStatusResource[];
+};
+
+export type SupplierBalanceResource = {
+  supplierName: string;
+  balance: string;
+  currency: string;
+};
+
+export type SupplierServiceResource = {
+  id: string;
+  supplierName: string;
+  supplierServiceId: number;
+  name: string;
+  category: string;
+  type: string;
+  rate: string;
+  min: number;
+  max: number;
+  refill: boolean;
+  cancel: boolean;
+  isActiveAtSupplier: boolean;
+  syncedAt: string;
+};
+
+export type SupplierSyncLogResource = {
+  id: string;
+  supplierName: string | null;
+  syncType: string;
+  targetType: string;
+  targetId: string | null;
+  status: 'success' | 'failed';
+  requestPayload: unknown;
+  responsePayload: unknown;
+  errorMessage: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+  createdAt: string;
+};
+
+export type AlertResource = {
+  id: string;
+  type: string;
+  severity: 'info' | 'warning' | 'critical' | string;
+  status: 'open' | 'resolved';
+  fingerprint: string;
+  title: string;
+  message: string;
+  context: unknown;
+  occurrenceCount: number;
+  firstOccurredAt: string;
+  lastOccurredAt: string;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AuditResource = {
+  id: string;
+  action: string;
+  entityType: string;
+  entityId: string | null;
+  payloadSummary: unknown;
+  ip: string | null;
+  userAgent: string | null;
+  createdAt: string;
+  admin: UserReference;
+};
+
 export type DashboardSummaryResponse = {
   generatedAt: string;
   users: {

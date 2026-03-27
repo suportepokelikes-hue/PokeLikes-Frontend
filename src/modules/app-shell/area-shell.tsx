@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import type { UserSummary } from '@/lib/api/contracts';
 import { LogoutButton } from '@/modules/auth/logout-button';
@@ -24,15 +27,22 @@ const areaConfig = {
     homeHref: '/admin',
     label: 'Area admin',
     links: [
-      { href: '/', label: 'Publico' },
-      { href: '/app', label: 'Cliente' },
-      { href: '/admin', label: 'Inicio admin' },
+      { href: '/admin', label: 'Dashboard' },
+      { href: '/admin/users', label: 'Usuarios' },
+      { href: '/admin/catalog', label: 'Catalogo' },
+      { href: '/admin/payments', label: 'Pagamentos' },
+      { href: '/admin/orders', label: 'Pedidos' },
+      { href: '/admin/supplier', label: 'Fornecedores' },
+      { href: '/admin/alerts', label: 'Alertas' },
+      { href: '/admin/audits', label: 'Auditoria' },
+      { href: '/admin/transactions', label: 'Transacoes' },
     ],
   },
 } as const;
 
 export function AreaShell({ area, user, title, children }: AreaShellProps) {
   const config = areaConfig[area];
+  const pathname = usePathname();
 
   return (
     <div className={`area-shell area-shell-${area}`}>
@@ -53,7 +63,11 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
 
       <nav className="area-nav" aria-label={`${config.label} navigation`}>
         {config.links.map((link) => (
-          <Link key={link.href} href={link.href} className={link.href === config.homeHref ? 'is-current' : ''}>
+          <Link
+            key={link.href}
+            href={link.href}
+            className={pathname === link.href ? 'is-current' : ''}
+          >
             {link.label}
           </Link>
         ))}
