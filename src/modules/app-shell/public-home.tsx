@@ -11,6 +11,11 @@ type PublicHomeProps = {
 
 const publicLinks: ShellLink[] = [
   {
+    href: '/catalog',
+    label: 'Catalogo',
+    description: 'Listagem publica real conectada ao endpoint de catalogo e ao estado de availability.',
+  },
+  {
     href: '/',
     label: 'Area publica',
     description: 'Base institucional e ponto de entrada do catalogo, auth e estados operacionais.',
@@ -77,6 +82,9 @@ export function PublicHome({ session }: PublicHomeProps) {
         ) : (
           <LogoutButton />
         )}
+        <Link href="/catalog" className="secondary-action">
+          Ver catalogo
+        </Link>
       </section>
 
       <section className="card-grid">

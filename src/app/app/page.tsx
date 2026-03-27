@@ -1,8 +1,8 @@
 import { requireCustomerSession } from '@/lib/auth/guards';
-import { CustomerHome } from '@/modules/app-shell/customer-home';
+import { CustomerDashboardPage } from '@/modules/customer-dashboard/customer-dashboard-page';
 
 export default async function CustomerPage() {
   const session = await requireCustomerSession();
 
-  return <CustomerHome user={session.user} />;
+  return <CustomerDashboardPage session={session} />;
 }

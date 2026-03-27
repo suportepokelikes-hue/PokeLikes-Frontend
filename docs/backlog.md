@@ -2,7 +2,7 @@
 
 ## Current State
 
-O repositorio agora possui foundation funcional do frontend com App Router, shells iniciais e bootstrap de sessao.
+O repositorio agora possui foundation funcional, auth operacional, design system interno e primeiras areas reais conectadas a API.
 
 Ja existe:
 
@@ -13,6 +13,9 @@ Ja existe:
 - middleware de protecao para `/app` e `/admin`
 - camada inicial de API/auth em `src/lib/api` e `src/lib/auth`
 - shells separados para area publica, cliente e admin
+- design system reutilizavel em `src/components/ui`
+- catalogo publico real
+- dashboards e listas iniciais reais para cliente e admin
 
 ## Recommended Execution Order
 
@@ -56,36 +59,37 @@ Tasks:
 
 Tasks:
 
-- listagem publica
-- detalhe do servico
-- estados de availability
+- [x] listagem publica
+- [x] detalhe do servico
+- [x] estados de availability
+- [ ] refinamento visual das telas publicas com base final do Stitch
 
 ## Phase 3: Wallet and PIX
 
 Tasks:
 
-- saldo
-- extrato
-- criar PIX
-- acompanhar status do PIX
+- [x] saldo
+- [x] extrato
+- [ ] criar PIX
+- [x] acompanhar status do PIX na listagem existente
 
 ## Phase 4: Orders
 
 Tasks:
 
-- checkout
-- meus pedidos
-- detalhe do pedido
+- [ ] checkout
+- [x] meus pedidos
+- [ ] detalhe do pedido
 
 ## Phase 5: Admin
 
 Tasks:
 
-- dashboard
-- users
-- catalog
-- payments
-- orders
+- [x] dashboard
+- [x] users
+- [ ] catalog
+- [x] payments
+- [x] orders
 - supplier
 - alerts
 - audits
@@ -96,5 +100,6 @@ Tasks:
 Na proxima sessao do Codex:
 
 - encaixar o design final das telas de auth e shells quando ele estiver pronto
-- iniciar catalogo publico em `/catalog` sobre a camada de sessao ja implementada
-- expandir o cliente com wallet e o admin com dashboard inicial
+- implementar checkout, detalhe de pedido e criacao de PIX
+- expandir o admin para catalogo, fornecedores, alertas, auditoria e transacoes
+- refinar visualmente as telas ja conectadas ao backend com os exports finais do Stitch

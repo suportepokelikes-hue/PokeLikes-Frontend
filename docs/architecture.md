@@ -57,6 +57,10 @@ Consolidar a arquitetura inicial do frontend da plataforma Instabarato.
 - `src/middleware.ts` protege rotas autenticadas, tenta refresh quando houver `refreshToken` e redireciona conforme `role`
 - guards server-side em `src/lib/auth/guards.ts` reforcam separacao entre cliente e admin dentro do App Router
 - `/login` e `/register` usam server actions para autenticar, persistir cookies e redirecionar conforme `role`
+- um design system interno em codigo foi introduzido em `src/components/ui` usando o padrao dominante do Stitch
+- o catalogo publico agora existe em `/catalog` e `/catalog/[serviceId]` usando os endpoints reais do dominio de catalogo
+- `/app`, `/app/wallet`, `/app/payments` e `/app/orders` consomem endpoints reais do cliente
+- `/admin`, `/admin/users`, `/admin/payments` e `/admin/orders` consomem endpoints reais do admin
 
 ## Implemented Structure
 
@@ -65,10 +69,14 @@ src/
   app/
     app/
     admin/
+    catalog/
   lib/
     api/
+      admin.ts
       auth.ts
+      catalog.ts
       contracts.ts
+      customer.ts
       http.ts
     auth/
       cookies.ts
@@ -78,8 +86,23 @@ src/
   modules/
     app-shell/
     admin-shell/
+    catalog/
+    customer-dashboard/
   middleware.ts
 ```
+
+## Implemented Route To Endpoint Mapping
+
+- `/catalog` -> `GET /catalog/services`
+- `/catalog/[serviceId]` -> `GET /catalog/services/{serviceId}`
+- `/app` -> `GET /me/wallet`, `GET /me/payments`, `GET /me/orders`
+- `/app/wallet` -> `GET /me/wallet`, `GET /me/wallet/transactions`
+- `/app/payments` -> `GET /me/payments`
+- `/app/orders` -> `GET /me/orders`
+- `/admin` -> `GET /admin/dashboard/summary`
+- `/admin/users` -> `GET /admin/users`
+- `/admin/payments` -> `GET /admin/payments`
+- `/admin/orders` -> `GET /admin/orders`
 
 ## Operational UX Direction
 
@@ -90,4 +113,5 @@ src/
 ## Remaining Direction
 
 - a proxima etapa deve refinar UX de auth com o design final e cobrir estados operacionais do backend
+- as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend

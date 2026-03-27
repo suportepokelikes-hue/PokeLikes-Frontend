@@ -1,8 +1,8 @@
 import { requireAdminSession } from '@/lib/auth/guards';
-import { AdminHome } from '@/modules/admin-shell/admin-home';
+import { AdminDashboardPage } from '@/modules/admin-shell/admin-dashboard-page';
 
 export default async function AdminPage() {
   const session = await requireAdminSession();
 
-  return <AdminHome user={session.user} />;
+  return <AdminDashboardPage session={session} />;
 }
