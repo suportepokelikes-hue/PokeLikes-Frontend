@@ -7,8 +7,8 @@ import type {
   UserSummary,
   WalletSummary,
   WalletTransactionResource,
-} from '@/lib/api/contracts';
-import { apiRequest } from '@/lib/api/http';
+} from './contracts';
+import { apiRequest } from './http';
 
 type AuthOptions = {
   accessToken: string;

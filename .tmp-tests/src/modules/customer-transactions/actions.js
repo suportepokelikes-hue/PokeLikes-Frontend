@@ -5,107 +5,46 @@ exports.createPixPaymentAction = createPixPaymentAction;
 exports.createOrderAction = createOrderAction;
 const navigation_1 = require("next/navigation");
 const customer_1 = require("@/lib/api/customer");
-const http_1 = require("@/lib/api/http");
 const cookies_1 = require("@/lib/auth/cookies");
 const navigation_2 = require("@/lib/auth/navigation");
+const action_helpers_1 = require("@/modules/customer-transactions/action-helpers");
 async function createPixPaymentAction(_, formData) {
     const session = await (0, cookies_1.getServerSession)();
-    const returnTo = (0, navigation_2.normalizeReturnTo)(readRequiredString(formData, 'returnTo'));
+    const returnTo = (0, navigation_2.normalizeReturnTo)((0, action_helpers_1.readRequiredString)(formData, 'returnTo'));
     if (session.status !== 'authenticated' || session.user.role !== 'customer') {
         (0, navigation_1.redirect)((0, navigation_2.getLoginPath)({ reason: 'required', returnTo }));
     }
-    const amount = readRequiredString(formData, 'amount');
-    if (!amount) {
-        return {
-            status: 'error',
-            message: 'Informe o valor para gerar a cobranca PIX.',
-        };
+    const payload = (0, action_helpers_1.parseCreatePixPayload)(formData);
+    if ('error' in payload) {
+        return payload.error;
     }
     let paymentId;
     try {
-        const payment = await (0, customer_1.createPixPayment)({ accessToken: session.accessToken }, { amount });
+        const payment = await (0, customer_1.createPixPayment)({ accessToken: session.accessToken }, payload.value);
         paymentId = payment.id;
     }
     catch (error) {
-        return mapFormError(error, 'Nao foi possivel criar a cobranca PIX agora.');
+        return (0, action_helpers_1.mapTransactionFormError)(error, 'Nao foi possivel criar a cobranca PIX agora.');
     }
     (0, navigation_1.redirect)(`/app/payments/${paymentId}`);
 }
 async function createOrderAction(_, formData) {
     const session = await (0, cookies_1.getServerSession)();
-    const returnTo = (0, navigation_2.normalizeReturnTo)(readRequiredString(formData, 'returnTo'));
+    const returnTo = (0, navigation_2.normalizeReturnTo)((0, action_helpers_1.readRequiredString)(formData, 'returnTo'));
     if (session.status !== 'authenticated' || session.user.role !== 'customer') {
         (0, navigation_1.redirect)((0, navigation_2.getLoginPath)({ reason: 'required', returnTo }));
     }
-    const catalogServiceIdRaw = readRequiredString(formData, 'catalogServiceId');
-    const catalogServiceId = Number.parseInt(catalogServiceIdRaw, 10);
-    const link = readRequiredString(formData, 'link');
-    const quantity = Number.parseInt(readRequiredString(formData, 'quantity'), 10);
-    const runs = readOptionalInt(formData, 'runs');
-    const interval = readOptionalInt(formData, 'interval');
-    const comments = readOptionalStringArray(formData, 'comments');
-    const answerNumberRaw = readRequiredString(formData, 'answerNumber');
-    if (Number.isNaN(catalogServiceId)) {
-        return {
-            status: 'error',
-            message: 'O contrato atual de criacao de pedido exige catalogServiceId numerico. Este servico nao pode ser convertido de forma segura.',
-        };
-    }
-    if (!link || Number.isNaN(quantity)) {
-        return {
-            status: 'error',
-            message: 'Informe link e quantidade validos para criar o pedido.',
-        };
+    const payload = (0, action_helpers_1.parseCreateOrderPayload)(formData);
+    if ('error' in payload) {
+        return payload.error;
     }
     let orderId;
     try {
-        const order = await (0, customer_1.createCustomerOrder)({ accessToken: session.accessToken }, {
-            catalogServiceId,
-            link,
-            quantity,
-            ...(runs !== undefined ? { runs } : {}),
-            ...(interval !== undefined ? { interval } : {}),
-            ...(comments.length > 0 ? { comments } : {}),
-            ...(answerNumberRaw ? { answerNumber: answerNumberRaw } : {}),
-        });
+        const order = await (0, customer_1.createCustomerOrder)({ accessToken: session.accessToken }, payload.value);
         orderId = order.id;
     }
     catch (error) {
-        return mapFormError(error, 'Nao foi possivel criar o pedido agora.');
+        return (0, action_helpers_1.mapTransactionFormError)(error, 'Nao foi possivel criar o pedido agora.');
     }
     (0, navigation_1.redirect)(`/app/orders/${orderId}`);
-}
-function readRequiredString(formData, key) {
-    const value = formData.get(key);
-    return typeof value === 'string' ? value.trim() : '';
-}
-function readOptionalInt(formData, key) {
-    const value = readRequiredString(formData, key);
-    if (!value) {
-        return undefined;
-    }
-    const parsed = Number.parseInt(value, 10);
-    return Number.isNaN(parsed) ? undefined : parsed;
-}
-function readOptionalStringArray(formData, key) {
-    const value = readRequiredString(formData, key);
-    if (!value) {
-        return [];
-    }
-    return value
-        .split(/\r?\n/)
-        .map((item) => item.trim())
-        .filter(Boolean);
-}
-function mapFormError(error, fallbackMessage) {
-    if (error instanceof http_1.ApiClientError) {
-        return {
-            status: 'error',
-            message: error.message || fallbackMessage,
-        };
-    }
-    return {
-        status: 'error',
-        message: fallbackMessage,
-    };
 }

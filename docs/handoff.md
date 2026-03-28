@@ -27,6 +27,9 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/admin/transactions` agora permite ajuste manual de carteira com base em `POST /admin/wallets/{userId}/adjustments`, com feedback inline e reaproveitando o filtro `userId` como contexto inicial
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora existem para concentrar edicao em paginas dedicadas e reduzir a densidade operacional das listas
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
+- a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`
+- auth e admin agora possuem helpers puros extraidos das server actions para sustentar testes de mapeamento de erro e parsing de payload
+- customer transactions agora tambem possuem helpers puros para parsing de PIX/pedido, e `src/lib/api/customer.ts` esta coberto por testes de wiring
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
@@ -40,6 +43,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/admin/catalog` e `/admin/users` agora usam a lista para leitura + criacao, e reservam a edicao para paginas dedicadas
 - `/admin/transactions` agora mistura leitura do ledger com lancamento manual de ajuste de carteira
 - `normalizeReturnTo` passou a bloquear tambem `/login?...` e `/register?...`, corrigindo um risco de loop de auth detectado pelos testes
+- `src/lib/api/http.ts` passou a preservar corretamente o prefixo `/v1` da base URL ao montar requests com paths iniciados por `/`
 - `/app/payments` cria PIX real e `/app/payments/[paymentId]` mostra o detalhe do pagamento
 - `/catalog/[serviceId]` cria pedido real para cliente autenticado e `/app/orders/[orderId]` mostra o detalhe do pedido
 - `src/lib/api` centraliza o client HTTP e os endpoints iniciais de auth
@@ -60,7 +64,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - implementar criacao e edicao de servicos em `/admin/catalog`
 - integrar ajuste manual de carteira no admin
 - revisar agora se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
-- expandir a cobertura de testes para a camada de API e para os helpers com maior risco de regressao
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para componentes de UI mais criticos
 - habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
 - preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch

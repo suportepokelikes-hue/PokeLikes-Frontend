@@ -141,6 +141,9 @@ Tasks:
 - [x] adicionar script `npm run test` sem dependencia extra
 - [x] cobrir utilitarios criticos de auth/navigation
 - [x] cobrir parsing de filtros e serializacao admin
+- [x] cobrir sessao e camada HTTP base da API
+- [x] cobrir helpers extraidos de server actions de auth e admin
+- [x] cobrir camada customer API e helpers das mutacoes PIX/pedido
 
 ## Next Recommended Step
 
@@ -148,5 +151,5 @@ Na proxima sessao do Codex:
 
 - integrar ajuste manual de carteira via `POST /admin/wallets/{userId}/adjustments`
 - decidir se o ajuste manual de carteira permanece em `transactions` ou sobe para um detalhe dedicado de usuario
-- expandir a cobertura de testes para a camada de API e flows server-side mais criticos
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta e componentes de UI mais criticos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`

@@ -2,17 +2,17 @@
 
 import { redirect } from 'next/navigation';
 
-import { ApiClientError } from '@/lib/api/http';
 import { login, logout, registerCustomer } from '@/lib/api/auth';
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath, getPostAuthRedirectPath, normalizeReturnTo } from '@/lib/auth/navigation';
 import { clearServerSessionCookies, writeServerSessionCookies } from '@/lib/auth/server-cookies';
+import { mapLoginError, mapRegisterError, readTrimmedString } from '@/modules/auth/action-helpers';
 import type { AuthFormState } from '@/modules/auth/types';
 
 export async function loginAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const email = readRequiredString(formData, 'email');
-  const password = readRequiredString(formData, 'password');
-  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
+  const email = readTrimmedString(formData, 'email');
+  const password = readTrimmedString(formData, 'password');
+  const returnTo = normalizeReturnTo(readTrimmedString(formData, 'returnTo'));
 
   if (!email || !password) {
     return {
@@ -35,11 +35,11 @@ export async function loginAction(_: AuthFormState, formData: FormData): Promise
 }
 
 export async function registerAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const name = readRequiredString(formData, 'name');
-  const email = readRequiredString(formData, 'email');
-  const phone = readRequiredString(formData, 'phone');
-  const password = readRequiredString(formData, 'password');
-  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
+  const name = readTrimmedString(formData, 'name');
+  const email = readTrimmedString(formData, 'email');
+  const phone = readTrimmedString(formData, 'phone');
+  const password = readTrimmedString(formData, 'password');
+  const returnTo = normalizeReturnTo(readTrimmedString(formData, 'returnTo'));
 
   if (!name || !email || !phone || !password) {
     return {
@@ -74,46 +74,4 @@ export async function logoutAction() {
 
   await clearServerSessionCookies();
   redirect(getLoginPath({ reason: 'logged_out' }));
-}
-
-function readRequiredString(formData: FormData, key: string): string {
-  const value = formData.get(key);
-
-  return typeof value === 'string' ? value.trim() : '';
-}
-
-function mapAuthError(error: unknown, fallbackMessage: string): AuthFormState {
-  if (error instanceof ApiClientError) {
-    return {
-      status: 'error',
-      message: error.message || fallbackMessage,
-    };
-  }
-
-  return {
-    status: 'error',
-    message: fallbackMessage,
-  };
-}
-
-function mapLoginError(error: unknown): AuthFormState {
-  if (error instanceof ApiClientError && error.status === 401) {
-    return {
-      status: 'error',
-      message: 'Email ou senha invalidos. Revise as credenciais e tente novamente.',
-    };
-  }
-
-  return mapAuthError(error, 'Nao foi possivel autenticar agora. Tente novamente em instantes.');
-}
-
-function mapRegisterError(error: unknown): AuthFormState {
-  if (error instanceof ApiClientError && error.status === 400) {
-    return {
-      status: 'error',
-      message: error.message || 'Revise nome, email, telefone e senha antes de enviar o cadastro.',
-    };
-  }
-
-  return mapAuthError(error, 'Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.');
 }

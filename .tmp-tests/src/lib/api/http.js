@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiClientError = void 0;
 exports.apiRequest = apiRequest;
-const env_1 = require("@/lib/config/env");
+const env_1 = require("../config/env");
 class ApiClientError extends Error {
     status;
     code;
@@ -18,7 +18,7 @@ class ApiClientError extends Error {
 exports.ApiClientError = ApiClientError;
 async function apiRequest({ path, method = 'GET', body, accessToken, headers, cache = 'no-store', }) {
     const { apiBaseUrl } = (0, env_1.getPublicEnv)();
-    const url = new URL(path, ensureTrailingSlash(apiBaseUrl));
+    const url = new URL(stripLeadingSlash(path), ensureTrailingSlash(apiBaseUrl));
     const requestHeaders = new Headers(headers);
     if (body !== undefined && !requestHeaders.has('Content-Type')) {
         requestHeaders.set('Content-Type', 'application/json');
@@ -50,4 +50,7 @@ async function readJsonBody(response) {
 }
 function ensureTrailingSlash(value) {
     return value.endsWith('/') ? value : `${value}/`;
+}
+function stripLeadingSlash(value) {
+    return value.startsWith('/') ? value.slice(1) : value;
 }

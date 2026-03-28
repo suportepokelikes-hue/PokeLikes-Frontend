@@ -16,17 +16,17 @@ exports.syncOrderAction = syncOrderAction;
 const cache_1 = require("next/cache");
 const navigation_1 = require("next/navigation");
 const admin_1 = require("@/lib/api/admin");
-const http_1 = require("@/lib/api/http");
 const cookies_1 = require("@/lib/auth/cookies");
 const navigation_2 = require("@/lib/auth/navigation");
+const action_helpers_1 = require("@/modules/admin-shell/action-helpers");
 async function createUserAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const name = readRequiredString(formData, 'name');
-    const email = readRequiredString(formData, 'email');
-    const password = readRequiredString(formData, 'password');
-    const phone = readRequiredString(formData, 'phone');
-    const role = readRole(formData);
-    const status = readStatus(formData);
+    const name = (0, action_helpers_1.readRequiredString)(formData, 'name');
+    const email = (0, action_helpers_1.readRequiredString)(formData, 'email');
+    const password = (0, action_helpers_1.readRequiredString)(formData, 'password');
+    const phone = (0, action_helpers_1.readRequiredString)(formData, 'phone');
+    const role = (0, action_helpers_1.readRole)(formData);
+    const status = (0, action_helpers_1.readStatus)(formData);
     if (!name || !email || !password) {
         return {
             status: 'error',
@@ -44,7 +44,7 @@ async function createUserAction(_, formData) {
         });
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel criar o usuario agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel criar o usuario agora.');
     }
     (0, cache_1.revalidatePath)('/admin');
     (0, cache_1.revalidatePath)('/admin/users');
@@ -55,13 +55,13 @@ async function createUserAction(_, formData) {
 }
 async function updateUserAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const userId = readRequiredString(formData, 'userId');
-    const name = readRequiredString(formData, 'name');
-    const password = readRequiredString(formData, 'password');
-    const role = readRole(formData);
-    const status = readStatus(formData);
-    const clearPhone = readRequiredString(formData, 'clearPhone') === 'true';
-    const phone = clearPhone ? '' : readRequiredString(formData, 'phone');
+    const userId = (0, action_helpers_1.readRequiredString)(formData, 'userId');
+    const name = (0, action_helpers_1.readRequiredString)(formData, 'name');
+    const password = (0, action_helpers_1.readRequiredString)(formData, 'password');
+    const role = (0, action_helpers_1.readRole)(formData);
+    const status = (0, action_helpers_1.readStatus)(formData);
+    const clearPhone = (0, action_helpers_1.readRequiredString)(formData, 'clearPhone') === 'true';
+    const phone = clearPhone ? '' : (0, action_helpers_1.readRequiredString)(formData, 'phone');
     if (!userId) {
         return {
             status: 'error',
@@ -85,7 +85,7 @@ async function updateUserAction(_, formData) {
         await (0, admin_1.updateAdminUser)(session.accessToken, userId, payload);
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel atualizar o usuario agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel atualizar o usuario agora.');
     }
     (0, cache_1.revalidatePath)('/admin');
     (0, cache_1.revalidatePath)('/admin/users');
@@ -96,7 +96,7 @@ async function updateUserAction(_, formData) {
 }
 async function createCatalogServiceAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const payload = parseCatalogCreatePayload(formData);
+    const payload = (0, action_helpers_1.parseCatalogCreatePayload)(formData);
     if ('error' in payload) {
         return payload.error;
     }
@@ -104,7 +104,7 @@ async function createCatalogServiceAction(_, formData) {
         await (0, admin_1.createAdminCatalogService)(session.accessToken, payload.value);
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel criar o servico de catalogo agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel criar o servico de catalogo agora.');
     }
     (0, cache_1.revalidatePath)('/admin');
     (0, cache_1.revalidatePath)('/admin/catalog');
@@ -115,14 +115,14 @@ async function createCatalogServiceAction(_, formData) {
 }
 async function updateCatalogServiceAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const serviceId = readRequiredString(formData, 'serviceId');
+    const serviceId = (0, action_helpers_1.readRequiredString)(formData, 'serviceId');
     if (!serviceId) {
         return {
             status: 'error',
             message: 'Informe um servico valido para atualizar.',
         };
     }
-    const payload = parseCatalogUpdatePayload(formData);
+    const payload = (0, action_helpers_1.parseCatalogUpdatePayload)(formData);
     if ('error' in payload) {
         return payload.error;
     }
@@ -136,7 +136,7 @@ async function updateCatalogServiceAction(_, formData) {
         await (0, admin_1.updateAdminCatalogService)(session.accessToken, serviceId, payload.value);
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel atualizar o servico de catalogo agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel atualizar o servico de catalogo agora.');
     }
     (0, cache_1.revalidatePath)('/admin');
     (0, cache_1.revalidatePath)('/admin/catalog');
@@ -147,11 +147,11 @@ async function updateCatalogServiceAction(_, formData) {
 }
 async function createWalletAdjustmentAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const userId = readRequiredString(formData, 'userId');
-    const amount = readRequiredString(formData, 'amount');
-    const direction = readWalletDirection(formData);
-    const type = readWalletAdjustmentType(formData);
-    const reason = readOptionalString(formData, 'reason');
+    const userId = (0, action_helpers_1.readRequiredString)(formData, 'userId');
+    const amount = (0, action_helpers_1.readRequiredString)(formData, 'amount');
+    const direction = (0, action_helpers_1.readWalletDirection)(formData);
+    const type = (0, action_helpers_1.readWalletAdjustmentType)(formData);
+    const reason = (0, action_helpers_1.readOptionalString)(formData, 'reason');
     if (!userId || !amount || !direction) {
         return {
             status: 'error',
@@ -174,12 +174,12 @@ async function createWalletAdjustmentAction(_, formData) {
         };
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel aplicar o ajuste de carteira agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel aplicar o ajuste de carteira agora.');
     }
 }
 async function resolveAlertAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const alertId = readRequiredString(formData, 'alertId');
+    const alertId = (0, action_helpers_1.readRequiredString)(formData, 'alertId');
     if (!alertId) {
         return {
             status: 'error',
@@ -190,7 +190,7 @@ async function resolveAlertAction(_, formData) {
         await (0, admin_1.resolveAdminAlert)(session.accessToken, alertId);
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel resolver o alerta agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel resolver o alerta agora.');
     }
     (0, cache_1.revalidatePath)('/admin');
     (0, cache_1.revalidatePath)('/admin/alerts');
@@ -205,7 +205,7 @@ async function refreshSupplierProvidersAction(_, formData) {
         await (0, admin_1.refreshSupplierProviders)(session.accessToken);
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel atualizar os providers agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel atualizar os providers agora.');
     }
     (0, cache_1.revalidatePath)('/admin');
     (0, cache_1.revalidatePath)('/admin/supplier');
@@ -216,12 +216,12 @@ async function refreshSupplierProvidersAction(_, formData) {
 }
 async function syncSupplierServicesAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const supplierName = readRequiredString(formData, 'supplierName');
+    const supplierName = (0, action_helpers_1.readRequiredString)(formData, 'supplierName');
     try {
         await (0, admin_1.syncSupplierServices)(session.accessToken, supplierName || undefined);
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel iniciar a sincronizacao de servicos agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel iniciar a sincronizacao de servicos agora.');
     }
     (0, cache_1.revalidatePath)('/admin/supplier');
     return {
@@ -231,7 +231,7 @@ async function syncSupplierServicesAction(_, formData) {
 }
 async function reconcilePaymentsAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const limit = readOptionalInt(formData, 'limit');
+    const limit = (0, action_helpers_1.readOptionalInt)(formData, 'limit');
     try {
         const result = await (0, admin_1.reconcileAdminPayments)(session.accessToken, limit ? { limit } : undefined);
         (0, cache_1.revalidatePath)('/admin');
@@ -242,12 +242,12 @@ async function reconcilePaymentsAction(_, formData) {
         };
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel executar a conciliacao em lote agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel executar a conciliacao em lote agora.');
     }
 }
 async function reconcilePaymentAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const paymentId = readRequiredString(formData, 'paymentId');
+    const paymentId = (0, action_helpers_1.readRequiredString)(formData, 'paymentId');
     if (!paymentId) {
         return {
             status: 'error',
@@ -264,12 +264,12 @@ async function reconcilePaymentAction(_, formData) {
         };
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel conciliar o pagamento agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel conciliar o pagamento agora.');
     }
 }
 async function syncOrdersAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const limit = readOptionalInt(formData, 'limit');
+    const limit = (0, action_helpers_1.readOptionalInt)(formData, 'limit');
     try {
         const result = await (0, admin_1.syncAdminOrders)(session.accessToken, limit ? { limit } : undefined);
         (0, cache_1.revalidatePath)('/admin');
@@ -280,12 +280,12 @@ async function syncOrdersAction(_, formData) {
         };
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel executar o sync de pedidos agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel executar o sync de pedidos agora.');
     }
 }
 async function syncOrderAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const orderId = readRequiredString(formData, 'orderId');
+    const orderId = (0, action_helpers_1.readRequiredString)(formData, 'orderId');
     if (!orderId) {
         return {
             status: 'error',
@@ -302,12 +302,12 @@ async function syncOrderAction(_, formData) {
         };
     }
     catch (error) {
-        return mapAdminActionError(error, 'Nao foi possivel sincronizar o pedido agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel sincronizar o pedido agora.');
     }
 }
 async function requireAuthenticatedAdmin(formData) {
     const session = await (0, cookies_1.getServerSession)();
-    const returnTo = (0, navigation_2.normalizeReturnTo)(readRequiredString(formData, 'returnTo'));
+    const returnTo = (0, navigation_2.normalizeReturnTo)((0, action_helpers_1.readRequiredString)(formData, 'returnTo'));
     if (session.status !== 'authenticated') {
         (0, navigation_1.redirect)((0, navigation_2.getLoginPath)({ reason: 'required', returnTo }));
     }
@@ -315,167 +315,4 @@ async function requireAuthenticatedAdmin(formData) {
         (0, navigation_1.redirect)('/app');
     }
     return session;
-}
-function readRequiredString(formData, key) {
-    const value = formData.get(key);
-    return typeof value === 'string' ? value.trim() : '';
-}
-function readOptionalInt(formData, key) {
-    const value = readRequiredString(formData, key);
-    if (!value) {
-        return undefined;
-    }
-    const parsed = Number.parseInt(value, 10);
-    return Number.isNaN(parsed) ? undefined : parsed;
-}
-function readOptionalString(formData, key) {
-    return readRequiredString(formData, key) || undefined;
-}
-function readRole(formData) {
-    const value = readRequiredString(formData, 'role');
-    return value === 'customer' || value === 'admin' ? value : undefined;
-}
-function readStatus(formData) {
-    const value = readRequiredString(formData, 'status');
-    return value === 'active' || value === 'disabled' ? value : undefined;
-}
-function readCatalogStatus(formData) {
-    const value = readRequiredString(formData, 'status');
-    return value === 'active' || value === 'inactive' ? value : undefined;
-}
-function readWalletDirection(formData) {
-    const value = readRequiredString(formData, 'direction');
-    return value === 'credit' || value === 'debit' ? value : undefined;
-}
-function readWalletAdjustmentType(formData) {
-    const value = readRequiredString(formData, 'type');
-    return value === 'wallet_adjustment_admin' || value === 'wallet_reversal_admin' ? value : undefined;
-}
-function parseCatalogCreatePayload(formData) {
-    const base = parseCatalogFields(formData, true);
-    if ('error' in base) {
-        return base;
-    }
-    const { value } = base;
-    return {
-        value: {
-            name: value.name,
-            publicPrice: value.publicPrice,
-            socialNetwork: value.socialNetwork,
-            category: value.category,
-            type: value.type,
-            minQuantity: value.minQuantity,
-            maxQuantity: value.maxQuantity,
-            supplierServiceId: value.supplierServiceId,
-            ...(value.description !== undefined ? { description: value.description } : {}),
-            ...(value.status !== undefined ? { status: value.status } : {}),
-            ...(value.sortOrder !== undefined ? { sortOrder: value.sortOrder } : {}),
-            ...(value.supplierName !== undefined ? { supplierName: value.supplierName } : {}),
-            ...(value.metadata !== undefined ? { metadata: value.metadata } : {}),
-        },
-    };
-}
-function parseCatalogUpdatePayload(formData) {
-    const base = parseCatalogFields(formData, false);
-    if ('error' in base) {
-        return base;
-    }
-    return { value: base.value };
-}
-function parseCatalogFields(formData, requireMandatory) {
-    const name = readOptionalString(formData, 'name');
-    const publicPrice = readOptionalString(formData, 'publicPrice');
-    const socialNetwork = readOptionalString(formData, 'socialNetwork');
-    const category = readOptionalString(formData, 'category');
-    const type = readOptionalString(formData, 'type');
-    const supplierName = readOptionalString(formData, 'supplierName');
-    const description = readOptionalString(formData, 'description');
-    const clearDescription = readRequiredString(formData, 'clearDescription') === 'true';
-    const clearMetadata = readRequiredString(formData, 'clearMetadata') === 'true';
-    const status = readCatalogStatus(formData);
-    const sortOrder = readOptionalInt(formData, 'sortOrder');
-    const minQuantity = readOptionalInt(formData, 'minQuantity');
-    const maxQuantity = readOptionalInt(formData, 'maxQuantity');
-    const supplierServiceId = readOptionalInt(formData, 'supplierServiceId');
-    const metadataInput = readRequiredString(formData, 'metadata');
-    if (requireMandatory && (!name || !publicPrice || !socialNetwork || !category || !type || minQuantity === undefined || maxQuantity === undefined || supplierServiceId === undefined)) {
-        return {
-            error: {
-                status: 'error',
-                message: 'Nome, preco, rede, categoria, tipo, faixa e supplier service id sao obrigatorios na criacao.',
-            },
-        };
-    }
-    if ((minQuantity !== undefined && minQuantity < 1) || (maxQuantity !== undefined && maxQuantity < 1)) {
-        return {
-            error: {
-                status: 'error',
-                message: 'As quantidades minima e maxima devem ser inteiros positivos.',
-            },
-        };
-    }
-    if (minQuantity !== undefined && maxQuantity !== undefined && maxQuantity < minQuantity) {
-        return {
-            error: {
-                status: 'error',
-                message: 'A quantidade maxima nao pode ser menor que a minima.',
-            },
-        };
-    }
-    if (supplierServiceId !== undefined && supplierServiceId < 1) {
-        return {
-            error: {
-                status: 'error',
-                message: 'Informe um supplier service id valido.',
-            },
-        };
-    }
-    const metadata = parseOptionalJson(metadataInput);
-    if (metadata.error) {
-        return {
-            error: {
-                status: 'error',
-                message: 'Metadata precisa ser um JSON valido quando preenchido.',
-            },
-        };
-    }
-    const value = {
-        ...(name ? { name } : {}),
-        ...(publicPrice ? { publicPrice } : {}),
-        ...(status ? { status } : {}),
-        ...(sortOrder !== undefined ? { sortOrder } : {}),
-        ...(socialNetwork ? { socialNetwork } : {}),
-        ...(category ? { category } : {}),
-        ...(type ? { type } : {}),
-        ...(minQuantity !== undefined ? { minQuantity } : {}),
-        ...(maxQuantity !== undefined ? { maxQuantity } : {}),
-        ...(supplierName ? { supplierName } : {}),
-        ...(supplierServiceId !== undefined ? { supplierServiceId } : {}),
-        ...(clearDescription ? { description: null } : description ? { description } : {}),
-        ...(clearMetadata ? { metadata: null } : metadata.value !== undefined ? { metadata: metadata.value } : {}),
-    };
-    return { value };
-}
-function parseOptionalJson(value) {
-    if (!value) {
-        return {};
-    }
-    try {
-        return { value: JSON.parse(value) };
-    }
-    catch {
-        return { error: true };
-    }
-}
-function mapAdminActionError(error, fallback) {
-    if (error instanceof http_1.ApiClientError) {
-        return {
-            status: 'error',
-            message: error.message || fallback,
-        };
-    }
-    return {
-        status: 'error',
-        message: fallback,
-    };
 }

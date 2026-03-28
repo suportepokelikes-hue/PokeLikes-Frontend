@@ -1,4 +1,4 @@
-import { getPublicEnv } from '@/lib/config/env';
+import { getPublicEnv } from '../config/env';
 
 type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
@@ -34,7 +34,7 @@ export async function apiRequest<T>({
   cache = 'no-store',
 }: ApiRequestOptions): Promise<T> {
   const { apiBaseUrl } = getPublicEnv();
-  const url = new URL(path, ensureTrailingSlash(apiBaseUrl));
+  const url = new URL(stripLeadingSlash(path), ensureTrailingSlash(apiBaseUrl));
   const requestHeaders = new Headers(headers);
 
   if (body !== undefined && !requestHeaders.has('Content-Type')) {
@@ -84,4 +84,8 @@ async function readJsonBody<T>(response: Response): Promise<T | undefined> {
 
 function ensureTrailingSlash(value: string): string {
   return value.endsWith('/') ? value : `${value}/`;
+}
+
+function stripLeadingSlash(value: string): string {
+  return value.startsWith('/') ? value.slice(1) : value;
 }

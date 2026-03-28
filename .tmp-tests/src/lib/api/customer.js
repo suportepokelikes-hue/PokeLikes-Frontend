@@ -9,7 +9,7 @@ exports.createPixPayment = createPixPayment;
 exports.getCustomerPaymentDetail = getCustomerPaymentDetail;
 exports.createCustomerOrder = createCustomerOrder;
 exports.getCustomerOrderDetail = getCustomerOrderDetail;
-const http_1 = require("@/lib/api/http");
+const http_1 = require("./http");
 function getWalletSummary({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me/wallet',

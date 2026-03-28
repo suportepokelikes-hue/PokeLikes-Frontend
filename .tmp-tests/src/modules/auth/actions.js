@@ -5,15 +5,15 @@ exports.loginAction = loginAction;
 exports.registerAction = registerAction;
 exports.logoutAction = logoutAction;
 const navigation_1 = require("next/navigation");
-const http_1 = require("@/lib/api/http");
 const auth_1 = require("@/lib/api/auth");
 const cookies_1 = require("@/lib/auth/cookies");
 const navigation_2 = require("@/lib/auth/navigation");
 const server_cookies_1 = require("@/lib/auth/server-cookies");
+const action_helpers_1 = require("@/modules/auth/action-helpers");
 async function loginAction(_, formData) {
-    const email = readRequiredString(formData, 'email');
-    const password = readRequiredString(formData, 'password');
-    const returnTo = (0, navigation_2.normalizeReturnTo)(readRequiredString(formData, 'returnTo'));
+    const email = (0, action_helpers_1.readTrimmedString)(formData, 'email');
+    const password = (0, action_helpers_1.readTrimmedString)(formData, 'password');
+    const returnTo = (0, navigation_2.normalizeReturnTo)((0, action_helpers_1.readTrimmedString)(formData, 'returnTo'));
     if (!email || !password) {
         return {
             status: 'error',
@@ -27,16 +27,16 @@ async function loginAction(_, formData) {
         role = session.user.role;
     }
     catch (error) {
-        return mapLoginError(error);
+        return (0, action_helpers_1.mapLoginError)(error);
     }
     (0, navigation_1.redirect)((0, navigation_2.getPostAuthRedirectPath)(role, returnTo));
 }
 async function registerAction(_, formData) {
-    const name = readRequiredString(formData, 'name');
-    const email = readRequiredString(formData, 'email');
-    const phone = readRequiredString(formData, 'phone');
-    const password = readRequiredString(formData, 'password');
-    const returnTo = (0, navigation_2.normalizeReturnTo)(readRequiredString(formData, 'returnTo'));
+    const name = (0, action_helpers_1.readTrimmedString)(formData, 'name');
+    const email = (0, action_helpers_1.readTrimmedString)(formData, 'email');
+    const phone = (0, action_helpers_1.readTrimmedString)(formData, 'phone');
+    const password = (0, action_helpers_1.readTrimmedString)(formData, 'password');
+    const returnTo = (0, navigation_2.normalizeReturnTo)((0, action_helpers_1.readTrimmedString)(formData, 'returnTo'));
     if (!name || !email || !phone || !password) {
         return {
             status: 'error',
@@ -50,7 +50,7 @@ async function registerAction(_, formData) {
         role = session.user.role;
     }
     catch (error) {
-        return mapRegisterError(error);
+        return (0, action_helpers_1.mapRegisterError)(error);
     }
     (0, navigation_1.redirect)((0, navigation_2.getPostAuthRedirectPath)(role, returnTo));
 }
@@ -66,38 +66,4 @@ async function logoutAction() {
     }
     await (0, server_cookies_1.clearServerSessionCookies)();
     (0, navigation_1.redirect)((0, navigation_2.getLoginPath)({ reason: 'logged_out' }));
-}
-function readRequiredString(formData, key) {
-    const value = formData.get(key);
-    return typeof value === 'string' ? value.trim() : '';
-}
-function mapAuthError(error, fallbackMessage) {
-    if (error instanceof http_1.ApiClientError) {
-        return {
-            status: 'error',
-            message: error.message || fallbackMessage,
-        };
-    }
-    return {
-        status: 'error',
-        message: fallbackMessage,
-    };
-}
-function mapLoginError(error) {
-    if (error instanceof http_1.ApiClientError && error.status === 401) {
-        return {
-            status: 'error',
-            message: 'Email ou senha invalidos. Revise as credenciais e tente novamente.',
-        };
-    }
-    return mapAuthError(error, 'Nao foi possivel autenticar agora. Tente novamente em instantes.');
-}
-function mapRegisterError(error) {
-    if (error instanceof http_1.ApiClientError && error.status === 400) {
-        return {
-            status: 'error',
-            message: error.message || 'Revise nome, email, telefone e senha antes de enviar o cadastro.',
-        };
-    }
-    return mapAuthError(error, 'Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.');
 }
