@@ -148,6 +148,7 @@ Tasks:
 - [x] cobrir configuracao de conteudo das telas de login e cadastro
 - [x] cobrir campos puros do formulario transacional do cliente
 - [x] cobrir camada auth API
+- [x] cobrir a composicao configuravel do `AuthForm`
 
 ## Next Recommended Step
 
@@ -155,5 +156,5 @@ Na proxima sessao do Codex:
 
 - integrar ajuste manual de carteira via `POST /admin/wallets/{userId}/adjustments`
 - decidir se o ajuste manual de carteira permanece em `transactions` ou sobe para um detalhe dedicado de usuario
-- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para formularios client com hooks
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para wrappers client que ainda dependem de hooks
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`

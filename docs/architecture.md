@@ -87,6 +87,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `src/lib/api/auth.ts` agora tambem possui cobertura de wiring para registro, login, refresh, logout, `auth/me` e `/me`
 - o design system base agora tambem possui cobertura de renderizacao server-side para `empty-state`, `error-state`, `status-badge` e `page-header`
 - `/login` e `/register` agora derivam seu conteudo de helpers puros, o que permite validar copy, links de retorno e composicao de campos sem acoplar os testes ao runtime do Next
+- `AuthForm` agora delega sua composicao configuravel para `src/modules/auth/auth-form-content.ts`, o que permite validar notice, `returnTo`, campos e feedback de erro sem depender de runner browser
 - os blocos puros do `transaction-form` do cliente agora tambem possuem cobertura de renderizacao, validando atributos essenciais de campos numericos, placeholders e textarea
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
 
@@ -161,7 +162,7 @@ src/
 ## Remaining Direction
 
 - a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
-- a proxima etapa deve expandir a cobertura de testes para fluxos autenticados ponta a ponta e para formularios client que dependem de hooks
+- a proxima etapa deve expandir a cobertura de testes para fluxos autenticados ponta a ponta e para wrappers client que ainda dependem de hooks diretamente
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
