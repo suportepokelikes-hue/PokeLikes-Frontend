@@ -147,6 +147,7 @@ Tasks:
 - [x] cobrir componentes UI base do design system com renderizacao server-side
 - [x] cobrir configuracao de conteudo das telas de login e cadastro
 - [x] cobrir campos puros do formulario transacional do cliente
+- [x] cobrir camada auth API
 
 ## Next Recommended Step
 

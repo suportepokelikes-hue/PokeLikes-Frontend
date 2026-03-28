@@ -4,8 +4,8 @@ import type {
   RefreshRequest,
   RegisterRequest,
   UserSummary,
-} from '@/lib/api/contracts';
-import { apiRequest } from '@/lib/api/http';
+} from './contracts';
+import { apiRequest } from './http';
 
 export function registerCustomer(payload: RegisterRequest): Promise<AuthSessionResponse> {
   return apiRequest<AuthSessionResponse>({

@@ -30,6 +30,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`
 - auth e admin agora possuem helpers puros extraidos das server actions para sustentar testes de mapeamento de erro e parsing de payload
 - customer transactions agora tambem possuem helpers puros para parsing de PIX/pedido, e `src/lib/api/customer.ts` esta coberto por testes de wiring
+- `src/lib/api/auth.ts` agora tambem esta coberto por testes de wiring para login, registro, refresh, logout e leitura de usuario autenticado
 - componentes base de UI (`empty-state`, `error-state`, `status-badge`, `page-header`) agora possuem testes de renderizacao via `react-dom/server`
 - `/login` e `/register` agora compartilham helpers puros de conteudo em `src/modules/auth/page-content.ts`, cobertos por teste para links alternativos e campos esperados
 - `TransactionField` e `TransactionTextarea` do checkout/pagamento agora possuem testes de renderizacao para atributos criticos
