@@ -6,8 +6,8 @@ type OrderDetailRouteProps = {
 };
 
 export default async function OrderDetailRoute({ params }: OrderDetailRouteProps) {
-  const session = await requireCustomerSession();
   const { orderId } = await params;
+  const session = await requireCustomerSession(`/app/orders/${orderId}`);
 
   return <OrderDetailPage session={session} orderId={orderId} />;
 }

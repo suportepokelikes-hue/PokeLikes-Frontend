@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
+import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
@@ -23,6 +24,8 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
       getWalletSummary({ accessToken: session.accessToken }),
       listCustomerPayments({ accessToken: session.accessToken }),
     ]);
+    const pendingCount = payments.items.filter((payment) => payment.status === 'pending').length;
+    const confirmedCount = payments.items.filter((payment) => payment.status === 'confirmed').length;
 
     return (
       <main className="page page-customer">
@@ -39,31 +42,50 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
             action={createPixPaymentAction}
             initialState={initialTransactionFormState}
             submitLabel="Criar PIX"
+            returnTo="/app/payments"
           >
             <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
           </TransactionForm>
+
+          <article className="customer-note-card">
+            <strong>Regras do fluxo PIX</strong>
+            <p>Pagamento criado continua pendente ate confirmacao do backend. Expiracao e falha continuam visiveis nesta tela.</p>
+            <p>Depois de confirmar, o saldo da wallet e atualizado pelo ciclo financeiro oficial.</p>
+          </article>
+        </section>
+
+        <section className="metric-list">
+          <StatCard label="Saldo atual" value={formatMoney(wallet.availableBalance)} meta="Disponivel na wallet" tone="accent" />
+          <StatCard label="Pendentes" value={String(pendingCount)} meta="Aguardando provider" tone="warning" />
+          <StatCard label="Confirmados" value={String(confirmedCount)} meta="Pagamentos concluidos" />
         </section>
 
         {payments.items.length === 0 ? (
           <EmptyState title="Nenhum pagamento encontrado" description="Crie uma cobranca PIX para comecar a acompanhar seu ciclo." />
         ) : (
-          <DataTable columns={['ID', 'Provider', 'Valor', 'Status', 'Expira em']}>
-            {payments.items.map((payment) => (
-              <tr key={payment.id}>
-                <td>
-                  <Link href={`/app/payments/${payment.id}`} className="table-link">
-                    {payment.id}
-                  </Link>
-                </td>
-                <td>{payment.provider}</td>
-                <td>{formatMoney(payment.amount)}</td>
-                <td>
-                  <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
-                </td>
-                <td>{formatDateTime(payment.expiresAt)}</td>
-              </tr>
-            ))}
-          </DataTable>
+          <section className="detail-card detail-card-wide">
+            <div className="panel-heading">
+              <h2>Historico PIX</h2>
+              <span className="panel-meta">Primeira pagina de pagamentos do cliente</span>
+            </div>
+            <DataTable columns={['ID', 'Provider', 'Valor', 'Status', 'Expira em']}>
+              {payments.items.map((payment) => (
+                <tr key={payment.id}>
+                  <td>
+                    <Link href={`/app/payments/${payment.id}`} className="table-link">
+                      {payment.id}
+                    </Link>
+                  </td>
+                  <td>{payment.provider}</td>
+                  <td>{formatMoney(payment.amount)}</td>
+                  <td>
+                    <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
+                  </td>
+                  <td>{formatDateTime(payment.expiresAt)}</td>
+                </tr>
+              ))}
+            </DataTable>
+          </section>
         )}
       </main>
     );

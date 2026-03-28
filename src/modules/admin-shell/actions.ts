@@ -14,6 +14,7 @@ import {
 } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import { getServerSession } from '@/lib/auth/cookies';
+import { getLoginPath, normalizeReturnTo } from '@/lib/auth/navigation';
 
 export type AdminActionState = {
   status: 'idle' | 'success' | 'error';
@@ -21,7 +22,7 @@ export type AdminActionState = {
 };
 
 export async function resolveAlertAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+  const session = await requireAuthenticatedAdmin(formData);
   const alertId = readRequiredString(formData, 'alertId');
 
   if (!alertId) {
@@ -46,8 +47,8 @@ export async function resolveAlertAction(_: AdminActionState, formData: FormData
   };
 }
 
-export async function refreshSupplierProvidersAction(_: AdminActionState): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+export async function refreshSupplierProvidersAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
 
   try {
     await refreshSupplierProviders(session.accessToken);
@@ -65,7 +66,7 @@ export async function refreshSupplierProvidersAction(_: AdminActionState): Promi
 }
 
 export async function syncSupplierServicesAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+  const session = await requireAuthenticatedAdmin(formData);
   const supplierName = readRequiredString(formData, 'supplierName');
 
   try {
@@ -83,7 +84,7 @@ export async function syncSupplierServicesAction(_: AdminActionState, formData: 
 }
 
 export async function reconcilePaymentsAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+  const session = await requireAuthenticatedAdmin(formData);
   const limit = readOptionalInt(formData, 'limit');
 
   try {
@@ -102,7 +103,7 @@ export async function reconcilePaymentsAction(_: AdminActionState, formData: For
 }
 
 export async function reconcilePaymentAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+  const session = await requireAuthenticatedAdmin(formData);
   const paymentId = readRequiredString(formData, 'paymentId');
 
   if (!paymentId) {
@@ -128,7 +129,7 @@ export async function reconcilePaymentAction(_: AdminActionState, formData: Form
 }
 
 export async function syncOrdersAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+  const session = await requireAuthenticatedAdmin(formData);
   const limit = readOptionalInt(formData, 'limit');
 
   try {
@@ -147,7 +148,7 @@ export async function syncOrdersAction(_: AdminActionState, formData: FormData):
 }
 
 export async function syncOrderAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
-  const session = await requireAuthenticatedAdmin();
+  const session = await requireAuthenticatedAdmin(formData);
   const orderId = readRequiredString(formData, 'orderId');
 
   if (!orderId) {
@@ -172,11 +173,12 @@ export async function syncOrderAction(_: AdminActionState, formData: FormData): 
   }
 }
 
-async function requireAuthenticatedAdmin() {
+async function requireAuthenticatedAdmin(formData: FormData) {
   const session = await getServerSession();
+  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
 
   if (session.status !== 'authenticated') {
-    redirect('/login');
+    redirect(getLoginPath({ reason: 'required', returnTo }));
   }
 
   if (session.user.role !== 'admin') {

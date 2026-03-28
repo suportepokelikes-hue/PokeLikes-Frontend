@@ -16,6 +16,10 @@ type CatalogListPageProps = {
 export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
   try {
     const response = await listCatalogServices(searchParams);
+    const purchasableCount = response.items.filter((service) => service.availability.isPurchasable).length;
+    const degradedCount = response.items.filter(
+      (service) => service.availability.providerStatus === 'degraded_low_balance' || service.availability.providerStatus === 'unavailable',
+    ).length;
 
     return (
       <main className="page page-public">
@@ -25,6 +29,24 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
           description="A listagem publica respeita o contrato da API e destaca availability, preco e limites sem recalculo local."
           actions={<CatalogFilterBar initialValues={searchParams} />}
         />
+
+        <section className="public-bento">
+          <article className="public-bento-card">
+            <span>Itens na pagina</span>
+            <strong>{response.items.length}</strong>
+            <p>{response.totalItems} servicos no total retornados pela API.</p>
+          </article>
+          <article className="public-bento-card">
+            <span>Compraveis</span>
+            <strong>{purchasableCount}</strong>
+            <p>Servicos prontos para checkout sem bloqueio operacional do provider.</p>
+          </article>
+          <article className="public-bento-card">
+            <span>Com atencao</span>
+            <strong>{degradedCount}</strong>
+            <p>Itens degradados ou indisponiveis nesta pagina do catalogo.</p>
+          </article>
+        </section>
 
         {response.items.length === 0 ? (
           <EmptyState
@@ -83,6 +105,11 @@ function CatalogCard({ service }: { service: CatalogServiceResource }) {
         <p>{service.description || 'Servico sem descricao publica informada no contrato atual.'}</p>
       </div>
 
+      <div className="catalog-card-foot">
+        <StatusBadge label={service.availability.providerStatus} tone={mapAvailabilityTone(service)} />
+        <span className="panel-link">Abrir detalhe</span>
+      </div>
+
       <dl className="catalog-stats">
         <div>
           <dt>Preco</dt>
@@ -127,6 +154,7 @@ function CatalogFilterBar({ initialValues }: { initialValues: CatalogListParams 
         defaultValue={initialValues.category}
         className="toolbar-input"
       />
+      <input type="text" name="type" placeholder="Tipo" defaultValue={initialValues.type} className="toolbar-input" />
       <button type="submit" className="primary-action">
         Filtrar
       </button>

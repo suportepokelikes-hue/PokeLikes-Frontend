@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import { refreshSession } from '@/lib/api/auth';
+import { getLoginPath } from '@/lib/auth/navigation';
 import { getSessionCookieNames, readSession } from '@/lib/auth/session';
 import { applySessionCookies, clearSessionCookies } from '@/lib/auth/response-cookies';
 
@@ -21,7 +22,7 @@ export async function middleware(request: NextRequest) {
     const refreshToken = request.cookies.get(getSessionCookieNames().refreshToken)?.value;
 
     if (!refreshToken) {
-      return redirectToPublic(request);
+      return redirectToPublic(request, 'required');
     }
 
     try {
@@ -37,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
       return applySessionCookies(NextResponse.next(), refreshedSession);
     } catch {
-      return clearSessionCookies(redirectToPublic(request));
+      return clearSessionCookies(redirectToPublic(request, 'expired'));
     }
   }
 
@@ -56,6 +57,7 @@ export const config = {
   matcher: ['/app/:path*', '/admin/:path*'],
 };
 
-function redirectToPublic(request: NextRequest) {
-  return NextResponse.redirect(new URL('/login', request.url));
+function redirectToPublic(request: NextRequest, reason: 'required' | 'expired') {
+  const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+  return NextResponse.redirect(new URL(getLoginPath({ reason, returnTo }), request.url));
 }

@@ -12,6 +12,7 @@ type TransactionFormProps = {
   initialState: TransactionFormState;
   children: React.ReactNode;
   submitLabel: string;
+  returnTo?: string;
 };
 
 export function TransactionForm({
@@ -21,6 +22,7 @@ export function TransactionForm({
   initialState,
   children,
   submitLabel,
+  returnTo,
 }: TransactionFormProps) {
   const [state, formAction] = useActionState(action, initialState);
 
@@ -34,6 +36,7 @@ export function TransactionForm({
       </div>
 
       <form action={formAction} className="transaction-form">
+        {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
         {children}
         {state.status === 'error' ? <p className="auth-error">{state.message}</p> : null}
         <SubmitButton label={submitLabel} />

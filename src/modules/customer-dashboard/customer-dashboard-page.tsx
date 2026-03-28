@@ -22,6 +22,10 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
       listCustomerPayments({ accessToken: session.accessToken }),
       listCustomerOrders({ accessToken: session.accessToken }),
     ]);
+    const confirmedPayments = payments.items.filter((payment) => payment.status === 'confirmed').length;
+    const openOrders = orders.items.filter((order) =>
+      ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
+    ).length;
 
     return (
       <main className="page page-customer">
@@ -30,11 +34,60 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           title={`Bem-vindo, ${session.user.name}.`}
           description="A area do cliente agora usa dados reais de wallet, pagamentos e pedidos, mantendo o shell consistente para as proximas telas."
           actions={
-            <Link href="/catalog" className="primary-action">
-              Explorar catalogo
-            </Link>
+            <>
+              <Link href="/app/profile" className="secondary-action">
+                Ver perfil
+              </Link>
+              <Link href="/catalog" className="primary-action">
+                Explorar catalogo
+              </Link>
+            </>
           }
         />
+
+        <section className="customer-hero-grid">
+          <article className="customer-spotlight">
+            <div className="customer-spotlight-head">
+              <span className="eyebrow">Panorama rapido</span>
+              <StatusBadge label={session.user.status} tone={session.user.status === 'active' ? 'success' : 'warning'} />
+            </div>
+            <h2>{formatMoney(wallet.availableBalance)}</h2>
+            <p>Saldo disponivel agora, pronto para PIX, pedidos e acompanhamento da operacao em tempo real.</p>
+            <div className="customer-highlight-list">
+              <div>
+                <span>Pagamentos confirmados</span>
+                <strong>{confirmedPayments}</strong>
+              </div>
+              <div>
+                <span>Pedidos em aberto</span>
+                <strong>{openOrders}</strong>
+              </div>
+              <div>
+                <span>Conta autenticada</span>
+                <strong>{session.user.role}</strong>
+              </div>
+            </div>
+          </article>
+
+          <div className="customer-action-grid">
+            <Link href="/app/payments" className="customer-action-card">
+              <strong>Gerar PIX</strong>
+              <p>Adicionar saldo e acompanhar expiracao ou confirmacao.</p>
+            </Link>
+            <Link href="/catalog" className="customer-action-card">
+              <strong>Novo pedido</strong>
+              <p>Entrar no catalogo e criar ordem real a partir dos servicos publicados.</p>
+            </Link>
+            <Link href="/app/orders" className="customer-action-card">
+              <strong>Pedidos</strong>
+              <p>Ver status assincrono e detalhes operacionais da fila atual.</p>
+            </Link>
+            <Link href="/app/profile" className="customer-action-card">
+              <strong>Perfil</strong>
+              <p>Conferir dados da conta e limites atuais do contrato de perfil.</p>
+            </Link>
+          </div>
+        </section>
 
         <section className="metric-list">
           <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} meta="Carteira atual" tone="accent" />

@@ -4,6 +4,7 @@ import type {
   OrderResource,
   PaginatedResponse,
   PaymentResource,
+  UserSummary,
   WalletSummary,
   WalletTransactionResource,
 } from '@/lib/api/contracts';
@@ -16,6 +17,13 @@ type AuthOptions = {
 export function getWalletSummary({ accessToken }: AuthOptions) {
   return apiRequest<WalletSummary>({
     path: '/me/wallet',
+    accessToken,
+  });
+}
+
+export function getCustomerProfile({ accessToken }: AuthOptions) {
+  return apiRequest<UserSummary>({
+    path: '/me',
     accessToken,
   });
 }

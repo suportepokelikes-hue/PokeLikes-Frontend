@@ -6,8 +6,8 @@ type PaymentDetailRouteProps = {
 };
 
 export default async function PaymentDetailRoute({ params }: PaymentDetailRouteProps) {
-  const session = await requireCustomerSession();
   const { paymentId } = await params;
+  const session = await requireCustomerSession(`/app/payments/${paymentId}`);
 
   return <PaymentDetailPage session={session} paymentId={paymentId} />;
 }

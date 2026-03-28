@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { createCustomerOrder, createPixPayment } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import { getServerSession } from '@/lib/auth/cookies';
+import { getLoginPath, normalizeReturnTo } from '@/lib/auth/navigation';
 import type { TransactionFormState } from '@/modules/customer-transactions/types';
 
 export async function createPixPaymentAction(
@@ -12,9 +13,10 @@ export async function createPixPaymentAction(
   formData: FormData,
 ): Promise<TransactionFormState> {
   const session = await getServerSession();
+  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
 
   if (session.status !== 'authenticated' || session.user.role !== 'customer') {
-    redirect('/login');
+    redirect(getLoginPath({ reason: 'required', returnTo }));
   }
 
   const amount = readRequiredString(formData, 'amount');
@@ -40,9 +42,10 @@ export async function createPixPaymentAction(
 
 export async function createOrderAction(_: TransactionFormState, formData: FormData): Promise<TransactionFormState> {
   const session = await getServerSession();
+  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
 
   if (session.status !== 'authenticated' || session.user.role !== 'customer') {
-    redirect('/login');
+    redirect(getLoginPath({ reason: 'required', returnTo }));
   }
 
   const catalogServiceIdRaw = readRequiredString(formData, 'catalogServiceId');

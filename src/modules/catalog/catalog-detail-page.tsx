@@ -5,8 +5,10 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { getCatalogService } from '@/lib/api/catalog';
+import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import { getServerSession } from '@/lib/auth/cookies';
+import { getLoginPath, getRegisterPath } from '@/lib/auth/navigation';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { createOrderAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm, TransactionTextarea } from '@/modules/customer-transactions/transaction-form';
@@ -20,6 +22,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
   try {
     const session = await getServerSession();
     const service = await getCatalogService(serviceId);
+    const returnTo = `/catalog/${serviceId}`;
 
     return (
       <main className="page page-public">
@@ -29,16 +32,49 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
           description={service.description || 'Servico sem descricao detalhada publicada no contrato atual.'}
           actions={
             <div className="page-actions">
-              <StatusBadge
-                label={service.availability.providerStatus}
-                tone={service.availability.isPurchasable ? 'success' : 'danger'}
-              />
+              <StatusBadge label={service.availability.providerStatus} tone={mapAvailabilityTone(service)} />
               <Link href="/catalog" className="secondary-action">
                 Voltar ao catalogo
               </Link>
             </div>
           }
         />
+
+        <section className="public-hero-grid">
+          <article className="public-spotlight">
+            <div className="public-spotlight-head">
+              <span className="eyebrow">Disponibilidade</span>
+              <StatusBadge
+                label={service.availability.isPurchasable ? 'Compravel' : 'Indisponivel'}
+                tone={mapAvailabilityTone(service)}
+              />
+            </div>
+            <h2>{formatMoney(service.publicPrice)}</h2>
+            <p>Preco publico real para um servico ligado a fornecedor, com limites e estado operacional vindos da API.</p>
+            <div className="public-highlight-list">
+              <div>
+                <span>Rede</span>
+                <strong>{service.socialNetwork}</strong>
+              </div>
+              <div>
+                <span>Categoria</span>
+                <strong>{service.category}</strong>
+              </div>
+              <div>
+                <span>Faixa</span>
+                <strong>
+                  {service.minQuantity} - {service.maxQuantity}
+                </strong>
+              </div>
+            </div>
+          </article>
+
+          <article className="public-note-card">
+            <strong>Leitura de availability</strong>
+            <p>Se `isPurchasable` estiver falso, a tela mostra o motivo operacional e evita mascarar indisponibilidade do provider.</p>
+            <p>Quando autenticado como cliente, o checkout abaixo ja usa os campos reais suportados por `POST /me/orders`.</p>
+          </article>
+        </section>
 
         <section className="detail-grid">
           <article className="detail-card">
@@ -115,6 +151,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                 action={createOrderAction}
                 initialState={initialTransactionFormState}
                 submitLabel="Confirmar pedido"
+                returnTo={returnTo}
               >
                 <input type="hidden" name="catalogServiceId" value={service.id} />
                 <div className="transaction-grid">
@@ -153,10 +190,10 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                 <strong>Quer comprar este servico?</strong>
                 <p>Entre como cliente para criar um pedido real a partir deste item do catalogo.</p>
                 <div className="page-actions">
-                  <Link href="/login" className="primary-action">
+                  <Link href={getLoginPath({ reason: 'required', returnTo })} className="primary-action">
                     Entrar
                   </Link>
-                  <Link href="/register" className="secondary-action">
+                  <Link href={getRegisterPath({ reason: 'required', returnTo })} className="secondary-action">
                     Criar conta
                   </Link>
                 </div>
@@ -180,4 +217,16 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
       </main>
     );
   }
+}
+
+function mapAvailabilityTone(service: CatalogServiceResource) {
+  if (!service.availability.isPurchasable) {
+    return 'danger';
+  }
+
+  if (service.availability.providerStatus === 'degraded_low_balance') {
+    return 'warning';
+  }
+
+  return 'success';
 }

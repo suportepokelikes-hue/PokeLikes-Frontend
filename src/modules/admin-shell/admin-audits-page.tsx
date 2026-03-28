@@ -6,15 +6,17 @@ import { listAdminAudits } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime } from '@/lib/format';
-import { AdminSummaryCard, PaginationSummary, renderAuditPayload } from '@/modules/admin-shell/shared';
+import type { AdminAuditsListParams } from '@/modules/admin-shell/query';
+import { AdminFilterBar, AdminSummaryCard, PaginationSummary, renderAuditPayload } from '@/modules/admin-shell/shared';
 
 type AdminAuditsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  filters: AdminAuditsListParams;
 };
 
-export async function AdminAuditsPage({ session }: AdminAuditsPageProps) {
+export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps) {
   try {
-    const audits = await listAdminAudits(session.accessToken);
+    const audits = await listAdminAudits(session.accessToken, filters);
     const distinctAdmins = new Set(audits.items.map((audit) => audit.admin.id)).size;
     const distinctEntities = new Set(audits.items.map((audit) => audit.entityType)).size;
     const latestEvent = audits.items[0]?.createdAt ?? null;
@@ -25,6 +27,38 @@ export async function AdminAuditsPage({ session }: AdminAuditsPageProps) {
           eyebrow="Admin / auditoria"
           title="Rastro de acoes administrativas."
           description="A auditoria expande a observabilidade do admin com entidade afetada, operador, origem da requisicao e payload resumido."
+          actions={
+            <AdminFilterBar
+              pathname="/admin/audits"
+              fields={[
+                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Acao ou entidade', defaultValue: filters.search },
+                { name: 'adminId', label: 'Admin ID', defaultValue: filters.adminId },
+                { name: 'action', label: 'Acao', defaultValue: filters.action },
+                { name: 'entityType', label: 'Entidade', defaultValue: filters.entityType },
+                {
+                  name: 'sortOrder',
+                  label: 'Ordem',
+                  type: 'select',
+                  defaultValue: filters.sortOrder ?? 'desc',
+                  options: [
+                    { label: 'Desc', value: 'desc' },
+                    { label: 'Asc', value: 'asc' },
+                  ],
+                },
+                {
+                  name: 'pageSize',
+                  label: 'Pagina',
+                  type: 'select',
+                  defaultValue: filters.pageSize ?? 10,
+                  options: [
+                    { label: '10', value: '10' },
+                    { label: '20', value: '20' },
+                    { label: '50', value: '50' },
+                  ],
+                },
+              ]}
+            />
+          }
         />
 
         <section className="metric-list">
@@ -65,7 +99,15 @@ export async function AdminAuditsPage({ session }: AdminAuditsPageProps) {
               ))}
             </DataTable>
 
-            <PaginationSummary page={audits.page} pageSize={audits.pageSize} totalItems={audits.totalItems} label="eventos" />
+            <PaginationSummary
+              page={audits.page}
+              pageSize={audits.pageSize}
+              totalItems={audits.totalItems}
+              totalPages={audits.totalPages}
+              pathname="/admin/audits"
+              params={{ ...filters, pageSize: filters.pageSize ?? audits.pageSize }}
+              label="eventos"
+            />
           </>
         )}
       </main>

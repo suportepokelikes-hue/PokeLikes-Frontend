@@ -10,8 +10,10 @@ import { formatDateTime } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { refreshSupplierProvidersAction, syncSupplierServicesAction } from '@/modules/admin-shell/actions';
 import {
+  AdminFilterBar,
   AdminSummaryCard,
   PaginationSummary,
+  buildPathWithSearch,
   formatProviderBalance,
   mapProviderTone,
   mapSyncStatusTone,
@@ -19,18 +21,30 @@ import {
   summarizeSupplierStatus,
   summarizeSupplierSync,
 } from '@/modules/admin-shell/shared';
+import type { SupplierServicesListParams, SupplierSyncLogsListParams } from '@/modules/admin-shell/query';
 
 type AdminSupplierPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  serviceFilters: SupplierServicesListParams;
+  logFilters: SupplierSyncLogsListParams;
 };
 
-export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
+export async function AdminSupplierPage({ session, serviceFilters, logFilters }: AdminSupplierPageProps) {
   try {
     const [providers, services, logs] = await Promise.all([
       listSupplierProviders(session.accessToken),
-      listSupplierServices(session.accessToken),
-      listSupplierSyncLogs(session.accessToken),
+      listSupplierServices(session.accessToken, serviceFilters),
+      listSupplierSyncLogs(session.accessToken, logFilters),
     ]);
+    const serviceReturnTo = buildPathWithSearch('/admin/supplier', {
+      ...serviceFilters,
+      logsPage: logFilters.page,
+      logsPageSize: logFilters.pageSize,
+      logSupplierName: logFilters.supplierName,
+      syncType: logFilters.syncType,
+      logStatus: logFilters.status,
+      targetType: logFilters.targetType,
+    });
 
     const unavailableCount = providers.items.filter((provider) => provider.operationalStatus === 'unavailable').length;
     const lowBalanceCount = providers.items.filter((provider) => provider.operationalStatus === 'degraded_low_balance').length;
@@ -49,12 +63,14 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
                 submitLabel="Atualizar providers"
                 pendingLabel="Atualizando..."
                 tone="secondary"
+                returnTo={serviceReturnTo}
               />
               <AdminActionForm
                 action={syncSupplierServicesAction}
                 submitLabel="Sincronizar catalogo"
                 pendingLabel="Sincronizando..."
                 tone="primary"
+                returnTo={serviceReturnTo}
               />
             </>
           }
@@ -101,6 +117,44 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
               <h2>Logs de sincronizacao</h2>
               <span className="panel-meta">Ultimos eventos tecnicos</span>
             </div>
+            <AdminFilterBar
+              pathname="/admin/supplier"
+              hiddenFields={[
+                { name: 'servicesPage', value: serviceFilters.page ?? 1 },
+                { name: 'servicesPageSize', value: serviceFilters.pageSize ?? 10 },
+                ...(serviceFilters.search ? [{ name: 'servicesSearch', value: serviceFilters.search }] : []),
+                ...(serviceFilters.supplierName ? [{ name: 'supplierName', value: serviceFilters.supplierName }] : []),
+                ...(serviceFilters.category ? [{ name: 'category', value: serviceFilters.category }] : []),
+                ...(serviceFilters.type ? [{ name: 'type', value: serviceFilters.type }] : []),
+                ...(serviceFilters.isActiveAtSupplier ? [{ name: 'isActiveAtSupplier', value: serviceFilters.isActiveAtSupplier }] : []),
+              ]}
+              fields={[
+                { name: 'logSupplierName', label: 'Fornecedor', defaultValue: logFilters.supplierName },
+                { name: 'syncType', label: 'Sync type', defaultValue: logFilters.syncType },
+                {
+                  name: 'logStatus',
+                  label: 'Status',
+                  type: 'select',
+                  defaultValue: logFilters.status,
+                  options: [
+                    { label: 'Success', value: 'success' },
+                    { label: 'Failed', value: 'failed' },
+                  ],
+                },
+                { name: 'targetType', label: 'Target', defaultValue: logFilters.targetType },
+                {
+                  name: 'logsPageSize',
+                  label: 'Pagina',
+                  type: 'select',
+                  defaultValue: logFilters.pageSize ?? 10,
+                  options: [
+                    { label: '10', value: '10' },
+                    { label: '20', value: '20' },
+                    { label: '50', value: '50' },
+                  ],
+                },
+              ]}
+            />
 
             {logs.items.length === 0 ? (
               <EmptyState title="Nenhum log encontrado" description="Ainda nao existem eventos de sincronizacao para exibir." />
@@ -124,7 +178,28 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
                     </tr>
                   ))}
                 </DataTable>
-                <PaginationSummary page={logs.page} pageSize={logs.pageSize} totalItems={logs.totalItems} label="logs" />
+                <PaginationSummary
+                  page={logs.page}
+                  pageSize={logs.pageSize}
+                  totalItems={logs.totalItems}
+                  totalPages={logs.totalPages}
+                  pathname="/admin/supplier"
+                  params={{
+                    servicesPage: serviceFilters.page ?? 1,
+                    servicesPageSize: serviceFilters.pageSize ?? 10,
+                    servicesSearch: serviceFilters.search,
+                    supplierName: serviceFilters.supplierName,
+                    category: serviceFilters.category,
+                    type: serviceFilters.type,
+                    isActiveAtSupplier: serviceFilters.isActiveAtSupplier,
+                    logsPageSize: logFilters.pageSize ?? logs.pageSize,
+                    logSupplierName: logFilters.supplierName,
+                    syncType: logFilters.syncType,
+                    logStatus: logFilters.status,
+                    targetType: logFilters.targetType,
+                  }}
+                  label="logs"
+                />
               </>
             )}
           </article>
@@ -135,6 +210,44 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
             <h2>Servicos do fornecedor</h2>
             <span className="panel-meta">Primeira pagina de /admin/supplier/services</span>
           </div>
+          <AdminFilterBar
+            pathname="/admin/supplier"
+            hiddenFields={[
+              { name: 'logsPage', value: logFilters.page ?? 1 },
+              { name: 'logsPageSize', value: logFilters.pageSize ?? 10 },
+              ...(logFilters.supplierName ? [{ name: 'logSupplierName', value: logFilters.supplierName }] : []),
+              ...(logFilters.syncType ? [{ name: 'syncType', value: logFilters.syncType }] : []),
+              ...(logFilters.status ? [{ name: 'logStatus', value: logFilters.status }] : []),
+              ...(logFilters.targetType ? [{ name: 'targetType', value: logFilters.targetType }] : []),
+            ]}
+            fields={[
+              { name: 'servicesSearch', label: 'Busca', type: 'search', placeholder: 'Servico fornecedor', defaultValue: serviceFilters.search },
+              { name: 'supplierName', label: 'Fornecedor', defaultValue: serviceFilters.supplierName },
+              { name: 'category', label: 'Categoria', defaultValue: serviceFilters.category },
+              { name: 'type', label: 'Tipo', defaultValue: serviceFilters.type },
+              {
+                name: 'isActiveAtSupplier',
+                label: 'Ativo',
+                type: 'select',
+                defaultValue: serviceFilters.isActiveAtSupplier,
+                options: [
+                  { label: 'Sim', value: 'true' },
+                  { label: 'Nao', value: 'false' },
+                ],
+              },
+              {
+                name: 'servicesPageSize',
+                label: 'Pagina',
+                type: 'select',
+                defaultValue: serviceFilters.pageSize ?? 10,
+                options: [
+                  { label: '10', value: '10' },
+                  { label: '20', value: '20' },
+                  { label: '50', value: '50' },
+                ],
+              },
+            ]}
+          />
 
           {services.items.length === 0 ? (
             <EmptyState title="Nenhum servico sincronizado" description="A API nao retornou servicos do fornecedor para a listagem atual." />
@@ -168,6 +281,7 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
                           action={syncSupplierServicesAction}
                           submitLabel="Sync fornecedor"
                           pendingLabel="Sincronizando..."
+                          returnTo={serviceReturnTo}
                           hiddenFields={[{ name: 'supplierName', value: service.supplierName }]}
                         />
                       </div>
@@ -179,6 +293,22 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
                 page={services.page}
                 pageSize={services.pageSize}
                 totalItems={services.totalItems}
+                totalPages={services.totalPages}
+                pathname="/admin/supplier"
+                params={{
+                  logsPage: logFilters.page ?? 1,
+                  logsPageSize: logFilters.pageSize ?? 10,
+                  logSupplierName: logFilters.supplierName,
+                  syncType: logFilters.syncType,
+                  logStatus: logFilters.status,
+                  targetType: logFilters.targetType,
+                  servicesPageSize: serviceFilters.pageSize ?? services.pageSize,
+                  servicesSearch: serviceFilters.search,
+                  supplierName: serviceFilters.supplierName,
+                  category: serviceFilters.category,
+                  type: serviceFilters.type,
+                  isActiveAtSupplier: serviceFilters.isActiveAtSupplier,
+                }}
                 label="servicos"
               />
             </>

@@ -158,6 +158,128 @@ a {
   flex-wrap: wrap;
 }
 
+.public-hero {
+  align-items: stretch;
+}
+
+.public-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.public-bento {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.public-bento-card,
+.public-note-card,
+.public-spotlight {
+  border: 1px solid rgba(195, 198, 215, 0.15);
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.public-bento-card,
+.public-note-card {
+  border-radius: 1.5rem;
+  padding: 1.2rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.public-bento-card span {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.public-bento-card strong,
+.public-note-card strong {
+  font-size: 1.05rem;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+}
+
+.public-bento-card p,
+.public-note-card p,
+.public-spotlight p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.public-hero-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+}
+
+.public-spotlight {
+  border-radius: 2rem;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(0, 74, 198, 0.12), transparent 15rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 238, 240, 0.92));
+}
+
+.public-spotlight-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.public-spotlight h2 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+}
+
+.public-highlight-list {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.public-highlight-list div,
+.catalog-card-foot {
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.public-highlight-list div {
+  padding: 1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.public-highlight-list span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.catalog-card-foot {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
 .primary-action,
 .secondary-action,
 .logout-button,
@@ -325,6 +447,19 @@ a {
   align-items: center;
 }
 
+.toolbar-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.toolbar-field span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .toolbar-input {
   min-height: 3rem;
   min-width: 12rem;
@@ -353,6 +488,120 @@ a {
 
 .detail-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.customer-hero-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+}
+
+.customer-spotlight,
+.customer-action-card,
+.customer-note-card {
+  border: 1px solid rgba(195, 198, 215, 0.15);
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+}
+
+.customer-spotlight {
+  border-radius: 2rem;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(0, 74, 198, 0.12), transparent 15rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 238, 240, 0.92));
+}
+
+.customer-spotlight-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.customer-spotlight h2 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+}
+
+.customer-spotlight p,
+.customer-note-card p,
+.customer-action-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.customer-highlight-list {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.customer-highlight-list div,
+.customer-action-card {
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.customer-highlight-list div {
+  padding: 1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.customer-highlight-list span {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.customer-highlight-list strong {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.customer-action-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.customer-action-card,
+.customer-note-card {
+  padding: 1.2rem;
+}
+
+.customer-action-card {
+  display: grid;
+  gap: 0.5rem;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.customer-action-card strong,
+.customer-note-card strong {
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  font-size: 1rem;
+}
+
+.customer-action-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 74, 198, 0.18);
+}
+
+.customer-note-card {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
 }
 
 .catalog-card,
@@ -546,15 +795,76 @@ a {
 .feedback-panel {
   display: grid;
   gap: 0.75rem;
+  padding: 1.35rem;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at top right, rgba(0, 74, 198, 0.08), transparent 14rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 238, 240, 0.9));
 }
 
 .feedback-error {
-  background: rgba(255, 218, 214, 0.45);
+  background:
+    radial-gradient(circle at top right, rgba(186, 26, 26, 0.08), transparent 14rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 218, 214, 0.68));
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.feedback-kicker {
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .pagination-panel {
   color: var(--muted);
   font-size: 0.88rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination-links {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+}
+
+.pagination-link-disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .admin-action-form {
@@ -650,19 +960,64 @@ a {
 }
 
 .auth-card {
-  width: min(100%, 34rem);
+  width: min(100%, 64rem);
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
   border-radius: 2rem;
   padding: 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+  gap: 1.5rem;
+}
+
+.auth-hero {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.auth-brand span,
+.auth-brand strong {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-brand span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.auth-brand strong {
+  color: var(--accent);
+}
+
+.auth-surface {
+  border-radius: 1.7rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 247, 249, 0.96));
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
 }
 
 .auth-intro {
   display: grid;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
 }
 
 .auth-intro h1 {
@@ -675,6 +1030,79 @@ a {
 .auth-form {
   display: grid;
   gap: 0.9rem;
+}
+
+.auth-notice {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.auth-notice strong,
+.auth-notice p {
+  margin: 0;
+}
+
+.auth-notice-info {
+  border-color: rgba(49, 94, 168, 0.18);
+  background: rgba(49, 94, 168, 0.08);
+}
+
+.auth-notice-warning {
+  border-color: rgba(169, 107, 21, 0.24);
+  background: rgba(169, 107, 21, 0.1);
+}
+
+.auth-notice-success {
+  border-color: rgba(43, 111, 67, 0.2);
+  background: rgba(43, 111, 67, 0.1);
+}
+
+.auth-context {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1.1rem 1.15rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, rgba(244, 166, 79, 0.12), rgba(255, 255, 255, 0.74));
+  border: 1px solid rgba(244, 166, 79, 0.2);
+}
+
+.auth-context-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.auth-context-copy {
+  margin: 0;
+  color: var(--muted);
+}
+
+.auth-context-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.auth-context-list li {
+  display: flex;
+  gap: 0.6rem;
+  color: var(--ink);
+}
+
+.auth-context-list li::before {
+  content: '';
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-top: 0.35rem;
+  border-radius: 999px;
+  background: var(--accent);
+  flex: 0 0 auto;
 }
 
 .transaction-form {
@@ -692,6 +1120,11 @@ a {
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--muted);
+}
+
+.auth-field small {
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .auth-field input {
@@ -735,6 +1168,13 @@ a {
   border: 1px solid rgba(169, 107, 21, 0.3);
   background: rgba(169, 107, 21, 0.08);
   color: var(--ink);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.auth-error strong,
+.auth-error p {
+  margin: 0;
 }
 
 .auth-submit:disabled,
@@ -743,8 +1183,19 @@ a {
   cursor: wait;
 }
 
+.auth-footer {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.auth-footnote {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
 .auth-alt {
-  margin: 1rem 0 0;
+  margin: 0;
   color: var(--muted);
 }
 
@@ -757,11 +1208,18 @@ a {
   .hero,
   .card-grid,
   .metric-list,
+  .public-bento,
   .catalog-grid,
   .dashboard-grid,
   .detail-grid,
   .catalog-stats,
-  .transaction-grid {
+  .public-hero-grid,
+  .public-highlight-list,
+  .transaction-grid,
+  .customer-hero-grid,
+  .customer-action-grid,
+  .customer-highlight-list,
+  .auth-card {
     grid-template-columns: 1fr;
   }
 

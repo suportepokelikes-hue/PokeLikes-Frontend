@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
+import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { listCustomerOrders } from '@/lib/api/customer';
@@ -17,6 +18,10 @@ type CustomerOrdersPageProps = {
 export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
   try {
     const orders = await listCustomerOrders({ accessToken: session.accessToken });
+    const openCount = orders.items.filter((order) =>
+      ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
+    ).length;
+    const completedCount = orders.items.filter((order) => order.status === 'completed').length;
 
     return (
       <main className="page page-customer">
@@ -26,26 +31,38 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
           description="A listagem mostra o status operacional oficial do pedido e o valor cobrado ao cliente quando disponivel."
         />
 
+        <section className="metric-list">
+          <StatCard label="Pedidos na pagina" value={String(orders.items.length)} meta={`${orders.totalItems} no total`} />
+          <StatCard label="Em andamento" value={String(openCount)} meta="Fluxos ainda assincronos" tone="warning" />
+          <StatCard label="Concluidos" value={String(completedCount)} meta="Pedidos fechados" tone="accent" />
+        </section>
+
         {orders.items.length === 0 ? (
           <EmptyState title="Nenhum pedido encontrado" description="Quando um pedido for criado, ele aparecera aqui com o status real." />
         ) : (
-          <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
-            {orders.items.map((order) => (
-              <tr key={order.id}>
-                <td>
-                  <Link href={`/app/orders/${order.id}`} className="table-link">
-                    {order.id}
-                  </Link>
-                </td>
-                <td>{order.catalogService?.name || 'Servico nao associado'}</td>
-                <td>
-                  <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
-                </td>
-                <td>{formatMoney(order.customerCharge)}</td>
-                <td>{formatDateTime(order.updatedAt)}</td>
-              </tr>
-            ))}
-          </DataTable>
+          <section className="detail-card detail-card-wide">
+            <div className="panel-heading">
+              <h2>Pedidos recentes</h2>
+              <span className="panel-meta">Status comercial e tecnico do cliente</span>
+            </div>
+            <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
+              {orders.items.map((order) => (
+                <tr key={order.id}>
+                  <td>
+                    <Link href={`/app/orders/${order.id}`} className="table-link">
+                      {order.id}
+                    </Link>
+                  </td>
+                  <td>{order.catalogService?.name || 'Servico nao associado'}</td>
+                  <td>
+                    <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
+                  </td>
+                  <td>{formatMoney(order.customerCharge)}</td>
+                  <td>{formatDateTime(order.updatedAt)}</td>
+                </tr>
+              ))}
+            </DataTable>
+          </section>
         )}
       </main>
     );

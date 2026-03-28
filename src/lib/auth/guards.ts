@@ -1,12 +1,13 @@
 import { redirect } from 'next/navigation';
 
 import { getServerSession } from '@/lib/auth/cookies';
+import { getLoginPath, getPostAuthRedirectPath, normalizeReturnTo } from '@/lib/auth/navigation';
 
-export async function requireCustomerSession() {
+export async function requireCustomerSession(returnTo?: string) {
   const session = await getServerSession();
 
   if (session.status !== 'authenticated') {
-    redirect('/login');
+    redirect(getLoginPath({ reason: 'required', returnTo: normalizeReturnTo(returnTo) }));
   }
 
   if (session.user.role !== 'customer') {
@@ -16,11 +17,11 @@ export async function requireCustomerSession() {
   return session;
 }
 
-export async function requireAdminSession() {
+export async function requireAdminSession(returnTo?: string) {
   const session = await getServerSession();
 
   if (session.status !== 'authenticated') {
-    redirect('/login');
+    redirect(getLoginPath({ reason: 'required', returnTo: normalizeReturnTo(returnTo) }));
   }
 
   if (session.user.role !== 'admin') {
@@ -30,12 +31,12 @@ export async function requireAdminSession() {
   return session;
 }
 
-export async function redirectAuthenticatedUser() {
+export async function redirectAuthenticatedUser(returnTo?: string) {
   const session = await getServerSession();
 
   if (session.status !== 'authenticated') {
     return;
   }
 
-  redirect(session.user.role === 'admin' ? '/admin' : '/app');
+  redirect(getPostAuthRedirectPath(session.user.role, returnTo));
 }

@@ -19,6 +19,8 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
       getWalletSummary({ accessToken: session.accessToken }),
       listWalletTransactions({ accessToken: session.accessToken }),
     ]);
+    const credits = transactions.items.filter((transaction) => transaction.direction === 'credit').length;
+    const debits = transactions.items.filter((transaction) => transaction.direction === 'debit').length;
 
     return (
       <main className="page page-customer">
@@ -27,6 +29,37 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
           title="Saldo e transacoes da carteira."
           description="A tela usa wallet e extrato reais da API para exibir saldo disponivel e movimentacoes recentes."
         />
+
+        <section className="customer-hero-grid">
+          <article className="customer-spotlight">
+            <div className="customer-spotlight-head">
+              <span className="eyebrow">Disponivel</span>
+              <span className="panel-meta">Wallet {wallet.id}</span>
+            </div>
+            <h2>{formatMoney(wallet.availableBalance)}</h2>
+            <p>O saldo exibido aqui vem direto do resumo oficial da carteira do cliente.</p>
+            <div className="customer-highlight-list">
+              <div>
+                <span>Creditos na pagina</span>
+                <strong>{credits}</strong>
+              </div>
+              <div>
+                <span>Debitos na pagina</span>
+                <strong>{debits}</strong>
+              </div>
+              <div>
+                <span>Total de eventos</span>
+                <strong>{transactions.totalItems}</strong>
+              </div>
+            </div>
+          </article>
+
+          <article className="customer-note-card">
+            <strong>Ciclo financeiro</strong>
+            <p>Saldo nao muda ao gerar o PIX. O credito so entra quando o backend confirmar o pagamento.</p>
+            <p>Use pagamentos e detalhe do PIX para acompanhar expiracao, confirmacao e falha.</p>
+          </article>
+        </section>
 
         <section className="metric-list">
           <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} tone="accent" />
@@ -37,19 +70,25 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
         {transactions.items.length === 0 ? (
           <EmptyState title="Nenhuma transacao encontrada" description="A carteira ainda nao recebeu creditos ou debitos." />
         ) : (
-          <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>
-            {transactions.items.map((transaction) => (
-              <tr key={transaction.id}>
-                <td>{transaction.id}</td>
-                <td>{transaction.type}</td>
-                <td>
-                  <StatusBadge label={transaction.direction} tone={transaction.direction === 'credit' ? 'success' : 'warning'} />
-                </td>
-                <td>{formatMoney(transaction.amount)}</td>
-                <td>{formatDateTime(transaction.createdAt)}</td>
-              </tr>
-            ))}
-          </DataTable>
+          <section className="detail-card detail-card-wide">
+            <div className="panel-heading">
+              <h2>Extrato recente</h2>
+              <span className="panel-meta">Primeira pagina do endpoint de transacoes</span>
+            </div>
+            <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>
+              {transactions.items.map((transaction) => (
+                <tr key={transaction.id}>
+                  <td>{transaction.id}</td>
+                  <td>{transaction.type}</td>
+                  <td>
+                    <StatusBadge label={transaction.direction} tone={transaction.direction === 'credit' ? 'success' : 'warning'} />
+                  </td>
+                  <td>{formatMoney(transaction.amount)}</td>
+                  <td>{formatDateTime(transaction.createdAt)}</td>
+                </tr>
+              ))}
+            </DataTable>
+          </section>
         )}
       </main>
     );

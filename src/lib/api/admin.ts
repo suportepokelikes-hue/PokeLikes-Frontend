@@ -1,4 +1,12 @@
 import type {
+  AdminAlertsListParams,
+  AdminAuditsListParams,
+  AdminCatalogListParams,
+  AdminOrdersListParams,
+  AdminPaymentsListParams,
+  AdminTransactionsListParams,
+  AdminUsersListParams,
+  AdminPaymentDetailResource,
   AdminPaymentsSummaryResponse,
   AdminWalletTransactionResource,
   AlertResource,
@@ -15,6 +23,8 @@ import type {
   SupplierSyncLogResource,
   SyncOrdersRequest,
   SyncOrdersResponse,
+  SupplierServicesListParams,
+  SupplierSyncLogsListParams,
   UserSummary,
 } from '@/lib/api/contracts';
 import { apiRequest } from '@/lib/api/http';
@@ -26,30 +36,44 @@ export function getAdminDashboardSummary(accessToken: string) {
   });
 }
 
-export function listAdminUsers(accessToken: string) {
+export function listAdminUsers(accessToken: string, params: AdminUsersListParams = {}) {
   return apiRequest<PaginatedResponse<UserSummary>>({
-    path: '/admin/users?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/users', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
   });
 }
 
-export function listAdminPayments(accessToken: string) {
+export function listAdminPayments(accessToken: string, params: AdminPaymentsListParams = {}) {
   return apiRequest<PaginatedResponse<AdminPaymentResource>>({
-    path: '/admin/payments?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/payments', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
   });
 }
 
-export function getAdminPaymentsSummary(accessToken: string) {
+export function getAdminPaymentsSummary(accessToken: string, params: Omit<AdminPaymentsListParams, 'page' | 'pageSize' | 'sortBy' | 'sortOrder'> = {}) {
   return apiRequest<AdminPaymentsSummaryResponse>({
-    path: '/admin/payments/summary',
+    path: buildAdminPath('/admin/payments/summary', params),
     accessToken,
   });
 }
 
-export function listAdminOrders(accessToken: string) {
+export function getAdminPaymentDetail(accessToken: string, paymentId: string) {
+  return apiRequest<AdminPaymentDetailResource>({
+    path: `/admin/payments/${paymentId}`,
+    accessToken,
+  });
+}
+
+export function listAdminOrders(accessToken: string, params: AdminOrdersListParams = {}) {
   return apiRequest<PaginatedResponse<AdminOrderResource>>({
-    path: '/admin/orders?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/orders', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+    accessToken,
+  });
+}
+
+export function getAdminOrderDetail(accessToken: string, orderId: string) {
+  return apiRequest<AdminOrderResource>({
+    path: `/admin/orders/${orderId}`,
     accessToken,
   });
 }
@@ -88,16 +112,16 @@ export function syncAdminOrder(accessToken: string, orderId: string) {
   });
 }
 
-export function listAdminCatalogServices(accessToken: string) {
+export function listAdminCatalogServices(accessToken: string, params: AdminCatalogListParams = {}) {
   return apiRequest<PaginatedResponse<CatalogServiceResource>>({
-    path: '/admin/catalog/services?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/catalog/services', { page: 1, pageSize: 10, ...params }),
     accessToken,
   });
 }
 
-export function listAdminTransactions(accessToken: string) {
+export function listAdminTransactions(accessToken: string, params: AdminTransactionsListParams = {}) {
   return apiRequest<PaginatedResponse<AdminWalletTransactionResource>>({
-    path: '/admin/transactions?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/transactions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
   });
 }
@@ -109,30 +133,30 @@ export function listSupplierProviders(accessToken: string) {
   });
 }
 
-export function listSupplierServices(accessToken: string) {
+export function listSupplierServices(accessToken: string, params: SupplierServicesListParams = {}) {
   return apiRequest<PaginatedResponse<SupplierServiceResource>>({
-    path: '/admin/supplier/services?page=1&pageSize=10',
+    path: buildAdminPath('/admin/supplier/services', { page: 1, pageSize: 10, ...params }),
     accessToken,
   });
 }
 
-export function listSupplierSyncLogs(accessToken: string) {
+export function listSupplierSyncLogs(accessToken: string, params: SupplierSyncLogsListParams = {}) {
   return apiRequest<PaginatedResponse<SupplierSyncLogResource>>({
-    path: '/admin/supplier/sync-logs?page=1&pageSize=10',
+    path: buildAdminPath('/admin/supplier/sync-logs', { page: 1, pageSize: 10, ...params }),
     accessToken,
   });
 }
 
-export function listAdminAlerts(accessToken: string) {
+export function listAdminAlerts(accessToken: string, params: AdminAlertsListParams = {}) {
   return apiRequest<PaginatedResponse<AlertResource>>({
-    path: '/admin/alerts?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/alerts', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
   });
 }
 
-export function listAdminAudits(accessToken: string) {
+export function listAdminAudits(accessToken: string, params: AdminAuditsListParams = {}) {
   return apiRequest<PaginatedResponse<AuditResource>>({
-    path: '/admin/audits?page=1&pageSize=10&sortOrder=desc',
+    path: buildAdminPath('/admin/audits', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
   });
 }
@@ -160,4 +184,19 @@ export function syncSupplierServices(accessToken: string, supplierName?: string)
     accessToken,
     ...(supplierName ? { body: { supplierName } } : {}),
   });
+}
+
+function buildAdminPath(path: string, params: Record<string, string | number | boolean | null | undefined>) {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === '') {
+      continue;
+    }
+
+    searchParams.set(key, String(value));
+  }
+
+  const query = searchParams.toString();
+  return query ? `${path}?${query}` : path;
 }

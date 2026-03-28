@@ -1,8 +1,15 @@
 import { requireAdminSession } from '@/lib/auth/guards';
+import { buildAdminPath, parseAdminAlertsParams } from '@/modules/admin-shell/query';
 import { AdminAlertsPage } from '@/modules/admin-shell/admin-alerts-page';
 
-export default async function AdminAlertsRoute() {
-  const session = await requireAdminSession();
+type AdminAlertsRouteProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return <AdminAlertsPage session={session} />;
+export default async function AdminAlertsRoute({ searchParams }: AdminAlertsRouteProps) {
+  const resolvedSearchParams = await searchParams;
+  const filters = parseAdminAlertsParams(resolvedSearchParams);
+  const session = await requireAdminSession(buildAdminPath('/admin/alerts', filters));
+
+  return <AdminAlertsPage session={session} filters={filters} />;
 }

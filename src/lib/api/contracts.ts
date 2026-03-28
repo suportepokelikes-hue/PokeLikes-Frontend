@@ -128,6 +128,20 @@ export type AdminPaymentResource = PaymentResource & {
   user: UserReference | null;
 };
 
+export type PaymentEventResource = {
+  id: string;
+  eventType: string;
+  providerEventId: string | null;
+  providerPaymentId: string | null;
+  processingStatus: string;
+  processedAt: string | null;
+  createdAt: string;
+};
+
+export type AdminPaymentDetailResource = AdminPaymentResource & {
+  events: PaymentEventResource[];
+};
+
 export type SupplierOrderStateResource = {
   provider: string;
   serviceId: number;
@@ -387,6 +401,96 @@ export type DashboardSummaryResponse = {
     counts: Record<'total' | 'healthy' | 'degraded' | 'unavailable', number>;
     providers: SupplierProviderSummary[];
   };
+};
+
+export type AdminUsersListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type AdminCatalogListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: string;
+  socialNetwork?: string;
+  category?: string;
+  type?: string;
+};
+
+export type AdminPaymentsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: string;
+  provider?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
+export type AdminOrdersListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: string;
+  userId?: string;
+};
+
+export type AdminTransactionsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  userId?: string;
+  type?: string;
+  direction?: string;
+  dateFrom?: string;
+  dateTo?: string;
+};
+
+export type SupplierServicesListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  supplierName?: string;
+  category?: string;
+  type?: string;
+  isActiveAtSupplier?: 'true' | 'false';
+};
+
+export type SupplierSyncLogsListParams = {
+  page?: number;
+  pageSize?: number;
+  supplierName?: string;
+  syncType?: string;
+  status?: string;
+  targetType?: string;
+};
+
+export type AdminAlertsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: string;
+  severity?: string;
+  type?: string;
+};
+
+export type AdminAuditsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  adminId?: string;
+  action?: string;
+  entityType?: string;
 };
 
 export type PaginatedResponse<T> = {

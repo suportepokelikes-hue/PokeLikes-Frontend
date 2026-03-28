@@ -19,6 +19,14 @@ Toda nova sessao do Codex neste repositorio deve:
 - o backend ja existe e o contrato local foi copiado para `docs/contracts/backend-openapi.yaml`
 - ja existem `/`, `/app` e `/admin` com shell visual e guardas por papel
 - ja existem `/login` e `/register` com server actions conectadas ao backend
+- `/login` e `/register` agora usam um formulario compartilhado mais rico, com contexto operacional, feedback inline mais claro e copy ajustada para teste manual real da autenticacao
+- middleware, guards e server actions agora carregam `reason` e `returnTo` para devolver o usuario a rota de origem apos login e para mostrar feedback de sessao expirada ou logout concluido
+- as listas admin agora leem filtros de `searchParams`, repassam os query params reais para `src/lib/api/admin.ts` e renderizam toolbar + navegacao de pagina coerentes com a OpenAPI
+- ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
+- dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
+- os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
+- a home publica, a listagem do catalogo e o detalhe do servico tambem receberam polimento visual alinhado ao Stitch dominante
+- `src/components/ui/empty-state.tsx` e `src/components/ui/error-state.tsx` agora sustentam um estado visual compartilhado mais forte, e `src/app/app/loading.tsx` cobre o loading do segmento autenticado do cliente
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
 - ja existem `/app/wallet`, `/app/payments`, `/app/orders`, `/admin/users`, `/admin/payments` e `/admin/orders`
 - ja existem `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits` e `/admin/transactions` conectados ao backend real
@@ -32,14 +40,17 @@ Toda nova sessao do Codex neste repositorio deve:
 - `src/app/admin/loading.tsx` cobre o loading visual do segmento admin
 - `src/modules/admin-shell/actions.ts` centraliza mutacoes server-side do admin: resolve de alertas, refresh/sync de fornecedores, conciliacao de pagamentos e sync de pedidos
 - `src/modules/admin-shell/admin-action-form.tsx` expoe feedback inline de sucesso e erro para as acoes operacionais do admin
+- ja existem drill-downs admin para `/admin/payments/[paymentId]` e `/admin/orders/[orderId]`
 
 ## Expected First Implementation Step
 
 - encaixar o design final das telas de auth e shells quando ele estiver disponivel
 - expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
-- expandir detalhes admin para pagamentos e pedidos com os endpoints individuais ja existentes
+- revisar presets e refinamento visual dos filtros administrativos agora que a navegacao esta funcional
+- habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
+- preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
-- adicionar estados mais ricos de erro e retorno para auth/logout quando os designs finais chegarem
+- aprofundar filtros e paginacao navegavel nas listas administrativas
 
 
 ## Source Of Truth Precedence

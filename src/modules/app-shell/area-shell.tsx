@@ -20,6 +20,10 @@ const areaConfig = {
     links: [
       { href: '/', label: 'Publico' },
       { href: '/app', label: 'Inicio cliente' },
+      { href: '/app/profile', label: 'Perfil' },
+      { href: '/app/wallet', label: 'Wallet' },
+      { href: '/app/payments', label: 'Pagamentos' },
+      { href: '/app/orders', label: 'Pedidos' },
       { href: '/admin', label: 'Admin' },
     ],
   },
@@ -66,7 +70,7 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
           <Link
             key={link.href}
             href={link.href}
-            className={pathname === link.href ? 'is-current' : ''}
+            className={isCurrentPath(pathname, link.href) ? 'is-current' : ''}
           >
             {link.label}
           </Link>
@@ -76,4 +80,12 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
       {children}
     </div>
   );
+}
+
+function isCurrentPath(pathname: string, href: string) {
+  if (href === '/') {
+    return pathname === href;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
 }

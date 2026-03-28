@@ -6,15 +6,17 @@ import { listAdminTransactions } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
-import { AdminSummaryCard, PaginationSummary, renderTransactionDirection } from '@/modules/admin-shell/shared';
+import type { AdminTransactionsListParams } from '@/modules/admin-shell/query';
+import { AdminFilterBar, AdminSummaryCard, PaginationSummary, renderTransactionDirection } from '@/modules/admin-shell/shared';
 
 type AdminTransactionsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  filters: AdminTransactionsListParams;
 };
 
-export async function AdminTransactionsPage({ session }: AdminTransactionsPageProps) {
+export async function AdminTransactionsPage({ session, filters }: AdminTransactionsPageProps) {
   try {
-    const transactions = await listAdminTransactions(session.accessToken);
+    const transactions = await listAdminTransactions(session.accessToken, filters);
     const credits = transactions.items.filter((item) => item.direction === 'credit').length;
     const debits = transactions.items.filter((item) => item.direction === 'debit').length;
     const latestTransaction = transactions.items[0]?.createdAt ?? null;
@@ -25,6 +27,49 @@ export async function AdminTransactionsPage({ session }: AdminTransactionsPagePr
           eyebrow="Admin / transacoes"
           title="Ledger financeiro do sistema."
           description="A listagem administrativa de transacoes usa o endpoint oficial do wallet admin com direcao, saldos e referencias funcionais."
+          actions={
+            <AdminFilterBar
+              pathname="/admin/transactions"
+              fields={[
+                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Referencia ou usuario', defaultValue: filters.search },
+                { name: 'userId', label: 'User ID', defaultValue: filters.userId },
+                { name: 'type', label: 'Tipo', defaultValue: filters.type },
+                {
+                  name: 'direction',
+                  label: 'Direcao',
+                  type: 'select',
+                  defaultValue: filters.direction,
+                  options: [
+                    { label: 'Credito', value: 'credit' },
+                    { label: 'Debito', value: 'debit' },
+                  ],
+                },
+                { name: 'dateFrom', label: 'De', type: 'datetime-local', defaultValue: filters.dateFrom },
+                { name: 'dateTo', label: 'Ate', type: 'datetime-local', defaultValue: filters.dateTo },
+                {
+                  name: 'sortOrder',
+                  label: 'Ordem',
+                  type: 'select',
+                  defaultValue: filters.sortOrder ?? 'desc',
+                  options: [
+                    { label: 'Desc', value: 'desc' },
+                    { label: 'Asc', value: 'asc' },
+                  ],
+                },
+                {
+                  name: 'pageSize',
+                  label: 'Pagina',
+                  type: 'select',
+                  defaultValue: filters.pageSize ?? 10,
+                  options: [
+                    { label: '10', value: '10' },
+                    { label: '20', value: '20' },
+                    { label: '50', value: '50' },
+                  ],
+                },
+              ]}
+            />
+          }
         />
 
         <section className="metric-list">
@@ -75,6 +120,9 @@ export async function AdminTransactionsPage({ session }: AdminTransactionsPagePr
               page={transactions.page}
               pageSize={transactions.pageSize}
               totalItems={transactions.totalItems}
+              totalPages={transactions.totalPages}
+              pathname="/admin/transactions"
+              params={{ ...filters, pageSize: filters.pageSize ?? transactions.pageSize }}
               label="transacoes"
             />
           </>

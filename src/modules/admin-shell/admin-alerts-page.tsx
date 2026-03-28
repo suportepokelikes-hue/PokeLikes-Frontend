@@ -10,21 +10,26 @@ import { formatDateTime } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { resolveAlertAction } from '@/modules/admin-shell/actions';
 import {
+  AdminFilterBar,
   AdminSummaryCard,
   JsonPreview,
   PaginationSummary,
+  buildPathWithSearch,
   mapAlertSeverityTone,
   mapAlertStatusTone,
   renderAlertTimeline,
 } from '@/modules/admin-shell/shared';
+import type { AdminAlertsListParams } from '@/modules/admin-shell/query';
 
 type AdminAlertsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  filters: AdminAlertsListParams;
 };
 
-export async function AdminAlertsPage({ session }: AdminAlertsPageProps) {
+export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps) {
   try {
-    const alerts = await listAdminAlerts(session.accessToken);
+    const alerts = await listAdminAlerts(session.accessToken, filters);
+    const returnTo = buildPathWithSearch('/admin/alerts', filters);
     const openCount = alerts.items.filter((alert) => alert.status === 'open').length;
     const criticalCount = alerts.items.filter((alert) => alert.severity === 'critical' && alert.status === 'open').length;
     const resolvedCount = alerts.items.filter((alert) => alert.status === 'resolved').length;
@@ -35,6 +40,57 @@ export async function AdminAlertsPage({ session }: AdminAlertsPageProps) {
           eyebrow="Admin / alertas"
           title="Central de alertas operacionais."
           description="A listagem mostra severidade, recorrencia e contexto retornados pelo backend sem esconder indisponibilidade ou degradacao."
+          actions={
+            <AdminFilterBar
+              pathname="/admin/alerts"
+              fields={[
+                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Titulo ou fingerprint', defaultValue: filters.search },
+                {
+                  name: 'status',
+                  label: 'Status',
+                  type: 'select',
+                  defaultValue: filters.status,
+                  options: [
+                    { label: 'Aberto', value: 'open' },
+                    { label: 'Resolvido', value: 'resolved' },
+                  ],
+                },
+                {
+                  name: 'severity',
+                  label: 'Severidade',
+                  type: 'select',
+                  defaultValue: filters.severity,
+                  options: [
+                    { label: 'Info', value: 'info' },
+                    { label: 'Warning', value: 'warning' },
+                    { label: 'Critical', value: 'critical' },
+                  ],
+                },
+                { name: 'type', label: 'Tipo', defaultValue: filters.type },
+                {
+                  name: 'sortOrder',
+                  label: 'Ordem',
+                  type: 'select',
+                  defaultValue: filters.sortOrder ?? 'desc',
+                  options: [
+                    { label: 'Desc', value: 'desc' },
+                    { label: 'Asc', value: 'asc' },
+                  ],
+                },
+                {
+                  name: 'pageSize',
+                  label: 'Pagina',
+                  type: 'select',
+                  defaultValue: filters.pageSize ?? 10,
+                  options: [
+                    { label: '10', value: '10' },
+                    { label: '20', value: '20' },
+                    { label: '50', value: '50' },
+                  ],
+                },
+              ]}
+            />
+          }
         />
 
         <section className="metric-list">
@@ -80,6 +136,7 @@ export async function AdminAlertsPage({ session }: AdminAlertsPageProps) {
                         submitLabel="Resolver"
                         pendingLabel="Resolvendo..."
                         tone={alert.severity === 'critical' ? 'danger' : 'secondary'}
+                        returnTo={returnTo}
                         hiddenFields={[{ name: 'alertId', value: alert.id }]}
                       />
                     ) : (
@@ -90,7 +147,15 @@ export async function AdminAlertsPage({ session }: AdminAlertsPageProps) {
               ))}
             </DataTable>
 
-            <PaginationSummary page={alerts.page} pageSize={alerts.pageSize} totalItems={alerts.totalItems} label="alertas" />
+            <PaginationSummary
+              page={alerts.page}
+              pageSize={alerts.pageSize}
+              totalItems={alerts.totalItems}
+              totalPages={alerts.totalPages}
+              pathname="/admin/alerts"
+              params={{ ...filters, pageSize: filters.pageSize ?? alerts.pageSize }}
+              label="alertas"
+            />
           </>
         )}
       </main>

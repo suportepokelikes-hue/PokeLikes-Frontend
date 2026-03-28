@@ -1,8 +1,15 @@
 import { requireAdminSession } from '@/lib/auth/guards';
+import { buildAdminPath, parseAdminAuditsParams } from '@/modules/admin-shell/query';
 import { AdminAuditsPage } from '@/modules/admin-shell/admin-audits-page';
 
-export default async function AdminAuditsRoute() {
-  const session = await requireAdminSession();
+type AdminAuditsRouteProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return <AdminAuditsPage session={session} />;
+export default async function AdminAuditsRoute({ searchParams }: AdminAuditsRouteProps) {
+  const resolvedSearchParams = await searchParams;
+  const filters = parseAdminAuditsParams(resolvedSearchParams);
+  const session = await requireAdminSession(buildAdminPath('/admin/audits', filters));
+
+  return <AdminAuditsPage session={session} filters={filters} />;
 }

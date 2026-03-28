@@ -26,6 +26,37 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
           actions={<StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />}
         />
 
+        <section className="customer-hero-grid">
+          <article className="customer-spotlight">
+            <div className="customer-spotlight-head">
+              <span className="eyebrow">Status financeiro</span>
+              <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
+            </div>
+            <h2>{formatMoney(payment.amount)}</h2>
+            <p>Este valor so entra no saldo quando o backend confirmar o pagamento. Criacao do PIX nao significa credito imediato.</p>
+            <div className="customer-highlight-list">
+              <div>
+                <span>Provider</span>
+                <strong>{payment.provider}</strong>
+              </div>
+              <div>
+                <span>Expira em</span>
+                <strong>{formatDateTime(payment.expiresAt)}</strong>
+              </div>
+              <div>
+                <span>Confirmado em</span>
+                <strong>{formatDateTime(payment.confirmedAt)}</strong>
+              </div>
+            </div>
+          </article>
+
+          <article className="customer-note-card">
+            <strong>Leitura operacional</strong>
+            <p>Use este detalhe para acompanhar expiracao, confirmacao ou falha do PIX com os dados oficiais retornados pelo backend.</p>
+            <p>Se o status continuar pendente, o comportamento correto e aguardar nova confirmacao assincrona do provider.</p>
+          </article>
+        </section>
+
         <section className="detail-grid">
           <article className="detail-card">
             <h2>Resumo</h2>
@@ -63,6 +94,10 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
               <div>
                 <dt>BR Code</dt>
                 <dd className="code-block">{payment.brCode || '-'}</dd>
+              </div>
+              <div>
+                <dt>BR Code Base64</dt>
+                <dd className="code-block">{payment.brCodeBase64 || '-'}</dd>
               </div>
             </dl>
           </article>

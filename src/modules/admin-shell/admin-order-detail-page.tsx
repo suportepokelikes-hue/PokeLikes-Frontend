@@ -3,64 +3,55 @@ import { notFound } from 'next/navigation';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { getCustomerOrderDetail } from '@/lib/api/customer';
+import { getAdminOrderDetail } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
+import { syncOrderAction } from '@/modules/admin-shell/actions';
 
-type OrderDetailPageProps = {
+type AdminOrderDetailPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   orderId: string;
 };
 
-export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps) {
+export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetailPageProps) {
   try {
-    const order = await getCustomerOrderDetail({ accessToken: session.accessToken }, orderId);
+    const order = await getAdminOrderDetail(session.accessToken, orderId);
 
     return (
-      <main className="page page-customer">
+      <main className="page page-admin">
         <PageHeader
-          eyebrow="Detalhe do pedido"
+          eyebrow="Admin / pedidos / detalhe"
           title={`Pedido ${order.id}`}
-          description="O detalhe do pedido mostra status, carga financeira e estado tecnico do fornecedor sem mascarar erros."
-          actions={<StatusBadge label={order.status} tone={mapOrderTone(order.status)} />}
-        />
-
-        <section className="customer-hero-grid">
-          <article className="customer-spotlight">
-            <div className="customer-spotlight-head">
-              <span className="eyebrow">Status do pedido</span>
+          description="O detalhe administrativo expande o estado comercial e tecnico do pedido sem esconder carga, remains ou erros do fornecedor."
+          actions={
+            <>
               <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
-            </div>
-            <h2>{order.catalogService?.name || 'Servico nao associado'}</h2>
-            <p>O pedido continua exibindo estado comercial e tecnico ao mesmo tempo, sem esconder remains, fila do fornecedor ou erro operacional.</p>
-            <div className="customer-highlight-list">
-              <div>
-                <span>Quantidade</span>
-                <strong>{order.quantity}</strong>
-              </div>
-              <div>
-                <span>Cobranca</span>
-                <strong>{formatMoney(order.customerCharge)}</strong>
-              </div>
-              <div>
-                <span>Atualizado em</span>
-                <strong>{formatDateTime(order.updatedAt)}</strong>
-              </div>
-            </div>
-          </article>
-
-          <article className="customer-note-card">
-            <strong>Estado tecnico</strong>
-            <p>Se houver `apiOrderId`, remains ou mensagem de erro, eles aparecem aqui como vieram do backend.</p>
-            <p>Eventos vazios nao sao mascarados: quando o backend ainda nao retornar timeline, a tela deixa esse ponto explicito.</p>
-          </article>
-        </section>
+              <AdminActionForm
+                action={syncOrderAction}
+                submitLabel="Sincronizar agora"
+                pendingLabel="Sincronizando..."
+                returnTo={`/admin/orders/${order.id}`}
+                hiddenFields={[{ name: 'orderId', value: order.id }]}
+                tone={['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status) ? 'primary' : 'secondary'}
+              />
+            </>
+          }
+        />
 
         <section className="detail-grid">
           <article className="detail-card">
             <h2>Resumo comercial</h2>
             <dl className="detail-list">
+              <div>
+                <dt>Usuario</dt>
+                <dd>{order.user?.name || 'Usuario nao associado'}</dd>
+              </div>
+              <div>
+                <dt>Email</dt>
+                <dd>{order.user?.email || '-'}</dd>
+              </div>
               <div>
                 <dt>Servico</dt>
                 <dd>{order.catalogService?.name || 'Servico nao associado'}</dd>
@@ -96,6 +87,14 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
                 <dd>{order.supplier.apiOrderId ?? '-'}</dd>
               </div>
               <div>
+                <dt>Estimated charge</dt>
+                <dd>{formatMoney(order.supplier.estimatedCharge)}</dd>
+              </div>
+              <div>
+                <dt>Actual charge</dt>
+                <dd>{formatMoney(order.supplier.actualCharge)}</dd>
+              </div>
+              <div>
                 <dt>Remains</dt>
                 <dd>{order.supplier.remains ?? '-'}</dd>
               </div>
@@ -104,12 +103,12 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
                 <dd>{order.supplier.errorMessage || order.supplier.errorCode || '-'}</dd>
               </div>
               <div>
-                <dt>Estimated charge</dt>
-                <dd>{formatMoney(order.supplier.estimatedCharge)}</dd>
+                <dt>Criado em</dt>
+                <dd>{formatDateTime(order.createdAt)}</dd>
               </div>
               <div>
-                <dt>Actual charge</dt>
-                <dd>{formatMoney(order.supplier.actualCharge)}</dd>
+                <dt>Atualizado em</dt>
+                <dd>{formatDateTime(order.updatedAt)}</dd>
               </div>
             </dl>
           </article>
@@ -143,10 +142,10 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
     }
 
     return (
-      <main className="page page-customer">
+      <main className="page page-admin">
         <ErrorState
-          title="Nao foi possivel carregar o pedido"
-          description="A API nao retornou os dados esperados para este pedido."
+          title="Nao foi possivel carregar o detalhe do pedido"
+          description="A API nao retornou os dados esperados para este pedido administrativo."
         />
       </main>
     );

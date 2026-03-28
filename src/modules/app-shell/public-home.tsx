@@ -48,14 +48,35 @@ export function PublicHome({ session }: PublicHomeProps) {
 
   return (
     <main className="page page-public">
-      <section className="hero">
+      <section className="hero public-hero">
         <div className="hero-copy">
           <p className="eyebrow">Likes Uai Platform</p>
-          <h1>{appName} com foundation real para publico, cliente e admin.</h1>
+          <h1>{appName} para catalogo publico, compra autenticada e operacao administrativa real.</h1>
           <p className="lede">
-            Esta entrega monta a base estrutural do App Router, os shells iniciais de navegacao e o bootstrap
-            de sessao alinhado ao contrato do backend.
+            A area publica ja conversa com a OpenAPI local, mostra servicos reais do catalogo e encaminha o usuario
+            para login, wallet, pagamentos e pedidos sem inventar fluxo fora do backend.
           </p>
+
+          <div className="public-hero-actions">
+            <Link href={primaryHref} className="primary-action">
+              {primaryLabel}
+            </Link>
+            {session.status === 'guest' ? (
+              <Link href="/register" className="secondary-action">
+                Criar conta
+              </Link>
+            ) : (
+              <LogoutButton />
+            )}
+            <Link href="/catalog" className="secondary-action">
+              Ver catalogo
+            </Link>
+          </div>
+
+          <div className="public-note-card">
+            <strong>Entrada recomendada</strong>
+            <p>Comece pelo catalogo para validar availability, preco, limites e o fluxo real de criacao de pedido.</p>
+          </div>
         </div>
 
         <div className="status-panel">
@@ -71,20 +92,22 @@ export function PublicHome({ session }: PublicHomeProps) {
         </div>
       </section>
 
-      <section className="public-actions">
-        <Link href={primaryHref} className="primary-action">
-          {primaryLabel}
-        </Link>
-        {session.status === 'guest' ? (
-          <Link href="/register" className="secondary-action">
-            Criar conta
-          </Link>
-        ) : (
-          <LogoutButton />
-        )}
-        <Link href="/catalog" className="secondary-action">
-          Ver catalogo
-        </Link>
+      <section className="public-bento">
+        <article className="public-bento-card">
+          <span>Catalogo vivo</span>
+          <strong>Servicos, filtros e availability</strong>
+          <p>Explore os itens publicados e veja imediatamente se o servico esta compravel ou degradado.</p>
+        </article>
+        <article className="public-bento-card">
+          <span>Cliente autenticado</span>
+          <strong>Wallet, PIX e pedidos</strong>
+          <p>Depois do login, a jornada continua na area do cliente com estados reais de pagamento e ordem.</p>
+        </article>
+        <article className="public-bento-card">
+          <span>Admin operacional</span>
+          <strong>Conciliacao, sync e auditoria</strong>
+          <p>O shell administrativo ja cobre pagamentos, pedidos, fornecedores, alertas e trilha operacional.</p>
+        </article>
       </section>
 
       <section className="card-grid">

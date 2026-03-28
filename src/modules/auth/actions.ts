@@ -5,12 +5,14 @@ import { redirect } from 'next/navigation';
 import { ApiClientError } from '@/lib/api/http';
 import { login, logout, registerCustomer } from '@/lib/api/auth';
 import { getServerSession } from '@/lib/auth/cookies';
+import { getLoginPath, getPostAuthRedirectPath, normalizeReturnTo } from '@/lib/auth/navigation';
 import { clearServerSessionCookies, writeServerSessionCookies } from '@/lib/auth/server-cookies';
 import type { AuthFormState } from '@/modules/auth/types';
 
 export async function loginAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const email = readRequiredString(formData, 'email');
   const password = readRequiredString(formData, 'password');
+  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
 
   if (!email || !password) {
     return {
@@ -26,10 +28,10 @@ export async function loginAction(_: AuthFormState, formData: FormData): Promise
     await writeServerSessionCookies(session);
     role = session.user.role;
   } catch (error) {
-    return mapAuthError(error, 'Nao foi possivel autenticar com as credenciais informadas.');
+    return mapLoginError(error);
   }
 
-  redirect(role === 'admin' ? '/admin' : '/app');
+  redirect(getPostAuthRedirectPath(role, returnTo));
 }
 
 export async function registerAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -37,6 +39,7 @@ export async function registerAction(_: AuthFormState, formData: FormData): Prom
   const email = readRequiredString(formData, 'email');
   const phone = readRequiredString(formData, 'phone');
   const password = readRequiredString(formData, 'password');
+  const returnTo = normalizeReturnTo(readRequiredString(formData, 'returnTo'));
 
   if (!name || !email || !phone || !password) {
     return {
@@ -52,10 +55,10 @@ export async function registerAction(_: AuthFormState, formData: FormData): Prom
     await writeServerSessionCookies(session);
     role = session.user.role;
   } catch (error) {
-    return mapAuthError(error, 'Nao foi possivel concluir o cadastro agora.');
+    return mapRegisterError(error);
   }
 
-  redirect(role === 'admin' ? '/admin' : '/app');
+  redirect(getPostAuthRedirectPath(role, returnTo));
 }
 
 export async function logoutAction() {
@@ -70,7 +73,7 @@ export async function logoutAction() {
   }
 
   await clearServerSessionCookies();
-  redirect('/');
+  redirect(getLoginPath({ reason: 'logged_out' }));
 }
 
 function readRequiredString(formData: FormData, key: string): string {
@@ -91,4 +94,26 @@ function mapAuthError(error: unknown, fallbackMessage: string): AuthFormState {
     status: 'error',
     message: fallbackMessage,
   };
+}
+
+function mapLoginError(error: unknown): AuthFormState {
+  if (error instanceof ApiClientError && error.status === 401) {
+    return {
+      status: 'error',
+      message: 'Email ou senha invalidos. Revise as credenciais e tente novamente.',
+    };
+  }
+
+  return mapAuthError(error, 'Nao foi possivel autenticar agora. Tente novamente em instantes.');
+}
+
+function mapRegisterError(error: unknown): AuthFormState {
+  if (error instanceof ApiClientError && error.status === 400) {
+    return {
+      status: 'error',
+      message: error.message || 'Revise nome, email, telefone e senha antes de enviar o cadastro.',
+    };
+  }
+
+  return mapAuthError(error, 'Nao foi possivel concluir o cadastro agora. Tente novamente em instantes.');
 }

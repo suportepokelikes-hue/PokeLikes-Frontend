@@ -1,8 +1,16 @@
 import { requireAdminSession } from '@/lib/auth/guards';
+import { buildAdminPath, parseSupplierServicesParams, parseSupplierSyncLogsParams } from '@/modules/admin-shell/query';
 import { AdminSupplierPage } from '@/modules/admin-shell/admin-supplier-page';
 
-export default async function AdminSupplierRoute() {
-  const session = await requireAdminSession();
+type AdminSupplierRouteProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return <AdminSupplierPage session={session} />;
+export default async function AdminSupplierRoute({ searchParams }: AdminSupplierRouteProps) {
+  const resolvedSearchParams = await searchParams;
+  const serviceFilters = parseSupplierServicesParams(resolvedSearchParams);
+  const logFilters = parseSupplierSyncLogsParams(resolvedSearchParams);
+  const session = await requireAdminSession(buildAdminPath('/admin/supplier', { ...serviceFilters, ...logFilters }));
+
+  return <AdminSupplierPage session={session} serviceFilters={serviceFilters} logFilters={logFilters} />;
 }

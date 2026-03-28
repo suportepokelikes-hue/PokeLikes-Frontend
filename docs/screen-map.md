@@ -11,6 +11,7 @@
 ## Customer
 
 - `/app`
+- `/app/profile`
 - `/app/wallet`
 - `/app/payments`
 - `/app/payments/[paymentId]`

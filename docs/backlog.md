@@ -52,8 +52,8 @@ Tasks:
 - [x] registro
 - [x] refresh/session bootstrap
 - [x] guardas de rota
-- [ ] refinar tratamento visual de erro, loading e feedback de auth com o design final
-- [ ] adicionar estados de logout expirado e retorno para rota de origem
+- [x] refinar tratamento visual de erro, loading e feedback de auth para teste manual pela UI
+- [x] adicionar estados de logout expirado e retorno para rota de origem
 
 ## Phase 2: Public Catalog
 
@@ -97,14 +97,43 @@ Tasks:
 - [x] transactions
 - [x] adicionar mutacoes operacionais iniciais no admin para resolve de alertas e refresh/sync de fornecedores
 - [x] expandir mutacoes operacionais reais no admin para conciliacao e sync de pedidos/pagamentos
-- [ ] aprofundar filtros, paginacao navegavel e detalhes drill-down nas listas administrativas
+- [x] abrir drill-down administrativo para detalhe de pagamento e pedido
+- [x] aprofundar filtros e paginacao navegavel nas listas administrativas
+
+## Phase 6: Customer Profile
+
+Tasks:
+
+- [x] criar rota de perfil do cliente consumindo `GET /me`
+- [ ] habilitar edicao de perfil quando o contrato local descrever o payload de `PATCH /me`
+
+## Phase 7: Customer Visual Polish
+
+Tasks:
+
+- [x] refinar dashboard do cliente com hero operacional e atalhos de fluxo
+- [x] refinar carteira, pagamentos, pedidos e perfil com cards de contexto e hierarquia mais forte
+- [x] aprofundar polish dos detalhes de pedido e pagamento do cliente
+
+## Phase 8: Public Visual Polish
+
+Tasks:
+
+- [x] refinar home publica com hero mais forte e cards de jornada
+- [x] refinar catalogo publico com resumo de availability e toolbar expandida
+- [x] refinar detalhe de servico com destaque de preco, disponibilidade e checkout
+
+## Phase 9: Shared State Polish
+
+Tasks:
+
+- [x] refinar componentes compartilhados de empty/error
+- [x] adicionar loading segmentado para a area do cliente
 
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
-- encaixar o design final das telas de auth e shells quando ele estiver pronto
-- expandir detalhes drill-down admin para pagamento e pedido usando os endpoints individuais existentes
-- aprofundar filtros e paginacao navegavel das listas administrativas
 - expandir o cliente para editar perfil e criar fluxos mais completos de order/payment com refinamento visual final
 - refinar visualmente as telas ja conectadas ao backend com os exports finais do Stitch
+- revisar se as telas admin precisam de presets de filtro mais opinionados por modulo

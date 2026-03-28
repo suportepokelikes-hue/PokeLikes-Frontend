@@ -8,20 +8,23 @@ import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
 import {
+  AdminFilterBar,
   AdminSummaryCard,
   PaginationSummary,
   mapCatalogStatusTone,
   mapProviderTone,
   renderCatalogAvailability,
 } from '@/modules/admin-shell/shared';
+import type { AdminCatalogListParams } from '@/modules/admin-shell/query';
 
 type AdminCatalogPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  filters: AdminCatalogListParams;
 };
 
-export async function AdminCatalogPage({ session }: AdminCatalogPageProps) {
+export async function AdminCatalogPage({ session, filters }: AdminCatalogPageProps) {
   try {
-    const catalog = await listAdminCatalogServices(session.accessToken);
+    const catalog = await listAdminCatalogServices(session.accessToken, filters);
     const activeCount = catalog.items.filter((service) => service.status === 'active').length;
     const purchasableCount = catalog.items.filter((service) => service.availability.isPurchasable).length;
     const degradedCount = catalog.items.filter(
@@ -34,6 +37,38 @@ export async function AdminCatalogPage({ session }: AdminCatalogPageProps) {
           eyebrow="Admin / catalogo"
           title="Catalogo operacional do fornecedor."
           description="A tela administrativa do catalogo segue o contrato oficial e prioriza preco publico, disponibilidade real e vinculo com o servico fornecedor."
+          actions={
+            <AdminFilterBar
+              pathname="/admin/catalog"
+              fields={[
+                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Servico ou descricao', defaultValue: filters.search },
+                {
+                  name: 'status',
+                  label: 'Status',
+                  type: 'select',
+                  defaultValue: filters.status,
+                  options: [
+                    { label: 'Ativo', value: 'active' },
+                    { label: 'Inativo', value: 'inactive' },
+                  ],
+                },
+                { name: 'socialNetwork', label: 'Rede', placeholder: 'instagram', defaultValue: filters.socialNetwork },
+                { name: 'category', label: 'Categoria', defaultValue: filters.category },
+                { name: 'type', label: 'Tipo', defaultValue: filters.type },
+                {
+                  name: 'pageSize',
+                  label: 'Pagina',
+                  type: 'select',
+                  defaultValue: filters.pageSize ?? 10,
+                  options: [
+                    { label: '10', value: '10' },
+                    { label: '20', value: '20' },
+                    { label: '50', value: '50' },
+                  ],
+                },
+              ]}
+            />
+          }
         />
 
         <section className="metric-list">
@@ -85,6 +120,9 @@ export async function AdminCatalogPage({ session }: AdminCatalogPageProps) {
               page={catalog.page}
               pageSize={catalog.pageSize}
               totalItems={catalog.totalItems}
+              totalPages={catalog.totalPages}
+              pathname="/admin/catalog"
+              params={{ ...filters, pageSize: filters.pageSize ?? catalog.pageSize }}
               label="servicos"
             />
           </>

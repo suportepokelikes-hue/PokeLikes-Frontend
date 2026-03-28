@@ -11,6 +11,7 @@ type AdminActionFormProps = {
   pendingLabel?: string;
   tone?: 'primary' | 'secondary' | 'danger';
   hiddenFields?: Array<{ name: string; value: string }>;
+  returnTo?: string;
   initialState?: AdminActionState;
 };
 
@@ -24,12 +25,15 @@ export function AdminActionForm({
   pendingLabel = 'Processando...',
   tone = 'secondary',
   hiddenFields = [],
+  returnTo,
   initialState = defaultState,
 }: AdminActionFormProps) {
   const [state, formAction] = useActionState(action, initialState);
 
   return (
     <form action={formAction} className="admin-action-form">
+      {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
+
       {hiddenFields.map((field) => (
         <input key={`${field.name}-${field.value}`} type="hidden" name={field.name} value={field.value} />
       ))}
