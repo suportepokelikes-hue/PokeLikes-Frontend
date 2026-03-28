@@ -31,6 +31,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - auth e admin agora possuem helpers puros extraidos das server actions para sustentar testes de mapeamento de erro e parsing de payload
 - customer transactions agora tambem possuem helpers puros para parsing de PIX/pedido, e `src/lib/api/customer.ts` esta coberto por testes de wiring
 - componentes base de UI (`empty-state`, `error-state`, `status-badge`, `page-header`) agora possuem testes de renderizacao via `react-dom/server`
+- `/login` e `/register` agora compartilham helpers puros de conteudo em `src/modules/auth/page-content.ts`, cobertos por teste para links alternativos e campos esperados
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
@@ -65,7 +66,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - implementar criacao e edicao de servicos em `/admin/catalog`
 - integrar ajuste manual de carteira no admin
 - revisar agora se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
-- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para componentes de tela mais sensiveis
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para formularios client mais sensiveis
 - habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
 - preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
