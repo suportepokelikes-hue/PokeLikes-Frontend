@@ -84,6 +84,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API
 - parte da logica mais sensivel das server actions de auth e admin foi extraida para helpers puros, facilitando cobertura de teste sem acoplamento ao runtime do Next
 - o dominio de transacoes do cliente agora segue a mesma direcao, com helpers puros para parsing de PIX/pedido e cobertura da camada `src/lib/api/customer.ts`
+- o design system base agora tambem possui cobertura de renderizacao server-side para `empty-state`, `error-state`, `status-badge` e `page-header`
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
 
 ## Implemented Structure
@@ -157,7 +158,7 @@ src/
 ## Remaining Direction
 
 - a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
-- a proxima etapa deve expandir a cobertura de testes para fluxos autenticados ponta a ponta e para componentes de UI mais criticos
+- a proxima etapa deve expandir a cobertura de testes para fluxos autenticados ponta a ponta e para componentes de tela mais sensiveis
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados

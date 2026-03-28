@@ -11,6 +11,6 @@
     "incremental": false,
     "plugins": []
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
-  "exclude": ["node_modules", ".next", "src/**/*.tsx"]
+  "include": ["src/**/*.ts", "src/components/ui/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"],
+  "exclude": ["node_modules", ".next"]
 }

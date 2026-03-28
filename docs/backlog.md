@@ -144,6 +144,7 @@ Tasks:
 - [x] cobrir sessao e camada HTTP base da API
 - [x] cobrir helpers extraidos de server actions de auth e admin
 - [x] cobrir camada customer API e helpers das mutacoes PIX/pedido
+- [x] cobrir componentes UI base do design system com renderizacao server-side
 
 ## Next Recommended Step
 
@@ -151,5 +152,5 @@ Na proxima sessao do Codex:
 
 - integrar ajuste manual de carteira via `POST /admin/wallets/{userId}/adjustments`
 - decidir se o ajuste manual de carteira permanece em `transactions` ou sobe para um detalhe dedicado de usuario
-- expandir a cobertura de testes para fluxos autenticados ponta a ponta e componentes de UI mais criticos
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta e componentes de tela mais sensiveis
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
