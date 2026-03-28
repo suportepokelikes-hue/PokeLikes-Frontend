@@ -1,6 +1,6 @@
-# Instabarato Frontend
+# Likes Uai Frontend
 
-Bootstrap inicial do frontend web da plataforma Instabarato.
+Bootstrap inicial do frontend web da plataforma Likes Uai.
 
 ## Estado atual
 

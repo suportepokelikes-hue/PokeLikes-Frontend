@@ -1,10 +1,10 @@
 openapi: 3.1.0
 info:
-  title: Instabarato Platform Backend API
+  title: Likes Uai Platform Backend API
   version: 1.0.0-draft
-  summary: Draft contract for Instabarato Platform Backend V1
+  summary: Draft contract for Likes Uai Platform Backend V1
   description: |
-    Draft OpenAPI contract for the public and admin APIs of Instabarato Platform Backend V1.
+    Draft OpenAPI contract for the public and admin APIs of Likes Uai Platform Backend V1.
     This file is intentionally incomplete and must evolve with implementation.
 servers:
   - url: http://localhost:3001/v1

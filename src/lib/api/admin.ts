@@ -1,4 +1,5 @@
 import type {
+  AdminPaymentsSummaryResponse,
   AdminWalletTransactionResource,
   AlertResource,
   AuditResource,
@@ -7,9 +8,13 @@ import type {
   CatalogServiceResource,
   DashboardSummaryResponse,
   PaginatedResponse,
+  PaymentReconciliationResponse,
+  SinglePaymentReconciliationResponse,
   SupplierProviderStatusesResponse,
   SupplierServiceResource,
   SupplierSyncLogResource,
+  SyncOrdersRequest,
+  SyncOrdersResponse,
   UserSummary,
 } from '@/lib/api/contracts';
 import { apiRequest } from '@/lib/api/http';
@@ -35,9 +40,50 @@ export function listAdminPayments(accessToken: string) {
   });
 }
 
+export function getAdminPaymentsSummary(accessToken: string) {
+  return apiRequest<AdminPaymentsSummaryResponse>({
+    path: '/admin/payments/summary',
+    accessToken,
+  });
+}
+
 export function listAdminOrders(accessToken: string) {
   return apiRequest<PaginatedResponse<AdminOrderResource>>({
     path: '/admin/orders?page=1&pageSize=10&sortOrder=desc',
+    accessToken,
+  });
+}
+
+export function reconcileAdminPayments(accessToken: string, body?: { limit?: number; provider?: string }) {
+  return apiRequest<PaymentReconciliationResponse>({
+    path: '/admin/payments/reconcile',
+    method: 'POST',
+    accessToken,
+    ...(body ? { body } : {}),
+  });
+}
+
+export function reconcileAdminPayment(accessToken: string, paymentId: string) {
+  return apiRequest<SinglePaymentReconciliationResponse>({
+    path: `/admin/payments/${paymentId}/reconcile`,
+    method: 'POST',
+    accessToken,
+  });
+}
+
+export function syncAdminOrders(accessToken: string, body?: SyncOrdersRequest) {
+  return apiRequest<SyncOrdersResponse>({
+    path: '/admin/orders/sync',
+    method: 'POST',
+    accessToken,
+    ...(body ? { body } : {}),
+  });
+}
+
+export function syncAdminOrder(accessToken: string, orderId: string) {
+  return apiRequest<SyncOrdersResponse>({
+    path: `/admin/orders/${orderId}/sync`,
+    method: 'POST',
     accessToken,
   });
 }
@@ -88,5 +134,30 @@ export function listAdminAudits(accessToken: string) {
   return apiRequest<PaginatedResponse<AuditResource>>({
     path: '/admin/audits?page=1&pageSize=10&sortOrder=desc',
     accessToken,
+  });
+}
+
+export function resolveAdminAlert(accessToken: string, alertId: string) {
+  return apiRequest<AlertResource>({
+    path: `/admin/alerts/${alertId}/resolve`,
+    method: 'PATCH',
+    accessToken,
+  });
+}
+
+export function refreshSupplierProviders(accessToken: string) {
+  return apiRequest<SupplierProviderStatusesResponse>({
+    path: '/admin/supplier/providers/refresh',
+    method: 'POST',
+    accessToken,
+  });
+}
+
+export function syncSupplierServices(accessToken: string, supplierName?: string) {
+  return apiRequest({
+    path: '/admin/supplier/services/sync',
+    method: 'POST',
+    accessToken,
+    ...(supplierName ? { body: { supplierName } } : {}),
   });
 }

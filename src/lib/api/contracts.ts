@@ -311,6 +311,38 @@ export type AuditResource = {
   admin: UserReference;
 };
 
+export type SyncOrdersRequest = {
+  limit?: number;
+};
+
+export type SyncOrdersResponse = {
+  found: number;
+  synced: number;
+  skipped: number;
+};
+
+export type AdminPaymentsSummaryResponse = {
+  counts: Record<'pending' | 'confirmed' | 'expired' | 'failed' | 'cancelled', number>;
+  confirmedVolume: Money;
+};
+
+export type PaymentReconciliationResponse = {
+  found: number;
+  reconciled: number;
+  unchanged: number;
+  errors: number;
+  statusCounts: Record<'pending' | 'confirmed' | 'expired' | 'failed' | 'cancelled', number>;
+};
+
+export type SinglePaymentReconciliationResponse = {
+  paymentId: string;
+  provider: string;
+  providerPaymentId: string;
+  status: 'pending' | 'confirmed' | 'expired' | 'failed' | 'cancelled';
+  reconciled: boolean;
+  unchanged: boolean;
+};
+
 export type DashboardSummaryResponse = {
   generatedAt: string;
   users: {

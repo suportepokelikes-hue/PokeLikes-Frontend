@@ -1,8 +1,8 @@
 {
-  "name": "instabarato-front",
+  "name": "likes-uai-front",
   "version": "0.1.0",
   "private": true,
-  "description": "Frontend web da plataforma Instabarato",
+  "description": "Frontend web da plataforma Likes Uai",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -7,6 +7,8 @@ import { listSupplierProviders, listSupplierServices, listSupplierSyncLogs } fro
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime } from '@/lib/format';
+import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
+import { refreshSupplierProvidersAction, syncSupplierServicesAction } from '@/modules/admin-shell/actions';
 import {
   AdminSummaryCard,
   PaginationSummary,
@@ -40,6 +42,22 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
           eyebrow="Admin / fornecedores"
           title="Fornecedores, servicos sincronizados e trilha tecnica."
           description="A area unifica status dos providers, catalogo espelhado do fornecedor e os logs mais recentes de sincronizacao."
+          actions={
+            <>
+              <AdminActionForm
+                action={refreshSupplierProvidersAction}
+                submitLabel="Atualizar providers"
+                pendingLabel="Atualizando..."
+                tone="secondary"
+              />
+              <AdminActionForm
+                action={syncSupplierServicesAction}
+                submitLabel="Sincronizar catalogo"
+                pendingLabel="Sincronizando..."
+                tone="primary"
+              />
+            </>
+          }
         />
 
         <section className="metric-list">
@@ -143,7 +161,17 @@ export async function AdminSupplierPage({ session }: AdminSupplierPageProps) {
                       {service.min} - {service.max}
                     </td>
                     <td>{renderSupplierFlags(service)}</td>
-                    <td>{formatDateTime(service.syncedAt)}</td>
+                    <td>
+                      <div className="stack-list">
+                        <span className="panel-meta">{formatDateTime(service.syncedAt)}</span>
+                        <AdminActionForm
+                          action={syncSupplierServicesAction}
+                          submitLabel="Sync fornecedor"
+                          pendingLabel="Sincronizando..."
+                          hiddenFields={[{ name: 'supplierName', value: service.supplierName }]}
+                        />
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </DataTable>

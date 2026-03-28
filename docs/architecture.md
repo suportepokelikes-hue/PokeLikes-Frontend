@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Consolidar a arquitetura inicial do frontend da plataforma Instabarato.
+Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 
 ## Stack Direction
 
@@ -67,6 +67,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Instabarato.
 - `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits` e `/admin/transactions` agora tambem consomem endpoints reais do admin
 - a navegacao da area admin passou a expor os modulos operacionais completos no shell compartilhado
 - as novas telas admin adotam o padrao dominante do Stitch ja convertido no design system interno: page header editorial, cards de resumo, tabelas densas e estados explicitados de loading, empty e server error
+- o admin agora possui mutacoes reais via server actions para resolver alertas, disparar refresh/sync de fornecedores, reconciliar pagamentos e sincronizar pedidos com revalidacao de rota e feedback inline
 
 ## Implemented Structure
 
@@ -130,5 +131,5 @@ src/
 
 - a proxima etapa deve refinar UX de auth com o design final e cobrir estados operacionais do backend
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
-- o proximo refinamento recomendado no admin e adicionar mutacoes operacionais reais nos endpoints ja disponiveis, como resolver alerta, refresh de providers e sync de servicos/pedidos
+- o proximo refinamento recomendado no admin e abrir drill-down de detalhe para pagamentos e pedidos e aprofundar filtros/paginacao navegavel nas listas administrativas
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend

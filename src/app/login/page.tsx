@@ -16,7 +16,7 @@ export default async function LoginPage() {
           name: 'email',
           label: 'Email',
           type: 'email',
-          placeholder: 'voce@instabarato.com',
+          placeholder: 'voce@likesuai.com',
           autoComplete: 'email',
         },
         {

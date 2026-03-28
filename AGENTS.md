@@ -2,7 +2,7 @@
 
 ## Objective
 
-Frontend web da plataforma Instabarato, consumindo a API backend V1 já existente.
+Frontend web da plataforma Likes Uai, consumindo a API backend V1 já existente.
 
 Este repositório deve construir:
 

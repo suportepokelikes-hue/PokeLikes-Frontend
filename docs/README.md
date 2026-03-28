@@ -1,6 +1,6 @@
-# Instabarato Frontend
+# Likes Uai Frontend
 
-Frontend web da plataforma Instabarato.
+Frontend web da plataforma Likes Uai.
 
 Este repositório existe para entregar a experiência do:
 

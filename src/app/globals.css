@@ -557,6 +557,60 @@ a {
   font-size: 0.88rem;
 }
 
+.admin-action-form {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.65rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-action-button:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.admin-action-button-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: white;
+}
+
+.admin-action-button-secondary {
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--ink);
+  border: 1px solid rgba(195, 198, 215, 0.28);
+}
+
+.admin-action-button-danger {
+  background: rgba(255, 218, 214, 0.92);
+  color: var(--danger);
+}
+
+.admin-action-message {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.admin-action-success {
+  color: var(--success);
+}
+
+.admin-action-error {
+  color: var(--danger);
+}
+
 .panel-link {
   color: var(--accent);
   font-weight: 700;

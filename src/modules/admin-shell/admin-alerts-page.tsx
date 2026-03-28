@@ -7,6 +7,8 @@ import { listAdminAlerts } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime } from '@/lib/format';
+import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
+import { resolveAlertAction } from '@/modules/admin-shell/actions';
 import {
   AdminSummaryCard,
   JsonPreview,
@@ -45,7 +47,7 @@ export async function AdminAlertsPage({ session }: AdminAlertsPageProps) {
           <EmptyState title="Nenhum alerta encontrado" description="A API nao retornou alertas para os filtros administrativos atuais." />
         ) : (
           <>
-            <DataTable columns={['Severidade', 'Status', 'Detalhe', 'Ocorrencias', 'Timeline', 'Contexto']}>
+            <DataTable columns={['Severidade', 'Status', 'Detalhe', 'Ocorrencias', 'Timeline', 'Contexto', 'Acao']}>
               {alerts.items.map((alert) => (
                 <tr key={alert.id}>
                   <td>
@@ -70,6 +72,19 @@ export async function AdminAlertsPage({ session }: AdminAlertsPageProps) {
                   </td>
                   <td>
                     <JsonPreview value={alert.context} fallback="Sem contexto adicional" />
+                  </td>
+                  <td>
+                    {alert.status === 'open' ? (
+                      <AdminActionForm
+                        action={resolveAlertAction}
+                        submitLabel="Resolver"
+                        pendingLabel="Resolvendo..."
+                        tone={alert.severity === 'critical' ? 'danger' : 'secondary'}
+                        hiddenFields={[{ name: 'alertId', value: alert.id }]}
+                      />
+                    ) : (
+                      <span className="panel-meta">Ja resolvido</span>
+                    )}
                   </td>
                 </tr>
               ))}

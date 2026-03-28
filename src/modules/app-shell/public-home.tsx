@@ -50,7 +50,7 @@ export function PublicHome({ session }: PublicHomeProps) {
     <main className="page page-public">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Instabarato Platform</p>
+          <p className="eyebrow">Likes Uai Platform</p>
           <h1>{appName} com foundation real para publico, cliente e admin.</h1>
           <p className="lede">
             Esta entrega monta a base estrutural do App Router, os shells iniciais de navegacao e o bootstrap

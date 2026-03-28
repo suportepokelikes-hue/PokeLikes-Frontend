@@ -30,12 +30,14 @@ Toda nova sessao do Codex neste repositorio deve:
 - `src/components/ui` concentra o design system interno derivado do Stitch
 - o shell admin agora contem navegacao por modulo para dashboard, usuarios, catalogo, pagamentos, pedidos, fornecedores, alertas, auditoria e transacoes
 - `src/app/admin/loading.tsx` cobre o loading visual do segmento admin
+- `src/modules/admin-shell/actions.ts` centraliza mutacoes server-side do admin: resolve de alertas, refresh/sync de fornecedores, conciliacao de pagamentos e sync de pedidos
+- `src/modules/admin-shell/admin-action-form.tsx` expoe feedback inline de sucesso e erro para as acoes operacionais do admin
 
 ## Expected First Implementation Step
 
 - encaixar o design final das telas de auth e shells quando ele estiver disponivel
 - expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
-- implementar mutacoes administrativas reais com feedback server-side, priorizando resolve de alertas e refresh/sync de fornecedores
+- expandir detalhes admin para pagamentos e pedidos com os endpoints individuais ja existentes
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
 - adicionar estados mais ricos de erro e retorno para auth/logout quando os designs finais chegarem
 

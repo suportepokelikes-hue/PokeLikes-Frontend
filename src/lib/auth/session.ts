@@ -1,8 +1,8 @@
 import type { AuthSessionResponse, UserRole, UserSummary } from '@/lib/api/contracts';
 
-const ACCESS_TOKEN_COOKIE = 'instabarato_access_token';
-const REFRESH_TOKEN_COOKIE = 'instabarato_refresh_token';
-const USER_COOKIE = 'instabarato_user';
+const ACCESS_TOKEN_COOKIE = 'likes_uai_access_token';
+const REFRESH_TOKEN_COOKIE = 'likes_uai_refresh_token';
+const USER_COOKIE = 'likes_uai_user';
 
 type CookieReader = {
   get(name: string): { value: string } | undefined;
