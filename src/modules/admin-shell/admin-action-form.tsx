@@ -10,6 +10,7 @@ type AdminActionFormProps = {
   submitLabel: string;
   pendingLabel?: string;
   tone?: 'primary' | 'secondary' | 'danger';
+  children?: React.ReactNode;
   hiddenFields?: Array<{ name: string; value: string }>;
   returnTo?: string;
   initialState?: AdminActionState;
@@ -24,6 +25,7 @@ export function AdminActionForm({
   submitLabel,
   pendingLabel = 'Processando...',
   tone = 'secondary',
+  children,
   hiddenFields = [],
   returnTo,
   initialState = defaultState,
@@ -37,6 +39,8 @@ export function AdminActionForm({
       {hiddenFields.map((field) => (
         <input key={`${field.name}-${field.value}`} type="hidden" name={field.name} value={field.value} />
       ))}
+
+      {children}
 
       <SubmitButton submitLabel={submitLabel} pendingLabel={pendingLabel} tone={tone} />
 

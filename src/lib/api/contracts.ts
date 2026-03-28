@@ -9,6 +9,25 @@ export type UserSummary = {
   status: string;
 };
 
+export type UserStatus = 'active' | 'disabled';
+
+export type AdminCreateUserRequest = {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  role?: UserRole;
+  status?: UserStatus;
+};
+
+export type AdminUpdateUserRequest = {
+  name?: string;
+  password?: string;
+  phone?: string | null;
+  role?: UserRole;
+  status?: UserStatus;
+};
+
 export type UserReference = {
   id: string;
   name: string;
@@ -45,6 +64,18 @@ export type Money = {
 export type WalletSummary = {
   id: string;
   availableBalance: Money;
+};
+
+export type AdminWalletAdjustmentRequest = {
+  amount: string;
+  direction: 'credit' | 'debit';
+  type?: 'wallet_adjustment_admin' | 'wallet_reversal_admin';
+  reason?: string;
+};
+
+export type AdminWalletAdjustmentResponse = {
+  wallet: WalletSummary;
+  transaction: WalletTransactionResource;
 };
 
 export type WalletTransactionResource = {
@@ -102,6 +133,40 @@ export type CatalogServiceResource = {
   availability: CatalogAvailabilityResource;
   metadata: unknown;
   supplierService: CatalogSupplierServiceReference;
+};
+
+export type CatalogServiceStatus = 'active' | 'inactive';
+
+export type AdminCatalogServiceUpsertRequest = {
+  name: string;
+  description?: string | null;
+  publicPrice: string;
+  status?: CatalogServiceStatus;
+  sortOrder?: number;
+  socialNetwork: string;
+  category: string;
+  type: string;
+  minQuantity: number;
+  maxQuantity: number;
+  supplierName?: string;
+  supplierServiceId: number;
+  metadata?: unknown;
+};
+
+export type AdminCatalogServiceUpdateRequest = {
+  name?: string;
+  description?: string | null;
+  publicPrice?: string;
+  status?: CatalogServiceStatus;
+  sortOrder?: number;
+  socialNetwork?: string;
+  category?: string;
+  type?: string;
+  minQuantity?: number;
+  maxQuantity?: number;
+  supplierName?: string;
+  supplierServiceId?: number;
+  metadata?: unknown;
 };
 
 export type CatalogServiceReference = {

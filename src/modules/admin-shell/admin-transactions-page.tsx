@@ -6,8 +6,10 @@ import { listAdminTransactions } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { createWalletAdjustmentAction } from '@/modules/admin-shell/actions';
+import { AdminWalletAdjustmentForm } from '@/modules/admin-shell/admin-wallet-adjustment-form';
 import type { AdminTransactionsListParams } from '@/modules/admin-shell/query';
-import { AdminFilterBar, AdminSummaryCard, PaginationSummary, renderTransactionDirection } from '@/modules/admin-shell/shared';
+import { AdminFilterBar, AdminSummaryCard, PaginationSummary, buildPathWithSearch, renderTransactionDirection } from '@/modules/admin-shell/shared';
 
 type AdminTransactionsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -17,6 +19,11 @@ type AdminTransactionsPageProps = {
 export async function AdminTransactionsPage({ session, filters }: AdminTransactionsPageProps) {
   try {
     const transactions = await listAdminTransactions(session.accessToken, filters);
+    const returnTo = buildPathWithSearch('/admin/transactions', {
+      ...filters,
+      page: filters.page ?? transactions.page,
+      pageSize: filters.pageSize ?? transactions.pageSize,
+    });
     const credits = transactions.items.filter((item) => item.direction === 'credit').length;
     const debits = transactions.items.filter((item) => item.direction === 'debit').length;
     const latestTransaction = transactions.items[0]?.createdAt ?? null;
@@ -76,6 +83,20 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
           <AdminSummaryCard label="Transacoes na pagina" value={String(transactions.items.length)} meta={`${transactions.totalItems} transacoes no total`} />
           <AdminSummaryCard label="Creditos" value={String(credits)} meta={`${debits} debitos na mesma pagina`} tone="accent" />
           <AdminSummaryCard label="Ultimo movimento" value={latestTransaction ? formatDateTime(latestTransaction) : '-'} meta="Ordenacao descendente por criacao" />
+        </section>
+
+        <section className="feedback-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">Operacao manual</p>
+              <h2>Ajustar carteira do usuario</h2>
+            </div>
+            <span className="panel-meta">POST /admin/wallets/{'{userId}'}/adjustments</span>
+          </div>
+          <p>
+            O ajuste manual aceita apenas `userId`, `amount`, `direction`, `type` e `reason`. Use credito para lancamento administrativo e debito para reversao controlada.
+          </p>
+          <AdminWalletAdjustmentForm action={createWalletAdjustmentAction} returnTo={returnTo} defaultUserId={filters.userId} />
         </section>
 
         {transactions.items.length === 0 ? (

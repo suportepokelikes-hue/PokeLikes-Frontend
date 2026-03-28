@@ -1,10 +1,16 @@
 import type {
   AdminAlertsListParams,
   AdminAuditsListParams,
+  AdminCatalogServiceUpdateRequest,
+  AdminCatalogServiceUpsertRequest,
+  AdminCreateUserRequest,
+  AdminWalletAdjustmentRequest,
+  AdminWalletAdjustmentResponse,
   AdminCatalogListParams,
   AdminOrdersListParams,
   AdminPaymentsListParams,
   AdminTransactionsListParams,
+  AdminUpdateUserRequest,
   AdminUsersListParams,
   AdminPaymentDetailResource,
   AdminPaymentsSummaryResponse,
@@ -40,6 +46,31 @@ export function listAdminUsers(accessToken: string, params: AdminUsersListParams
   return apiRequest<PaginatedResponse<UserSummary>>({
     path: buildAdminPath('/admin/users', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
+  });
+}
+
+export function createAdminUser(accessToken: string, body: AdminCreateUserRequest) {
+  return apiRequest<UserSummary>({
+    path: '/admin/users',
+    method: 'POST',
+    accessToken,
+    body,
+  });
+}
+
+export function getAdminUserDetail(accessToken: string, userId: string) {
+  return apiRequest<UserSummary>({
+    path: `/admin/users/${userId}`,
+    accessToken,
+  });
+}
+
+export function updateAdminUser(accessToken: string, userId: string, body: AdminUpdateUserRequest) {
+  return apiRequest<UserSummary>({
+    path: `/admin/users/${userId}`,
+    method: 'PATCH',
+    accessToken,
+    body,
   });
 }
 
@@ -119,10 +150,37 @@ export function listAdminCatalogServices(accessToken: string, params: AdminCatal
   });
 }
 
+export function createAdminCatalogService(accessToken: string, body: AdminCatalogServiceUpsertRequest) {
+  return apiRequest<CatalogServiceResource>({
+    path: '/admin/catalog/services',
+    method: 'POST',
+    accessToken,
+    body,
+  });
+}
+
+export function updateAdminCatalogService(accessToken: string, serviceId: string, body: AdminCatalogServiceUpdateRequest) {
+  return apiRequest<CatalogServiceResource>({
+    path: `/admin/catalog/services/${serviceId}`,
+    method: 'PATCH',
+    accessToken,
+    body,
+  });
+}
+
 export function listAdminTransactions(accessToken: string, params: AdminTransactionsListParams = {}) {
   return apiRequest<PaginatedResponse<AdminWalletTransactionResource>>({
     path: buildAdminPath('/admin/transactions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
+  });
+}
+
+export function createAdminWalletAdjustment(accessToken: string, userId: string, body: AdminWalletAdjustmentRequest) {
+  return apiRequest<AdminWalletAdjustmentResponse>({
+    path: `/admin/wallets/${userId}/adjustments`,
+    method: 'POST',
+    accessToken,
+    body,
   });
 }
 

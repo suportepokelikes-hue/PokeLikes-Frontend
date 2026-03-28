@@ -22,9 +22,13 @@
 
 - `/admin`
 - `/admin/users`
+- `/admin/users/[userId]`
 - `/admin/catalog`
+- `/admin/catalog/[serviceId]`
 - `/admin/payments`
+- `/admin/payments/[paymentId]`
 - `/admin/orders`
+- `/admin/orders/[orderId]`
 - `/admin/supplier`
 - `/admin/alerts`
 - `/admin/audits`

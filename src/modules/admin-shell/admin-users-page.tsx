@@ -1,3 +1,7 @@
+import { Fragment } from 'react';
+
+import Link from 'next/link';
+
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -6,8 +10,10 @@ import { DataTable } from '@/components/ui/table';
 import { listAdminUsers } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
+import { createUserAction } from '@/modules/admin-shell/actions';
+import { AdminUserMutationForm } from '@/modules/admin-shell/admin-user-mutation-form';
 import type { AdminUsersListParams } from '@/modules/admin-shell/query';
-import { AdminFilterBar, PaginationSummary } from '@/modules/admin-shell/shared';
+import { AdminFilterBar, PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
 
 type AdminUsersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -17,6 +23,11 @@ type AdminUsersPageProps = {
 export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) {
   try {
     const users = await listAdminUsers(session.accessToken, filters);
+    const returnTo = buildPathWithSearch('/admin/users', {
+      ...filters,
+      page: filters.page ?? users.page,
+      pageSize: filters.pageSize ?? users.pageSize,
+    });
 
     return (
       <main className="page page-admin">
@@ -72,22 +83,49 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
           }
         />
 
+        <section className="feedback-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">Provisionamento</p>
+              <h2>Criar usuario operacional</h2>
+            </div>
+            <span className="panel-meta">POST /admin/users</span>
+          </div>
+          <p>
+            A criacao respeita apenas os campos aceitos pelo backend: nome, email, senha, telefone, papel e status
+            inicial.
+          </p>
+          <AdminUserMutationForm mode="create" action={createUserAction} returnTo={returnTo} />
+        </section>
+
         {users.items.length === 0 ? (
           <EmptyState title="Nenhum usuario encontrado" description="O backend nao retornou usuarios para a listagem atual." />
         ) : (
           <>
-            <DataTable columns={['Nome', 'Email', 'Papel', 'Status']}>
+            <DataTable columns={['Nome', 'Email', 'Papel', 'Status', 'Acoes']}>
               {users.items.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <StatusBadge label={user.role} tone={user.role === 'admin' ? 'info' : 'neutral'} />
-                  </td>
-                  <td>
-                    <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'danger'} />
-                  </td>
-                </tr>
+                <Fragment key={user.id}>
+                  <tr>
+                    <td>
+                      <div className="stack-list">
+                        <strong>{user.name}</strong>
+                        <span className="panel-meta">ID {user.id}</span>
+                      </div>
+                    </td>
+                    <td>{user.email}</td>
+                    <td>
+                      <StatusBadge label={user.role} tone={user.role === 'admin' ? 'info' : 'neutral'} />
+                    </td>
+                    <td>
+                      <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'danger'} />
+                    </td>
+                    <td>
+                      <Link href={`/admin/users/${user.id}`} className="table-link">
+                        Abrir detalhe
+                      </Link>
+                    </td>
+                  </tr>
+                </Fragment>
               ))}
             </DataTable>
             <PaginationSummary

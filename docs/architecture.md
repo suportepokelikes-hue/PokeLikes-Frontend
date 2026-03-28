@@ -77,6 +77,11 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - as novas telas admin adotam o padrao dominante do Stitch ja convertido no design system interno: page header editorial, cards de resumo, tabelas densas e estados explicitados de loading, empty e server error
 - o admin agora possui mutacoes reais via server actions para resolver alertas, disparar refresh/sync de fornecedores, reconciliar pagamentos e sincronizar pedidos com revalidacao de rota e feedback inline
 - as listas administrativas agora aceitam filtros e paginacao navegavel alinhados aos query params reais da OpenAPI, com serializacao centralizada para URL, camada API e `returnTo`
+- `/admin/users` agora tambem executa `POST /admin/users` e `PATCH /admin/users/{userId}` com formularios operacionais embutidos na propria listagem, sem sair do shell administrativo
+- `/admin/catalog` agora tambem executa `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}` com formularios operacionais embutidos na propria listagem, incluindo suporte a `metadata` JSON e limpeza explicita de campos anulaveis
+- `/admin/transactions` agora tambem executa `POST /admin/wallets/{userId}/adjustments`, permitindo credito e debito administrativos no mesmo contexto do ledger financeiro
+- `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora concentram as edicoes mais densas do admin em paginas dedicadas, deixando as listas primarias focadas em leitura e navegacao
+- o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth e parsing administrativo
 
 ## Implemented Structure
 
@@ -122,13 +127,20 @@ src/
 - `/app/orders/[orderId]` -> `GET /me/orders/{orderId}`
 - `/admin` -> `GET /admin/dashboard/summary`
 - `/admin/users` -> `GET /admin/users`
+- `/admin/users` -> `POST /admin/users`
+- `/admin/users` -> `PATCH /admin/users/{userId}`
+- `/admin/users/[userId]` -> `GET /admin/users/{userId}`, `PATCH /admin/users/{userId}`, `POST /admin/wallets/{userId}/adjustments`
 - `/admin/payments` -> `GET /admin/payments`
 - `/admin/orders` -> `GET /admin/orders`
 - `/admin/catalog` -> `GET /admin/catalog/services`
+- `/admin/catalog` -> `POST /admin/catalog/services`
+- `/admin/catalog` -> `PATCH /admin/catalog/services/{serviceId}`
+- `/admin/catalog/[serviceId]` -> `GET /catalog/services/{serviceId}`, `PATCH /admin/catalog/services/{serviceId}`
 - `/admin/supplier` -> `GET /admin/supplier/providers`, `GET /admin/supplier/services`, `GET /admin/supplier/sync-logs`
 - `/admin/alerts` -> `GET /admin/alerts`
 - `/admin/audits` -> `GET /admin/audits`
 - `/admin/transactions` -> `GET /admin/transactions`
+- `/admin/transactions` -> `POST /admin/wallets/{userId}/adjustments`
 - `/admin/payments/[paymentId]` -> `GET /admin/payments/{paymentId}`
 - `/admin/orders/[orderId]` -> `GET /admin/orders/{orderId}`
 
@@ -141,10 +153,11 @@ src/
 
 ## Remaining Direction
 
-- a proxima etapa deve consolidar polimento visual e estados refinados nas listas administrativas ja filtraveis
+- a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
+- a proxima etapa deve expandir a cobertura de testes para utilitarios de API e fluxos server-side com maior risco operacional
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
-- o proximo refinamento recomendado apos filtros/paginacao no admin e voltar para polimento visual das areas publica e cliente e fluxos de perfil
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`
-- o proximo passo recomendado no cliente e preparar a edicao de perfil assim que `PATCH /me` receber schema formal e depois revisar refinamentos finais das jornadas transacionais
-- o proximo passo recomendado depois do polimento publico e fechar a entrada de edicao de perfil via contrato novo, ou avancar para mutacoes reais adicionais onde a OpenAPI ja suportar
+- o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
+- o proximo passo recomendado em qualidade e aumentar a cobertura de testes em torno de auth, query params e camada de API
+- o proximo passo recomendado no cliente continua sendo preparar a edicao de perfil assim que `PATCH /me` receber schema formal
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend

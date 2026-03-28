@@ -99,6 +99,10 @@ Tasks:
 - [x] expandir mutacoes operacionais reais no admin para conciliacao e sync de pedidos/pagamentos
 - [x] abrir drill-down administrativo para detalhe de pagamento e pedido
 - [x] aprofundar filtros e paginacao navegavel nas listas administrativas
+- [x] habilitar criacao e edicao operacional de usuarios em `/admin/users`
+- [x] habilitar criacao e edicao operacional de servicos em `/admin/catalog`
+- [x] integrar ajuste manual de carteira em `/admin/transactions`
+- [x] abrir detalhes dedicados para usuarios e catalogo no admin para reduzir densidade das listas
 
 ## Phase 6: Customer Profile
 
@@ -130,10 +134,19 @@ Tasks:
 - [x] refinar componentes compartilhados de empty/error
 - [x] adicionar loading segmentado para a area do cliente
 
+## Phase 10: Frontend Test Baseline
+
+Tasks:
+
+- [x] adicionar script `npm run test` sem dependencia extra
+- [x] cobrir utilitarios criticos de auth/navigation
+- [x] cobrir parsing de filtros e serializacao admin
+
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
-- expandir o cliente para editar perfil e criar fluxos mais completos de order/payment com refinamento visual final
-- refinar visualmente as telas ja conectadas ao backend com os exports finais do Stitch
-- revisar se as telas admin precisam de presets de filtro mais opinionados por modulo
+- integrar ajuste manual de carteira via `POST /admin/wallets/{userId}/adjustments`
+- decidir se o ajuste manual de carteira permanece em `transactions` ou sobe para um detalhe dedicado de usuario
+- expandir a cobertura de testes para a camada de API e flows server-side mais criticos
+- habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`

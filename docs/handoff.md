@@ -22,6 +22,11 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/login` e `/register` agora usam um formulario compartilhado mais rico, com contexto operacional, feedback inline mais claro e copy ajustada para teste manual real da autenticacao
 - middleware, guards e server actions agora carregam `reason` e `returnTo` para devolver o usuario a rota de origem apos login e para mostrar feedback de sessao expirada ou logout concluido
 - as listas admin agora leem filtros de `searchParams`, repassam os query params reais para `src/lib/api/admin.ts` e renderizam toolbar + navegacao de pagina coerentes com a OpenAPI
+- `/admin/users` agora tambem permite criar e atualizar usuarios com base em `POST /admin/users` e `PATCH /admin/users/{userId}`, usando feedback inline por server action
+- `/admin/catalog` agora tambem permite criar e atualizar servicos com base em `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}`, incluindo `metadata` JSON e limpeza explicita de descricao/metadata
+- `/admin/transactions` agora permite ajuste manual de carteira com base em `POST /admin/wallets/{userId}/adjustments`, com feedback inline e reaproveitando o filtro `userId` como contexto inicial
+- `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora existem para concentrar edicao em paginas dedicadas e reduzir a densidade operacional das listas
+- existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
@@ -30,6 +35,11 @@ Toda nova sessao do Codex neste repositorio deve:
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
 - ja existem `/app/wallet`, `/app/payments`, `/app/orders`, `/admin/users`, `/admin/payments` e `/admin/orders`
 - ja existem `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits` e `/admin/transactions` conectados ao backend real
+- `/admin/users` nao e mais somente leitura; a propria lista contem formularios de criacao e atualizacao operacional
+- `/admin/catalog` nao e mais somente leitura; a propria lista contem formularios de criacao e atualizacao operacional
+- `/admin/catalog` e `/admin/users` agora usam a lista para leitura + criacao, e reservam a edicao para paginas dedicadas
+- `/admin/transactions` agora mistura leitura do ledger com lancamento manual de ajuste de carteira
+- `normalizeReturnTo` passou a bloquear tambem `/login?...` e `/register?...`, corrigindo um risco de loop de auth detectado pelos testes
 - `/app/payments` cria PIX real e `/app/payments/[paymentId]` mostra o detalhe do pagamento
 - `/catalog/[serviceId]` cria pedido real para cliente autenticado e `/app/orders/[orderId]` mostra o detalhe do pedido
 - `src/lib/api` centraliza o client HTTP e os endpoints iniciais de auth
@@ -47,10 +57,13 @@ Toda nova sessao do Codex neste repositorio deve:
 - encaixar o design final das telas de auth e shells quando ele estiver disponivel
 - expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
 - revisar presets e refinamento visual dos filtros administrativos agora que a navegacao esta funcional
+- implementar criacao e edicao de servicos em `/admin/catalog`
+- integrar ajuste manual de carteira no admin
+- revisar agora se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
+- expandir a cobertura de testes para a camada de API e para os helpers com maior risco de regressao
 - habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
 - preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
-- aprofundar filtros e paginacao navegavel nas listas administrativas
 
 
 ## Source Of Truth Precedence

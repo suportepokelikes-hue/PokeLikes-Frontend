@@ -83,7 +83,7 @@ export function normalizeReturnTo(value?: string | null) {
     const url = new URL(value, 'https://likesuai.local');
     const normalized = `${url.pathname}${url.search}`;
 
-    if (normalized === '/login' || normalized === '/register') {
+    if (url.pathname === '/login' || url.pathname === '/register') {
       return null;
     }
 

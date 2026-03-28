@@ -1,3 +1,7 @@
+import { Fragment } from 'react';
+
+import Link from 'next/link';
+
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -7,10 +11,13 @@ import { listAdminCatalogServices } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
+import { createCatalogServiceAction } from '@/modules/admin-shell/actions';
+import { AdminCatalogMutationForm } from '@/modules/admin-shell/admin-catalog-mutation-form';
 import {
   AdminFilterBar,
   AdminSummaryCard,
   PaginationSummary,
+  buildPathWithSearch,
   mapCatalogStatusTone,
   mapProviderTone,
   renderCatalogAvailability,
@@ -25,6 +32,11 @@ type AdminCatalogPageProps = {
 export async function AdminCatalogPage({ session, filters }: AdminCatalogPageProps) {
   try {
     const catalog = await listAdminCatalogServices(session.accessToken, filters);
+    const returnTo = buildPathWithSearch('/admin/catalog', {
+      ...filters,
+      page: filters.page ?? catalog.page,
+      pageSize: filters.pageSize ?? catalog.pageSize,
+    });
     const activeCount = catalog.items.filter((service) => service.status === 'active').length;
     const purchasableCount = catalog.items.filter((service) => service.availability.isPurchasable).length;
     const degradedCount = catalog.items.filter(
@@ -77,42 +89,64 @@ export async function AdminCatalogPage({ session, filters }: AdminCatalogPagePro
           <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco operacional`} tone="warning" />
         </section>
 
+        <section className="feedback-panel">
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">Provisionamento</p>
+              <h2>Criar servico de catalogo</h2>
+            </div>
+            <span className="panel-meta">POST /admin/catalog/services</span>
+          </div>
+          <p>
+            O cadastro administrativo respeita apenas o payload do contrato: dados publicos, faixa operacional,
+            vinculo com fornecedor e metadata opcional em JSON.
+          </p>
+          <AdminCatalogMutationForm mode="create" action={createCatalogServiceAction} returnTo={returnTo} />
+        </section>
+
         {catalog.items.length === 0 ? (
           <EmptyState title="Nenhum servico encontrado" description="O backend nao retornou servicos de catalogo para a listagem administrativa atual." />
         ) : (
           <>
-            <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Fornecedor', 'Faixa']} >
+            <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Fornecedor', 'Faixa', 'Acoes']}>
               {catalog.items.map((service) => (
-                <tr key={service.id}>
-                  <td>
-                    <div className="stack-list">
-                      <strong>{service.name}</strong>
-                      <span className="panel-meta">
-                        {service.socialNetwork} / {service.category} / {service.type}
-                      </span>
-                    </div>
-                  </td>
-                  <td>{formatMoney(service.publicPrice)}</td>
-                  <td>
-                    <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
-                  </td>
-                  <td>{renderCatalogAvailability(service)}</td>
-                  <td>
-                    <div className="stack-list">
-                      <strong>{service.supplierService.supplierName}</strong>
-                      <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
-                      {service.supplierService.providerStatus ? (
-                        <StatusBadge
-                          label={service.supplierService.providerStatus.providerStatus}
-                          tone={mapProviderTone(service.supplierService.providerStatus.providerStatus)}
-                        />
-                      ) : null}
-                    </div>
-                  </td>
-                  <td>
-                    {service.minQuantity} - {service.maxQuantity}
-                  </td>
-                </tr>
+                <Fragment key={service.id}>
+                  <tr>
+                    <td>
+                      <div className="stack-list">
+                        <strong>{service.name}</strong>
+                        <span className="panel-meta">
+                          {service.socialNetwork} / {service.category} / {service.type}
+                        </span>
+                      </div>
+                    </td>
+                    <td>{formatMoney(service.publicPrice)}</td>
+                    <td>
+                      <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
+                    </td>
+                    <td>{renderCatalogAvailability(service)}</td>
+                    <td>
+                      <div className="stack-list">
+                        <strong>{service.supplierService.supplierName}</strong>
+                        <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
+                        {service.supplierService.providerStatus ? (
+                          <StatusBadge
+                            label={service.supplierService.providerStatus.providerStatus}
+                            tone={mapProviderTone(service.supplierService.providerStatus.providerStatus)}
+                          />
+                        ) : null}
+                      </div>
+                    </td>
+                    <td>
+                      {service.minQuantity} - {service.maxQuantity}
+                    </td>
+                    <td>
+                      <Link href={`/admin/catalog/${service.id}`} className="table-link">
+                        Abrir detalhe
+                      </Link>
+                    </td>
+                  </tr>
+                </Fragment>
               ))}
             </DataTable>
 
