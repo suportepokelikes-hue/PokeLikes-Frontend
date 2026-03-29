@@ -35,6 +35,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - componentes base de UI (`empty-state`, `error-state`, `status-badge`, `page-header`) agora possuem testes de renderizacao via `react-dom/server`
 - `/login` e `/register` agora compartilham helpers puros de conteudo em `src/modules/auth/page-content.ts`, cobertos por teste para links alternativos e campos esperados
 - `TransactionField` e `TransactionTextarea` do checkout/pagamento agora possuem testes de renderizacao para atributos criticos
+- `TransactionForm` agora delega sua composicao configuravel para `src/modules/customer-transactions/transaction-form-content.ts`, coberto por teste para hidden `returnTo`, label de submit e fallback de erro
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte

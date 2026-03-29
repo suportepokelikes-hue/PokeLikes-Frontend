@@ -149,6 +149,7 @@ Tasks:
 - [x] cobrir campos puros do formulario transacional do cliente
 - [x] cobrir camada auth API
 - [x] cobrir a composicao configuravel do `AuthForm`
+- [x] cobrir a composicao configuravel do `TransactionForm`
 
 ## Next Recommended Step
 

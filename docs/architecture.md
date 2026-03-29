@@ -89,6 +89,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/login` e `/register` agora derivam seu conteudo de helpers puros, o que permite validar copy, links de retorno e composicao de campos sem acoplar os testes ao runtime do Next
 - `AuthForm` agora delega sua composicao configuravel para `src/modules/auth/auth-form-content.ts`, o que permite validar notice, `returnTo`, campos e feedback de erro sem depender de runner browser
 - os blocos puros do `transaction-form` do cliente agora tambem possuem cobertura de renderizacao, validando atributos essenciais de campos numericos, placeholders e textarea
+- `TransactionForm` agora tambem delega sua composicao configuravel para `src/modules/customer-transactions/transaction-form-content.ts`, o que permite validar hidden `returnTo`, labels de submit e fallback de erro sem browser
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
 
 ## Implemented Structure

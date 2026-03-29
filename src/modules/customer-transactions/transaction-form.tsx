@@ -3,16 +3,12 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 
+import { getTransactionFormView, type TransactionFormContent } from './transaction-form-content';
 import type { TransactionFormState } from '@/modules/customer-transactions/types';
 
-type TransactionFormProps = {
-  title: string;
-  description: string;
+type TransactionFormProps = TransactionFormContent & {
   action: (state: TransactionFormState, formData: FormData) => Promise<TransactionFormState>;
   initialState: TransactionFormState;
-  children: React.ReactNode;
-  submitLabel: string;
-  returnTo?: string;
 };
 
 export function TransactionForm({
@@ -25,21 +21,31 @@ export function TransactionForm({
   returnTo,
 }: TransactionFormProps) {
   const [state, formAction] = useActionState(action, initialState);
+  const view = getTransactionFormView(
+    {
+      title,
+      description,
+      children,
+      submitLabel,
+      returnTo,
+    },
+    state,
+  );
 
   return (
     <section className="detail-card">
       <div className="panel-heading">
         <div className="stack-item">
-          <strong>{title}</strong>
-          <p>{description}</p>
+          <strong>{view.title}</strong>
+          <p>{view.description}</p>
         </div>
       </div>
 
       <form action={formAction} className="transaction-form">
-        {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
-        {children}
-        {state.status === 'error' ? <p className="auth-error">{state.message}</p> : null}
-        <SubmitButton label={submitLabel} />
+        {view.hiddenReturnTo ? <input type="hidden" name="returnTo" value={view.hiddenReturnTo} /> : null}
+        {view.children}
+        {view.error ? <p className="auth-error">{view.error}</p> : null}
+        <SubmitButton label={view.submitLabel} pendingLabel={view.pendingLabel} />
       </form>
     </section>
   );
@@ -94,12 +100,12 @@ export function TransactionTextarea({ label, name, placeholder }: TransactionTex
   );
 }
 
-function SubmitButton({ label }: { label: string }) {
+function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
 
   return (
     <button type="submit" className="auth-submit" disabled={pending}>
-      {pending ? 'Processando...' : label}
+      {pending ? pendingLabel : label}
     </button>
   );
 }
