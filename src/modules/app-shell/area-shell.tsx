@@ -3,89 +3,55 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import type { UserSummary } from '@/lib/api/contracts';
 import { LogoutButton } from '@/modules/auth/logout-button';
+import { getAreaShellView, type AreaShellArea } from './area-shell-content';
+import type { UserSummary } from '@/lib/api/contracts';
 
 type AreaShellProps = {
-  area: 'customer' | 'admin';
+  area: AreaShellArea;
   user: UserSummary;
   title: string;
   children: React.ReactNode;
 };
 
-const areaConfig = {
-  customer: {
-    homeHref: '/app',
-    label: 'Area cliente',
-    links: [
-      { href: '/', label: 'Publico' },
-      { href: '/app', label: 'Inicio cliente' },
-      { href: '/app/profile', label: 'Perfil' },
-      { href: '/app/wallet', label: 'Wallet' },
-      { href: '/app/payments', label: 'Pagamentos' },
-      { href: '/app/orders', label: 'Pedidos' },
-      { href: '/admin', label: 'Admin' },
-    ],
-  },
-  admin: {
-    homeHref: '/admin',
-    label: 'Area admin',
-    links: [
-      { href: '/admin', label: 'Dashboard' },
-      { href: '/admin/users', label: 'Usuarios' },
-      { href: '/admin/catalog', label: 'Catalogo' },
-      { href: '/admin/payments', label: 'Pagamentos' },
-      { href: '/admin/orders', label: 'Pedidos' },
-      { href: '/admin/supplier', label: 'Fornecedores' },
-      { href: '/admin/alerts', label: 'Alertas' },
-      { href: '/admin/audits', label: 'Auditoria' },
-      { href: '/admin/transactions', label: 'Transacoes' },
-    ],
-  },
-} as const;
-
 export function AreaShell({ area, user, title, children }: AreaShellProps) {
-  const config = areaConfig[area];
   const pathname = usePathname();
+  const view = getAreaShellView({
+    area,
+    user,
+    title,
+    pathname,
+    children,
+  });
 
   return (
-    <div className={`area-shell area-shell-${area}`}>
+    <div className={view.areaClassName}>
       <header className="area-header">
         <div>
-          <p className="eyebrow">{config.label}</p>
-          <h1>{title}</h1>
+          <p className="eyebrow">{view.eyebrow}</p>
+          <h1>{view.title}</h1>
         </div>
 
         <div className="account-badge">
-          <strong>{user.name}</strong>
-          <span>
-            {user.email} / {user.status}
-          </span>
+          <strong>{view.userName}</strong>
+          <span>{view.userMeta}</span>
           <LogoutButton label="Encerrar sessao" />
         </div>
       </header>
 
-      <nav className="area-nav" aria-label={`${config.label} navigation`}>
-        {config.links.map((link) => (
+      <nav className="area-nav" aria-label={view.navigationLabel}>
+        {view.links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={isCurrentPath(pathname, link.href) ? 'is-current' : ''}
+            className={link.isCurrent ? 'is-current' : ''}
           >
             {link.label}
           </Link>
         ))}
       </nav>
 
-      {children}
+      {view.children}
     </div>
   );
-}
-
-function isCurrentPath(pathname: string, href: string) {
-  if (href === '/') {
-    return pathname === href;
-  }
-
-  return pathname === href || pathname.startsWith(`${href}/`);
 }

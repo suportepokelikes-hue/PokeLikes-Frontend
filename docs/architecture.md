@@ -90,6 +90,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `AuthForm` agora delega sua composicao configuravel para `src/modules/auth/auth-form-content.ts`, o que permite validar notice, `returnTo`, campos e feedback de erro sem depender de runner browser
 - os blocos puros do `transaction-form` do cliente agora tambem possuem cobertura de renderizacao, validando atributos essenciais de campos numericos, placeholders e textarea
 - `TransactionForm` agora tambem delega sua composicao configuravel para `src/modules/customer-transactions/transaction-form-content.ts`, o que permite validar hidden `returnTo`, labels de submit e fallback de erro sem browser
+- `AdminActionForm`, `LogoutButton` e `AreaShell` agora tambem delegam sua composicao configuravel para helpers puros, permitindo validar hidden fields, mensagens operacionais, copy de logout e destaque de navegacao sem acoplar os testes aos hooks do runtime
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
 
 ## Implemented Structure
@@ -163,7 +164,7 @@ src/
 ## Remaining Direction
 
 - a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
-- a proxima etapa deve expandir a cobertura de testes para fluxos autenticados ponta a ponta e para wrappers client que ainda dependem de hooks diretamente
+- a proxima etapa deve expandir a cobertura de testes para fluxos autenticados ponta a ponta, ja que os wrappers client mais sensiveis agora estao desacoplados em helpers puros
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados

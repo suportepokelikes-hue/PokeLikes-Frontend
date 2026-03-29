@@ -36,6 +36,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/login` e `/register` agora compartilham helpers puros de conteudo em `src/modules/auth/page-content.ts`, cobertos por teste para links alternativos e campos esperados
 - `TransactionField` e `TransactionTextarea` do checkout/pagamento agora possuem testes de renderizacao para atributos criticos
 - `TransactionForm` agora delega sua composicao configuravel para `src/modules/customer-transactions/transaction-form-content.ts`, coberto por teste para hidden `returnTo`, label de submit e fallback de erro
+- `AdminActionForm`, `LogoutButton` e `AreaShell` agora delegam sua composicao configuravel para helpers puros testados, cobrindo hidden fields, mensagens operacionais, copy de logout e destaque de navegacao atual
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
@@ -70,7 +71,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - implementar criacao e edicao de servicos em `/admin/catalog`
 - integrar ajuste manual de carteira no admin
 - revisar agora se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
-- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para wrappers client que ainda dependem de hooks diretamente
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta
 - habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
 - preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch

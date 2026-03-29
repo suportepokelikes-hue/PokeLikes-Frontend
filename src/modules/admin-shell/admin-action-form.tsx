@@ -3,16 +3,11 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 
+import { getAdminActionFormView, type AdminActionFormContent } from './admin-action-form-content';
 import type { AdminActionState } from '@/modules/admin-shell/actions';
 
-type AdminActionFormProps = {
+type AdminActionFormProps = AdminActionFormContent & {
   action: (state: AdminActionState, formData: FormData) => Promise<AdminActionState>;
-  submitLabel: string;
-  pendingLabel?: string;
-  tone?: 'primary' | 'secondary' | 'danger';
-  children?: React.ReactNode;
-  hiddenFields?: Array<{ name: string; value: string }>;
-  returnTo?: string;
   initialState?: AdminActionState;
 };
 
@@ -31,21 +26,32 @@ export function AdminActionForm({
   initialState = defaultState,
 }: AdminActionFormProps) {
   const [state, formAction] = useActionState(action, initialState);
+  const view = getAdminActionFormView(
+    {
+      submitLabel,
+      pendingLabel,
+      tone,
+      children,
+      hiddenFields,
+      returnTo,
+    },
+    state,
+  );
 
   return (
     <form action={formAction} className="admin-action-form">
-      {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
+      {view.hiddenReturnTo ? <input type="hidden" name="returnTo" value={view.hiddenReturnTo} /> : null}
 
-      {hiddenFields.map((field) => (
+      {view.hiddenFields.map((field) => (
         <input key={`${field.name}-${field.value}`} type="hidden" name={field.name} value={field.value} />
       ))}
 
-      {children}
+      {view.children}
 
-      <SubmitButton submitLabel={submitLabel} pendingLabel={pendingLabel} tone={tone} />
+      <SubmitButton submitLabel={view.submitLabel} pendingLabel={view.pendingLabel} tone={view.tone} />
 
-      {state.status !== 'idle' ? (
-        <p className={`admin-action-message admin-action-${state.status}`}>{state.message}</p>
+      {view.message ? (
+        <p className={`admin-action-message admin-action-${view.message.status}`}>{view.message.text}</p>
       ) : null}
     </form>
   );

@@ -150,6 +150,7 @@ Tasks:
 - [x] cobrir camada auth API
 - [x] cobrir a composicao configuravel do `AuthForm`
 - [x] cobrir a composicao configuravel do `TransactionForm`
+- [x] cobrir a composicao configuravel dos wrappers client restantes (`AdminActionForm`, `LogoutButton` e `AreaShell`)
 
 ## Next Recommended Step
 
@@ -157,5 +158,5 @@ Na proxima sessao do Codex:
 
 - integrar ajuste manual de carteira via `POST /admin/wallets/{userId}/adjustments`
 - decidir se o ajuste manual de carteira permanece em `transactions` ou sobe para um detalhe dedicado de usuario
-- expandir a cobertura de testes para fluxos autenticados ponta a ponta e para wrappers client que ainda dependem de hooks
+- expandir a cobertura de testes para fluxos autenticados ponta a ponta
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
