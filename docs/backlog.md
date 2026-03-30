@@ -152,11 +152,19 @@ Tasks:
 - [x] cobrir a composicao configuravel do `TransactionForm`
 - [x] cobrir a composicao configuravel dos wrappers client restantes (`AdminActionForm`, `LogoutButton` e `AreaShell`)
 
+## Phase 11: E2E
+
+Tasks:
+
+- [x] adicionar infraestrutura Playwright com scripts e config local
+- [x] preparar helpers de ambiente e auth para E2E
+- [x] cobrir fluxos de maior valor: login cliente/admin, PIX e checkout por UI
+- [ ] ampliar cobertura E2E para operacoes admin e cenarios negativos
+
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
-- integrar ajuste manual de carteira via `POST /admin/wallets/{userId}/adjustments`
-- decidir se o ajuste manual de carteira permanece em `transactions` ou sobe para um detalhe dedicado de usuario
-- expandir a cobertura de testes para fluxos autenticados ponta a ponta
+- consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
+- ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
