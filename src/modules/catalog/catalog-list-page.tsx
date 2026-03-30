@@ -30,6 +30,41 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
           actions={<CatalogFilterBar initialValues={searchParams} />}
         />
 
+        <section className="catalog-overview-grid">
+          <article className="catalog-spotlight">
+            <div className="catalog-spotlight-head">
+              <span className="eyebrow">Radar da pagina</span>
+              <strong>{response.totalItems} servicos publicados</strong>
+            </div>
+            <p>
+              O catalogo prioriza a mesma hierarquia do Stitch: contexto primeiro, cards com leitura rapida depois e
+              availability sempre exposta como parte central da compra.
+            </p>
+            <div className="catalog-summary-strip">
+              <div>
+                <span>Compraveis agora</span>
+                <strong>{purchasableCount}</strong>
+              </div>
+              <div>
+                <span>Com atencao</span>
+                <strong>{degradedCount}</strong>
+              </div>
+              <div>
+                <span>Pagina atual</span>
+                <strong>
+                  {response.page} / {response.totalPages}
+                </strong>
+              </div>
+            </div>
+          </article>
+
+          <article className="public-note-card catalog-note-card">
+            <strong>Leitura operacional</strong>
+            <p>Itens degradados continuam visiveis para nao mascarar risco de provider durante a avaliacao do catalogo.</p>
+            <p>O detalhe do servico preserva a mesma leitura de availability e leva direto ao checkout autenticado.</p>
+          </article>
+        </section>
+
         <section className="public-bento">
           <article className="public-bento-card">
             <span>Itens na pagina</span>
@@ -91,12 +126,17 @@ function CatalogCard({ service }: { service: CatalogServiceResource }) {
   return (
     <Link href={`/catalog/${service.id}`} className="catalog-card">
       <div className="catalog-card-head">
-        <StatusBadge
-          label={service.availability.isPurchasable ? 'Compravel' : 'Indisponivel'}
-          tone={mapAvailabilityTone(service)}
-        />
+        <div className="stack-list">
+          <StatusBadge
+            label={service.availability.isPurchasable ? 'Compravel' : 'Indisponivel'}
+            tone={mapAvailabilityTone(service)}
+          />
+          <span className="catalog-meta">
+            {service.socialNetwork} / {service.category} / {service.type}
+          </span>
+        </div>
         <span className="catalog-meta">
-          {service.socialNetwork} / {service.category} / {service.type}
+          {service.supplierService.supplierName}
         </span>
       </div>
 
@@ -122,8 +162,8 @@ function CatalogCard({ service }: { service: CatalogServiceResource }) {
           </dd>
         </div>
         <div>
-          <dt>Fornecedor</dt>
-          <dd>{service.supplierService.supplierName}</dd>
+          <dt>Provider</dt>
+          <dd>{service.availability.reason}</dd>
         </div>
       </dl>
     </Link>

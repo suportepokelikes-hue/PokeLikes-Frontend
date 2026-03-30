@@ -26,32 +26,58 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
 
   return (
     <div className={view.areaClassName}>
-      <header className="area-header">
-        <div>
-          <p className="eyebrow">{view.eyebrow}</p>
-          <h1>{view.title}</h1>
+      <aside className="area-sidebar">
+        <div className="area-brand">
+          <div className="area-brand-mark">{area === 'admin' ? 'A' : 'L'}</div>
+          <div>
+            <strong>{view.brandTitle}</strong>
+            <span>{view.brandMeta}</span>
+          </div>
         </div>
+
+        <nav className="area-nav" aria-label={view.navigationLabel}>
+          {view.links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={link.isCurrent ? 'is-current' : ''}
+            >
+              <span className="area-nav-icon" aria-hidden="true">
+                {link.icon}
+              </span>
+              <span>{link.label}</span>
+            </Link>
+          ))}
+        </nav>
 
         <div className="account-badge">
           <strong>{view.userName}</strong>
           <span>{view.userMeta}</span>
           <LogoutButton label="Encerrar sessao" />
         </div>
-      </header>
+      </aside>
 
-      <nav className="area-nav" aria-label={view.navigationLabel}>
-        {view.links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={link.isCurrent ? 'is-current' : ''}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+      <div className="area-main">
+        <header className="area-header">
+          <div>
+            <p className="eyebrow">{view.eyebrow}</p>
+            <h1>{view.title}</h1>
+          </div>
 
-      {view.children}
+          <div className="area-toolbar">
+            <label className="area-search">
+              <span aria-hidden="true">Q</span>
+              <input type="search" placeholder="Buscar nesta area" />
+            </label>
+            <div className="area-user-chip">
+              <strong>{view.userName}</strong>
+              <span>{area === 'admin' ? 'Operacao autenticada' : 'Sessao ativa'}</span>
+            </div>
+          </div>
+        </header>
+
+        <div className="area-content">{view.children}</div>
+      </div>
     </div>
   );
 }

@@ -93,6 +93,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `AdminActionForm`, `LogoutButton` e `AreaShell` agora tambem delegam sua composicao configuravel para helpers puros, permitindo validar hidden fields, mensagens operacionais, copy de logout e destaque de navegacao sem acoplar os testes aos hooks do runtime
 - a infraestrutura E2E agora usa Playwright com `playwright.config.ts`, `webServer` local em Next, envs explicitas de credenciais e primeiras specs reais para auth, PIX, checkout e operacao admin por UI
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
+- o frontend entrou em uma segunda rodada forte de alinhamento com o Stitch dominante, com shell lateral mais proximo das referencias, tipografia editorial, superficie mais limpa e composicoes menos genericas nas telas publicas, cliente, admin e auth
 
 ## Implemented Structure
 
@@ -161,11 +162,12 @@ src/
 - a area do cliente deve priorizar clareza de fluxo para wallet, PIX e pedidos
 - a area admin deve priorizar densidade informacional e observabilidade operacional
 - a area admin consolidou um shell unico com navegacao por modulo e tabelas reutilizaveis para catalogo, fornecedores, alertas, auditoria e transacoes
+- a referencia visual dominante agora e a linguagem “architectural minimalist” dos exports do Stitch em `docs/stitch_cliente_dashboard`, com sidebar fixa, topo leve, cards tonais e hierarquia editorial
 
 ## Remaining Direction
 
 - a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
-- a proxima etapa deve consolidar a camada E2E com massa de teste estavel e ampliar os cenarios administrativos mais sensiveis
+- a proxima etapa deve consolidar a camada E2E com massa de teste estavel e ampliar os cenarios administrativos mais sensiveis ja sobre a nova base visual
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados

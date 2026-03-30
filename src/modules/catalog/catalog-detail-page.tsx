@@ -66,6 +66,10 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                   {service.minQuantity} - {service.maxQuantity}
                 </strong>
               </div>
+              <div>
+                <span>Fornecedor</span>
+                <strong>{service.supplierService.supplierName}</strong>
+              </div>
             </div>
           </article>
 
@@ -73,6 +77,33 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
             <strong>Leitura de availability</strong>
             <p>Se `isPurchasable` estiver falso, a tela mostra o motivo operacional e evita mascarar indisponibilidade do provider.</p>
             <p>Quando autenticado como cliente, o checkout abaixo ja usa os campos reais suportados por `POST /me/orders`.</p>
+          </article>
+        </section>
+
+        <section className="journey-grid">
+          <article className="journey-card">
+            <p className="eyebrow">Resumo rapido</p>
+            <h2>Antes de comprar, confira o estado operacional do servico.</h2>
+            <p className="section-copy">
+              O Stitch privilegia blocos de leitura curta e densidade controlada. Por isso o detalhe agora abre com
+              preco, faixa, disponibilidade e contexto do fornecedor antes do formulario.
+            </p>
+          </article>
+          <article className="journey-card">
+            <ol className="journey-steps">
+              <li>
+                <strong>1. Validar faixa</strong>
+                <span>Quantidade minima e maxima seguem exatamente o contrato do servico.</span>
+              </li>
+              <li>
+                <strong>2. Conferir availability</strong>
+                <span>Provider status e reason continuam visiveis antes da compra.</span>
+              </li>
+              <li>
+                <strong>3. Entrar no checkout</strong>
+                <span>O formulario so aparece para cliente autenticado e envia apenas campos aceitos pela API.</span>
+              </li>
+            </ol>
           </article>
         </section>
 

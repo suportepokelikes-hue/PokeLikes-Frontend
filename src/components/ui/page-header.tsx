@@ -8,7 +8,7 @@ type PageHeaderProps = {
 export function PageHeader({ eyebrow, title, description, actions }: PageHeaderProps) {
   return (
     <section className="section-header">
-      <div>
+      <div className="section-header-copy">
         <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         <p className="section-copy">{description}</p>

@@ -45,6 +45,33 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           }
         />
 
+        <section className="customer-command-grid">
+          <article className="customer-command-card">
+            <p className="eyebrow">Console pessoal</p>
+            <h2>Fluxo rapido para saldo, recarga e acompanhamento operacional.</h2>
+            <p className="section-copy">
+              O dashboard foi reorganizado para ficar mais proximo do Stitch do cliente: menos blocos equivalentes e
+              mais hierarquia entre contexto, atalhos e dados vivos.
+            </p>
+          </article>
+          <article className="customer-command-card customer-command-card-muted">
+            <div className="customer-mini-list">
+              <div>
+                <span>Role</span>
+                <strong>{session.user.role}</strong>
+              </div>
+              <div>
+                <span>Email</span>
+                <strong>{session.user.email}</strong>
+              </div>
+              <div>
+                <span>Status</span>
+                <strong>{session.user.status}</strong>
+              </div>
+            </div>
+          </article>
+        </section>
+
         <section className="customer-hero-grid">
           <article className="customer-spotlight">
             <div className="customer-spotlight-head">

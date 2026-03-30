@@ -4,5 +4,10 @@ type StatusBadgeProps = {
 };
 
 export function StatusBadge({ label, tone = 'neutral' }: StatusBadgeProps) {
-  return <span className={`status-badge status-${tone}`}>{label}</span>;
+  return (
+    <span className={`status-badge status-${tone}`}>
+      <span className="status-badge-dot" aria-hidden="true" />
+      {label}
+    </span>
+  );
 }

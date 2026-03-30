@@ -73,9 +73,17 @@ export function PublicHome({ session }: PublicHomeProps) {
             </Link>
           </div>
 
-          <div className="public-note-card">
-            <strong>Entrada recomendada</strong>
-            <p>Comece pelo catalogo para validar availability, preco, limites e o fluxo real de criacao de pedido.</p>
+          <div className="public-overview-grid">
+            <article className="public-overview-card">
+              <span>Entrada recomendada</span>
+              <strong>Comece pelo catalogo</strong>
+              <p>Valide availability, preco, limites e a transicao real para checkout autenticado.</p>
+            </article>
+            <article className="public-overview-card">
+              <span>Operacao real</span>
+              <strong>Sem mocks na jornada</strong>
+              <p>Login, PIX, pedidos e admin seguem para o backend V1 com os estados operacionais verdadeiros.</p>
+            </article>
           </div>
         </div>
 
@@ -90,6 +98,33 @@ export function PublicHome({ session }: PublicHomeProps) {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="journey-grid">
+        <article className="journey-card">
+          <p className="eyebrow">Jornada publica</p>
+          <h2>Descubra, valide disponibilidade e entre no fluxo certo.</h2>
+          <p className="section-copy">
+            A experiencia publica foi reorganizada para ficar mais proxima do Stitch: leitura editorial, menos ruido
+            visual e destaque claro para os proximos passos.
+          </p>
+        </article>
+        <article className="journey-card">
+          <ol className="journey-steps">
+            <li>
+              <strong>1. Explorar catalogo</strong>
+              <span>Ver servicos ativos, disponibilidade e faixa operacional.</span>
+            </li>
+            <li>
+              <strong>2. Autenticar</strong>
+              <span>Cliente segue para wallet e pedidos; admin segue para o console operacional.</span>
+            </li>
+            <li>
+              <strong>3. Executar</strong>
+              <span>Criar PIX, comprar servicos, monitorar estados ou operar o backoffice.</span>
+            </li>
+          </ol>
+        </article>
       </section>
 
       <section className="public-bento">

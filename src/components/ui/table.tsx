@@ -16,6 +16,7 @@ export function DataTable({ columns, children }: DataTableProps) {
         </thead>
         <tbody>{children}</tbody>
       </table>
+      <div className="table-fade" aria-hidden="true" />
     </div>
   );
 }

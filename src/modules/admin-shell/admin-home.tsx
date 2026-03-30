@@ -61,15 +61,58 @@ export function AdminHome({ user }: AdminHomeProps) {
 
   return (
     <main className="page page-admin">
-      <section className="section-header">
-        <div>
+      <section className="admin-command-grid">
+        <article className="admin-command-card">
           <p className="eyebrow">Admin operacional</p>
           <h1>Painel preparado para observabilidade e fluxo administrativo.</h1>
-        </div>
-        <p className="section-copy">
-          A fundacao do admin prioriza densidade informacional, separacao clara de escopo e guardas por papel
-          antes das telas de negocio completas.
-        </p>
+          <p className="section-copy">
+            O shell admin agora segue a referencia dominante do Stitch: navegação lateral fixa, topo leve e blocos
+            editoriais antes da camada de tabela e mutacao.
+          </p>
+        </article>
+        <article className="admin-command-card admin-command-card-muted">
+          <div className="customer-mini-list">
+            <div>
+              <span>Operador</span>
+              <strong>{user.name}</strong>
+            </div>
+            <div>
+              <span>Papel</span>
+              <strong>{user.role}</strong>
+            </div>
+            <div>
+              <span>Status</span>
+              <strong>{user.status}</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section className="journey-grid">
+        <article className="journey-card">
+          <p className="eyebrow">Modo de leitura</p>
+          <h2>Operacao primeiro, modulos depois.</h2>
+          <p className="section-copy">
+            A entrada do admin deixa claro onde ficam risco operacional, monitoramento, conciliacao e governanca sem
+            cair numa home genérica de cards iguais.
+          </p>
+        </article>
+        <article className="journey-card">
+          <ol className="journey-steps">
+            <li>
+              <strong>1. Monitorar</strong>
+              <span>Alertas, pagamentos e pedidos concentram o ritmo operacional do dia.</span>
+            </li>
+            <li>
+              <strong>2. Corrigir</strong>
+              <span>Usuarios, catalogo e carteira suportam mutacoes reais conectadas ao backend.</span>
+            </li>
+            <li>
+              <strong>3. Auditar</strong>
+              <span>Auditoria, fornecedores e transacoes fecham o contexto de governanca.</span>
+            </li>
+          </ol>
+        </article>
       </section>
 
       <section className="metric-list">
@@ -81,7 +124,7 @@ export function AdminHome({ user }: AdminHomeProps) {
         ))}
       </section>
 
-      <section className="card-grid compact-grid">
+      <section className="admin-link-grid">
         {adminLinks.map((item) => (
           <Link key={item.href} href={item.href} className="nav-card">
             <span>{item.label}</span>

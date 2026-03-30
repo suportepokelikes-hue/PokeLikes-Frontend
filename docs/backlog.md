@@ -126,6 +126,7 @@ Tasks:
 - [x] refinar home publica com hero mais forte e cards de jornada
 - [x] refinar catalogo publico com resumo de availability e toolbar expandida
 - [x] refinar detalhe de servico com destaque de preco, disponibilidade e checkout
+- [x] realinhar a linguagem visual publica com a referencia dominante do Stitch
 
 ## Phase 9: Shared State Polish
 
@@ -133,6 +134,7 @@ Tasks:
 
 - [x] refinar componentes compartilhados de empty/error
 - [x] adicionar loading segmentado para a area do cliente
+- [x] realinhar shell, tipografia e superficies compartilhadas para reduzir o visual generico e aproximar o frontend dos exports do Stitch
 
 ## Phase 10: Frontend Test Baseline
 
@@ -166,6 +168,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- revisar o resultado visual da nova rodada de alinhamento com o Stitch tela a tela, agora com feedback manual do usuario
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`

@@ -7,11 +7,14 @@ export type AreaShellArea = 'customer' | 'admin';
 type AreaShellLink = {
   href: string;
   label: string;
+  icon: string;
   isCurrent: boolean;
 };
 
 type AreaShellView = {
   areaClassName: string;
+  brandTitle: string;
+  brandMeta: string;
   eyebrow: string;
   title: string;
   userName: string;
@@ -24,28 +27,30 @@ type AreaShellView = {
 const areaConfig = {
   customer: {
     label: 'Area cliente',
+    brandMeta: 'Likes Uai Client',
     links: [
-      { href: '/', label: 'Publico' },
-      { href: '/app', label: 'Inicio cliente' },
-      { href: '/app/profile', label: 'Perfil' },
-      { href: '/app/wallet', label: 'Wallet' },
-      { href: '/app/payments', label: 'Pagamentos' },
-      { href: '/app/orders', label: 'Pedidos' },
-      { href: '/admin', label: 'Admin' },
+      { href: '/', label: 'Publico', icon: 'P' },
+      { href: '/app', label: 'Dashboard', icon: 'D' },
+      { href: '/app/profile', label: 'Perfil', icon: 'U' },
+      { href: '/app/wallet', label: 'Carteira', icon: 'W' },
+      { href: '/app/payments', label: 'Pagamentos', icon: 'R' },
+      { href: '/app/orders', label: 'Pedidos', icon: 'O' },
+      { href: '/admin', label: 'Admin', icon: 'A' },
     ],
   },
   admin: {
     label: 'Area admin',
+    brandMeta: 'Likes Uai Console',
     links: [
-      { href: '/admin', label: 'Dashboard' },
-      { href: '/admin/users', label: 'Usuarios' },
-      { href: '/admin/catalog', label: 'Catalogo' },
-      { href: '/admin/payments', label: 'Pagamentos' },
-      { href: '/admin/orders', label: 'Pedidos' },
-      { href: '/admin/supplier', label: 'Fornecedores' },
-      { href: '/admin/alerts', label: 'Alertas' },
-      { href: '/admin/audits', label: 'Auditoria' },
-      { href: '/admin/transactions', label: 'Transacoes' },
+      { href: '/admin', label: 'Dashboard', icon: 'D' },
+      { href: '/admin/users', label: 'Usuarios', icon: 'U' },
+      { href: '/admin/catalog', label: 'Catalogo', icon: 'C' },
+      { href: '/admin/payments', label: 'Pagamentos', icon: 'P' },
+      { href: '/admin/orders', label: 'Pedidos', icon: 'O' },
+      { href: '/admin/supplier', label: 'Fornecedores', icon: 'F' },
+      { href: '/admin/alerts', label: 'Alertas', icon: '!' },
+      { href: '/admin/audits', label: 'Auditoria', icon: 'A' },
+      { href: '/admin/transactions', label: 'Transacoes', icon: 'T' },
     ],
   },
 } as const;
@@ -62,6 +67,8 @@ export function getAreaShellView(options: {
 
   return {
     areaClassName: `area-shell area-shell-${area}`,
+    brandTitle: 'Likes Uai',
+    brandMeta: config.brandMeta,
     eyebrow: config.label,
     title,
     userName: user.name,
