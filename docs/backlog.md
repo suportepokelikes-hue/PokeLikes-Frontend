@@ -159,6 +159,7 @@ Tasks:
 - [x] adicionar infraestrutura Playwright com scripts e config local
 - [x] preparar helpers de ambiente e auth para E2E
 - [x] cobrir fluxos de maior valor: login cliente/admin, PIX e checkout por UI
+- [x] cobrir cenarios negativos de auth e primeira operacao admin por UI
 - [ ] ampliar cobertura E2E para operacoes admin e cenarios negativos
 
 ## Next Recommended Step

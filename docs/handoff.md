@@ -37,7 +37,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `TransactionField` e `TransactionTextarea` do checkout/pagamento agora possuem testes de renderizacao para atributos criticos
 - `TransactionForm` agora delega sua composicao configuravel para `src/modules/customer-transactions/transaction-form-content.ts`, coberto por teste para hidden `returnTo`, label de submit e fallback de erro
 - `AdminActionForm`, `LogoutButton` e `AreaShell` agora delegam sua composicao configuravel para helpers puros testados, cobrindo hidden fields, mensagens operacionais, copy de logout e destaque de navegacao atual
-- a base E2E agora usa Playwright com `playwright.config.ts`, `webServer` local em Next e envs explicitas para credenciais e backend; as primeiras specs reais estao em `e2e/auth.spec.ts` e `e2e/customer-transactions.spec.ts`
+- a base E2E agora usa Playwright com `playwright.config.ts`, `webServer` local em Next e envs explicitas para credenciais e backend; as primeiras specs reais estao em `e2e/auth.spec.ts`, `e2e/customer-transactions.spec.ts` e `e2e/admin-operations.spec.ts`
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte

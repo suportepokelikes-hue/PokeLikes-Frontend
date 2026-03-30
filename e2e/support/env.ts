@@ -42,3 +42,9 @@ export function getCheckoutServiceId() {
 
   return value || null;
 }
+
+export function getAdminAlertId() {
+  const value = process.env.E2E_ADMIN_ALERT_ID?.trim();
+
+  return value || null;
+}

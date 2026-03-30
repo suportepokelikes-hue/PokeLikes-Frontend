@@ -91,7 +91,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - os blocos puros do `transaction-form` do cliente agora tambem possuem cobertura de renderizacao, validando atributos essenciais de campos numericos, placeholders e textarea
 - `TransactionForm` agora tambem delega sua composicao configuravel para `src/modules/customer-transactions/transaction-form-content.ts`, o que permite validar hidden `returnTo`, labels de submit e fallback de erro sem browser
 - `AdminActionForm`, `LogoutButton` e `AreaShell` agora tambem delegam sua composicao configuravel para helpers puros, permitindo validar hidden fields, mensagens operacionais, copy de logout e destaque de navegacao sem acoplar os testes aos hooks do runtime
-- a infraestrutura E2E agora usa Playwright com `playwright.config.ts`, `webServer` local em Next, envs explicitas de credenciais e primeiras specs reais para auth, PIX e checkout por UI
+- a infraestrutura E2E agora usa Playwright com `playwright.config.ts`, `webServer` local em Next, envs explicitas de credenciais e primeiras specs reais para auth, PIX, checkout e operacao admin por UI
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
 
 ## Implemented Structure
