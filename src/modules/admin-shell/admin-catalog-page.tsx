@@ -7,7 +7,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { listAdminCatalogServices, listSupplierServices } from '@/lib/api/admin';
+import { listAdminCatalogServices, listSupplierProviders, listSupplierServices } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
@@ -39,25 +39,31 @@ export async function AdminCatalogPage({
   creationDraft,
 }: AdminCatalogPageProps) {
   try {
-    const [catalog, supplierServices] = await Promise.all([
+    const [catalog, providerStatuses, supplierServices] = await Promise.all([
       listAdminCatalogServices(session.accessToken, filters),
+      listSupplierProviders(session.accessToken),
       listSupplierServices(session.accessToken, supplierServiceFilters),
     ]);
 
     const returnTo = buildPathWithSearch('/admin/catalog', {
-      ...filters,
+      search: filters.search,
+      pageSize: filters.pageSize,
       servicesPage: supplierServiceFilters.page,
       servicesPageSize: supplierServiceFilters.pageSize,
-      servicesSearch: supplierServiceFilters.search,
-      servicesSupplierName: supplierServiceFilters.supplierName,
-      servicesCategory: supplierServiceFilters.category,
-      servicesType: supplierServiceFilters.type,
-      isActiveAtSupplier: supplierServiceFilters.isActiveAtSupplier,
+      supplierName: supplierServiceFilters.supplierName,
       ...buildDraftParams(creationDraft),
     });
-    const activeCount = catalog.items.filter((service) => service.status === 'active').length;
-    const purchasableCount = catalog.items.filter((service) => service.availability.isPurchasable).length;
-    const degradedCount = catalog.items.filter(
+    const providerOptions = providerStatuses.items
+      .map((provider) => provider.supplierName)
+      .filter((name, index, items) => items.indexOf(name) === index)
+      .sort((left, right) => left.localeCompare(right, 'pt-BR'));
+    const selectedSupplierName = supplierServiceFilters.supplierName;
+    const visibleCatalogItems = selectedSupplierName
+      ? catalog.items.filter((service) => service.supplierService.supplierName === selectedSupplierName)
+      : catalog.items;
+    const activeCount = visibleCatalogItems.filter((service) => service.status === 'active').length;
+    const purchasableCount = visibleCatalogItems.filter((service) => service.availability.isPurchasable).length;
+    const degradedCount = visibleCatalogItems.filter(
       (service) => service.availability.providerStatus === 'degraded_low_balance' || service.availability.providerStatus === 'unavailable',
     ).length;
 
@@ -70,22 +76,16 @@ export async function AdminCatalogPage({
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
-              hiddenFields={buildSupplierFilterHiddenFields(supplierServiceFilters, creationDraft)}
+              hiddenFields={buildSharedCatalogHiddenFields(filters, supplierServiceFilters, creationDraft)}
               fields={[
-                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Servico ou descricao', defaultValue: filters.search },
+                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Busque por nome, descricao ou termo relevante', defaultValue: filters.search },
                 {
-                  name: 'status',
-                  label: 'Status',
+                  name: 'supplierName',
+                  label: 'Fornecedor',
                   type: 'select',
-                  defaultValue: filters.status,
-                  options: [
-                    { label: 'Ativo', value: 'active' },
-                    { label: 'Inativo', value: 'inactive' },
-                  ],
+                  defaultValue: supplierServiceFilters.supplierName,
+                  options: providerOptions.map((supplierName) => ({ label: supplierName, value: supplierName })),
                 },
-                { name: 'socialNetwork', label: 'Rede', placeholder: 'instagram', defaultValue: filters.socialNetwork },
-                { name: 'category', label: 'Categoria', defaultValue: filters.category },
-                { name: 'type', label: 'Tipo', defaultValue: filters.type },
                 {
                   name: 'pageSize',
                   label: 'Pagina',
@@ -103,7 +103,11 @@ export async function AdminCatalogPage({
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Servicos publicos" value={String(catalog.items.length)} meta={`${catalog.totalItems} cadastrados no total`} />
+          <AdminSummaryCard
+            label="Servicos publicos"
+            value={String(visibleCatalogItems.length)}
+            meta={selectedSupplierName ? `Mostrando o lote atual de ${selectedSupplierName}` : `${catalog.totalItems} cadastrados no total`}
+          />
           <AdminSummaryCard label="Ativos" value={String(activeCount)} meta="Disponiveis para venda" tone="accent" />
           <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco operacional`} tone="warning" />
         </section>
@@ -120,44 +124,6 @@ export async function AdminCatalogPage({
             Escolha um servico sincronizado para publicar no catalogo publico. O formulario abaixo preenche automaticamente
             IDs, categoria, tipo e limites tecnicos.
           </p>
-
-          <AdminFilterBar
-            pathname="/admin/catalog"
-            hiddenFields={buildCatalogFilterHiddenFields(filters, creationDraft)}
-            fields={[
-              {
-                name: 'servicesSearch',
-                label: 'Busca',
-                type: 'search',
-                placeholder: 'Servico sincronizado',
-                defaultValue: supplierServiceFilters.search,
-              },
-              { name: 'servicesSupplierName', label: 'Fornecedor', defaultValue: supplierServiceFilters.supplierName },
-              { name: 'servicesCategory', label: 'Categoria', defaultValue: supplierServiceFilters.category },
-              { name: 'servicesType', label: 'Tipo', defaultValue: supplierServiceFilters.type },
-              {
-                name: 'isActiveAtSupplier',
-                label: 'Ativo no fornecedor',
-                type: 'select',
-                defaultValue: supplierServiceFilters.isActiveAtSupplier,
-                options: [
-                  { label: 'Sim', value: 'true' },
-                  { label: 'Nao', value: 'false' },
-                ],
-              },
-              {
-                name: 'servicesPageSize',
-                label: 'Pagina',
-                type: 'select',
-                defaultValue: supplierServiceFilters.pageSize ?? 10,
-                options: [
-                  { label: '10', value: '10' },
-                  { label: '20', value: '20' },
-                  { label: '50', value: '50' },
-                ],
-              },
-            ]}
-          />
 
           {supplierServices.items.length === 0 ? (
             <EmptyState title="Nenhum servico sincronizado encontrado" description="Ajuste os filtros para encontrar um servico do fornecedor." />
@@ -213,18 +179,10 @@ export async function AdminCatalogPage({
                 pathname="/admin/catalog"
                 params={{
                   search: filters.search,
-                  status: filters.status,
-                  socialNetwork: filters.socialNetwork,
-                  category: filters.category,
-                  type: filters.type,
                   pageSize: filters.pageSize,
+                  supplierName: supplierServiceFilters.supplierName,
                   ...buildDraftParams(creationDraft),
                   servicesPageSize: supplierServiceFilters.pageSize ?? supplierServices.pageSize,
-                  servicesSearch: supplierServiceFilters.search,
-                  servicesSupplierName: supplierServiceFilters.supplierName,
-                  servicesCategory: supplierServiceFilters.category,
-                  servicesType: supplierServiceFilters.type,
-                  isActiveAtSupplier: supplierServiceFilters.isActiveAtSupplier,
                 }}
                 label="servicos sincronizados"
               />
@@ -252,12 +210,12 @@ export async function AdminCatalogPage({
           />
         </section>
 
-        {catalog.items.length === 0 ? (
+        {visibleCatalogItems.length === 0 ? (
           <EmptyState title="Nenhum servico publicado" description="Publique um servico sincronizado para ele aparecer no catalogo da plataforma." />
         ) : (
           <>
             <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Fornecedor', 'Faixa', 'Acoes']}>
-              {catalog.items.map((service) => (
+              {visibleCatalogItems.map((service) => (
                 <Fragment key={service.id}>
                   <tr>
                     <td>
@@ -303,19 +261,16 @@ export async function AdminCatalogPage({
               pageSize={catalog.pageSize}
               totalItems={catalog.totalItems}
               totalPages={catalog.totalPages}
-              pathname="/admin/catalog"
-              params={{
-                ...filters,
-                servicesPage: supplierServiceFilters.page,
-                servicesPageSize: supplierServiceFilters.pageSize,
-                servicesSearch: supplierServiceFilters.search,
-                servicesSupplierName: supplierServiceFilters.supplierName,
-                servicesCategory: supplierServiceFilters.category,
-                servicesType: supplierServiceFilters.type,
-                isActiveAtSupplier: supplierServiceFilters.isActiveAtSupplier,
-                ...buildDraftParams(creationDraft),
-              }}
-              label="servicos"
+                pathname="/admin/catalog"
+                params={{
+                  search: filters.search,
+                  pageSize: filters.pageSize,
+                  supplierName: supplierServiceFilters.supplierName,
+                  servicesPage: supplierServiceFilters.page,
+                  servicesPageSize: supplierServiceFilters.pageSize,
+                  ...buildDraftParams(creationDraft),
+                }}
+                label="servicos"
             />
           </>
         )}
@@ -347,14 +302,11 @@ function buildCreateDraftPath(
   },
 ) {
   return `${buildPathWithSearch('/admin/catalog', {
-    ...filters,
+    search: filters.search,
+    pageSize: filters.pageSize,
     servicesPage: supplierServiceFilters.page,
     servicesPageSize: supplierServiceFilters.pageSize,
-    servicesSearch: supplierServiceFilters.search,
-    servicesSupplierName: supplierServiceFilters.supplierName,
-    servicesCategory: supplierServiceFilters.category,
-    servicesType: supplierServiceFilters.type,
-    isActiveAtSupplier: supplierServiceFilters.isActiveAtSupplier,
+    supplierName: supplierServiceFilters.supplierName,
     createSupplierServiceId: service.supplierServiceId,
     createSupplierName: service.supplierName,
     createName: service.name,
@@ -381,27 +333,17 @@ function buildDraftParams(creationDraft?: AdminCatalogCreationDraft) {
   };
 }
 
-function buildCatalogFilterHiddenFields(filters: AdminCatalogListParams, creationDraft?: AdminCatalogCreationDraft) {
+function buildSharedCatalogHiddenFields(
+  filters: AdminCatalogListParams,
+  supplierServiceFilters: SupplierServicesListParams,
+  creationDraft?: AdminCatalogCreationDraft,
+) {
   return [
     ...(filters.search ? [{ name: 'search', value: filters.search }] : []),
-    ...(filters.status ? [{ name: 'status', value: filters.status }] : []),
-    ...(filters.socialNetwork ? [{ name: 'socialNetwork', value: filters.socialNetwork }] : []),
-    ...(filters.category ? [{ name: 'category', value: filters.category }] : []),
-    ...(filters.type ? [{ name: 'type', value: filters.type }] : []),
+    ...(supplierServiceFilters.supplierName ? [{ name: 'supplierName', value: supplierServiceFilters.supplierName }] : []),
     ...(filters.pageSize ? [{ name: 'pageSize', value: filters.pageSize }] : []),
-    ...Object.entries(buildDraftParams(creationDraft)).map(([name, value]) => ({ name, value })),
-  ];
-}
-
-function buildSupplierFilterHiddenFields(supplierServiceFilters: SupplierServicesListParams, creationDraft?: AdminCatalogCreationDraft) {
-  return [
     ...(supplierServiceFilters.page ? [{ name: 'servicesPage', value: supplierServiceFilters.page }] : []),
     ...(supplierServiceFilters.pageSize ? [{ name: 'servicesPageSize', value: supplierServiceFilters.pageSize }] : []),
-    ...(supplierServiceFilters.search ? [{ name: 'servicesSearch', value: supplierServiceFilters.search }] : []),
-    ...(supplierServiceFilters.supplierName ? [{ name: 'servicesSupplierName', value: supplierServiceFilters.supplierName }] : []),
-    ...(supplierServiceFilters.category ? [{ name: 'servicesCategory', value: supplierServiceFilters.category }] : []),
-    ...(supplierServiceFilters.type ? [{ name: 'servicesType', value: supplierServiceFilters.type }] : []),
-    ...(supplierServiceFilters.isActiveAtSupplier ? [{ name: 'isActiveAtSupplier', value: supplierServiceFilters.isActiveAtSupplier }] : []),
     ...Object.entries(buildDraftParams(creationDraft)).map(([name, value]) => ({ name, value })),
   ];
 }

@@ -177,7 +177,7 @@ export function parseSupplierServicesParams(searchParams: Record<string, SearchP
     page: readPositiveInt(searchParams.servicesPage ?? searchParams.page),
     pageSize: readPositiveInt(searchParams.servicesPageSize ?? searchParams.pageSize),
     search: readString(searchParams.servicesSearch ?? searchParams.search),
-    supplierName: readString(searchParams.servicesSupplierName ?? searchParams.supplierName),
+    supplierName: readString(searchParams.supplierName ?? searchParams.servicesSupplierName),
     category: readString(searchParams.servicesCategory ?? searchParams.category),
     type: readString(searchParams.servicesType ?? searchParams.type),
     isActiveAtSupplier: isActiveAtSupplier === 'true' || isActiveAtSupplier === 'false' ? isActiveAtSupplier : undefined,

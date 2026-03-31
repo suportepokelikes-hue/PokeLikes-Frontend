@@ -112,6 +112,7 @@ Tasks:
 - [x] substituir a sidebar empilhada no topo em tablet/mobile por menu lateral recolhivel via botao
 - [x] corrigir a sobreposicao dos drawers sobre o header sticky e reforcar a responsividade transversal das toolbars de filtro
 - [x] remover o chip redundante de usuario do topo do shell autenticado
+- [x] simplificar os filtros do catalogo admin para busca textual ampla e selecao de fornecedor
 
 ## Phase 6: Customer Profile
 

@@ -80,6 +80,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/admin/users` agora tambem executa `POST /admin/users` e `PATCH /admin/users/{userId}` com formularios operacionais embutidos na propria listagem, sem sair do shell administrativo
 - `/admin/catalog` agora tambem executa `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}` com formularios operacionais embutidos na propria listagem, incluindo suporte a `metadata` JSON e limpeza explicita de campos anulaveis
 - `/admin/catalog` agora tambem usa `GET /admin/supplier/services` para guiar a criacao de `CatalogService` a partir de `SupplierService` sincronizado, reduzindo a necessidade de descoberta manual de IDs e limites tecnicos
+- `/admin/catalog` agora simplifica a filtragem para um unico campo de busca textual ampla e uma selecao de fornecedor, removendo os filtros secundarios para reduzir ruido operacional
 - `/admin/transactions` agora tambem executa `POST /admin/wallets/{userId}/adjustments`, permitindo credito e debito administrativos no mesmo contexto do ledger financeiro
 - o ajuste manual de carteira no admin agora explica melhor a diferenca entre adicionar saldo, remover saldo, ajuste manual e reversao manual, reduzindo erro operacional no formulario
 - o ajuste manual de carteira no admin agora deriva automaticamente o tipo do lancamento pela direcao: credito vira ajuste manual e debito vira reversao manual

@@ -16,7 +16,12 @@ export default async function AdminCatalogRoute({ searchParams }: AdminCatalogRo
   const filters = parseAdminCatalogParams(resolvedSearchParams);
   const supplierServiceFilters = parseSupplierServicesParams(resolvedSearchParams);
   const creationDraft = parseAdminCatalogCreationDraft(resolvedSearchParams);
-  const session = await requireAdminSession(buildAdminPath('/admin/catalog', filters));
+  const session = await requireAdminSession(
+    buildAdminPath('/admin/catalog', {
+      ...filters,
+      ...(supplierServiceFilters.supplierName ? { supplierName: supplierServiceFilters.supplierName } : {}),
+    }),
+  );
 
   return <AdminCatalogPage session={session} filters={filters} supplierServiceFilters={supplierServiceFilters} creationDraft={creationDraft} />;
 }
