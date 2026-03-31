@@ -16,9 +16,10 @@ import { AdminFilterBar, PaginationSummary, buildPathWithSearch } from '@/module
 type AdminUsersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   filters: AdminUsersListParams;
+  isCreateOpen?: boolean;
 };
 
-export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) {
+export async function AdminUsersPage({ session, filters, isCreateOpen = false }: AdminUsersPageProps) {
   try {
     const users = await listAdminUsers(session.accessToken, filters);
     const returnTo = buildPathWithSearch('/admin/users', {
@@ -26,71 +27,71 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
       page: filters.page ?? users.page,
       pageSize: filters.pageSize ?? users.pageSize,
     });
+    const createPath = buildPathWithSearch('/admin/users', {
+      ...filters,
+      page: filters.page ?? users.page,
+      pageSize: filters.pageSize ?? users.pageSize,
+      create: 1,
+    });
 
     return (
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / usuarios"
           title="Usuarios"
-          description="Crie usuarios e acompanhe papel e status de acesso."
+          description="Acompanhe papel, status e acesso dos usuarios."
           actions={
-            <AdminFilterBar
-              pathname="/admin/users"
-              fields={[
-                {
-                  name: 'search',
-                  label: 'Busca',
-                  type: 'search',
-                  placeholder: 'Nome ou email',
-                  defaultValue: filters.search,
-                },
-                {
-                  name: 'sortBy',
-                  label: 'Ordenar por',
-                  type: 'select',
-                  defaultValue: filters.sortBy,
-                  options: [
-                    { label: 'Nome', value: 'name' },
-                    { label: 'Email', value: 'email' },
-                    { label: 'Criacao', value: 'createdAt' },
-                  ],
-                },
-                {
-                  name: 'sortOrder',
-                  label: 'Ordem',
-                  type: 'select',
-                  defaultValue: filters.sortOrder,
-                  options: [
-                    { label: 'Desc', value: 'desc' },
-                    { label: 'Asc', value: 'asc' },
-                  ],
-                },
-                {
-                  name: 'pageSize',
-                  label: 'Pagina',
-                  type: 'select',
-                  defaultValue: filters.pageSize ?? 10,
-                  options: [
-                    { label: '10', value: '10' },
-                    { label: '20', value: '20' },
-                    { label: '50', value: '50' },
-                  ],
-                },
-              ]}
-            />
+            <>
+              <Link href={createPath} className="primary-action">
+                + Novo usuario
+              </Link>
+              <AdminFilterBar
+                pathname="/admin/users"
+                fields={[
+                  {
+                    name: 'search',
+                    label: 'Busca',
+                    type: 'search',
+                    placeholder: 'Nome ou email',
+                    defaultValue: filters.search,
+                  },
+                  {
+                    name: 'sortBy',
+                    label: 'Ordenar por',
+                    type: 'select',
+                    defaultValue: filters.sortBy,
+                    options: [
+                      { label: 'Nome', value: 'name' },
+                      { label: 'Email', value: 'email' },
+                      { label: 'Criacao', value: 'createdAt' },
+                    ],
+                  },
+                  {
+                    name: 'sortOrder',
+                    label: 'Ordem',
+                    type: 'select',
+                    defaultValue: filters.sortOrder,
+                    options: [
+                      { label: 'Desc', value: 'desc' },
+                      { label: 'Asc', value: 'asc' },
+                    ],
+                  },
+                  {
+                    name: 'pageSize',
+                    label: 'Pagina',
+                    type: 'select',
+                    defaultValue: filters.pageSize ?? 10,
+                    options: [
+                      { label: '10', value: '10' },
+                      { label: '20', value: '20' },
+                      { label: '50', value: '50' },
+                    ],
+                  },
+                ]}
+              />
+            </>
           }
         />
-
-        <section className="feedback-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Novo usuario</p>
-              <h2>Criar usuario</h2>
-            </div>
-          </div>
-          <p>Preencha os dados basicos e defina papel e status.</p>
-          <AdminUserMutationForm mode="create" action={createUserAction} returnTo={returnTo} />
-        </section>
 
         {users.items.length === 0 ? (
           <EmptyState title="Nenhum usuario encontrado" description="Nenhum usuario foi encontrado com os filtros atuais." />
@@ -131,6 +132,25 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
             />
           </>
         )}
+
+        {isCreateOpen ? (
+          <div className="admin-overlay-shell">
+            <Link href={returnTo} className="admin-overlay-backdrop" aria-label="Fechar criacao de usuario" />
+            <aside className="admin-overlay-drawer">
+              <div className="panel-heading">
+                <div>
+                  <p className="eyebrow">Novo usuario</p>
+                  <h2>Criar usuario</h2>
+                </div>
+                <Link href={returnTo} className="secondary-action">
+                  Fechar
+                </Link>
+              </div>
+              <p className="section-copy">Preencha os dados basicos e defina papel e status.</p>
+              <AdminUserMutationForm mode="create" action={createUserAction} returnTo={returnTo} />
+            </aside>
+          </div>
+        ) : null}
       </main>
     );
   } catch (error) {

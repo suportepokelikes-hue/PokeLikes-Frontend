@@ -85,6 +85,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o ajuste manual de carteira no admin agora deriva automaticamente o tipo do lancamento pela direcao: credito vira ajuste manual e debito vira reversao manual
 - quando o ajuste manual de carteira e aberto a partir do detalhe de um usuario, o `userId` fica travado no contexto atual e segue pela action como campo oculto
 - a edicao de usuario no admin nao oferece mais um checkbox separado para limpar telefone; a UX foi simplificada para focar nos campos principais de atualizacao
+- `/admin/users` agora prioriza a listagem e abre a criacao de usuario em um drawer controlado por URL, evitando expor o formulario completo como bloco fixo na tela
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora concentram as edicoes mais densas do admin em paginas dedicadas, deixando as listas primarias focadas em leitura e navegacao
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API
 - parte da logica mais sensivel das server actions de auth e admin foi extraida para helpers puros, facilitando cobertura de teste sem acoplamento ao runtime do Next

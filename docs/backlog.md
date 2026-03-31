@@ -107,6 +107,7 @@ Tasks:
 - [x] tornar o ajuste manual de carteira mais explicito na UI e remover o checkbox de limpar telefone da edicao de usuario
 - [x] simplificar ainda mais o ajuste manual de carteira derivando o tipo automaticamente pela direcao da operacao
 - [x] travar o `userId` no ajuste manual quando o fluxo ja estiver dentro do detalhe de um usuario
+- [x] mover a criacao de usuario em `/admin/users` para um drawer acionado por botao, priorizando a listagem
 
 ## Phase 6: Customer Profile
 

@@ -30,6 +30,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - o tipo do lancamento da carteira nao e mais escolhido manualmente na UI; ele agora e derivado automaticamente pela direcao da operacao
 - quando o ajuste de carteira ja nasce no detalhe de um usuario, o campo de `userId` nao fica mais editavel na UI
 - a edicao de usuario no admin nao usa mais checkbox para limpar telefone; o formulario ficou mais direto
+- `/admin/users` agora mostra a lista primeiro e abre a criacao de usuario em um drawer lateral acionado por `+ Novo usuario`
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora existem para concentrar edicao em paginas dedicadas e reduzir a densidade operacional das listas
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
 - a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`
