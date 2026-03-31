@@ -32,7 +32,6 @@ import {
   readRequiredString,
   readRole,
   readStatus,
-  readWalletAdjustmentType,
   readWalletDirection,
 } from '@/modules/admin-shell/action-helpers';
 
@@ -189,7 +188,6 @@ export async function createWalletAdjustmentAction(_: AdminActionState, formData
   const userId = readRequiredString(formData, 'userId');
   const amount = readRequiredString(formData, 'amount');
   const direction = readWalletDirection(formData);
-  const type = readWalletAdjustmentType(formData);
   const reason = readOptionalString(formData, 'reason');
 
   if (!userId || !amount || !direction) {
@@ -203,7 +201,7 @@ export async function createWalletAdjustmentAction(_: AdminActionState, formData
     const result = await createAdminWalletAdjustment(session.accessToken, userId, {
       amount,
       direction,
-      ...(type ? { type } : {}),
+      type: direction === 'credit' ? 'wallet_adjustment_admin' : 'wallet_reversal_admin',
       ...(reason ? { reason } : {}),
     });
 
