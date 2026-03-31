@@ -103,6 +103,7 @@ Tasks:
 - [x] habilitar criacao e edicao operacional de servicos em `/admin/catalog`
 - [x] integrar ajuste manual de carteira em `/admin/transactions`
 - [x] abrir detalhes dedicados para usuarios e catalogo no admin para reduzir densidade das listas
+- [x] mudar o fluxo de criacao do catalogo admin para partir de `SupplierService` sincronizado em vez de preenchimento manual completo
 
 ## Phase 6: Customer Profile
 

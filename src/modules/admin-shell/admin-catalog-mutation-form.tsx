@@ -1,6 +1,7 @@
 import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import type { AdminActionState } from '@/modules/admin-shell/actions';
+import type { AdminCatalogCreationDraft } from '@/modules/admin-shell/query';
 
 type CatalogAction = (state: AdminActionState, formData: FormData) => Promise<AdminActionState>;
 
@@ -9,25 +10,93 @@ type AdminCatalogMutationFormProps = {
   action: CatalogAction;
   returnTo: string;
   service?: CatalogServiceResource;
+  creationDraft?: AdminCatalogCreationDraft;
 };
 
-export function AdminCatalogMutationForm({ mode, action, returnTo, service }: AdminCatalogMutationFormProps) {
+export function AdminCatalogMutationForm({
+  mode,
+  action,
+  returnTo,
+  service,
+  creationDraft,
+}: AdminCatalogMutationFormProps) {
   const isCreate = mode === 'create';
   const metadataValue = service?.metadata ? JSON.stringify(service.metadata) : '';
+
+  if (isCreate && !creationDraft) {
+    return (
+      <div className="stack-list">
+        <div className="stack-item">
+          <strong>Selecione um servico sincronizado</strong>
+          <p>Escolha um item na lista acima para preencher automaticamente fornecedor, categoria, tipo e limites.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const hiddenFields = service
+    ? [{ name: 'serviceId', value: service.id }]
+    : creationDraft
+      ? [
+          { name: 'supplierServiceId', value: String(creationDraft.supplierServiceId) },
+          { name: 'supplierName', value: creationDraft.supplierName },
+          { name: 'category', value: creationDraft.category },
+          { name: 'type', value: creationDraft.type },
+          { name: 'minQuantity', value: String(creationDraft.minQuantity) },
+          { name: 'maxQuantity', value: String(creationDraft.maxQuantity) },
+        ]
+      : [];
 
   return (
     <AdminActionForm
       action={action}
-      submitLabel={isCreate ? 'Criar servico' : 'Salvar servico'}
-      pendingLabel={isCreate ? 'Criando...' : 'Salvando...'}
+      submitLabel={isCreate ? 'Publicar servico' : 'Salvar servico'}
+      pendingLabel={isCreate ? 'Publicando...' : 'Salvando...'}
       tone={isCreate ? 'primary' : 'secondary'}
       returnTo={returnTo}
-      hiddenFields={service ? [{ name: 'serviceId', value: service.id }] : []}
+      hiddenFields={hiddenFields}
     >
       <div className="admin-catalog-form">
+        {isCreate && creationDraft ? (
+          <div className="detail-card detail-card-wide">
+            <h2>Servico sincronizado</h2>
+            <dl className="detail-list">
+              <div>
+                <dt>Fornecedor</dt>
+                <dd>{creationDraft.supplierName}</dd>
+              </div>
+              <div>
+                <dt>SID</dt>
+                <dd>{creationDraft.supplierServiceId}</dd>
+              </div>
+              <div>
+                <dt>Categoria</dt>
+                <dd>{creationDraft.category}</dd>
+              </div>
+              <div>
+                <dt>Tipo</dt>
+                <dd>{creationDraft.type}</dd>
+              </div>
+              <div>
+                <dt>Faixa minima</dt>
+                <dd>{creationDraft.minQuantity}</dd>
+              </div>
+              <div>
+                <dt>Faixa maxima</dt>
+                <dd>{creationDraft.maxQuantity}</dd>
+              </div>
+            </dl>
+          </div>
+        ) : null}
+
         <label className="admin-user-field admin-user-field-wide">
-          <span>Nome</span>
-          <input type="text" name="name" defaultValue={service?.name ?? ''} placeholder="Nome publico do servico" />
+          <span>Nome publico</span>
+          <input
+            type="text"
+            name="name"
+            defaultValue={service?.name ?? creationDraft?.name ?? ''}
+            placeholder="Nome publico do servico"
+          />
         </label>
 
         <label className="admin-user-field admin-user-field-wide">
@@ -36,7 +105,7 @@ export function AdminCatalogMutationForm({ mode, action, returnTo, service }: Ad
             name="description"
             defaultValue={service?.description ?? ''}
             className="admin-catalog-textarea"
-            placeholder="Contexto operacional opcional"
+            placeholder="Descreva o servico para o catalogo publico"
           />
         </label>
 
@@ -46,26 +115,16 @@ export function AdminCatalogMutationForm({ mode, action, returnTo, service }: Ad
         </label>
 
         <label className="admin-user-field">
-          <span>Status</span>
-          <select name="status" defaultValue={service?.status ?? 'active'}>
-            <option value="active">active</option>
-            <option value="inactive">inactive</option>
-          </select>
-        </label>
-
-        <label className="admin-user-field">
           <span>Rede social</span>
           <input type="text" name="socialNetwork" defaultValue={service?.socialNetwork ?? ''} placeholder="instagram" />
         </label>
 
         <label className="admin-user-field">
-          <span>Categoria</span>
-          <input type="text" name="category" defaultValue={service?.category ?? ''} placeholder="followers" />
-        </label>
-
-        <label className="admin-user-field">
-          <span>Tipo</span>
-          <input type="text" name="type" defaultValue={service?.type ?? ''} placeholder="default" />
+          <span>Status</span>
+          <select name="status" defaultValue={service?.status ?? 'active'}>
+            <option value="active">Ativo</option>
+            <option value="inactive">Inativo</option>
+          </select>
         </label>
 
         <label className="admin-user-field">
@@ -73,49 +132,59 @@ export function AdminCatalogMutationForm({ mode, action, returnTo, service }: Ad
           <input type="number" name="sortOrder" defaultValue={service?.sortOrder ?? ''} min={0} placeholder="0" />
         </label>
 
-        <label className="admin-user-field">
-          <span>Quantidade minima</span>
-          <input type="number" name="minQuantity" defaultValue={service?.minQuantity ?? ''} min={1} placeholder="100" />
-        </label>
-
-        <label className="admin-user-field">
-          <span>Quantidade maxima</span>
-          <input type="number" name="maxQuantity" defaultValue={service?.maxQuantity ?? ''} min={1} placeholder="10000" />
-        </label>
-
-        <label className="admin-user-field">
-          <span>Fornecedor</span>
-          <input
-            type="text"
-            name="supplierName"
-            defaultValue={service?.supplierService.supplierName ?? ''}
-            placeholder="Nome do provider"
-          />
-        </label>
-
-        <label className="admin-user-field">
-          <span>Supplier service id</span>
-          <input
-            type="number"
-            name="supplierServiceId"
-            defaultValue={service?.supplierService.supplierServiceId ?? ''}
-            min={1}
-            placeholder="12345"
-          />
-        </label>
-
-        <label className="admin-user-field admin-user-field-wide">
-          <span>Metadata JSON</span>
-          <textarea
-            name="metadata"
-            defaultValue={metadataValue}
-            className="admin-catalog-textarea admin-catalog-textarea-code"
-            placeholder='{"key":"value"}'
-          />
-        </label>
-
         {!isCreate ? (
           <>
+            <label className="admin-user-field">
+              <span>Categoria</span>
+              <input type="text" name="category" defaultValue={service?.category ?? ''} placeholder="followers" />
+            </label>
+
+            <label className="admin-user-field">
+              <span>Tipo</span>
+              <input type="text" name="type" defaultValue={service?.type ?? ''} placeholder="default" />
+            </label>
+
+            <label className="admin-user-field">
+              <span>Quantidade minima</span>
+              <input type="number" name="minQuantity" defaultValue={service?.minQuantity ?? ''} min={1} placeholder="100" />
+            </label>
+
+            <label className="admin-user-field">
+              <span>Quantidade maxima</span>
+              <input type="number" name="maxQuantity" defaultValue={service?.maxQuantity ?? ''} min={1} placeholder="10000" />
+            </label>
+
+            <label className="admin-user-field">
+              <span>Fornecedor</span>
+              <input
+                type="text"
+                name="supplierName"
+                defaultValue={service?.supplierService.supplierName ?? ''}
+                placeholder="Nome do fornecedor"
+              />
+            </label>
+
+            <label className="admin-user-field">
+              <span>ID do servico no fornecedor</span>
+              <input
+                type="number"
+                name="supplierServiceId"
+                defaultValue={service?.supplierService.supplierServiceId ?? ''}
+                min={1}
+                placeholder="12345"
+              />
+            </label>
+
+            <label className="admin-user-field admin-user-field-wide">
+              <span>Metadata JSON</span>
+              <textarea
+                name="metadata"
+                defaultValue={metadataValue}
+                className="admin-catalog-textarea admin-catalog-textarea-code"
+                placeholder='{"key":"value"}'
+              />
+            </label>
+
             <label className="admin-user-toggle">
               <input type="checkbox" name="clearDescription" value="true" />
               <span>Limpar descricao ao atualizar.</span>

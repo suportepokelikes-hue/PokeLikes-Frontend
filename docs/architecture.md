@@ -79,6 +79,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - as listas administrativas agora aceitam filtros e paginacao navegavel alinhados aos query params reais da OpenAPI, com serializacao centralizada para URL, camada API e `returnTo`
 - `/admin/users` agora tambem executa `POST /admin/users` e `PATCH /admin/users/{userId}` com formularios operacionais embutidos na propria listagem, sem sair do shell administrativo
 - `/admin/catalog` agora tambem executa `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}` com formularios operacionais embutidos na propria listagem, incluindo suporte a `metadata` JSON e limpeza explicita de campos anulaveis
+- `/admin/catalog` agora tambem usa `GET /admin/supplier/services` para guiar a criacao de `CatalogService` a partir de `SupplierService` sincronizado, reduzindo a necessidade de descoberta manual de IDs e limites tecnicos
 - `/admin/transactions` agora tambem executa `POST /admin/wallets/{userId}/adjustments`, permitindo credito e debito administrativos no mesmo contexto do ledger financeiro
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora concentram as edicoes mais densas do admin em paginas dedicadas, deixando as listas primarias focadas em leitura e navegacao
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API

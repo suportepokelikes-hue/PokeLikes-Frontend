@@ -24,6 +24,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - as listas admin agora leem filtros de `searchParams`, repassam os query params reais para `src/lib/api/admin.ts` e renderizam toolbar + navegacao de pagina coerentes com a OpenAPI
 - `/admin/users` agora tambem permite criar e atualizar usuarios com base em `POST /admin/users` e `PATCH /admin/users/{userId}`, usando feedback inline por server action
 - `/admin/catalog` agora tambem permite criar e atualizar servicos com base em `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}`, incluindo `metadata` JSON e limpeza explicita de descricao/metadata
+- a criacao em `/admin/catalog` agora parte da selecao de um `SupplierService` sincronizado carregado por `GET /admin/supplier/services`, e o formulario de publicacao preenche automaticamente fornecedor, categoria, tipo e limites
 - `/admin/transactions` agora permite ajuste manual de carteira com base em `POST /admin/wallets/{userId}/adjustments`, com feedback inline e reaproveitando o filtro `userId` como contexto inicial
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora existem para concentrar edicao em paginas dedicadas e reduzir a densidade operacional das listas
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo

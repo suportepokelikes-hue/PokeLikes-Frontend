@@ -20,6 +20,16 @@ export type AdminCatalogListParams = {
   type?: string;
 };
 
+export type AdminCatalogCreationDraft = {
+  supplierServiceId: number;
+  supplierName: string;
+  name: string;
+  category: string;
+  type: string;
+  minQuantity: number;
+  maxQuantity: number;
+};
+
 export type AdminPaymentsListParams = AdminBaseListParams & {
   status?: string;
   provider?: string;
@@ -88,6 +98,30 @@ export function parseAdminCatalogParams(searchParams: Record<string, SearchParam
   };
 }
 
+export function parseAdminCatalogCreationDraft(searchParams: Record<string, SearchParamValue>): AdminCatalogCreationDraft | undefined {
+  const supplierServiceId = readPositiveInt(searchParams.createSupplierServiceId);
+  const supplierName = readString(searchParams.createSupplierName);
+  const name = readString(searchParams.createName);
+  const category = readString(searchParams.createCategory);
+  const type = readString(searchParams.createType);
+  const minQuantity = readPositiveInt(searchParams.createMinQuantity);
+  const maxQuantity = readPositiveInt(searchParams.createMaxQuantity);
+
+  if (!supplierServiceId || !supplierName || !name || !category || !type || !minQuantity || !maxQuantity) {
+    return undefined;
+  }
+
+  return {
+    supplierServiceId,
+    supplierName,
+    name,
+    category,
+    type,
+    minQuantity,
+    maxQuantity,
+  };
+}
+
 export function parseAdminPaymentsParams(searchParams: Record<string, SearchParamValue>): AdminPaymentsListParams {
   return {
     ...parseBaseListParams(searchParams),
@@ -143,9 +177,9 @@ export function parseSupplierServicesParams(searchParams: Record<string, SearchP
     page: readPositiveInt(searchParams.servicesPage ?? searchParams.page),
     pageSize: readPositiveInt(searchParams.servicesPageSize ?? searchParams.pageSize),
     search: readString(searchParams.servicesSearch ?? searchParams.search),
-    supplierName: readString(searchParams.supplierName),
-    category: readString(searchParams.category),
-    type: readString(searchParams.type),
+    supplierName: readString(searchParams.servicesSupplierName ?? searchParams.supplierName),
+    category: readString(searchParams.servicesCategory ?? searchParams.category),
+    type: readString(searchParams.servicesType ?? searchParams.type),
     isActiveAtSupplier: isActiveAtSupplier === 'true' || isActiveAtSupplier === 'false' ? isActiveAtSupplier : undefined,
   };
 }
