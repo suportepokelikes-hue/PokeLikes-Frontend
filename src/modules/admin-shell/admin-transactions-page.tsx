@@ -32,8 +32,8 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / transacoes"
-          title="Ledger financeiro do sistema."
-          description="A listagem administrativa de transacoes usa o endpoint oficial do wallet admin com direcao, saldos e referencias funcionais."
+          title="Transacoes"
+          description="Acompanhe creditos, debitos e ajustes de carteira."
           actions={
             <AdminFilterBar
               pathname="/admin/transactions"
@@ -82,7 +82,7 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
         <section className="metric-list">
           <AdminSummaryCard label="Transacoes na pagina" value={String(transactions.items.length)} meta={`${transactions.totalItems} transacoes no total`} />
           <AdminSummaryCard label="Creditos" value={String(credits)} meta={`${debits} debitos na mesma pagina`} tone="accent" />
-          <AdminSummaryCard label="Ultimo movimento" value={latestTransaction ? formatDateTime(latestTransaction) : '-'} meta="Ordenacao descendente por criacao" />
+          <AdminSummaryCard label="Ultimo movimento" value={latestTransaction ? formatDateTime(latestTransaction) : '-'} meta="Movimento mais recente" />
         </section>
 
         <section className="feedback-panel">
@@ -91,16 +91,13 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
               <p className="eyebrow">Operacao manual</p>
               <h2>Ajustar carteira do usuario</h2>
             </div>
-            <span className="panel-meta">POST /admin/wallets/{'{userId}'}/adjustments</span>
           </div>
-          <p>
-            O ajuste manual aceita apenas `userId`, `amount`, `direction`, `type` e `reason`. Use credito para lancamento administrativo e debito para reversao controlada.
-          </p>
+          <p>Use esta acao para creditar ou debitar a carteira de um usuario.</p>
           <AdminWalletAdjustmentForm action={createWalletAdjustmentAction} returnTo={returnTo} defaultUserId={filters.userId} />
         </section>
 
         {transactions.items.length === 0 ? (
-          <EmptyState title="Nenhuma transacao encontrada" description="A API nao retornou transacoes administrativas para esta consulta." />
+          <EmptyState title="Nenhuma transacao encontrada" description="Nenhuma transacao foi encontrada com os filtros atuais." />
         ) : (
           <>
             <DataTable columns={['Usuario', 'Tipo', 'Direcao', 'Valor', 'Saldo antes / depois', 'Referencia', 'Criado em']}>
@@ -155,7 +152,7 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar as transacoes admin"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista administrativa de transacoes.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de transacoes.'}
         />
       </main>
     );

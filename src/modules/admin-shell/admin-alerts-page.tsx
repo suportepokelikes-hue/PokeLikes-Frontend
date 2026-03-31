@@ -100,7 +100,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
         </section>
 
         {alerts.items.length === 0 ? (
-          <EmptyState title="Nenhum alerta encontrado" description="A API nao retornou alertas para os filtros administrativos atuais." />
+          <EmptyState title="Nenhum alerta encontrado" description="Nenhum alerta foi encontrado com os filtros atuais." />
         ) : (
           <>
             <DataTable columns={['Severidade', 'Status', 'Detalhe', 'Ocorrencias', 'Timeline', 'Contexto', 'Acao']}>
@@ -165,7 +165,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar os alertas"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista administrativa de alertas.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de alertas.'}
         />
       </main>
     );

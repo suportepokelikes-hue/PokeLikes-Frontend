@@ -33,7 +33,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
         <PageHeader
           eyebrow="Cliente autenticado"
           title={`Bem-vindo, ${session.user.name}.`}
-          description="A area do cliente agora usa dados reais de wallet, pagamentos e pedidos, mantendo o shell consistente para as proximas telas."
+          description="Acompanhe saldo, pagamentos e pedidos."
           actions={
             <>
               <Link href="/app/profile" className="secondary-action">
@@ -48,41 +48,14 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           }
         />
 
-        <section className="customer-command-grid">
-          <article className="customer-command-card">
-            <p className="eyebrow">Console pessoal</p>
-            <h2>Fluxo rapido para saldo, recarga e acompanhamento operacional.</h2>
-            <p className="section-copy">
-              O dashboard foi reorganizado para ficar mais proximo do Stitch do cliente: menos blocos equivalentes e
-              mais hierarquia entre contexto, atalhos e dados vivos.
-            </p>
-          </article>
-          <article className="customer-command-card customer-command-card-muted">
-            <div className="customer-mini-list">
-              <div>
-                <span>Role</span>
-                <strong>{session.user.role}</strong>
-              </div>
-              <div>
-                <span>Email</span>
-                <strong>{session.user.email}</strong>
-              </div>
-              <div>
-                <span>Status</span>
-                <strong>{session.user.status}</strong>
-              </div>
-            </div>
-          </article>
-        </section>
-
         <section className="customer-hero-grid">
           <article className="customer-spotlight">
             <div className="customer-spotlight-head">
-              <span className="eyebrow">Panorama rapido</span>
+              <span className="eyebrow">Saldo atual</span>
               <StatusBadge label={session.user.status} tone={session.user.status === 'active' ? 'success' : 'warning'} />
             </div>
             <h2>{formatMoney(wallet.availableBalance)}</h2>
-            <p>Saldo disponivel agora, pronto para PIX, pedidos e acompanhamento da operacao em tempo real.</p>
+            <p>Use seu saldo para pagar pedidos e acompanhe o que ainda está em andamento.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Pagamentos confirmados</span>
@@ -105,28 +78,28 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 <CreditCard size={18} strokeWidth={2.1} />
               </span>
               <strong>Gerar PIX</strong>
-              <p>Adicionar saldo e acompanhar expiracao ou confirmacao.</p>
+              <p>Adicionar saldo.</p>
             </Link>
             <Link href="/catalog" className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <ShoppingBag size={18} strokeWidth={2.1} />
               </span>
               <strong>Novo pedido</strong>
-              <p>Entrar no catalogo e criar ordem real a partir dos servicos publicados.</p>
+              <p>Comprar um servico.</p>
             </Link>
             <Link href="/app/orders" className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <ArrowRight size={18} strokeWidth={2.1} />
               </span>
               <strong>Pedidos</strong>
-              <p>Ver status assincrono e detalhes operacionais da fila atual.</p>
+              <p>Ver andamento e histórico.</p>
             </Link>
             <Link href="/app/profile" className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CircleUserRound size={18} strokeWidth={2.1} />
               </span>
               <strong>Perfil</strong>
-              <p>Conferir dados da conta e limites atuais do contrato de perfil.</p>
+              <p>Ver seus dados.</p>
             </Link>
           </div>
         </section>
@@ -149,7 +122,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             {payments.items.length === 0 ? (
               <EmptyState
                 title="Nenhum pagamento encontrado"
-                description="Quando houver cobrancas PIX, elas aparecerao aqui com status assincrono real."
+                description="Acompanhe os pagamentos PIX em andamento."
               />
             ) : (
               <DataTable columns={['ID', 'Valor', 'Status', 'Criado em']}>

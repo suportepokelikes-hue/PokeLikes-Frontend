@@ -31,7 +31,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
         <PageHeader
           eyebrow="Admin / pagamentos"
           title="Pagamentos administrativos."
-          description="A lista usa o endpoint administrativo e expoe provider, usuario, status e volume."
+          description="Acompanhe status, valor e conciliacao dos pagamentos."
           actions={
             <>
               <AdminFilterBar
@@ -92,12 +92,12 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
 
         <section className="metric-list">
           <AdminSummaryCard label="Pendentes" value={String(summary.counts.pending)} meta="Aguardando confirmacao ou conciliacao" tone="warning" />
-          <AdminSummaryCard label="Confirmados" value={String(summary.counts.confirmed)} meta="Volume confirmado pela API" tone="accent" />
-          <AdminSummaryCard label="Volume confirmado" value={formatMoney(summary.confirmedVolume)} meta="Resumo oficial de pagamentos" />
+          <AdminSummaryCard label="Confirmados" value={String(summary.counts.confirmed)} meta="Pagamentos confirmados" tone="accent" />
+          <AdminSummaryCard label="Volume confirmado" value={formatMoney(summary.confirmedVolume)} meta="Total confirmado" />
         </section>
 
         {payments.items.length === 0 ? (
-          <EmptyState title="Nenhum pagamento encontrado" description="A API nao retornou pagamentos para a listagem atual." />
+          <EmptyState title="Nenhum pagamento encontrado" description="Nenhum pagamento foi encontrado com os filtros atuais." />
         ) : (
           <>
             <DataTable columns={['ID', 'Usuario', 'Provider', 'Valor', 'Status', 'Criado em', 'Acao']}>
@@ -150,7 +150,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar os pagamentos admin"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista administrativa de pagamentos.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de pagamentos.'}
         />
       </main>
     );

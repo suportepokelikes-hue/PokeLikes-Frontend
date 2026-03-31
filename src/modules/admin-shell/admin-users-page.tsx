@@ -86,15 +86,11 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
         <section className="feedback-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Provisionamento</p>
-              <h2>Criar usuario operacional</h2>
+              <p className="eyebrow">Novo usuario</p>
+              <h2>Criar usuario</h2>
             </div>
-            <span className="panel-meta">POST /admin/users</span>
           </div>
-          <p>
-            A criacao respeita apenas os campos aceitos pelo backend: nome, email, senha, telefone, papel e status
-            inicial.
-          </p>
+          <p>Preencha os dados básicos e defina papel e status.</p>
           <AdminUserMutationForm mode="create" action={createUserAction} returnTo={returnTo} />
         </section>
 
@@ -146,7 +142,7 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar os usuarios"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista de usuarios.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de usuarios.'}
         />
       </main>
     );

@@ -47,8 +47,8 @@ export async function AdminCatalogPage({ session, filters }: AdminCatalogPagePro
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / catalogo"
-          title="Catalogo operacional do fornecedor."
-          description="A tela administrativa do catalogo segue o contrato oficial e prioriza preco publico, disponibilidade real e vinculo com o servico fornecedor."
+          title="Catalogo"
+          description="Gerencie serviços, preços e disponibilidade."
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
@@ -85,22 +85,18 @@ export async function AdminCatalogPage({ session, filters }: AdminCatalogPagePro
 
         <section className="metric-list">
           <AdminSummaryCard label="Servicos na pagina" value={String(catalog.items.length)} meta={`${catalog.totalItems} cadastrados no total`} />
-          <AdminSummaryCard label="Ativos" value={String(activeCount)} meta="Status retornado pela API" tone="accent" />
+          <AdminSummaryCard label="Ativos" value={String(activeCount)} meta="Disponíveis para venda" tone="accent" />
           <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco operacional`} tone="warning" />
         </section>
 
         <section className="feedback-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Provisionamento</p>
-              <h2>Criar servico de catalogo</h2>
+              <p className="eyebrow">Novo servico</p>
+              <h2>Criar servico</h2>
             </div>
-            <span className="panel-meta">POST /admin/catalog/services</span>
           </div>
-          <p>
-            O cadastro administrativo respeita apenas o payload do contrato: dados publicos, faixa operacional,
-            vinculo com fornecedor e metadata opcional em JSON.
-          </p>
+          <p>Defina os dados públicos, a faixa e o vínculo com o fornecedor.</p>
           <AdminCatalogMutationForm mode="create" action={createCatalogServiceAction} returnTo={returnTo} />
         </section>
 
@@ -168,7 +164,7 @@ export async function AdminCatalogPage({ session, filters }: AdminCatalogPagePro
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar o catalogo admin"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista administrativa de catalogo.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista do catalogo.'}
         />
       </main>
     );

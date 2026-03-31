@@ -68,7 +68,7 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
         </section>
 
         {audits.items.length === 0 ? (
-          <EmptyState title="Nenhum evento de auditoria" description="A API nao retornou logs de auditoria para esta consulta." />
+          <EmptyState title="Nenhum evento de auditoria" description="Nenhum evento foi encontrado com os filtros atuais." />
         ) : (
           <>
             <DataTable columns={['Acao', 'Entidade', 'Admin', 'Origem', 'Criado em', 'Payload']}>
@@ -117,7 +117,7 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar a auditoria"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou os logs administrativos de auditoria.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar os eventos de auditoria.'}
         />
       </main>
     );

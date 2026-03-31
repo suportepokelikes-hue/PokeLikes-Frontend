@@ -31,14 +31,14 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
       <main className="page page-customer">
         <PageHeader
           eyebrow="Pagamentos"
-          title="Pagamentos PIX do cliente."
-          description="A listagem reflete os estados assincronos oficiais do backend sem inventar confirmacao antecipada."
+          title="Pagamentos PIX"
+          description="Crie um PIX e acompanhe o status."
         />
 
         <section className="dashboard-grid">
           <TransactionForm
             title="Gerar cobranca PIX"
-            description={`Seu saldo atual e ${formatMoney(wallet.availableBalance)}. O PIX criado nao significa pagamento confirmado.`}
+            description={`Saldo atual: ${formatMoney(wallet.availableBalance)}.`}
             action={createPixPaymentAction}
             initialState={initialTransactionFormState}
             submitLabel="Criar PIX"
@@ -48,9 +48,8 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
           </TransactionForm>
 
           <article className="customer-note-card">
-            <strong>Regras do fluxo PIX</strong>
-            <p>Pagamento criado continua pendente ate confirmacao do backend. Expiracao e falha continuam visiveis nesta tela.</p>
-            <p>Depois de confirmar, o saldo da wallet e atualizado pelo ciclo financeiro oficial.</p>
+            <strong>Importante</strong>
+            <p>O saldo só entra depois da confirmação do pagamento.</p>
           </article>
         </section>
 
@@ -66,7 +65,7 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
               <h2>Historico PIX</h2>
-              <span className="panel-meta">Primeira pagina de pagamentos do cliente</span>
+              <span className="panel-meta">Pagamentos recentes</span>
             </div>
             <DataTable columns={['ID', 'Provider', 'Valor', 'Status', 'Expira em']}>
               {payments.items.map((payment) => (
@@ -94,7 +93,7 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
       <main className="page page-customer">
         <ErrorState
           title="Nao foi possivel carregar os pagamentos"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista de pagamentos.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar sua lista de pagamentos.'}
         />
       </main>
     );

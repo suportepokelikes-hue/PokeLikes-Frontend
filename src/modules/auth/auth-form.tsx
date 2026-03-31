@@ -85,17 +85,6 @@ export function AuthForm({
               ))}
             </ul>
           </section>
-
-          <div className="auth-metrics">
-            <article className="auth-metric-card">
-              <span>Fluxo</span>
-              <strong>Autenticacao real</strong>
-            </article>
-            <article className="auth-metric-card">
-              <span>Destino</span>
-              <strong>Cliente ou admin</strong>
-            </article>
-          </div>
         </div>
 
         <div className="auth-surface">

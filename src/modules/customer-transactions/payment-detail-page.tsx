@@ -22,7 +22,7 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
         <PageHeader
           eyebrow="Detalhe do pagamento"
           title={`Pagamento ${payment.id}`}
-          description="O detalhe mostra o ciclo real do PIX, incluindo expiracao, confirmacao e codigo de pagamento."
+          description="Acompanhe valor, status e dados do PIX."
           actions={<StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />}
         />
 
@@ -33,7 +33,7 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
               <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
             </div>
             <h2>{formatMoney(payment.amount)}</h2>
-            <p>Este valor so entra no saldo quando o backend confirmar o pagamento. Criacao do PIX nao significa credito imediato.</p>
+            <p>O saldo so muda depois da confirmacao do pagamento.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Provider</span>
@@ -51,9 +51,9 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
           </article>
 
           <article className="customer-note-card">
-            <strong>Leitura operacional</strong>
-            <p>Use este detalhe para acompanhar expiracao, confirmacao ou falha do PIX com os dados oficiais retornados pelo backend.</p>
-            <p>Se o status continuar pendente, o comportamento correto e aguardar nova confirmacao assincrona do provider.</p>
+            <strong>Importante</strong>
+            <p>Se o pagamento ainda estiver pendente, aguarde a confirmacao.</p>
+            <p>Em caso de expiracao ou falha, gere um novo PIX.</p>
           </article>
         </section>
 
@@ -113,7 +113,7 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
       <main className="page page-customer">
         <ErrorState
           title="Nao foi possivel carregar o pagamento"
-          description="A API nao retornou os dados esperados para este pagamento."
+          description="Nao foi possivel buscar os dados deste pagamento."
         />
       </main>
     );

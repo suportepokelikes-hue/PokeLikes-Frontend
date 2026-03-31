@@ -15,20 +15,19 @@ export function getLoginPageContent(options: {
 
   return {
     brandLabel: 'Likes Uai',
-    title: 'Entre para continuar no cliente ou no admin.',
+    title: 'Entre na sua conta.',
     eyebrow: 'Acesso',
-    description:
-      'A autenticacao usa cookies HTTP-only e redireciona voce automaticamente para a area correta conforme o papel retornado pelo backend.',
+    description: 'Use seu email e senha para entrar.',
     notice,
     returnTo,
-    panelTitle: 'O que acontece depois do login',
-    panelCopy: 'Este fluxo e real e ja serve para validar a sessao pela UI, sem mocks nem bootstrap artificial.',
+    panelTitle: 'Acesso',
+    panelCopy: 'Entre para seguir para a area correspondente ao seu perfil.',
     panelItems: [
-      'cliente segue para /app com wallet, pagamentos e pedidos',
-      'admin segue para /admin com modulos operacionais e monitoramento',
-      'falhas de credencial retornam feedback direto do servidor na propria tela',
+      'clientes acessam saldo, pagamentos e pedidos',
+      'admins acessam o painel operacional',
+      'erros de acesso aparecem nesta tela',
     ],
-    footnote: 'Use as mesmas credenciais cadastradas no backend V1. O acesso permanece em cookies seguros de sessao.',
+    footnote: 'Se voce ja tem cadastro, entre com as credenciais da sua conta.',
     fields: [
       {
         name: 'email' as const,
@@ -37,7 +36,7 @@ export function getLoginPageContent(options: {
         placeholder: 'voce@likesuai.com',
         autoComplete: 'email',
         inputMode: 'email' as const,
-        description: 'Informe o email usado no login do backend.',
+        description: 'Informe o email da sua conta.',
       },
       {
         name: 'password' as const,
@@ -45,7 +44,7 @@ export function getLoginPageContent(options: {
         type: 'password' as const,
         placeholder: 'Sua senha',
         autoComplete: 'current-password',
-        description: 'A senha e validada diretamente pelo endpoint /auth/login.',
+        description: 'Informe a senha da sua conta.',
       },
     ],
     submitLabel: 'Entrar',
@@ -65,20 +64,19 @@ export function getRegisterPageContent(options: {
 
   return {
     brandLabel: 'Likes Uai',
-    title: 'Crie sua conta para iniciar wallet, pagamentos e pedidos.',
+    title: 'Crie sua conta.',
     eyebrow: 'Cadastro',
-    description:
-      'O cadastro segue estritamente o contrato atual do backend: nome, email, telefone e senha. Se o servidor aprovar, a sessao ja nasce autenticada.',
+    description: 'Preencha seus dados para comecar.',
     notice,
     returnTo,
-    panelTitle: 'Cadastro real de cliente',
-    panelCopy: 'A rota /auth/register cria conta de cliente. Nao existe auto-onboarding administrativo por esta interface.',
+    panelTitle: 'Cadastro',
+    panelCopy: 'Depois do cadastro, sua conta ja fica pronta para uso.',
     panelItems: [
-      'apos sucesso, a sessao e aberta automaticamente e voce cai em /app',
-      'nome, email, telefone e senha sao enviados sem campos adicionais fora da OpenAPI',
-      'erros de validacao do backend aparecem inline para facilitar teste manual',
+      'acesso a saldo, pagamentos e pedidos',
+      'entrada imediata na area do cliente',
+      'mensagens de erro exibidas na propria tela',
     ],
-    footnote: 'Este formulario cria apenas conta de cliente. Contas admin continuam dependendo do fluxo operacional do backend.',
+    footnote: 'Este cadastro cria conta de cliente.',
     fields: [
       {
         name: 'name' as const,
@@ -86,7 +84,7 @@ export function getRegisterPageContent(options: {
         type: 'text' as const,
         placeholder: 'Seu nome completo',
         autoComplete: 'name',
-        description: 'Use o nome que deve aparecer na area autenticada.',
+        description: 'Este nome sera exibido na sua conta.',
       },
       {
         name: 'email' as const,
@@ -95,7 +93,7 @@ export function getRegisterPageContent(options: {
         placeholder: 'voce@exemplo.com',
         autoComplete: 'email',
         inputMode: 'email' as const,
-        description: 'Sera usado para login e identificacao da conta.',
+        description: 'Sera usado para entrar na sua conta.',
       },
       {
         name: 'phone' as const,
@@ -104,7 +102,7 @@ export function getRegisterPageContent(options: {
         placeholder: '(11) 99999-9999',
         autoComplete: 'tel',
         inputMode: 'tel' as const,
-        description: 'Informe um telefone valido conforme a expectativa atual do backend.',
+        description: 'Informe um telefone valido.',
       },
       {
         name: 'password' as const,
@@ -112,7 +110,7 @@ export function getRegisterPageContent(options: {
         type: 'password' as const,
         placeholder: 'Crie uma senha',
         autoComplete: 'new-password',
-        description: 'A senha e enviada ao endpoint /auth/register e nao fica exposta na UI.',
+        description: 'Crie uma senha para acessar sua conta.',
       },
     ],
     submitLabel: 'Criar conta',

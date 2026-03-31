@@ -26,7 +26,7 @@ export async function AdminUserDetailPage({ session, userId }: AdminUserDetailPa
         <PageHeader
           eyebrow="Admin / usuarios / detalhe"
           title={user.name}
-          description="O detalhe do usuario concentra edicao operacional e ajuste de carteira em um fluxo menos denso do que a tabela principal."
+          description="Edite dados do usuario e ajuste a carteira em um unico lugar."
           actions={
             <>
               <StatusBadge label={user.role} tone={user.role === 'admin' ? 'info' : 'neutral'} />
@@ -67,7 +67,7 @@ export async function AdminUserDetailPage({ session, userId }: AdminUserDetailPa
 
           <article className="detail-card">
             <h2>Atualizar usuario</h2>
-            <p className="section-copy">A senha so e enviada se voce preencher um novo valor. O email permanece somente leitura no contrato atual.</p>
+            <p className="section-copy">Preencha uma nova senha apenas se quiser altera-la. O email permanece somente leitura.</p>
             <AdminUserMutationForm mode="update" action={updateUserAction} returnTo={returnTo} user={user} />
           </article>
 
@@ -88,7 +88,7 @@ export async function AdminUserDetailPage({ session, userId }: AdminUserDetailPa
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar o detalhe do usuario"
-          description="A API nao retornou os dados esperados para este usuario administrativo."
+          description="Nao foi possivel buscar os dados deste usuario."
         />
       </main>
     );

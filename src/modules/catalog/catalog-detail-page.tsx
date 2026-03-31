@@ -29,7 +29,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
         <PageHeader
           eyebrow="Detalhe do servico"
           title={service.name}
-          description={service.description || 'Servico sem descricao detalhada publicada no contrato atual.'}
+          description={service.description || 'Confira os dados principais deste servico.'}
           actions={
             <div className="page-actions">
               <StatusBadge label={service.availability.providerStatus} tone={mapAvailabilityTone(service)} />
@@ -50,7 +50,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
               />
             </div>
             <h2>{formatMoney(service.publicPrice)}</h2>
-            <p>Preco publico real para um servico ligado a fornecedor, com limites e estado operacional vindos da API.</p>
+            <p>Confira preco, disponibilidade e faixa antes de comprar.</p>
             <div className="public-highlight-list">
               <div>
                 <span>Rede</span>
@@ -74,36 +74,9 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
           </article>
 
           <article className="public-note-card">
-            <strong>Leitura de availability</strong>
-            <p>Se `isPurchasable` estiver falso, a tela mostra o motivo operacional e evita mascarar indisponibilidade do provider.</p>
-            <p>Quando autenticado como cliente, o checkout abaixo ja usa os campos reais suportados por `POST /me/orders`.</p>
-          </article>
-        </section>
-
-        <section className="journey-grid">
-          <article className="journey-card">
-            <p className="eyebrow">Resumo rapido</p>
-            <h2>Antes de comprar, confira o estado operacional do servico.</h2>
-            <p className="section-copy">
-              O Stitch privilegia blocos de leitura curta e densidade controlada. Por isso o detalhe agora abre com
-              preco, faixa, disponibilidade e contexto do fornecedor antes do formulario.
-            </p>
-          </article>
-          <article className="journey-card">
-            <ol className="journey-steps">
-              <li>
-                <strong>1. Validar faixa</strong>
-                <span>Quantidade minima e maxima seguem exatamente o contrato do servico.</span>
-              </li>
-              <li>
-                <strong>2. Conferir availability</strong>
-                <span>Provider status e reason continuam visiveis antes da compra.</span>
-              </li>
-              <li>
-                <strong>3. Entrar no checkout</strong>
-                <span>O formulario so aparece para cliente autenticado e envia apenas campos aceitos pela API.</span>
-              </li>
-            </ol>
+            <strong>Antes de comprar</strong>
+            <p>Se o servico estiver indisponivel, o motivo aparece nesta tela.</p>
+            <p>Entre com sua conta para seguir com o pedido.</p>
           </article>
         </section>
 
@@ -131,18 +104,18 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
           </article>
 
           <article className="detail-card">
-            <h2>Availability operacional</h2>
+            <h2>Disponibilidade</h2>
             <dl className="detail-list">
               <div>
-                <dt>Purchasable</dt>
+                <dt>Disponivel para compra</dt>
                 <dd>{service.availability.isPurchasable ? 'Sim' : 'Nao'}</dd>
               </div>
               <div>
-                <dt>Provider status</dt>
+                <dt>Status do fornecedor</dt>
                 <dd>{service.availability.providerStatus}</dd>
               </div>
               <div>
-                <dt>Reason</dt>
+                <dt>Motivo</dt>
                 <dd>{service.availability.reason}</dd>
               </div>
               <div>
@@ -160,7 +133,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                 <dd>{service.supplierService.supplierName}</dd>
               </div>
               <div>
-                <dt>Supplier service ID</dt>
+                <dt>ID do servico no fornecedor</dt>
                 <dd>{service.supplierService.supplierServiceId}</dd>
               </div>
               <div>
@@ -178,7 +151,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
             {session.status === 'authenticated' && session.user.role === 'customer' ? (
               <TransactionForm
                 title="Criar pedido"
-                description="O checkout usa apenas os campos suportados pelo contrato atual de criacao de pedidos."
+                description="Preencha os dados do pedido para continuar."
                 action={createOrderAction}
                 initialState={initialTransactionFormState}
                 submitLabel="Confirmar pedido"
@@ -219,7 +192,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
             ) : (
               <div className="stack-item">
                 <strong>Quer comprar este servico?</strong>
-                <p>Entre como cliente para criar um pedido real a partir deste item do catalogo.</p>
+                <p>Entre como cliente para criar um pedido a partir deste item.</p>
                 <div className="page-actions">
                   <Link href={getLoginPath({ reason: 'required', returnTo })} className="primary-action">
                     Entrar
@@ -243,7 +216,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
       <main className="page page-public">
         <ErrorState
           title="Nao foi possivel carregar o servico"
-          description="A API nao retornou os dados esperados para este item do catalogo."
+          description="Nao foi possivel buscar os dados deste servico."
         />
       </main>
     );

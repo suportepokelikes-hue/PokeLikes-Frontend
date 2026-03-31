@@ -98,6 +98,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - a marca visual agora passa a usar um asset real em `public/brand/logo.jpeg` nos pontos principais de branding do app, substituindo monogramas e lockups puramente tipograficos
 - a iconografia compartilhada agora passa a usar `lucide-react` no shell autenticado, substituindo os icones CSS provisórios e abrindo um caminho mais consistente para os proximos ajustes de UX
 - essa mesma base de iconografia agora comeca a subir para estados compartilhados e jornadas principais, reforcando CTA, empty/error e leitura de cards sem depender apenas de texto
+- a copy das telas principais foi simplificada para cortar rotulos internos de sistema, explicacoes de arquitetura vazando para a UI e blocos redundantes de contexto nas areas publica, cliente e admin
 
 ## Implemented Structure
 
@@ -165,12 +166,14 @@ src/
 - status de sessao, disponibilidade e estados assincronos continuam sendo parte central da UX
 - a area do cliente deve priorizar clareza de fluxo para wallet, PIX e pedidos
 - a area admin deve priorizar densidade informacional e observabilidade operacional
+- a direcao de conteudo agora privilegia linguagem de tarefa em vez de linguagem de implementacao: menos explicacao tecnica, menos repeticao e mais foco em decisao e acao
 - a area admin consolidou um shell unico com navegacao por modulo e tabelas reutilizaveis para catalogo, fornecedores, alertas, auditoria e transacoes
 - a referencia visual dominante agora e a linguagem “architectural minimalist” dos exports do Stitch em `docs/stitch_cliente_dashboard`, com sidebar fixa, topo leve, cards tonais e hierarquia editorial
 
 ## Remaining Direction
 
 - a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
+- a proxima etapa de UX deve revisar hierarquia de conteudo, ordem dos blocos e CTA nas jornadas principais depois da limpeza editorial
 - a proxima etapa deve consolidar a camada E2E com massa de teste estavel e ampliar os cenarios administrativos mais sensiveis ja sobre a nova base visual
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`

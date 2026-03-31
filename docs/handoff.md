@@ -43,6 +43,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - a logo real da marca agora vive em `public/brand/logo.jpeg` e ja substitui a marca fake/textual nos shells principais, auth e home publica
 - o shell autenticado agora usa `lucide-react` para iconografia real de navegacao e busca, no lugar dos icones desenhados por CSS na fase anterior
 - a iconografia real agora tambem comeca a aparecer em estados compartilhados (`empty/error`) e nas jornadas principais de home publica, dashboard do cliente e entrada do admin
+- a copy das telas principais acabou de passar por uma limpeza editorial para remover linguagem tecnica, rotulos internos como "workspace" e blocos repetitivos de contexto
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
@@ -72,7 +73,7 @@ Toda nova sessao do Codex neste repositorio deve:
 ## Expected First Implementation Step
 
 - revisar o novo alinhamento visual do frontend contra os PNGs/code.html do Stitch e corrigir os pontos que ainda destoarem
-- aprofundar a proxima rodada em conteudo e UX agora que a base visual e os microdetalhes estao mais estaveis
+- aprofundar a proxima rodada em conteudo e UX agora que a base visual, os microdetalhes e a limpeza editorial estao mais estaveis
 - expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
 - revisar presets e refinamento visual dos filtros administrativos agora que a navegacao esta funcional
 - implementar criacao e edicao de servicos em `/admin/catalog`

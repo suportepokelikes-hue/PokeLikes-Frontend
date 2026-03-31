@@ -24,7 +24,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         <PageHeader
           eyebrow="Admin / pedidos / detalhe"
           title={`Pedido ${order.id}`}
-          description="O detalhe administrativo expande o estado comercial e tecnico do pedido sem esconder carga, remains ou erros do fornecedor."
+          description="Veja status, cliente e atualizacoes deste pedido."
           actions={
             <>
               <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
@@ -79,19 +79,19 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 <dd>{order.supplier.provider}</dd>
               </div>
               <div>
-                <dt>Service ID</dt>
+                <dt>ID do servico</dt>
                 <dd>{order.supplier.serviceId}</dd>
               </div>
               <div>
-                <dt>API order ID</dt>
+                <dt>ID do pedido no fornecedor</dt>
                 <dd>{order.supplier.apiOrderId ?? '-'}</dd>
               </div>
               <div>
-                <dt>Estimated charge</dt>
+                <dt>Custo estimado</dt>
                 <dd>{formatMoney(order.supplier.estimatedCharge)}</dd>
               </div>
               <div>
-                <dt>Actual charge</dt>
+                <dt>Custo real</dt>
                 <dd>{formatMoney(order.supplier.actualCharge)}</dd>
               </div>
               <div>
@@ -130,7 +130,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 ))}
               </div>
             ) : (
-              <p className="section-copy">O backend ainda nao retornou eventos para este pedido.</p>
+              <p className="section-copy">Ainda nao ha atualizacoes para este pedido.</p>
             )}
           </article>
         </section>
@@ -145,7 +145,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar o detalhe do pedido"
-          description="A API nao retornou os dados esperados para este pedido administrativo."
+          description="Nao foi possivel buscar os dados deste pedido."
         />
       </main>
     );

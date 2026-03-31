@@ -90,7 +90,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
             </div>
 
             {providers.items.length === 0 ? (
-              <EmptyState title="Nenhum provider monitorado" description="A API nao retornou providers para a monitoracao administrativa." />
+              <EmptyState title="Nenhum fornecedor encontrado" description="Nenhum fornecedor foi encontrado com os filtros atuais." />
             ) : (
               <DataTable columns={['Fornecedor', 'Status', 'Saldo', 'Ultima checagem']}>
                 {providers.items.map((provider) => (
@@ -250,7 +250,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
           />
 
           {services.items.length === 0 ? (
-            <EmptyState title="Nenhum servico sincronizado" description="A API nao retornou servicos do fornecedor para a listagem atual." />
+            <EmptyState title="Nenhum servico sincronizado" description="Nenhum servico foi encontrado com os filtros atuais." />
           ) : (
             <>
               <DataTable columns={['Fornecedor / SID', 'Servico', 'Categoria / tipo', 'Rate', 'Faixa', 'Flags', 'Sync']} >
@@ -321,7 +321,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar a operacao de fornecedores"
-          description={error instanceof ApiClientError ? error.message : 'A API nao respondeu aos endpoints de fornecedores.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar os dados de fornecedores.'}
         />
       </main>
     );

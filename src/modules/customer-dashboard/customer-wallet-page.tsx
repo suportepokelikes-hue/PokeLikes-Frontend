@@ -26,18 +26,18 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
       <main className="page page-customer">
         <PageHeader
           eyebrow="Carteira"
-          title="Saldo e transacoes da carteira."
-          description="A tela usa wallet e extrato reais da API para exibir saldo disponivel e movimentacoes recentes."
+          title="Carteira"
+          description="Veja seu saldo e as movimentações mais recentes."
         />
 
         <section className="customer-hero-grid">
           <article className="customer-spotlight">
             <div className="customer-spotlight-head">
-              <span className="eyebrow">Disponivel</span>
+              <span className="eyebrow">Saldo</span>
               <span className="panel-meta">Wallet {wallet.id}</span>
             </div>
             <h2>{formatMoney(wallet.availableBalance)}</h2>
-            <p>O saldo exibido aqui vem direto do resumo oficial da carteira do cliente.</p>
+            <p>Seu saldo disponível para usar nos pedidos.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Creditos na pagina</span>
@@ -55,9 +55,8 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
           </article>
 
           <article className="customer-note-card">
-            <strong>Ciclo financeiro</strong>
-            <p>Saldo nao muda ao gerar o PIX. O credito so entra quando o backend confirmar o pagamento.</p>
-            <p>Use pagamentos e detalhe do PIX para acompanhar expiracao, confirmacao e falha.</p>
+            <strong>Importante</strong>
+            <p>O saldo só muda quando o pagamento for confirmado.</p>
           </article>
         </section>
 
@@ -73,7 +72,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
               <h2>Extrato recente</h2>
-              <span className="panel-meta">Primeira pagina do endpoint de transacoes</span>
+              <span className="panel-meta">Movimentações mais recentes</span>
             </div>
             <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>
               {transactions.items.map((transaction) => (
@@ -97,7 +96,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
       <main className="page page-customer">
         <ErrorState
           title="Nao foi possivel carregar a carteira"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou wallet e transacoes.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar saldo e movimentacoes.'}
         />
       </main>
     );

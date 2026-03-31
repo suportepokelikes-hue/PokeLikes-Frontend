@@ -5,7 +5,7 @@ export default async function AdminLayout({ children }: Readonly<{ children: Rea
   const session = await requireAdminSession();
 
   return (
-    <AreaShell area="admin" user={session.user} title="Workspace administrativo">
+    <AreaShell area="admin" user={session.user} title="Admin">
       {children}
     </AreaShell>
   );

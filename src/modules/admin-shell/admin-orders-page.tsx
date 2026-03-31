@@ -33,7 +33,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         <PageHeader
           eyebrow="Admin / pedidos"
           title="Pedidos administrativos."
-          description="A listagem usa o endpoint oficial de pedidos admin e mantem visivel o status operacional."
+          description="Acompanhe status, fornecedor e cobranca dos pedidos."
           actions={
             <>
               <AdminFilterBar
@@ -99,7 +99,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         </section>
 
         {orders.items.length === 0 ? (
-          <EmptyState title="Nenhum pedido encontrado" description="A API nao retornou pedidos para a listagem atual." />
+          <EmptyState title="Nenhum pedido encontrado" description="Nenhum pedido foi encontrado com os filtros atuais." />
         ) : (
           <>
             <DataTable columns={['ID', 'Usuario', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
@@ -152,7 +152,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar os pedidos admin"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista administrativa de pedidos.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de pedidos.'}
         />
       </main>
     );

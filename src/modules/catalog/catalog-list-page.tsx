@@ -25,21 +25,18 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
       <main className="page page-public">
         <PageHeader
           eyebrow="Catalogo publico"
-          title="Servicos reais disponiveis no backend."
-          description="A listagem publica respeita o contrato da API e destaca availability, preco e limites sem recalculo local."
+          title="Servicos disponiveis"
+          description="Explore os servicos disponiveis e filtre o que voce precisa."
           actions={<CatalogFilterBar initialValues={searchParams} />}
         />
 
         <section className="catalog-overview-grid">
           <article className="catalog-spotlight">
             <div className="catalog-spotlight-head">
-              <span className="eyebrow">Radar da pagina</span>
+              <span className="eyebrow">Catalogo</span>
               <strong>{response.totalItems} servicos publicados</strong>
             </div>
-            <p>
-              O catalogo prioriza a mesma hierarquia do Stitch: contexto primeiro, cards com leitura rapida depois e
-              availability sempre exposta como parte central da compra.
-            </p>
+            <p>Veja o que esta disponivel, o que precisa de atencao e em qual pagina voce esta.</p>
             <div className="catalog-summary-strip">
               <div>
                 <span>Compraveis agora</span>
@@ -59,9 +56,8 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
           </article>
 
           <article className="public-note-card catalog-note-card">
-            <strong>Leitura operacional</strong>
-            <p>Itens degradados continuam visiveis para nao mascarar risco de provider durante a avaliacao do catalogo.</p>
-            <p>O detalhe do servico preserva a mesma leitura de availability e leva direto ao checkout autenticado.</p>
+            <strong>Antes de comprar</strong>
+            <p>Confira disponibilidade, faixa minima e maxima e status do servico.</p>
           </article>
         </section>
 
@@ -69,25 +65,22 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
           <article className="public-bento-card">
             <span>Itens na pagina</span>
             <strong>{response.items.length}</strong>
-            <p>{response.totalItems} servicos no total retornados pela API.</p>
+            <p>{response.totalItems} servicos no total.</p>
           </article>
           <article className="public-bento-card">
             <span>Compraveis</span>
             <strong>{purchasableCount}</strong>
-            <p>Servicos prontos para checkout sem bloqueio operacional do provider.</p>
+            <p>Servicos prontos para checkout.</p>
           </article>
           <article className="public-bento-card">
             <span>Com atencao</span>
             <strong>{degradedCount}</strong>
-            <p>Itens degradados ou indisponiveis nesta pagina do catalogo.</p>
+            <p>Itens degradados ou indisponiveis nesta pagina.</p>
           </article>
         </section>
 
         {response.items.length === 0 ? (
-          <EmptyState
-            title="Nenhum servico encontrado"
-            description="Ajuste a busca ou os filtros para explorar outros servicos do catalogo."
-          />
+          <EmptyState title="Nenhum servico encontrado" description="Ajuste a busca ou os filtros para explorar outros servicos." />
         ) : (
           <>
             <section className="catalog-grid">
@@ -108,15 +101,8 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
   } catch (error) {
     return (
       <main className="page page-public">
-        <PageHeader
-          eyebrow="Catalogo publico"
-          title="Servicos reais disponiveis no backend."
-          description="A listagem publica respeita o contrato da API e destaca availability, preco e limites sem recalculo local."
-        />
-        <ErrorState
-          title="Nao foi possivel carregar o catalogo"
-          description={getErrorMessage(error, 'Verifique a disponibilidade da API do backend e tente novamente.')}
-        />
+        <PageHeader eyebrow="Catalogo publico" title="Servicos disponiveis" description="Veja preco, disponibilidade e filtros do catalogo." />
+        <ErrorState title="Nao foi possivel carregar o catalogo" description={getErrorMessage(error, 'Tente novamente em instantes.')} />
       </main>
     );
   }
@@ -135,14 +121,12 @@ function CatalogCard({ service }: { service: CatalogServiceResource }) {
             {service.socialNetwork} / {service.category} / {service.type}
           </span>
         </div>
-        <span className="catalog-meta">
-          {service.supplierService.supplierName}
-        </span>
+        <span className="catalog-meta">{service.supplierService.supplierName}</span>
       </div>
 
       <div className="catalog-card-body">
         <h2>{service.name}</h2>
-        <p>{service.description || 'Servico sem descricao publica informada no contrato atual.'}</p>
+        <p>{service.description || 'Servico sem descricao publicada.'}</p>
       </div>
 
       <div className="catalog-card-foot">
@@ -162,7 +146,7 @@ function CatalogCard({ service }: { service: CatalogServiceResource }) {
           </dd>
         </div>
         <div>
-          <dt>Provider</dt>
+          <dt>Motivo</dt>
           <dd>{service.availability.reason}</dd>
         </div>
       </dl>
@@ -187,13 +171,7 @@ function CatalogFilterBar({ initialValues }: { initialValues: CatalogListParams 
         defaultValue={initialValues.socialNetwork}
         className="toolbar-input"
       />
-      <input
-        type="text"
-        name="category"
-        placeholder="Categoria"
-        defaultValue={initialValues.category}
-        className="toolbar-input"
-      />
+      <input type="text" name="category" placeholder="Categoria" defaultValue={initialValues.category} className="toolbar-input" />
       <input type="text" name="type" placeholder="Tipo" defaultValue={initialValues.type} className="toolbar-input" />
       <button type="submit" className="primary-action">
         Filtrar

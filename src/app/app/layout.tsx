@@ -5,7 +5,7 @@ export default async function CustomerLayout({ children }: Readonly<{ children: 
   const session = await requireCustomerSession();
 
   return (
-    <AreaShell area="customer" user={session.user} title="Workspace do cliente">
+    <AreaShell area="customer" user={session.user} title="Minha conta">
       {children}
     </AreaShell>
   );

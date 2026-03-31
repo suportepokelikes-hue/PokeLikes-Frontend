@@ -19,9 +19,9 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
     return (
       <main className="page page-admin">
         <PageHeader
-          eyebrow="Admin operacional"
-          title="Resumo operacional em tempo real."
-          description="O dashboard administrativo agora usa o endpoint oficial de resumo para usuarios, pagamentos, pedidos, alertas e fornecedores."
+          eyebrow="Admin / resumo"
+          title="Resumo"
+          description="Acompanhe alertas, pagamentos e fornecedores."
         />
 
         <section className="metric-list">

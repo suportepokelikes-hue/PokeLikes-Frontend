@@ -22,7 +22,7 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
         <PageHeader
           eyebrow="Detalhe do pedido"
           title={`Pedido ${order.id}`}
-          description="O detalhe do pedido mostra status, carga financeira e estado tecnico do fornecedor sem mascarar erros."
+          description="Acompanhe status, valor e atualizacoes do pedido."
           actions={<StatusBadge label={order.status} tone={mapOrderTone(order.status)} />}
         />
 
@@ -33,7 +33,7 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
               <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
             </div>
             <h2>{order.catalogService?.name || 'Servico nao associado'}</h2>
-            <p>O pedido continua exibindo estado comercial e tecnico ao mesmo tempo, sem esconder remains, fila do fornecedor ou erro operacional.</p>
+            <p>Veja o andamento do pedido e os dados mais importantes em um so lugar.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Quantidade</span>
@@ -51,9 +51,9 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
           </article>
 
           <article className="customer-note-card">
-            <strong>Estado tecnico</strong>
-            <p>Se houver `apiOrderId`, remains ou mensagem de erro, eles aparecem aqui como vieram do backend.</p>
-            <p>Eventos vazios nao sao mascarados: quando o backend ainda nao retornar timeline, a tela deixa esse ponto explicito.</p>
+            <strong>Importante</strong>
+            <p>Se houver atraso, falha ou atualizacao do fornecedor, isso aparece neste detalhe.</p>
+            <p>Quando nao houver eventos, a linha do tempo ficara vazia.</p>
           </article>
         </section>
 
@@ -131,7 +131,7 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
                 ))}
               </div>
             ) : (
-              <p className="section-copy">O backend ainda nao retornou eventos para este pedido.</p>
+              <p className="section-copy">Ainda nao ha atualizacoes para este pedido.</p>
             )}
           </article>
         </section>
@@ -146,7 +146,7 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
       <main className="page page-customer">
         <ErrorState
           title="Nao foi possivel carregar o pedido"
-          description="A API nao retornou os dados esperados para este pedido."
+          description="Nao foi possivel buscar os dados deste pedido."
         />
       </main>
     );

@@ -28,7 +28,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
         <PageHeader
           eyebrow="Admin / catalogo / detalhe"
           title={service.name}
-          description="A pagina dedicada concentra a edicao do servico e deixa a listagem principal focada em leitura operacional."
+          description="Edite preco, disponibilidade e dados do servico."
           actions={
             <>
               <StatusBadge label={service.status} tone={service.status === 'active' ? 'success' : 'neutral'} />
@@ -66,7 +66,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
                 <dd>{service.sortOrder}</dd>
               </div>
               <div>
-                <dt>Availability</dt>
+                <dt>Disponibilidade</dt>
                 <dd>{service.availability.reason}</dd>
               </div>
               <div>
@@ -84,7 +84,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
                 <dd>{service.supplierService.supplierName}</dd>
               </div>
               <div>
-                <dt>Supplier service ID</dt>
+                <dt>ID do servico no fornecedor</dt>
                 <dd>{service.supplierService.supplierServiceId}</dd>
               </div>
               <div>
@@ -100,7 +100,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
 
           <article className="detail-card detail-card-wide">
             <h2>Atualizar servico</h2>
-            <p className="section-copy">A atualizacao usa o endpoint admin de PATCH e reaproveita o detalhe publico apenas como leitura base do recurso.</p>
+            <p className="section-copy">Ajuste os dados do servico e salve quando terminar.</p>
             <AdminCatalogMutationForm mode="update" action={updateCatalogServiceAction} returnTo={returnTo} service={service} />
           </article>
         </section>
@@ -115,7 +115,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar o detalhe do servico"
-          description="A API nao retornou os dados esperados para este servico de catalogo."
+          description="Nao foi possivel buscar os dados deste servico."
         />
       </main>
     );

@@ -15,22 +15,22 @@ const publicLinks: ShellLink[] = [
   {
     href: '/catalog',
     label: 'Catalogo',
-    description: 'Listagem publica real conectada ao endpoint de catalogo e ao estado de availability.',
+    description: 'Servicos publicos com status e disponibilidade.',
   },
   {
     href: '/',
     label: 'Area publica',
-    description: 'Base institucional e ponto de entrada do catalogo, auth e estados operacionais.',
+    description: 'Entrada para catalogo, login e cadastro.',
   },
   {
     href: '/app',
     label: 'Area do cliente',
-    description: 'Shell autenticado para wallet, pagamentos PIX, pedidos e sessao do usuario.',
+    description: 'Saldo, pagamentos e pedidos.',
   },
   {
     href: '/admin',
     label: 'Area admin',
-    description: 'Shell operacional para monitoramento, conciliacao e modulos administrativos.',
+    description: 'Operacao, monitoramento e controle.',
   },
 ];
 
@@ -39,8 +39,8 @@ export function PublicHome({ session }: PublicHomeProps) {
   const primaryHref = session.status === 'authenticated' ? (session.user.role === 'admin' ? '/admin' : '/app') : '/login';
   const primaryLabel = session.status === 'authenticated' ? 'Continuar sessao' : 'Entrar';
   const metrics: ShellMetric[] = [
-    { label: 'Contrato fonte', value: 'OpenAPI V1 local' },
-    { label: 'Backend base URL', value: apiBaseUrl },
+    { label: 'Catalogo', value: 'Disponivel' },
+    { label: 'Base da API', value: apiBaseUrl },
     {
       label: 'Sessao',
       value: getSessionLabel(session),
@@ -60,11 +60,8 @@ export function PublicHome({ session }: PublicHomeProps) {
               <p className="eyebrow">Likes Uai Platform</p>
             </div>
           </div>
-          <h1>{appName} para catalogo publico, compra autenticada e operacao administrativa real.</h1>
-          <p className="lede">
-            A area publica ja conversa com a OpenAPI local, mostra servicos reais do catalogo e encaminha o usuario
-            para login, wallet, pagamentos e pedidos sem inventar fluxo fora do backend.
-          </p>
+          <h1>{appName} para comprar, acompanhar pedidos e operar o painel.</h1>
+          <p className="lede">Entre, explore o catalogo e siga para a area certa sem perder o contexto.</p>
 
           <div className="public-hero-actions">
             <Link href={primaryHref} className="primary-action">
@@ -85,18 +82,6 @@ export function PublicHome({ session }: PublicHomeProps) {
             </Link>
           </div>
 
-          <div className="public-overview-grid">
-            <article className="public-overview-card">
-              <span>Entrada recomendada</span>
-              <strong>Comece pelo catalogo</strong>
-              <p>Valide availability, preco, limites e a transicao real para checkout autenticado.</p>
-            </article>
-            <article className="public-overview-card">
-              <span>Operacao real</span>
-              <strong>Sem mocks na jornada</strong>
-              <p>Login, PIX, pedidos e admin seguem para o backend V1 com os estados operacionais verdadeiros.</p>
-            </article>
-          </div>
         </div>
 
         <div className="status-panel">
@@ -112,57 +97,30 @@ export function PublicHome({ session }: PublicHomeProps) {
         </div>
       </section>
 
-      <section className="journey-grid">
-        <article className="journey-card">
-          <p className="eyebrow">Jornada publica</p>
-          <h2>Descubra, valide disponibilidade e entre no fluxo certo.</h2>
-          <p className="section-copy">
-            A experiencia publica foi reorganizada para ficar mais proxima do Stitch: leitura editorial, menos ruido
-            visual e destaque claro para os proximos passos.
-          </p>
-        </article>
-        <article className="journey-card">
-          <ol className="journey-steps">
-            <li>
-              <strong>1. Explorar catalogo</strong>
-              <span>Ver servicos ativos, disponibilidade e faixa operacional.</span>
-            </li>
-            <li>
-              <strong>2. Autenticar</strong>
-              <span>Cliente segue para wallet e pedidos; admin segue para o console operacional.</span>
-            </li>
-            <li>
-              <strong>3. Executar</strong>
-              <span>Criar PIX, comprar servicos, monitorar estados ou operar o backoffice.</span>
-            </li>
-          </ol>
-        </article>
-      </section>
-
       <section className="public-bento">
         <article className="public-bento-card">
           <span className="surface-icon" aria-hidden="true">
             <ShoppingBag size={18} strokeWidth={2.1} />
           </span>
-          <span>Catalogo vivo</span>
-          <strong>Servicos, filtros e availability</strong>
-          <p>Explore os itens publicados e veja imediatamente se o servico esta compravel ou degradado.</p>
+          <span>Catalogo</span>
+          <strong>Servicos e disponibilidade</strong>
+          <p>Veja o que esta disponivel antes de comprar.</p>
         </article>
         <article className="public-bento-card">
           <span className="surface-icon" aria-hidden="true">
             <CreditCard size={18} strokeWidth={2.1} />
           </span>
-          <span>Cliente autenticado</span>
-          <strong>Wallet, PIX e pedidos</strong>
-          <p>Depois do login, a jornada continua na area do cliente com estados reais de pagamento e ordem.</p>
+          <span>Cliente</span>
+          <strong>Saldo, PIX e pedidos</strong>
+          <p>Acompanhe pagamentos e pedidos no mesmo lugar.</p>
         </article>
         <article className="public-bento-card">
           <span className="surface-icon" aria-hidden="true">
             <ShieldCheck size={18} strokeWidth={2.1} />
           </span>
-          <span>Admin operacional</span>
-          <strong>Conciliacao, sync e auditoria</strong>
-          <p>O shell administrativo ja cobre pagamentos, pedidos, fornecedores, alertas e trilha operacional.</p>
+          <span>Admin</span>
+          <strong>Operacao e controle</strong>
+          <p>Monitore pagamentos, pedidos, alertas e usuarios.</p>
         </article>
       </section>
 

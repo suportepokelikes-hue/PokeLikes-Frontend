@@ -24,7 +24,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
         <PageHeader
           eyebrow="Admin / pagamentos / detalhe"
           title={`Pagamento ${payment.id}`}
-          description="O drill-down administrativo mostra o ciclo completo do pagamento, o usuario impactado e a timeline de eventos retornada pelo backend."
+          description="Veja status, cliente e atualizacoes deste pagamento."
           actions={
             <>
               <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
@@ -49,7 +49,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                 <dd>{payment.provider}</dd>
               </div>
               <div>
-                <dt>Provider payment ID</dt>
+                <dt>ID do pagamento no fornecedor</dt>
                 <dd className="code-block">{payment.providerPaymentId}</dd>
               </div>
               <div>
@@ -57,7 +57,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                 <dd>{formatMoney(payment.amount)}</dd>
               </div>
               <div>
-                <dt>Creditado na wallet</dt>
+                <dt>Creditado na carteira</dt>
                 <dd>{formatDateTime(payment.walletCreditedAt)}</dd>
               </div>
               <div>
@@ -118,7 +118,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                 ))}
               </div>
             ) : (
-              <p className="section-copy">O backend ainda nao retornou eventos para este pagamento.</p>
+              <p className="section-copy">Ainda nao ha atualizacoes para este pagamento.</p>
             )}
           </article>
         </section>
@@ -133,7 +133,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar o detalhe do pagamento"
-          description="A API nao retornou os dados esperados para este pagamento administrativo."
+          description="Nao foi possivel buscar os dados deste pagamento."
         />
       </main>
     );

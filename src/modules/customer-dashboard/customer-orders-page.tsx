@@ -27,8 +27,8 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
       <main className="page page-customer">
         <PageHeader
           eyebrow="Pedidos"
-          title="Pedidos do cliente."
-          description="A listagem mostra o status operacional oficial do pedido e o valor cobrado ao cliente quando disponivel."
+          title="Pedidos"
+          description="Acompanhe seus pedidos e o status de cada um."
         />
 
         <section className="metric-list">
@@ -38,12 +38,12 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
         </section>
 
         {orders.items.length === 0 ? (
-          <EmptyState title="Nenhum pedido encontrado" description="Quando um pedido for criado, ele aparecera aqui com o status real." />
+          <EmptyState title="Nenhum pedido encontrado" description="Quando voce criar um pedido, ele aparecera aqui." />
         ) : (
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
               <h2>Pedidos recentes</h2>
-              <span className="panel-meta">Status comercial e tecnico do cliente</span>
+              <span className="panel-meta">Atualizações recentes</span>
             </div>
             <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
               {orders.items.map((order) => (
@@ -71,7 +71,7 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
       <main className="page page-customer">
         <ErrorState
           title="Nao foi possivel carregar os pedidos"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou a lista de pedidos.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar sua lista de pedidos.'}
         />
       </main>
     );

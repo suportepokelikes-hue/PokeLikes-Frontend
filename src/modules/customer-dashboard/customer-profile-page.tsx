@@ -23,8 +23,8 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
       <main className="page page-customer">
         <PageHeader
           eyebrow="Cliente / perfil"
-          title="Perfil autenticado do cliente."
-          description="Esta tela usa o endpoint real `/me` para expor os dados atuais da conta e deixa explicita a lacuna contratual que ainda impede edicao segura."
+          title="Perfil"
+          description="Veja seus dados e o saldo atual."
           actions={
             <Link href="/app" className="secondary-action">
               Voltar ao dashboard
@@ -35,11 +35,11 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
         <section className="customer-hero-grid">
           <article className="customer-spotlight">
             <div className="customer-spotlight-head">
-              <span className="eyebrow">Identidade da conta</span>
+              <span className="eyebrow">Sua conta</span>
               <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
             </div>
             <h2>{profile.name}</h2>
-            <p>Resumo atual do cadastro autenticado, puxado diretamente do backend para validar sessao, papel e dados exibidos.</p>
+            <p>Confira os dados principais da sua conta.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Email</span>
@@ -57,9 +57,8 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
           </article>
 
           <article className="customer-note-card">
-            <strong>Contrato de perfil</strong>
-            <p>A leitura esta pronta e validada por `GET /me`.</p>
-            <p>A edicao ainda depende de um schema formal para `PATCH /me`, entao esta rota continua conscientemente somente leitura.</p>
+            <strong>Edição</strong>
+            <p>A edição ainda não está disponível.</p>
           </article>
         </section>
 
@@ -98,23 +97,6 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
             </dl>
           </article>
 
-          <article className="detail-card">
-            <h2>Estado operacional</h2>
-            <div className="stack-list">
-              <div className="stack-item">
-                <strong>Leitura do perfil ja esta ativa</strong>
-                <p>A tela consome `/me` diretamente e serve para validar bootstrap, papel e dados visiveis da sessao.</p>
-              </div>
-              <div className="stack-item">
-                <strong>Edicao ainda bloqueada pelo contrato</strong>
-                <p>`PATCH /me` existe na OpenAPI local, mas o request body nao foi especificado. Sem esse schema, a UI nao deve inventar payload.</p>
-              </div>
-              <div className="stack-item">
-                <strong>Proximo passo seguro</strong>
-                <p>Assim que o contrato descrever os campos editaveis, esta mesma rota pode receber form server-side sem quebrar a separacao do dominio do cliente.</p>
-              </div>
-            </div>
-          </article>
         </section>
       </main>
     );
@@ -123,7 +105,7 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
       <main className="page page-customer">
         <ErrorState
           title="Nao foi possivel carregar o perfil"
-          description={error instanceof ApiClientError ? error.message : 'A API nao retornou os dados esperados para o perfil atual.'}
+          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar os dados do seu perfil.'}
         />
       </main>
     );
