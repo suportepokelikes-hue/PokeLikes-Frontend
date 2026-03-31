@@ -1,5 +1,21 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
+import {
+  Bell,
+  BookOpenText,
+  CircleUserRound,
+  CreditCard,
+  FolderKanban,
+  Globe,
+  LayoutDashboard,
+  PackageSearch,
+  ReceiptText,
+  Search,
+  Shield,
+  Users,
+  Wallet,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -13,6 +29,22 @@ type AreaShellProps = {
   user: UserSummary;
   title: string;
   children: React.ReactNode;
+};
+
+const navIcons: Record<string, LucideIcon> = {
+  public: Globe,
+  dashboard: LayoutDashboard,
+  profile: CircleUserRound,
+  wallet: Wallet,
+  payments: CreditCard,
+  orders: ReceiptText,
+  admin: Shield,
+  users: Users,
+  catalog: FolderKanban,
+  suppliers: PackageSearch,
+  alerts: Bell,
+  audits: BookOpenText,
+  transactions: CreditCard,
 };
 
 export function AreaShell({ area, user, title, children }: AreaShellProps) {
@@ -39,16 +71,18 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
         </div>
 
         <nav className="area-nav" aria-label={view.navigationLabel}>
-          {view.links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={link.isCurrent ? 'is-current' : ''}
-            >
-              <span className={`area-nav-icon area-nav-icon-${link.icon}`} aria-hidden="true" />
+          {view.links.map((link) => {
+            const Icon = navIcons[link.icon] ?? LayoutDashboard;
+
+            return (
+              <Link key={link.href} href={link.href} className={link.isCurrent ? 'is-current' : ''}>
+                <span className="area-nav-icon" aria-hidden="true">
+                  <Icon size={16} strokeWidth={2.15} />
+                </span>
               <span>{link.label}</span>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="account-badge">
@@ -67,7 +101,7 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
 
           <div className="area-toolbar">
             <label className="area-search">
-              <span className="area-search-icon" aria-hidden="true" />
+              <Search size={16} strokeWidth={2.1} className="area-search-icon" aria-hidden="true" />
               <input type="search" placeholder="Buscar nesta area" />
             </label>
             <div className="area-user-chip">

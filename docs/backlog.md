@@ -137,6 +137,7 @@ Tasks:
 - [x] realinhar shell, tipografia e superficies compartilhadas para reduzir o visual generico e aproximar o frontend dos exports do Stitch
 - [x] ajustar microdetalhes de spacing, iconografia e responsividade sem mexer em fluxo
 - [x] integrar a logo real da marca nos pontos principais de branding do frontend
+- [x] substituir a iconografia provisoria do shell por um conjunto real com `lucide-react`
 
 ## Phase 10: Frontend Test Baseline
 
