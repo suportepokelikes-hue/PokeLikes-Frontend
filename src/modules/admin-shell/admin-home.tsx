@@ -1,3 +1,4 @@
+import { ArrowRight, Bell, FolderKanban, ReceiptText, ShieldCheck, Users } from 'lucide-react';
 import Link from 'next/link';
 
 import type { UserSummary } from '@/lib/api/contracts';
@@ -127,9 +128,25 @@ export function AdminHome({ user }: AdminHomeProps) {
       <section className="admin-link-grid">
         {adminLinks.map((item) => (
           <Link key={item.href} href={item.href} className="nav-card">
+            <span className="surface-icon" aria-hidden="true">
+              {item.href === '/admin/catalog' ? (
+                <FolderKanban size={18} strokeWidth={2.1} />
+              ) : item.href === '/admin/orders' ? (
+                <ReceiptText size={18} strokeWidth={2.1} />
+              ) : item.href === '/admin/alerts' ? (
+                <Bell size={18} strokeWidth={2.1} />
+              ) : item.href === '/admin/users' ? (
+                <Users size={18} strokeWidth={2.1} />
+              ) : (
+                <ShieldCheck size={18} strokeWidth={2.1} />
+              )}
+            </span>
             <span>{item.label}</span>
             <strong>{item.href}</strong>
             <p>{item.description}</p>
+            <span className="panel-link">
+              Abrir modulo <ArrowRight size={14} strokeWidth={2.15} aria-hidden="true" />
+            </span>
           </Link>
         ))}
       </section>

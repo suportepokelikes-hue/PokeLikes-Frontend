@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowRight, CircleUserRound, CreditCard, ShoppingBag, Wallet } from 'lucide-react';
 
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
@@ -36,9 +37,11 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           actions={
             <>
               <Link href="/app/profile" className="secondary-action">
+                <CircleUserRound size={16} strokeWidth={2.15} aria-hidden="true" />
                 Ver perfil
               </Link>
               <Link href="/catalog" className="primary-action">
+                <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
                 Explorar catalogo
               </Link>
             </>
@@ -98,18 +101,30 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
 
           <div className="customer-action-grid">
             <Link href="/app/payments" className="customer-action-card">
+              <span className="surface-icon" aria-hidden="true">
+                <CreditCard size={18} strokeWidth={2.1} />
+              </span>
               <strong>Gerar PIX</strong>
               <p>Adicionar saldo e acompanhar expiracao ou confirmacao.</p>
             </Link>
             <Link href="/catalog" className="customer-action-card">
+              <span className="surface-icon" aria-hidden="true">
+                <ShoppingBag size={18} strokeWidth={2.1} />
+              </span>
               <strong>Novo pedido</strong>
               <p>Entrar no catalogo e criar ordem real a partir dos servicos publicados.</p>
             </Link>
             <Link href="/app/orders" className="customer-action-card">
+              <span className="surface-icon" aria-hidden="true">
+                <ArrowRight size={18} strokeWidth={2.1} />
+              </span>
               <strong>Pedidos</strong>
               <p>Ver status assincrono e detalhes operacionais da fila atual.</p>
             </Link>
             <Link href="/app/profile" className="customer-action-card">
+              <span className="surface-icon" aria-hidden="true">
+                <CircleUserRound size={18} strokeWidth={2.1} />
+              </span>
               <strong>Perfil</strong>
               <p>Conferir dados da conta e limites atuais do contrato de perfil.</p>
             </Link>

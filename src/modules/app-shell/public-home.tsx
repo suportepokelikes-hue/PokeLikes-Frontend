@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ArrowRight, CreditCard, LayoutDashboard, ShieldCheck, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
 import type { SessionState } from '@/lib/auth/session';
@@ -67,16 +68,19 @@ export function PublicHome({ session }: PublicHomeProps) {
 
           <div className="public-hero-actions">
             <Link href={primaryHref} className="primary-action">
+              <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
               {primaryLabel}
             </Link>
             {session.status === 'guest' ? (
               <Link href="/register" className="secondary-action">
+                <LayoutDashboard size={16} strokeWidth={2.15} aria-hidden="true" />
                 Criar conta
               </Link>
             ) : (
               <LogoutButton />
             )}
             <Link href="/catalog" className="secondary-action">
+              <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
               Ver catalogo
             </Link>
           </div>
@@ -137,16 +141,25 @@ export function PublicHome({ session }: PublicHomeProps) {
 
       <section className="public-bento">
         <article className="public-bento-card">
+          <span className="surface-icon" aria-hidden="true">
+            <ShoppingBag size={18} strokeWidth={2.1} />
+          </span>
           <span>Catalogo vivo</span>
           <strong>Servicos, filtros e availability</strong>
           <p>Explore os itens publicados e veja imediatamente se o servico esta compravel ou degradado.</p>
         </article>
         <article className="public-bento-card">
+          <span className="surface-icon" aria-hidden="true">
+            <CreditCard size={18} strokeWidth={2.1} />
+          </span>
           <span>Cliente autenticado</span>
           <strong>Wallet, PIX e pedidos</strong>
           <p>Depois do login, a jornada continua na area do cliente com estados reais de pagamento e ordem.</p>
         </article>
         <article className="public-bento-card">
+          <span className="surface-icon" aria-hidden="true">
+            <ShieldCheck size={18} strokeWidth={2.1} />
+          </span>
           <span>Admin operacional</span>
           <strong>Conciliacao, sync e auditoria</strong>
           <p>O shell administrativo ja cobre pagamentos, pedidos, fornecedores, alertas e trilha operacional.</p>
@@ -159,6 +172,9 @@ export function PublicHome({ session }: PublicHomeProps) {
             <span>{item.label}</span>
             <strong>{item.href}</strong>
             <p>{item.description}</p>
+            <span className="panel-link">
+              Abrir area <ArrowRight size={14} strokeWidth={2.15} aria-hidden="true" />
+            </span>
           </Link>
         ))}
       </section>

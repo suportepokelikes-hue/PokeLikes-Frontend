@@ -431,6 +431,23 @@ button {
   gap: 0.72rem;
 }
 
+.surface-icon,
+.feedback-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.85rem;
+  background: rgba(0, 74, 198, 0.08);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback-icon-danger {
+  background: rgba(147, 0, 10, 0.1);
+  color: var(--danger);
+}
+
 .nav-card:hover,
 .customer-action-card:hover,
 .catalog-card:hover {
@@ -721,6 +738,12 @@ button {
   font-weight: 700;
 }
 
+.panel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+}
+
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -801,6 +824,13 @@ button {
   gap: 0.75rem;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.feedback-title-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .pagination-panel {

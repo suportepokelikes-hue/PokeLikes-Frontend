@@ -42,6 +42,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - depois desse realinhamento, entrou um passe especifico de microdetalhes visuais no shell e nos componentes compartilhados para melhorar iconografia, espacamento e comportamento responsivo em larguras menores
 - a logo real da marca agora vive em `public/brand/logo.jpeg` e ja substitui a marca fake/textual nos shells principais, auth e home publica
 - o shell autenticado agora usa `lucide-react` para iconografia real de navegacao e busca, no lugar dos icones desenhados por CSS na fase anterior
+- a iconografia real agora tambem comeca a aparecer em estados compartilhados (`empty/error`) e nas jornadas principais de home publica, dashboard do cliente e entrada do admin
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte

@@ -138,6 +138,7 @@ Tasks:
 - [x] ajustar microdetalhes de spacing, iconografia e responsividade sem mexer em fluxo
 - [x] integrar a logo real da marca nos pontos principais de branding do frontend
 - [x] substituir a iconografia provisoria do shell por um conjunto real com `lucide-react`
+- [x] expandir a iconografia real para estados compartilhados e cards/jornadas principais
 
 ## Phase 10: Frontend Test Baseline
 

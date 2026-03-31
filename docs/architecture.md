@@ -97,6 +97,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o shell e o design system receberam um passe fino de micro-polish visual, com icones CSS dedicados, espacamento mais consistente entre cards/acoes e regras responsivas mais seguras para toolbar, sidebar e grids em larguras menores
 - a marca visual agora passa a usar um asset real em `public/brand/logo.jpeg` nos pontos principais de branding do app, substituindo monogramas e lockups puramente tipograficos
 - a iconografia compartilhada agora passa a usar `lucide-react` no shell autenticado, substituindo os icones CSS provisórios e abrindo um caminho mais consistente para os proximos ajustes de UX
+- essa mesma base de iconografia agora comeca a subir para estados compartilhados e jornadas principais, reforcando CTA, empty/error e leitura de cards sem depender apenas de texto
 
 ## Implemented Structure
 
