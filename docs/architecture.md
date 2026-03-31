@@ -95,6 +95,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - essa base de testes ja capturou e corrigiu dois bugs reais: `returnTo` aceitando `/login?...` e a construcao de URL da API descartando o prefixo `/v1` quando o path chegava com `/`
 - o frontend entrou em uma segunda rodada forte de alinhamento com o Stitch dominante, com shell lateral mais proximo das referencias, tipografia editorial, superficie mais limpa e composicoes menos genericas nas telas publicas, cliente, admin e auth
 - o shell e o design system receberam um passe fino de micro-polish visual, com icones CSS dedicados, espacamento mais consistente entre cards/acoes e regras responsivas mais seguras para toolbar, sidebar e grids em larguras menores
+- a marca visual agora passa a usar um asset real em `public/brand/logo.jpeg` nos pontos principais de branding do app, substituindo monogramas e lockups puramente tipograficos
 
 ## Implemented Structure
 

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import type { SessionState } from '@/lib/auth/session';
@@ -50,7 +51,14 @@ export function PublicHome({ session }: PublicHomeProps) {
     <main className="page page-public">
       <section className="hero public-hero">
         <div className="hero-copy">
-          <p className="eyebrow">Likes Uai Platform</p>
+          <div className="public-brand-lockup">
+            <div className="public-brand-logo">
+              <Image src="/brand/logo.jpeg" alt="Likes Uai" width={84} height={84} className="public-brand-logo-image" priority />
+            </div>
+            <div>
+              <p className="eyebrow">Likes Uai Platform</p>
+            </div>
+          </div>
           <h1>{appName} para catalogo publico, compra autenticada e operacao administrativa real.</h1>
           <p className="lede">
             A area publica ja conversa com a OpenAPI local, mostra servicos reais do catalogo e encaminha o usuario

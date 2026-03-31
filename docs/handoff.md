@@ -40,6 +40,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - a base E2E agora usa Playwright com `playwright.config.ts`, `webServer` local em Next e envs explicitas para credenciais e backend; as primeiras specs reais estao em `e2e/auth.spec.ts`, `e2e/customer-transactions.spec.ts` e `e2e/admin-operations.spec.ts`
 - o frontend passou por uma nova rodada de alinhamento visual com os exports do Stitch em `docs/stitch_cliente_dashboard`, especialmente no shell lateral, telas de auth, home publica, catalogo e dashboards principais de cliente/admin
 - depois desse realinhamento, entrou um passe especifico de microdetalhes visuais no shell e nos componentes compartilhados para melhorar iconografia, espacamento e comportamento responsivo em larguras menores
+- a logo real da marca agora vive em `public/brand/logo.jpeg` e ja substitui a marca fake/textual nos shells principais, auth e home publica
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte

@@ -136,6 +136,7 @@ Tasks:
 - [x] adicionar loading segmentado para a area do cliente
 - [x] realinhar shell, tipografia e superficies compartilhadas para reduzir o visual generico e aproximar o frontend dos exports do Stitch
 - [x] ajustar microdetalhes de spacing, iconografia e responsividade sem mexer em fluxo
+- [x] integrar a logo real da marca nos pontos principais de branding do frontend
 
 ## Phase 10: Frontend Test Baseline
 

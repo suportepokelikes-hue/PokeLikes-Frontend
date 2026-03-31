@@ -249,6 +249,41 @@ button {
   gap: 1rem;
 }
 
+.public-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  flex-wrap: wrap;
+}
+
+.public-brand-logo,
+.auth-brand-logo {
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.public-brand-logo {
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: 1.3rem;
+}
+
+.auth-brand-logo {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  flex: 0 0 auto;
+}
+
+.public-brand-logo-image,
+.auth-brand-logo-image,
+.brand-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .public-hero-actions,
 .public-actions {
   display: flex;
@@ -900,6 +935,11 @@ button {
   overflow: hidden;
 }
 
+.area-brand-mark-image {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
 .area-brand-mark::before,
 .area-brand-mark::after {
   content: '';
@@ -1272,6 +1312,11 @@ button {
 
 .auth-brand strong {
   color: var(--accent);
+}
+
+.auth-brand-copy {
+  display: grid;
+  gap: 0.18rem;
 }
 
 .auth-intro {

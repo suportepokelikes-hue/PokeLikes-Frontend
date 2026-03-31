@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -28,7 +29,9 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
     <div className={view.areaClassName}>
       <aside className="area-sidebar">
         <div className="area-brand">
-          <div className="area-brand-mark">{area === 'admin' ? 'A' : 'L'}</div>
+          <div className="area-brand-mark area-brand-mark-image">
+            <Image src="/brand/logo.jpeg" alt="Likes Uai" width={56} height={56} className="brand-logo-image" priority />
+          </div>
           <div>
             <strong>{view.brandTitle}</strong>
             <span>{view.brandMeta}</span>

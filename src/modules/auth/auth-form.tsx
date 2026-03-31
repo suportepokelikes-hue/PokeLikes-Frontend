@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -60,8 +61,13 @@ export function AuthForm({
       <section className="auth-card">
         <div className="auth-hero">
           <div className="auth-brand">
-            <span>{brandLabel}</span>
-            <strong>{eyebrow}</strong>
+            <div className="auth-brand-logo">
+              <Image src="/brand/logo.jpeg" alt={brandLabel} width={64} height={64} className="auth-brand-logo-image" priority />
+            </div>
+            <div className="auth-brand-copy">
+              <span>{brandLabel}</span>
+              <strong>{eyebrow}</strong>
+            </div>
           </div>
 
           <div className="auth-intro">

@@ -4,6 +4,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Likes Uai',
   description: 'Frontend web da plataforma Likes Uai com area publica, cliente e admin.',
+  icons: {
+    icon: '/brand/logo.jpeg',
+    shortcut: '/brand/logo.jpeg',
+    apple: '/brand/logo.jpeg',
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
