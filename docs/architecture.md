@@ -99,6 +99,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - a iconografia compartilhada agora passa a usar `lucide-react` no shell autenticado, substituindo os icones CSS provisórios e abrindo um caminho mais consistente para os proximos ajustes de UX
 - essa mesma base de iconografia agora comeca a subir para estados compartilhados e jornadas principais, reforcando CTA, empty/error e leitura de cards sem depender apenas de texto
 - a copy das telas principais foi simplificada para cortar rotulos internos de sistema, explicacoes de arquitetura vazando para a UI e blocos redundantes de contexto nas areas publica, cliente e admin
+- as jornadas principais tambem passaram por uma rodada de UX estrutural, com CTA mais claros, blocos reordenados e traducao adicional dos labels tecnicos mais expostos na interface
 
 ## Implemented Structure
 
@@ -174,6 +175,7 @@ src/
 
 - a proxima etapa deve consolidar o acabamento operacional dessas mutacoes admin, revisando se algumas acoes densas precisam de fluxo dedicado por entidade
 - a proxima etapa de UX deve revisar hierarquia de conteudo, ordem dos blocos e CTA nas jornadas principais depois da limpeza editorial
+- a proxima etapa de UX deve revisar o comportamento desses novos arranjos em telas menores e ajustar os modulos densos que ainda pedirem refinamento proprio
 - a proxima etapa deve consolidar a camada E2E com massa de teste estavel e ampliar os cenarios administrativos mais sensiveis ja sobre a nova base visual
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
 - a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`

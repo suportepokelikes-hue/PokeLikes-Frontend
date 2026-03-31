@@ -33,6 +33,11 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
           actions={
             <div className="page-actions">
               <StatusBadge label={service.availability.providerStatus} tone={mapAvailabilityTone(service)} />
+              {session.status === 'authenticated' && session.user.role === 'customer' ? (
+                <Link href="#checkout" className="primary-action">
+                  Comprar agora
+                </Link>
+              ) : null}
               <Link href="/catalog" className="secondary-action">
                 Voltar ao catalogo
               </Link>
@@ -81,6 +86,64 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
         </section>
 
         <section className="detail-grid">
+          <article id="checkout" className="detail-card detail-card-wide">
+            {session.status === 'authenticated' && session.user.role === 'customer' ? (
+              <TransactionForm
+                title="Criar pedido"
+                description="Preencha os dados do pedido para continuar."
+                action={createOrderAction}
+                initialState={initialTransactionFormState}
+                submitLabel="Confirmar pedido"
+                returnTo={returnTo}
+              >
+                <input type="hidden" name="catalogServiceId" value={service.id} />
+                <div className="transaction-grid">
+                  <TransactionField label="Servico" name="serviceName" defaultValue={service.name} readOnly />
+                  <TransactionField
+                    label="Quantidade"
+                    name="quantity"
+                    type="number"
+                    required
+                    min={service.minQuantity}
+                    max={service.maxQuantity}
+                  />
+                </div>
+                <div className="transaction-grid">
+                  <TransactionField
+                    label="Link do destino"
+                    name="link"
+                    type="url"
+                    required
+                    placeholder="https://instagram.com/seu-perfil"
+                  />
+                  <TransactionField label="Repeticoes" name="runs" type="number" placeholder="Opcional" />
+                </div>
+                <div className="transaction-grid">
+                  <TransactionField label="Intervalo" name="interval" type="number" placeholder="Opcional" />
+                  <TransactionField label="Numero de resposta" name="answerNumber" placeholder="Opcional" />
+                </div>
+                <TransactionTextarea
+                  label="Comentarios"
+                  name="comments"
+                  placeholder="Um comentario por linha, se o servico exigir."
+                />
+              </TransactionForm>
+            ) : (
+              <div className="stack-item">
+                <strong>Quer comprar este servico?</strong>
+                <p>Entre como cliente para criar um pedido a partir deste item.</p>
+                <div className="page-actions">
+                  <Link href={getLoginPath({ reason: 'required', returnTo })} className="primary-action">
+                    Entrar
+                  </Link>
+                  <Link href={getRegisterPath({ reason: 'required', returnTo })} className="secondary-action">
+                    Criar conta
+                  </Link>
+                </div>
+              </div>
+            )}
+          </article>
+
           <article className="detail-card">
             <h2>Resumo comercial</h2>
             <dl className="detail-list">
@@ -147,63 +210,6 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
             </dl>
           </article>
 
-          <article className="detail-card detail-card-wide">
-            {session.status === 'authenticated' && session.user.role === 'customer' ? (
-              <TransactionForm
-                title="Criar pedido"
-                description="Preencha os dados do pedido para continuar."
-                action={createOrderAction}
-                initialState={initialTransactionFormState}
-                submitLabel="Confirmar pedido"
-                returnTo={returnTo}
-              >
-                <input type="hidden" name="catalogServiceId" value={service.id} />
-                <div className="transaction-grid">
-                  <TransactionField label="Servico" name="serviceName" defaultValue={service.name} readOnly />
-                  <TransactionField
-                    label="Quantidade"
-                    name="quantity"
-                    type="number"
-                    required
-                    min={service.minQuantity}
-                    max={service.maxQuantity}
-                  />
-                </div>
-                <div className="transaction-grid">
-                  <TransactionField
-                    label="Link do destino"
-                    name="link"
-                    type="url"
-                    required
-                    placeholder="https://instagram.com/seu-perfil"
-                  />
-                  <TransactionField label="Runs" name="runs" type="number" placeholder="Opcional" />
-                </div>
-                <div className="transaction-grid">
-                  <TransactionField label="Intervalo" name="interval" type="number" placeholder="Opcional" />
-                  <TransactionField label="Answer number" name="answerNumber" placeholder="Opcional" />
-                </div>
-                <TransactionTextarea
-                  label="Comments"
-                  name="comments"
-                  placeholder="Um comentario por linha, se o servico exigir."
-                />
-              </TransactionForm>
-            ) : (
-              <div className="stack-item">
-                <strong>Quer comprar este servico?</strong>
-                <p>Entre como cliente para criar um pedido a partir deste item.</p>
-                <div className="page-actions">
-                  <Link href={getLoginPath({ reason: 'required', returnTo })} className="primary-action">
-                    Entrar
-                  </Link>
-                  <Link href={getRegisterPath({ reason: 'required', returnTo })} className="secondary-action">
-                    Criar conta
-                  </Link>
-                </div>
-              </div>
-            )}
-          </article>
         </section>
       </main>
     );

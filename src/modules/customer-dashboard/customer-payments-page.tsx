@@ -32,12 +32,22 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
         <PageHeader
           eyebrow="Pagamentos"
           title="Pagamentos PIX"
-          description="Crie um PIX e acompanhe o status."
+          description="Crie um PIX para adicionar saldo e acompanhe o status."
+          actions={
+            <>
+              <Link href="/app/wallet" className="secondary-action">
+                Ver carteira
+              </Link>
+              <Link href="/catalog" className="secondary-action">
+                Ir para o catalogo
+              </Link>
+            </>
+          }
         />
 
         <section className="dashboard-grid">
           <TransactionForm
-            title="Gerar cobranca PIX"
+            title="Gerar PIX"
             description={`Saldo atual: ${formatMoney(wallet.availableBalance)}.`}
             action={createPixPaymentAction}
             initialState={initialTransactionFormState}
@@ -48,26 +58,27 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
           </TransactionForm>
 
           <article className="customer-note-card">
-            <strong>Importante</strong>
-            <p>O saldo só entra depois da confirmação do pagamento.</p>
+            <strong>Antes de confirmar</strong>
+            <p>O saldo so entra depois da confirmacao do pagamento.</p>
+            <p>Se o PIX expirar, gere um novo pagamento.</p>
           </article>
         </section>
 
         <section className="metric-list">
-          <StatCard label="Saldo atual" value={formatMoney(wallet.availableBalance)} meta="Disponivel na wallet" tone="accent" />
-          <StatCard label="Pendentes" value={String(pendingCount)} meta="Aguardando provider" tone="warning" />
+          <StatCard label="Saldo atual" value={formatMoney(wallet.availableBalance)} meta="Disponivel na carteira" tone="accent" />
+          <StatCard label="Pendentes" value={String(pendingCount)} meta="Aguardando confirmacao" tone="warning" />
           <StatCard label="Confirmados" value={String(confirmedCount)} meta="Pagamentos concluidos" />
         </section>
 
         {payments.items.length === 0 ? (
-          <EmptyState title="Nenhum pagamento encontrado" description="Crie uma cobranca PIX para comecar a acompanhar seu ciclo." />
+          <EmptyState title="Nenhum pagamento encontrado" description="Crie um PIX para comecar a acompanhar seu ciclo de pagamento." />
         ) : (
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
-              <h2>Historico PIX</h2>
-              <span className="panel-meta">Pagamentos recentes</span>
+              <h2>Pagamentos recentes</h2>
+              <span className="panel-meta">Acompanhe o status de cada PIX</span>
             </div>
-            <DataTable columns={['ID', 'Provider', 'Valor', 'Status', 'Expira em']}>
+            <DataTable columns={['ID', 'Metodo', 'Valor', 'Status', 'Expira em']}>
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
                   <td>

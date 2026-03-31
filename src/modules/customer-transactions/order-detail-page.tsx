@@ -84,19 +84,19 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
             <h2>Estado tecnico</h2>
             <dl className="detail-list">
               <div>
-                <dt>Provider</dt>
+                <dt>Fornecedor</dt>
                 <dd>{order.supplier.provider}</dd>
               </div>
               <div>
-                <dt>Service ID</dt>
+                <dt>ID do servico</dt>
                 <dd>{order.supplier.serviceId}</dd>
               </div>
               <div>
-                <dt>API order ID</dt>
+                <dt>ID do pedido no fornecedor</dt>
                 <dd>{order.supplier.apiOrderId ?? '-'}</dd>
               </div>
               <div>
-                <dt>Remains</dt>
+                <dt>Restante</dt>
                 <dd>{order.supplier.remains ?? '-'}</dd>
               </div>
               <div>
@@ -104,11 +104,11 @@ export async function OrderDetailPage({ session, orderId }: OrderDetailPageProps
                 <dd>{order.supplier.errorMessage || order.supplier.errorCode || '-'}</dd>
               </div>
               <div>
-                <dt>Estimated charge</dt>
+                <dt>Custo estimado</dt>
                 <dd>{formatMoney(order.supplier.estimatedCharge)}</dd>
               </div>
               <div>
-                <dt>Actual charge</dt>
+                <dt>Custo real</dt>
                 <dd>{formatMoney(order.supplier.actualCharge)}</dd>
               </div>
             </dl>

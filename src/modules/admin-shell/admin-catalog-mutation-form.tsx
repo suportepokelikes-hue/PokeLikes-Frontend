@@ -69,7 +69,7 @@ export function AdminCatalogMutationForm({ mode, action, returnTo, service }: Ad
         </label>
 
         <label className="admin-user-field">
-          <span>Sort order</span>
+          <span>Ordem</span>
           <input type="number" name="sortOrder" defaultValue={service?.sortOrder ?? ''} min={0} placeholder="0" />
         </label>
 

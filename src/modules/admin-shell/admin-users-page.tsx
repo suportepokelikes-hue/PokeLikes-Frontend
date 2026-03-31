@@ -1,5 +1,3 @@
-import { Fragment } from 'react';
-
 import Link from 'next/link';
 
 import { EmptyState } from '@/components/ui/empty-state';
@@ -33,8 +31,8 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / usuarios"
-          title="Usuarios da plataforma."
-          description="A listagem administrativa respeita os papeis e status vindos do backend."
+          title="Usuarios"
+          description="Crie usuarios e acompanhe papel e status de acesso."
           actions={
             <AdminFilterBar
               pathname="/admin/users"
@@ -90,38 +88,36 @@ export async function AdminUsersPage({ session, filters }: AdminUsersPageProps) 
               <h2>Criar usuario</h2>
             </div>
           </div>
-          <p>Preencha os dados básicos e defina papel e status.</p>
+          <p>Preencha os dados basicos e defina papel e status.</p>
           <AdminUserMutationForm mode="create" action={createUserAction} returnTo={returnTo} />
         </section>
 
         {users.items.length === 0 ? (
-          <EmptyState title="Nenhum usuario encontrado" description="O backend nao retornou usuarios para a listagem atual." />
+          <EmptyState title="Nenhum usuario encontrado" description="Nenhum usuario foi encontrado com os filtros atuais." />
         ) : (
           <>
             <DataTable columns={['Nome', 'Email', 'Papel', 'Status', 'Acoes']}>
               {users.items.map((user) => (
-                <Fragment key={user.id}>
-                  <tr>
-                    <td>
-                      <div className="stack-list">
-                        <strong>{user.name}</strong>
-                        <span className="panel-meta">ID {user.id}</span>
-                      </div>
-                    </td>
-                    <td>{user.email}</td>
-                    <td>
-                      <StatusBadge label={user.role} tone={user.role === 'admin' ? 'info' : 'neutral'} />
-                    </td>
-                    <td>
-                      <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'danger'} />
-                    </td>
-                    <td>
-                      <Link href={`/admin/users/${user.id}`} className="table-link">
-                        Abrir detalhe
-                      </Link>
-                    </td>
-                  </tr>
-                </Fragment>
+                <tr key={user.id}>
+                  <td>
+                    <div className="stack-list">
+                      <strong>{user.name}</strong>
+                      <span className="panel-meta">ID {user.id}</span>
+                    </div>
+                  </td>
+                  <td>{user.email}</td>
+                  <td>
+                    <StatusBadge label={user.role} tone={user.role === 'admin' ? 'info' : 'neutral'} />
+                  </td>
+                  <td>
+                    <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'danger'} />
+                  </td>
+                  <td>
+                    <Link href={`/admin/users/${user.id}`} className="table-link">
+                      Abrir detalhe
+                    </Link>
+                  </td>
+                </tr>
               ))}
             </DataTable>
             <PaginationSummary

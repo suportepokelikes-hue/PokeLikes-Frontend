@@ -51,8 +51,8 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
                       { label: 'Cancelado', value: 'cancelled' },
                     ],
                   },
-                  { name: 'provider', label: 'Provider', defaultValue: filters.provider },
-                  { name: 'userId', label: 'User ID', defaultValue: filters.userId },
+                  { name: 'provider', label: 'Metodo', defaultValue: filters.provider },
+                  { name: 'userId', label: 'ID do usuario', defaultValue: filters.userId },
                   { name: 'dateFrom', label: 'De', type: 'datetime-local', defaultValue: filters.dateFrom },
                   { name: 'dateTo', label: 'Ate', type: 'datetime-local', defaultValue: filters.dateTo },
                   {
@@ -100,7 +100,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
           <EmptyState title="Nenhum pagamento encontrado" description="Nenhum pagamento foi encontrado com os filtros atuais." />
         ) : (
           <>
-            <DataTable columns={['ID', 'Usuario', 'Provider', 'Valor', 'Status', 'Criado em', 'Acao']}>
+            <DataTable columns={['ID', 'Usuario', 'Metodo', 'Valor', 'Status', 'Criado em', 'Acao']}>
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
                   <td>{payment.id}</td>

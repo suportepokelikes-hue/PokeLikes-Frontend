@@ -196,7 +196,7 @@ export async function createWalletAdjustmentAction(_: AdminActionState, formData
   if (!userId || !amount || !direction) {
     return {
       status: 'error',
-      message: 'User ID, valor e direcao sao obrigatorios para ajustar a carteira.',
+      message: 'ID do usuario, valor e direcao sao obrigatorios para ajustar a carteira.',
     };
   }
 

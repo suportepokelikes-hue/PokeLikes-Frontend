@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -27,6 +28,9 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
           description="Veja status, cliente e atualizacoes deste pedido."
           actions={
             <>
+              <Link href="/admin/orders" className="secondary-action">
+                Voltar aos pedidos
+              </Link>
               <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
               <AdminActionForm
                 action={syncOrderAction}
@@ -40,12 +44,27 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
           }
         />
 
+        <section className="metric-list">
+          <article className={`metric-card metric-${mapOrderTone(order.status)}`}>
+            <span>Status</span>
+            <strong>{order.status}</strong>
+          </article>
+          <article className="metric-card metric-accent">
+            <span>Cobranca</span>
+            <strong>{formatMoney(order.customerCharge)}</strong>
+          </article>
+          <article className="metric-card metric-default">
+            <span>Cliente</span>
+            <strong>{order.user?.name || 'Nao associado'}</strong>
+          </article>
+        </section>
+
         <section className="detail-grid">
           <article className="detail-card">
-            <h2>Resumo comercial</h2>
+            <h2>Cliente e pedido</h2>
             <dl className="detail-list">
               <div>
-                <dt>Usuario</dt>
+                <dt>Cliente</dt>
                 <dd>{order.user?.name || 'Usuario nao associado'}</dd>
               </div>
               <div>
@@ -72,10 +91,10 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
           </article>
 
           <article className="detail-card">
-            <h2>Estado tecnico</h2>
+            <h2>Fornecedor</h2>
             <dl className="detail-list">
               <div>
-                <dt>Provider</dt>
+                <dt>Fornecedor</dt>
                 <dd>{order.supplier.provider}</dd>
               </div>
               <div>
@@ -95,7 +114,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 <dd>{formatMoney(order.supplier.actualCharge)}</dd>
               </div>
               <div>
-                <dt>Remains</dt>
+                <dt>Restante</dt>
                 <dd>{order.supplier.remains ?? '-'}</dd>
               </div>
               <div>

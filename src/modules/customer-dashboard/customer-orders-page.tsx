@@ -28,22 +28,32 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
         <PageHeader
           eyebrow="Pedidos"
           title="Pedidos"
-          description="Acompanhe seus pedidos e o status de cada um."
+          description="Acompanhe o andamento de cada pedido."
+          actions={
+            <>
+              <Link href="/catalog" className="primary-action">
+                Novo pedido
+              </Link>
+              <Link href="/app/payments" className="secondary-action">
+                Ver pagamentos
+              </Link>
+            </>
+          }
         />
 
         <section className="metric-list">
           <StatCard label="Pedidos na pagina" value={String(orders.items.length)} meta={`${orders.totalItems} no total`} />
-          <StatCard label="Em andamento" value={String(openCount)} meta="Fluxos ainda assincronos" tone="warning" />
+          <StatCard label="Em andamento" value={String(openCount)} meta="Ainda precisam de atualizacao" tone="warning" />
           <StatCard label="Concluidos" value={String(completedCount)} meta="Pedidos fechados" tone="accent" />
         </section>
 
         {orders.items.length === 0 ? (
-          <EmptyState title="Nenhum pedido encontrado" description="Quando voce criar um pedido, ele aparecera aqui." />
+          <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo para fazer seu primeiro pedido." />
         ) : (
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
               <h2>Pedidos recentes</h2>
-              <span className="panel-meta">Atualizações recentes</span>
+              <span className="panel-meta">Status e cobranca atual</span>
             </div>
             <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
               {orders.items.map((order) => (

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -27,6 +28,9 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
           description="Veja status, cliente e atualizacoes deste pagamento."
           actions={
             <>
+              <Link href="/admin/payments" className="secondary-action">
+                Voltar aos pagamentos
+              </Link>
               <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
               <AdminActionForm
                 action={reconcilePaymentAction}
@@ -40,25 +44,40 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
           }
         />
 
+        <section className="metric-list">
+          <article className="metric-card metric-accent">
+            <span>Valor</span>
+            <strong>{formatMoney(payment.amount)}</strong>
+          </article>
+          <article className={`metric-card metric-${mapPaymentTone(payment.status)}`}>
+            <span>Status</span>
+            <strong>{payment.status}</strong>
+          </article>
+          <article className="metric-card metric-default">
+            <span>Cliente</span>
+            <strong>{payment.user?.name || 'Nao associado'}</strong>
+          </article>
+        </section>
+
         <section className="detail-grid">
           <article className="detail-card">
-            <h2>Resumo financeiro</h2>
+            <h2>Cliente e pagamento</h2>
             <dl className="detail-list">
               <div>
-                <dt>Provider</dt>
-                <dd>{payment.provider}</dd>
+                <dt>Cliente</dt>
+                <dd>{payment.user?.name || 'Usuario nao associado'}</dd>
               </div>
               <div>
-                <dt>ID do pagamento no fornecedor</dt>
-                <dd className="code-block">{payment.providerPaymentId}</dd>
+                <dt>Email</dt>
+                <dd>{payment.user?.email || '-'}</dd>
+              </div>
+              <div>
+                <dt>Metodo</dt>
+                <dd>{payment.provider}</dd>
               </div>
               <div>
                 <dt>Valor</dt>
                 <dd>{formatMoney(payment.amount)}</dd>
-              </div>
-              <div>
-                <dt>Creditado na carteira</dt>
-                <dd>{formatDateTime(payment.walletCreditedAt)}</dd>
               </div>
               <div>
                 <dt>Criado em</dt>
@@ -72,15 +91,15 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
           </article>
 
           <article className="detail-card">
-            <h2>Cliente e PIX</h2>
+            <h2>Detalhes do PIX</h2>
             <dl className="detail-list">
               <div>
-                <dt>Usuario</dt>
-                <dd>{payment.user?.name || 'Usuario nao associado'}</dd>
+                <dt>ID do pagamento no fornecedor</dt>
+                <dd className="code-block">{payment.providerPaymentId}</dd>
               </div>
               <div>
-                <dt>Email</dt>
-                <dd>{payment.user?.email || '-'}</dd>
+                <dt>Creditado na carteira</dt>
+                <dd>{formatDateTime(payment.walletCreditedAt)}</dd>
               </div>
               <div>
                 <dt>Expira em</dt>
@@ -108,11 +127,11 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                       <span>{formatDateTime(event.createdAt)}</span>
                     </div>
                     <p>
-                      status de processamento: {event.processingStatus}
+                      Processamento: {event.processingStatus}
                       {event.processedAt ? ` / processado em ${formatDateTime(event.processedAt)}` : ''}
                     </p>
                     <span>
-                      providerEventId: {event.providerEventId || '-'} / providerPaymentId: {event.providerPaymentId || '-'}
+                      Evento no fornecedor: {event.providerEventId || '-'} / pagamento no fornecedor: {event.providerPaymentId || '-'}
                     </span>
                   </div>
                 ))}

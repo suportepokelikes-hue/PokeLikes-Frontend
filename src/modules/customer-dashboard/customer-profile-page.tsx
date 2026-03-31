@@ -22,13 +22,18 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
     return (
       <main className="page page-customer">
         <PageHeader
-          eyebrow="Cliente / perfil"
-          title="Perfil"
-          description="Veja seus dados e o saldo atual."
+          eyebrow="Perfil"
+          title="Minha conta"
+          description="Veja seus dados principais e o saldo atual."
           actions={
-            <Link href="/app" className="secondary-action">
-              Voltar ao dashboard
-            </Link>
+            <>
+              <Link href="/app/wallet" className="secondary-action">
+                Ver carteira
+              </Link>
+              <Link href="/app" className="secondary-action">
+                Voltar ao inicio
+              </Link>
+            </>
           }
         />
 
@@ -39,7 +44,7 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
               <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
             </div>
             <h2>{profile.name}</h2>
-            <p>Confira os dados principais da sua conta.</p>
+            <p>Confira seus dados principais e acompanhe o saldo da carteira.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Email</span>
@@ -50,15 +55,16 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
                 <strong>{profile.phone || 'Sem telefone'}</strong>
               </div>
               <div>
-                <span>Wallet atual</span>
+                <span>Saldo atual</span>
                 <strong>{formatMoney(wallet.availableBalance)}</strong>
               </div>
             </div>
           </article>
 
           <article className="customer-note-card">
-            <strong>Edição</strong>
-            <p>A edição ainda não está disponível.</p>
+            <strong>Edicao</strong>
+            <p>A edicao ainda nao esta disponivel.</p>
+            <p>Enquanto isso, use esta tela para consultar os dados atuais da conta.</p>
           </article>
         </section>
 
@@ -76,7 +82,7 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
               </div>
               <div>
                 <dt>Telefone</dt>
-                <dd>{profile.phone || 'Nao informado pelo backend'}</dd>
+                <dd>{profile.phone || 'Nao informado'}</dd>
               </div>
               <div>
                 <dt>Papel</dt>
@@ -96,7 +102,6 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
               </div>
             </dl>
           </article>
-
         </section>
       </main>
     );

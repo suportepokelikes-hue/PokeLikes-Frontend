@@ -14,7 +14,7 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
     <AdminActionForm action={action} submitLabel="Aplicar ajuste" pendingLabel="Aplicando..." tone="primary" returnTo={returnTo}>
       <div className="admin-user-form">
         <label className="admin-user-field">
-          <span>User ID</span>
+          <span>ID do usuario</span>
           <input type="text" name="userId" defaultValue={defaultUserId ?? ''} placeholder="ID do usuario" />
         </label>
 

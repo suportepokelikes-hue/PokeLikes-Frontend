@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, CircleUserRound, CreditCard, ShoppingBag, Wallet } from 'lucide-react';
+import { CircleUserRound, CreditCard, ShoppingBag, Wallet } from 'lucide-react';
 
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
@@ -31,18 +31,18 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
     return (
       <main className="page page-customer">
         <PageHeader
-          eyebrow="Cliente autenticado"
-          title={`Bem-vindo, ${session.user.name}.`}
-          description="Acompanhe saldo, pagamentos e pedidos."
+          eyebrow="Area do cliente"
+          title={`Bem-vindo, ${session.user.name}`}
+          description="Veja seu saldo, gere um PIX ou acompanhe seus pedidos."
           actions={
             <>
-              <Link href="/app/profile" className="secondary-action">
-                <CircleUserRound size={16} strokeWidth={2.15} aria-hidden="true" />
-                Ver perfil
-              </Link>
               <Link href="/catalog" className="primary-action">
                 <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
-                Explorar catalogo
+                Novo pedido
+              </Link>
+              <Link href="/app/payments" className="secondary-action">
+                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
+                Gerar PIX
               </Link>
             </>
           }
@@ -55,7 +55,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
               <StatusBadge label={session.user.status} tone={session.user.status === 'active' ? 'success' : 'warning'} />
             </div>
             <h2>{formatMoney(wallet.availableBalance)}</h2>
-            <p>Use seu saldo para pagar pedidos e acompanhe o que ainda está em andamento.</p>
+            <p>Use seu saldo para pagar pedidos e acompanhe o que ainda esta em andamento.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Pagamentos confirmados</span>
@@ -66,48 +66,48 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 <strong>{openOrders}</strong>
               </div>
               <div>
-                <span>Conta autenticada</span>
+                <span>Perfil</span>
                 <strong>{session.user.role}</strong>
               </div>
             </div>
           </article>
 
           <div className="customer-action-grid">
+            <Link href="/app/wallet" className="customer-action-card">
+              <span className="surface-icon" aria-hidden="true">
+                <Wallet size={18} strokeWidth={2.1} />
+              </span>
+              <strong>Carteira</strong>
+              <p>Ver saldo e movimentacoes.</p>
+            </Link>
             <Link href="/app/payments" className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CreditCard size={18} strokeWidth={2.1} />
               </span>
-              <strong>Gerar PIX</strong>
-              <p>Adicionar saldo.</p>
-            </Link>
-            <Link href="/catalog" className="customer-action-card">
-              <span className="surface-icon" aria-hidden="true">
-                <ShoppingBag size={18} strokeWidth={2.1} />
-              </span>
-              <strong>Novo pedido</strong>
-              <p>Comprar um servico.</p>
+              <strong>Pagamentos</strong>
+              <p>Gerar PIX e acompanhar status.</p>
             </Link>
             <Link href="/app/orders" className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
-                <ArrowRight size={18} strokeWidth={2.1} />
+                <ShoppingBag size={18} strokeWidth={2.1} />
               </span>
               <strong>Pedidos</strong>
-              <p>Ver andamento e histórico.</p>
+              <p>Ver andamento e historico.</p>
             </Link>
             <Link href="/app/profile" className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CircleUserRound size={18} strokeWidth={2.1} />
               </span>
               <strong>Perfil</strong>
-              <p>Ver seus dados.</p>
+              <p>Consultar seus dados.</p>
             </Link>
           </div>
         </section>
 
         <section className="metric-list">
           <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} meta="Carteira atual" tone="accent" />
-          <StatCard label="Pagamentos recentes" value={`${payments.totalItems}`} meta="Ultimos 5 registros" />
-          <StatCard label="Pedidos recentes" value={`${orders.totalItems}`} meta="Ultimos 5 registros" />
+          <StatCard label="Pagamentos recentes" value={`${payments.totalItems}`} meta="Ultimos registros" />
+          <StatCard label="Pedidos recentes" value={`${orders.totalItems}`} meta="Ultimos registros" />
         </section>
 
         <section className="dashboard-grid">
@@ -115,15 +115,12 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             <div className="panel-heading">
               <h2>Pagamentos PIX</h2>
               <Link href="/app/payments" className="panel-link">
-                Ver area completa
+                Ver tudo
               </Link>
             </div>
 
             {payments.items.length === 0 ? (
-              <EmptyState
-                title="Nenhum pagamento encontrado"
-                description="Acompanhe os pagamentos PIX em andamento."
-              />
+              <EmptyState title="Nenhum pagamento encontrado" description="Crie um PIX para começar a acompanhar seus pagamentos." />
             ) : (
               <DataTable columns={['ID', 'Valor', 'Status', 'Criado em']}>
                 {payments.items.map((payment) => (
@@ -144,15 +141,12 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             <div className="panel-heading">
               <h2>Pedidos</h2>
               <Link href="/app/orders" className="panel-link">
-                Ver area completa
+                Ver tudo
               </Link>
             </div>
 
             {orders.items.length === 0 ? (
-              <EmptyState
-                title="Nenhum pedido encontrado"
-                description="Os pedidos reais criados pelo backend vao aparecer aqui com status operacional."
-              />
+              <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo para fazer seu primeiro pedido." />
             ) : (
               <DataTable columns={['ID', 'Servico', 'Status', 'Atualizado em']}>
                 {orders.items.map((order) => (
@@ -175,8 +169,8 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
     return (
       <main className="page page-customer">
         <ErrorState
-          title="Nao foi possivel montar o dashboard do cliente"
-          description={getErrorMessage(error, 'A API nao respondeu com wallet, pagamentos ou pedidos.')}
+          title="Nao foi possivel montar o dashboard"
+          description={getErrorMessage(error, 'Nao foi possivel buscar saldo, pagamentos e pedidos.')}
         />
       </main>
     );

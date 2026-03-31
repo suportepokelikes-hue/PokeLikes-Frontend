@@ -36,7 +36,7 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
             <p>O saldo so muda depois da confirmacao do pagamento.</p>
             <div className="customer-highlight-list">
               <div>
-                <span>Provider</span>
+                <span>Metodo</span>
                 <strong>{payment.provider}</strong>
               </div>
               <div>
@@ -62,7 +62,7 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
             <h2>Resumo</h2>
             <dl className="detail-list">
               <div>
-                <dt>Provider</dt>
+                <dt>Metodo</dt>
                 <dd>{payment.provider}</dd>
               </div>
               <div>
@@ -92,11 +92,11 @@ export async function PaymentDetailPage({ session, paymentId }: PaymentDetailPag
                 <dd>{formatDateTime(payment.confirmedAt)}</dd>
               </div>
               <div>
-                <dt>BR Code</dt>
+                <dt>Pix copia e cola</dt>
                 <dd className="code-block">{payment.brCode || '-'}</dd>
               </div>
               <div>
-                <dt>BR Code Base64</dt>
+                <dt>Pix em base64</dt>
                 <dd className="code-block">{payment.brCodeBase64 || '-'}</dd>
               </div>
             </dl>

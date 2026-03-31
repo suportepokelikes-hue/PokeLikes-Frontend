@@ -44,6 +44,12 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
         />
 
         <section className="detail-grid">
+          <article className="detail-card detail-card-wide">
+            <h2>Atualizar servico</h2>
+            <p className="section-copy">Ajuste os dados do servico e salve quando terminar.</p>
+            <AdminCatalogMutationForm mode="update" action={updateCatalogServiceAction} returnTo={returnTo} service={service} />
+          </article>
+
           <article className="detail-card">
             <h2>Resumo comercial</h2>
             <dl className="detail-list">
@@ -62,7 +68,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
                 </dd>
               </div>
               <div>
-                <dt>Sort order</dt>
+                <dt>Ordem</dt>
                 <dd>{service.sortOrder}</dd>
               </div>
               <div>
@@ -88,7 +94,7 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
                 <dd>{service.supplierService.supplierServiceId}</dd>
               </div>
               <div>
-                <dt>Status do provider</dt>
+                <dt>Status do fornecedor</dt>
                 <dd>{service.supplierService.providerStatus?.providerStatus || '-'}</dd>
               </div>
               <div>
@@ -96,12 +102,6 @@ export async function AdminCatalogDetailPage({ session, serviceId }: AdminCatalo
                 <dd>{service.supplierService.providerStatus?.lastErrorMessage || '-'}</dd>
               </div>
             </dl>
-          </article>
-
-          <article className="detail-card detail-card-wide">
-            <h2>Atualizar servico</h2>
-            <p className="section-copy">Ajuste os dados do servico e salve quando terminar.</p>
-            <AdminCatalogMutationForm mode="update" action={updateCatalogServiceAction} returnTo={returnTo} service={service} />
           </article>
         </section>
       </main>

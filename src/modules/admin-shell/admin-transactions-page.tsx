@@ -39,7 +39,7 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
               pathname="/admin/transactions"
               fields={[
                 { name: 'search', label: 'Busca', type: 'search', placeholder: 'Referencia ou usuario', defaultValue: filters.search },
-                { name: 'userId', label: 'User ID', defaultValue: filters.userId },
+                { name: 'userId', label: 'ID do usuario', defaultValue: filters.userId },
                 { name: 'type', label: 'Tipo', defaultValue: filters.type },
                 {
                   name: 'direction',
@@ -80,7 +80,7 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Transacoes na pagina" value={String(transactions.items.length)} meta={`${transactions.totalItems} transacoes no total`} />
+          <AdminSummaryCard label="Transacoes na pagina" value={String(transactions.items.length)} meta={`${transactions.totalItems} no total`} />
           <AdminSummaryCard label="Creditos" value={String(credits)} meta={`${debits} debitos na mesma pagina`} tone="accent" />
           <AdminSummaryCard label="Ultimo movimento" value={latestTransaction ? formatDateTime(latestTransaction) : '-'} meta="Movimento mais recente" />
         </section>
@@ -110,10 +110,10 @@ export async function AdminTransactionsPage({ session, filters }: AdminTransacti
                     </div>
                   </td>
                   <td>
-                    <div className="stack-list">
-                      <strong>{transaction.type}</strong>
-                      <span className="panel-meta">{transaction.id}</span>
-                    </div>
+            <div className="stack-list">
+              <strong>{transaction.type}</strong>
+              <span className="panel-meta">{transaction.id}</span>
+            </div>
                   </td>
                   <td>{renderTransactionDirection(transaction)}</td>
                   <td>{formatMoney(transaction.amount)}</td>

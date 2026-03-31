@@ -56,7 +56,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
                       { label: 'Falho', value: 'failed' },
                     ],
                   },
-                  { name: 'userId', label: 'User ID', defaultValue: filters.userId },
+                  { name: 'userId', label: 'ID do usuario', defaultValue: filters.userId },
                   {
                     name: 'sortOrder',
                     label: 'Ordem',

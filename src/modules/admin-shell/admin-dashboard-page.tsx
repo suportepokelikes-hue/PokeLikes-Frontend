@@ -84,7 +84,7 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
       <main className="page page-admin">
         <ErrorState
           title="Nao foi possivel carregar o dashboard administrativo"
-          description={getErrorMessage(error, 'A API nao respondeu ao resumo operacional do admin.')}
+          description={getErrorMessage(error, 'Nao foi possivel buscar o resumo do admin.')}
         />
       </main>
     );

@@ -140,6 +140,7 @@ Tasks:
 - [x] substituir a iconografia provisoria do shell por um conjunto real com `lucide-react`
 - [x] expandir a iconografia real para estados compartilhados e cards/jornadas principais
 - [x] simplificar a copy das telas principais para remover linguagem tecnica, redundancia e rotulos internos de sistema
+- [x] reorganizar hierarquia, CTA e traducao de labels tecnicos nas jornadas principais
 
 ## Phase 10: Frontend Test Baseline
 
@@ -175,6 +176,7 @@ Na proxima sessao do Codex:
 
 - revisar o resultado visual da limpeza editorial tela a tela, agora com feedback manual do usuario
 - aprofundar o proximo passe em conteudo e UX com foco em hierarquia, ordem dos blocos e CTA das jornadas principais
+- revisar o comportamento das telas densas em largura menor depois da nova reorganizacao dos blocos
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
