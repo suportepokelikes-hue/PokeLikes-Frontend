@@ -24,7 +24,7 @@
 - `/admin/users`
 - `/admin/users/[userId]`
 - `/admin/catalog`
-- `/admin/catalog/[serviceId]`
+- `/admin/catalog/[serviceId]` (redireciona para drawer em `/admin/catalog`)
 - `/admin/payments`
 - `/admin/payments/[paymentId]`
 - `/admin/orders`

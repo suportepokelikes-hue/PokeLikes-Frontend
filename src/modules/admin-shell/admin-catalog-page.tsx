@@ -8,10 +8,11 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { listAdminCatalogServices, listSupplierProviders, listSupplierServices } from '@/lib/api/admin';
+import { getCatalogService } from '@/lib/api/catalog';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
-import { createCatalogServiceAction } from '@/modules/admin-shell/actions';
+import { createCatalogServiceAction, updateCatalogServiceAction } from '@/modules/admin-shell/actions';
 import { AdminCatalogMutationForm } from '@/modules/admin-shell/admin-catalog-mutation-form';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import {
@@ -31,6 +32,7 @@ type AdminCatalogPageProps = {
   filters: AdminCatalogListParams;
   supplierServiceFilters: SupplierServicesListParams;
   creationDraft?: AdminCatalogCreationDraft;
+  activeServiceId?: string;
 };
 
 export async function AdminCatalogPage({
@@ -38,6 +40,7 @@ export async function AdminCatalogPage({
   filters,
   supplierServiceFilters,
   creationDraft,
+  activeServiceId,
 }: AdminCatalogPageProps) {
   try {
     const [catalog, providerStatuses, supplierServices] = await Promise.all([
@@ -58,6 +61,17 @@ export async function AdminCatalogPage({
       .filter((name, index, items) => items.indexOf(name) === index)
       .sort((left, right) => left.localeCompare(right, 'pt-BR'));
     const selectedSupplierName = supplierServiceFilters.supplierName;
+    let activeService = null;
+    let activeServiceError: string | null = null;
+
+    if (activeServiceId) {
+      try {
+        activeService = await getCatalogService(activeServiceId);
+      } catch (error) {
+        activeServiceError = error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este servico.';
+      }
+    }
+
     const visibleCatalogItems = selectedSupplierName
       ? catalog.items.filter((service) => service.supplierService.supplierName === selectedSupplierName)
       : catalog.items;
@@ -226,8 +240,18 @@ export async function AdminCatalogPage({
                       {service.minQuantity} - {service.maxQuantity}
                     </td>
                     <td>
-                      <Link href={`/admin/catalog/${service.id}`} className="table-link">
-                        Abrir detalhe
+                      <Link
+                        href={buildPathWithSearch('/admin/catalog', {
+                          search: filters.search,
+                          pageSize: filters.pageSize,
+                          supplierName: supplierServiceFilters.supplierName,
+                          servicesPage: supplierServiceFilters.page,
+                          servicesPageSize: supplierServiceFilters.pageSize,
+                          editServiceId: service.id,
+                        })}
+                        className="table-link"
+                      >
+                        Editar servico
                       </Link>
                     </td>
                   </tr>
@@ -267,6 +291,38 @@ export async function AdminCatalogPage({
               returnTo={returnTo}
               creationDraft={creationDraft}
             />
+          </AdminSlideOver>
+        ) : null}
+
+        {activeService ? (
+          <AdminSlideOver
+            eyebrow="Catalogo publicado"
+            title={activeService.name}
+            description="Ajuste os dados publicos principais sem sair da listagem."
+            closeHref={returnTo}
+          >
+            <section className="admin-drawer-stack">
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Editar servico</p>
+                    <h3>Dados publicos</h3>
+                  </div>
+                  <div className="feedback-actions">
+                    <StatusBadge label={activeService.status} tone={mapCatalogStatusTone(activeService.status)} />
+                    <StatusBadge
+                      label={activeService.availability.isPurchasable ? 'compravel' : 'indisponivel'}
+                      tone={activeService.availability.isPurchasable ? 'success' : 'danger'}
+                    />
+                  </div>
+                </div>
+                <AdminCatalogMutationForm mode="update" action={updateCatalogServiceAction} returnTo={returnTo} service={activeService} />
+              </article>
+            </section>
+          </AdminSlideOver>
+        ) : activeServiceError ? (
+          <AdminSlideOver eyebrow="Catalogo publicado" title="Servico indisponivel" description={activeServiceError} closeHref={returnTo}>
+            <ErrorState title="Nao foi possivel abrir este servico" description="Feche o painel e tente novamente pela listagem." />
           </AdminSlideOver>
         ) : null}
       </main>

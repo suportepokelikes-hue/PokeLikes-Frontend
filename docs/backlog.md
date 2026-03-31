@@ -114,6 +114,7 @@ Tasks:
 - [x] remover o chip redundante de usuario do topo do shell autenticado
 - [x] simplificar os filtros do catalogo admin para busca textual ampla e selecao de fornecedor
 - [x] mover a criacao de servico no catalogo admin para drawer lateral e remover o seletor de pagina dessa tela
+- [x] mover tambem a edicao do catalogo publicado para drawer lateral na propria listagem
 
 ## Phase 6: Customer Profile
 

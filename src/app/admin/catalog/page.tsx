@@ -16,12 +16,26 @@ export default async function AdminCatalogRoute({ searchParams }: AdminCatalogRo
   const filters = parseAdminCatalogParams(resolvedSearchParams);
   const supplierServiceFilters = parseSupplierServicesParams(resolvedSearchParams);
   const creationDraft = parseAdminCatalogCreationDraft(resolvedSearchParams);
+  const rawEditServiceId = Array.isArray(resolvedSearchParams.editServiceId)
+    ? resolvedSearchParams.editServiceId[0]
+    : resolvedSearchParams.editServiceId;
+  const activeServiceId = typeof rawEditServiceId === 'string' && rawEditServiceId.trim() ? rawEditServiceId.trim() : undefined;
   const session = await requireAdminSession(
     buildAdminPath('/admin/catalog', {
       ...filters,
       ...(supplierServiceFilters.supplierName ? { supplierName: supplierServiceFilters.supplierName } : {}),
+      ...(activeServiceId ? { editServiceId: activeServiceId } : {}),
+      ...(creationDraft ? { createSupplierServiceId: creationDraft.supplierServiceId } : {}),
     }),
   );
 
-  return <AdminCatalogPage session={session} filters={filters} supplierServiceFilters={supplierServiceFilters} creationDraft={creationDraft} />;
+  return (
+    <AdminCatalogPage
+      session={session}
+      filters={filters}
+      supplierServiceFilters={supplierServiceFilters}
+      creationDraft={creationDraft}
+      activeServiceId={activeServiceId}
+    />
+  );
 }

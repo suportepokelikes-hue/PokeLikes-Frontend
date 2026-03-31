@@ -1,5 +1,4 @@
-import { requireAdminSession } from '@/lib/auth/guards';
-import { AdminCatalogDetailPage } from '@/modules/admin-shell/admin-catalog-detail-page';
+import { redirect } from 'next/navigation';
 
 type AdminCatalogDetailRouteProps = {
   params: Promise<{ serviceId: string }>;
@@ -7,7 +6,5 @@ type AdminCatalogDetailRouteProps = {
 
 export default async function AdminCatalogDetailRoute({ params }: AdminCatalogDetailRouteProps) {
   const { serviceId } = await params;
-  const session = await requireAdminSession(`/admin/catalog/${serviceId}`);
-
-  return <AdminCatalogDetailPage session={session} serviceId={serviceId} />;
+  redirect(`/admin/catalog?editServiceId=${encodeURIComponent(serviceId)}`);
 }

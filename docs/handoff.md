@@ -38,7 +38,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - o padrao compartilhado de toolbar/filtros (`AdminFilterBar` dentro de `PageHeader`) agora quebra melhor em larguras intermediarias e deve ser considerado a base para os modulos administrativos restantes
 - no catalogo admin, a filtragem foi simplificada para um unico campo de busca textual e uma selecao de fornecedor; os filtros secundarios antigos sairam da UX
 - a publicacao de um novo servico no catalogo admin agora acontece em drawer lateral acionado pela lista de servicos sincronizados, sem formulario fixo exposto na tela
-- `/admin/catalog/[serviceId]` continua como pagina dedicada de edicao; no caso de usuarios, a edicao e o ajuste de carteira agora vivem em drawer lateral na propria listagem
+- a edicao de um servico ja publicado no catalogo admin agora tambem acontece em drawer lateral na propria listagem; a rota `/admin/catalog/[serviceId]` ficou apenas como redirecionamento
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
 - a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`
 - auth e admin agora possuem helpers puros extraidos das server actions para sustentar testes de mapeamento de erro e parsing de payload

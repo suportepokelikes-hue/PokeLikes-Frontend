@@ -93,7 +93,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o shell autenticado deixou de empilhar a sidebar no topo em tablet/mobile e agora usa menu lateral recolhivel por botao, preservando a hierarquia visual nas larguras menores
 - o header do shell autenticado foi simplificado para manter apenas a busca no topo; a identificacao do usuario e o logout seguem concentrados no badge lateral inferior, sem duplicacao visual
 - a toolbar de filtros e a area de acoes do `PageHeader` foram reforcadas para quebrar de forma fluida em larguras intermediarias, evitando overflow horizontal nas listas admin e nos modulos que reutilizam o mesmo padrao
-- `/admin/catalog/[serviceId]` continua concentrando a edicao mais densa do catalogo em pagina dedicada, enquanto `/admin/users` absorveu a edicao e o ajuste de carteira em drawer lateral dentro da propria listagem
+- `/admin/catalog` agora tambem absorveu a edicao do servico publicado em drawer lateral dentro da propria listagem; a rota `/admin/catalog/[serviceId]` ficou apenas como redirecionamento para esse fluxo
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API
 - parte da logica mais sensivel das server actions de auth e admin foi extraida para helpers puros, facilitando cobertura de teste sem acoplamento ao runtime do Next
 - o dominio de transacoes do cliente agora segue a mesma direcao, com helpers puros para parsing de PIX/pedido e cobertura da camada `src/lib/api/customer.ts`
@@ -166,7 +166,7 @@ src/
 - `/admin/catalog` -> `GET /admin/catalog/services`
 - `/admin/catalog` -> `POST /admin/catalog/services`
 - `/admin/catalog` -> `PATCH /admin/catalog/services/{serviceId}`
-- `/admin/catalog/[serviceId]` -> `GET /catalog/services/{serviceId}`, `PATCH /admin/catalog/services/{serviceId}`
+- `/admin/catalog/[serviceId]` -> redireciona para `/admin/catalog?editServiceId=...`
 - `/admin/supplier` -> `GET /admin/supplier/providers`, `GET /admin/supplier/services`, `GET /admin/supplier/sync-logs`
 - `/admin/alerts` -> `GET /admin/alerts`
 - `/admin/audits` -> `GET /admin/audits`
