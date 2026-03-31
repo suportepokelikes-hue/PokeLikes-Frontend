@@ -9,20 +9,23 @@ import {
   FolderKanban,
   Globe,
   LayoutDashboard,
+  Menu,
   PackageSearch,
   ReceiptText,
   Search,
   Shield,
   Users,
   Wallet,
+  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
+import type { UserSummary } from '@/lib/api/contracts';
 import { LogoutButton } from '@/modules/auth/logout-button';
 import { getAreaShellView, type AreaShellArea } from './area-shell-content';
-import type { UserSummary } from '@/lib/api/contracts';
 
 type AreaShellProps = {
   area: AreaShellArea;
@@ -49,6 +52,7 @@ const navIcons: Record<string, LucideIcon> = {
 
 export function AreaShell({ area, user, title, children }: AreaShellProps) {
   const pathname = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const view = getAreaShellView({
     area,
     user,
@@ -57,29 +61,46 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
     children,
   });
 
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
+
   return (
-    <div className={view.areaClassName}>
-      <aside className="area-sidebar">
-        <div className="area-brand">
-          <div className="area-brand-mark area-brand-mark-image">
-            <Image src="/brand/logo.jpeg" alt="Likes Uai" width={56} height={56} className="brand-logo-image" priority />
+    <div className={view.areaClassName} data-sidebar-open={isSidebarOpen ? 'true' : 'false'}>
+      <button
+        type="button"
+        className={`area-mobile-backdrop${isSidebarOpen ? ' is-visible' : ''}`}
+        aria-label="Fechar menu"
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
+      <aside className="area-sidebar" aria-label={view.navigationLabel}>
+        <div className="area-sidebar-top">
+          <div className="area-brand">
+            <div className="area-brand-mark area-brand-mark-image">
+              <Image src="/brand/logo.jpeg" alt="Likes Uai" width={56} height={56} className="brand-logo-image" priority />
+            </div>
+            <div>
+              <strong>{view.brandTitle}</strong>
+              <span>{view.brandMeta}</span>
+            </div>
           </div>
-          <div>
-            <strong>{view.brandTitle}</strong>
-            <span>{view.brandMeta}</span>
-          </div>
+
+          <button type="button" className="area-sidebar-close" aria-label="Fechar menu" onClick={() => setIsSidebarOpen(false)}>
+            <X size={18} strokeWidth={2.1} aria-hidden="true" />
+          </button>
         </div>
 
-        <nav className="area-nav" aria-label={view.navigationLabel}>
+        <nav className="area-nav">
           {view.links.map((link) => {
             const Icon = navIcons[link.icon] ?? LayoutDashboard;
 
             return (
-              <Link key={link.href} href={link.href} className={link.isCurrent ? 'is-current' : ''}>
+              <Link key={link.href} href={link.href} className={link.isCurrent ? 'is-current' : ''} onClick={() => setIsSidebarOpen(false)}>
                 <span className="area-nav-icon" aria-hidden="true">
                   <Icon size={16} strokeWidth={2.15} />
                 </span>
-              <span>{link.label}</span>
+                <span>{link.label}</span>
               </Link>
             );
           })}
@@ -94,9 +115,21 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
 
       <div className="area-main">
         <header className="area-header">
-          <div>
-            <p className="eyebrow">{view.eyebrow}</p>
-            <h1>{view.title}</h1>
+          <div className="area-header-main">
+            <button
+              type="button"
+              className="area-mobile-toggle"
+              aria-label="Abrir menu"
+              aria-expanded={isSidebarOpen}
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu size={18} strokeWidth={2.1} aria-hidden="true" />
+            </button>
+
+            <div>
+              <p className="eyebrow">{view.eyebrow}</p>
+              <h1>{view.title}</h1>
+            </div>
           </div>
 
           <div className="area-toolbar">

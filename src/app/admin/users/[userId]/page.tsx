@@ -1,5 +1,4 @@
-import { requireAdminSession } from '@/lib/auth/guards';
-import { AdminUserDetailPage } from '@/modules/admin-shell/admin-user-detail-page';
+import { redirect } from 'next/navigation';
 
 type AdminUserDetailRouteProps = {
   params: Promise<{ userId: string }>;
@@ -7,7 +6,5 @@ type AdminUserDetailRouteProps = {
 
 export default async function AdminUserDetailRoute({ params }: AdminUserDetailRouteProps) {
   const { userId } = await params;
-  const session = await requireAdminSession(`/admin/users/${userId}`);
-
-  return <AdminUserDetailPage session={session} userId={userId} />;
+  redirect(`/admin/users?editUserId=${encodeURIComponent(userId)}`);
 }

@@ -108,6 +108,8 @@ Tasks:
 - [x] simplificar ainda mais o ajuste manual de carteira derivando o tipo automaticamente pela direcao da operacao
 - [x] travar o `userId` no ajuste manual quando o fluxo ja estiver dentro do detalhe de um usuario
 - [x] mover a criacao de usuario em `/admin/users` para um drawer acionado por botao, priorizando a listagem
+- [x] mover tambem a edicao de usuario e o ajuste manual de carteira para drawer lateral na propria listagem
+- [x] substituir a sidebar empilhada no topo em tablet/mobile por menu lateral recolhivel via botao
 
 ## Phase 6: Customer Profile
 
@@ -181,7 +183,7 @@ Na proxima sessao do Codex:
 
 - revisar o resultado visual da limpeza editorial tela a tela, agora com feedback manual do usuario
 - aprofundar o proximo passe em conteudo e UX com foco em hierarquia, ordem dos blocos e CTA das jornadas principais
-- revisar o comportamento das telas densas em largura menor depois da nova reorganizacao dos blocos
+- revisar o comportamento das telas densas em largura menor depois da nova reorganizacao dos blocos e do novo shell recolhivel
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
