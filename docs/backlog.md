@@ -110,6 +110,7 @@ Tasks:
 - [x] mover a criacao de usuario em `/admin/users` para um drawer acionado por botao, priorizando a listagem
 - [x] mover tambem a edicao de usuario e o ajuste manual de carteira para drawer lateral na propria listagem
 - [x] substituir a sidebar empilhada no topo em tablet/mobile por menu lateral recolhivel via botao
+- [x] corrigir a sobreposicao dos drawers sobre o header sticky e reforcar a responsividade transversal das toolbars de filtro
 
 ## Phase 6: Customer Profile
 

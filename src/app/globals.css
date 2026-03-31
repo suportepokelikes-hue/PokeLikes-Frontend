@@ -173,6 +173,7 @@ button {
 .section-header-copy {
   display: grid;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .section-header h1,
@@ -186,13 +187,18 @@ button {
 
 .page-actions {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   flex-wrap: wrap;
+  flex: 1 1 28rem;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .page-actions > * {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .primary-action,
@@ -947,11 +953,15 @@ button {
   align-items: flex-end;
   gap: 0.85rem;
   flex-wrap: wrap;
+  flex: 1 1 100%;
+  width: 100%;
 }
 
 .toolbar-field {
   display: grid;
   gap: 0.35rem;
+  flex: 1 1 11rem;
+  min-width: 0;
 }
 
 .toolbar-field span {
@@ -964,12 +974,18 @@ button {
 
 .toolbar-input {
   min-height: 2.9rem;
-  min-width: 11rem;
+  min-width: 0;
+  width: 100%;
   padding: 0.8rem 0.95rem;
   border-radius: 0.75rem;
   border: 0;
   background: var(--surface-low);
   color: var(--ink);
+}
+
+.toolbar > .primary-action,
+.toolbar > .secondary-action {
+  flex: 0 0 auto;
 }
 
 .stack-list {
@@ -1735,6 +1751,11 @@ button {
 
   .page-actions > * {
     width: 100%;
+  }
+
+  .page-actions {
+    width: 100%;
+    justify-content: stretch;
   }
 
   .toolbar-field,

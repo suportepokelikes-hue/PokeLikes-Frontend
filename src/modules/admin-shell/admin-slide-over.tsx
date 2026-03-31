@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const CLOSE_DELAY_MS = 220;
 
@@ -25,8 +26,10 @@ export function AdminSlideOver({
 }: AdminSlideOverProps) {
   const router = useRouter();
   const [isClosing, setIsClosing] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -62,7 +65,11 @@ export function AdminSlideOver({
     setIsClosing((current) => current || true);
   }
 
-  return (
+  if (!isMounted) {
+    return null;
+  }
+
+  return createPortal(
     <div className="admin-overlay-shell" data-state={isClosing ? 'closing' : 'open'}>
       <button type="button" className="admin-overlay-backdrop" aria-label={closeLabel} onClick={requestClose} />
       <aside className="admin-overlay-drawer" role="dialog" aria-modal="true" aria-label={title}>
@@ -79,6 +86,7 @@ export function AdminSlideOver({
         {description ? <p className="section-copy">{description}</p> : null}
         {children}
       </aside>
-    </div>
+    </div>,
+    document.body,
   );
 }
