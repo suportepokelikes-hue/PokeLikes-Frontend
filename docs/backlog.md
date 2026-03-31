@@ -106,6 +106,7 @@ Tasks:
 - [x] mudar o fluxo de criacao do catalogo admin para partir de `SupplierService` sincronizado em vez de preenchimento manual completo
 - [x] tornar o ajuste manual de carteira mais explicito na UI e remover o checkbox de limpar telefone da edicao de usuario
 - [x] simplificar ainda mais o ajuste manual de carteira derivando o tipo automaticamente pela direcao da operacao
+- [x] travar o `userId` no ajuste manual quando o fluxo ja estiver dentro do detalhe de um usuario
 
 ## Phase 6: Customer Profile
 

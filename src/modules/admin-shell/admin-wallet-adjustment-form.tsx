@@ -10,13 +10,29 @@ type AdminWalletAdjustmentFormProps = {
 };
 
 export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: AdminWalletAdjustmentFormProps) {
+  const hiddenFields = defaultUserId ? [{ name: 'userId', value: defaultUserId }] : [];
+
   return (
-    <AdminActionForm action={action} submitLabel="Aplicar ajuste" pendingLabel="Aplicando..." tone="primary" returnTo={returnTo}>
+    <AdminActionForm
+      action={action}
+      submitLabel="Aplicar ajuste"
+      pendingLabel="Aplicando..."
+      tone="primary"
+      returnTo={returnTo}
+      hiddenFields={hiddenFields}
+    >
       <div className="admin-user-form">
-        <label className="admin-user-field">
-          <span>ID do usuario</span>
-          <input type="text" name="userId" defaultValue={defaultUserId ?? ''} placeholder="ID do usuario" />
-        </label>
+        {defaultUserId ? (
+          <div className="admin-user-static">
+            <span>ID do usuario</span>
+            <strong>{defaultUserId}</strong>
+          </div>
+        ) : (
+          <label className="admin-user-field">
+            <span>ID do usuario</span>
+            <input type="text" name="userId" placeholder="ID do usuario" />
+          </label>
+        )}
 
         <label className="admin-user-field">
           <span>Valor</span>
