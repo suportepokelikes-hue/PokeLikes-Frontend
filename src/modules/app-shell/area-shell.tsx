@@ -42,9 +42,7 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
               href={link.href}
               className={link.isCurrent ? 'is-current' : ''}
             >
-              <span className="area-nav-icon" aria-hidden="true">
-                {link.icon}
-              </span>
+              <span className={`area-nav-icon area-nav-icon-${link.icon}`} aria-hidden="true" />
               <span>{link.label}</span>
             </Link>
           ))}
@@ -66,7 +64,7 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
 
           <div className="area-toolbar">
             <label className="area-search">
-              <span aria-hidden="true">Q</span>
+              <span className="area-search-icon" aria-hidden="true" />
               <input type="search" placeholder="Buscar nesta area" />
             </label>
             <div className="area-user-chip">
