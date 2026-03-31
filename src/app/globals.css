@@ -1254,27 +1254,6 @@ button {
   color: var(--ink);
 }
 
-.area-user-chip {
-  display: grid;
-  gap: 0.15rem;
-  padding: 0.78rem 0.98rem;
-  border-radius: 0.85rem;
-  background: var(--surface-lowest);
-  box-shadow: var(--shadow-soft);
-}
-
-.area-user-chip strong {
-  font-size: 0.88rem;
-}
-
-.area-user-chip span {
-  font-size: 0.68rem;
-  color: var(--outline);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-weight: 700;
-}
-
 .area-content {
   min-width: 0;
   padding: 0 2rem 2rem;

@@ -137,10 +137,6 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
               <Search size={16} strokeWidth={2.1} className="area-search-icon" aria-hidden="true" />
               <input type="search" placeholder="Buscar nesta area" />
             </label>
-            <div className="area-user-chip">
-              <strong>{view.userName}</strong>
-              <span>{area === 'admin' ? 'Operacao autenticada' : 'Sessao ativa'}</span>
-            </div>
           </div>
         </header>
 

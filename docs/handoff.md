@@ -34,6 +34,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/admin/users` agora tambem abre a edicao e o ajuste manual de carteira em drawer lateral na propria listagem; a rota `/admin/users/[userId]` foi mantida apenas como redirecionamento para esse fluxo
 - os drawers admin agora usam portal para o `document.body`, o que corrige a sobreposicao sobre a barra superior sticky e garante que o backdrop cubra tambem o header
 - o shell autenticado agora usa menu lateral recolhivel em tablet/mobile, no lugar da sidebar empilhada no topo da pagina
+- o topo do shell autenticado nao mostra mais o chip redundante com nome do usuario; a identificacao e o logout ficam apenas no badge lateral inferior
 - o padrao compartilhado de toolbar/filtros (`AdminFilterBar` dentro de `PageHeader`) agora quebra melhor em larguras intermediarias e deve ser considerado a base para os modulos administrativos restantes
 - `/admin/catalog/[serviceId]` continua como pagina dedicada de edicao; no caso de usuarios, a edicao e o ajuste de carteira agora vivem em drawer lateral na propria listagem
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo

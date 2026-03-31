@@ -89,6 +89,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/admin/users` agora concentra criacao, edicao e ajuste manual de carteira em drawers laterais com animacao suave, mantendo a listagem como superficie principal
 - os drawers admin agora renderizam por portal no `document.body`, garantindo sobreposicao correta sobre header sticky, busca e backdrop em toda a viewport
 - o shell autenticado deixou de empilhar a sidebar no topo em tablet/mobile e agora usa menu lateral recolhivel por botao, preservando a hierarquia visual nas larguras menores
+- o header do shell autenticado foi simplificado para manter apenas a busca no topo; a identificacao do usuario e o logout seguem concentrados no badge lateral inferior, sem duplicacao visual
 - a toolbar de filtros e a area de acoes do `PageHeader` foram reforcadas para quebrar de forma fluida em larguras intermediarias, evitando overflow horizontal nas listas admin e nos modulos que reutilizam o mesmo padrao
 - `/admin/catalog/[serviceId]` continua concentrando a edicao mais densa do catalogo em pagina dedicada, enquanto `/admin/users` absorveu a edicao e o ajuste de carteira em drawer lateral dentro da propria listagem
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API
