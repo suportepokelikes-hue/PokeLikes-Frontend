@@ -13,6 +13,7 @@ import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
 import { createCatalogServiceAction } from '@/modules/admin-shell/actions';
 import { AdminCatalogMutationForm } from '@/modules/admin-shell/admin-catalog-mutation-form';
+import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import {
   AdminFilterBar,
   AdminSummaryCard,
@@ -51,7 +52,6 @@ export async function AdminCatalogPage({
       servicesPage: supplierServiceFilters.page,
       servicesPageSize: supplierServiceFilters.pageSize,
       supplierName: supplierServiceFilters.supplierName,
-      ...buildDraftParams(creationDraft),
     });
     const providerOptions = providerStatuses.items
       .map((provider) => provider.supplierName)
@@ -85,17 +85,6 @@ export async function AdminCatalogPage({
                   type: 'select',
                   defaultValue: supplierServiceFilters.supplierName,
                   options: providerOptions.map((supplierName) => ({ label: supplierName, value: supplierName })),
-                },
-                {
-                  name: 'pageSize',
-                  label: 'Pagina',
-                  type: 'select',
-                  defaultValue: filters.pageSize ?? 10,
-                  options: [
-                    { label: '10', value: '10' },
-                    { label: '20', value: '20' },
-                    { label: '50', value: '50' },
-                  ],
                 },
               ]}
             />
@@ -190,24 +179,14 @@ export async function AdminCatalogPage({
           )}
         </section>
 
-        <section className="feedback-panel" id="catalog-create-form">
+        <section className="feedback-panel">
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Publicar no catalogo</p>
-              <h2>{creationDraft ? 'Novo servico publico' : 'Selecione um servico sincronizado'}</h2>
+              <h2>Selecione um servico sincronizado</h2>
             </div>
           </div>
-          <p>
-            {creationDraft
-              ? 'Revise os dados publicos, ajuste preco e status e publique o servico.'
-              : 'Use a lista acima para escolher um servico sincronizado do fornecedor antes de criar o item publico.'}
-          </p>
-          <AdminCatalogMutationForm
-            mode="create"
-            action={createCatalogServiceAction}
-            returnTo={returnTo}
-            creationDraft={creationDraft}
-          />
+          <p>Escolha um item na lista acima para abrir o drawer de publicacao com os dados tecnicos ja preenchidos.</p>
         </section>
 
         {visibleCatalogItems.length === 0 ? (
@@ -274,6 +253,22 @@ export async function AdminCatalogPage({
             />
           </>
         )}
+
+        {creationDraft ? (
+          <AdminSlideOver
+            eyebrow="Publicar no catalogo"
+            title="Novo servico publico"
+            description="Revise os dados publicos, ajuste preco e status e publique o servico."
+            closeHref={returnTo}
+          >
+            <AdminCatalogMutationForm
+              mode="create"
+              action={createCatalogServiceAction}
+              returnTo={returnTo}
+              creationDraft={creationDraft}
+            />
+          </AdminSlideOver>
+        ) : null}
       </main>
     );
   } catch (error) {
@@ -314,7 +309,7 @@ function buildCreateDraftPath(
     createType: service.type,
     createMinQuantity: service.min,
     createMaxQuantity: service.max,
-  })}#catalog-create-form`;
+  })}`;
 }
 
 function buildDraftParams(creationDraft?: AdminCatalogCreationDraft) {

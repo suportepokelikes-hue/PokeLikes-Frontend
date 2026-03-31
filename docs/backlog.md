@@ -113,6 +113,7 @@ Tasks:
 - [x] corrigir a sobreposicao dos drawers sobre o header sticky e reforcar a responsividade transversal das toolbars de filtro
 - [x] remover o chip redundante de usuario do topo do shell autenticado
 - [x] simplificar os filtros do catalogo admin para busca textual ampla e selecao de fornecedor
+- [x] mover a criacao de servico no catalogo admin para drawer lateral e remover o seletor de pagina dessa tela
 
 ## Phase 6: Customer Profile
 
