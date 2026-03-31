@@ -59,25 +59,18 @@ export function AdminUserMutationForm({ mode, action, returnTo, user }: AdminUse
         <label className="admin-user-field">
           <span>Papel</span>
           <select name="role" defaultValue={user?.role ?? 'customer'}>
-            <option value="customer">customer</option>
-            <option value="admin">admin</option>
+            <option value="customer">Cliente</option>
+            <option value="admin">Admin</option>
           </select>
         </label>
 
         <label className="admin-user-field">
           <span>Status</span>
           <select name="status" defaultValue={user?.status ?? 'active'}>
-            <option value="active">active</option>
-            <option value="disabled">disabled</option>
+            <option value="active">Ativo</option>
+            <option value="disabled">Desativado</option>
           </select>
         </label>
-
-        {!isCreate ? (
-          <label className="admin-user-toggle admin-user-field-wide">
-            <input type="checkbox" name="clearPhone" value="true" />
-            <span>Limpar telefone salvo ao atualizar este usuario.</span>
-          </label>
-        ) : null}
       </div>
     </AdminActionForm>
   );

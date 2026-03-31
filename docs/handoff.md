@@ -26,6 +26,8 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/admin/catalog` agora tambem permite criar e atualizar servicos com base em `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}`, incluindo `metadata` JSON e limpeza explicita de descricao/metadata
 - a criacao em `/admin/catalog` agora parte da selecao de um `SupplierService` sincronizado carregado por `GET /admin/supplier/services`, e o formulario de publicacao preenche automaticamente fornecedor, categoria, tipo e limites
 - `/admin/transactions` agora permite ajuste manual de carteira com base em `POST /admin/wallets/{userId}/adjustments`, com feedback inline e reaproveitando o filtro `userId` como contexto inicial
+- o formulario de ajuste manual de carteira no admin agora traduz direcao e tipo de lancamento para uma linguagem operacional mais clara
+- a edicao de usuario no admin nao usa mais checkbox para limpar telefone; o formulario ficou mais direto
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora existem para concentrar edicao em paginas dedicadas e reduzir a densidade operacional das listas
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
 - a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`

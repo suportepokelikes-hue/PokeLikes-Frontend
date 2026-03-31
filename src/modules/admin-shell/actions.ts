@@ -83,8 +83,7 @@ export async function updateUserAction(_: AdminActionState, formData: FormData):
   const password = readRequiredString(formData, 'password');
   const role = readRole(formData);
   const status = readStatus(formData);
-  const clearPhone = readRequiredString(formData, 'clearPhone') === 'true';
-  const phone = clearPhone ? '' : readRequiredString(formData, 'phone');
+  const phone = readRequiredString(formData, 'phone');
 
   if (!userId) {
     return {
@@ -96,7 +95,7 @@ export async function updateUserAction(_: AdminActionState, formData: FormData):
   const payload: AdminUpdateUserRequest = {
     ...(name ? { name } : {}),
     ...(password ? { password } : {}),
-    ...(clearPhone ? { phone: null } : phone ? { phone } : {}),
+    ...(phone ? { phone } : {}),
     ...(role ? { role } : {}),
     ...(status ? { status } : {}),
   };

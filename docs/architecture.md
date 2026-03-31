@@ -81,6 +81,8 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/admin/catalog` agora tambem executa `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}` com formularios operacionais embutidos na propria listagem, incluindo suporte a `metadata` JSON e limpeza explicita de campos anulaveis
 - `/admin/catalog` agora tambem usa `GET /admin/supplier/services` para guiar a criacao de `CatalogService` a partir de `SupplierService` sincronizado, reduzindo a necessidade de descoberta manual de IDs e limites tecnicos
 - `/admin/transactions` agora tambem executa `POST /admin/wallets/{userId}/adjustments`, permitindo credito e debito administrativos no mesmo contexto do ledger financeiro
+- o ajuste manual de carteira no admin agora explica melhor a diferenca entre adicionar saldo, remover saldo, ajuste manual e reversao manual, reduzindo erro operacional no formulario
+- a edicao de usuario no admin nao oferece mais um checkbox separado para limpar telefone; a UX foi simplificada para focar nos campos principais de atualizacao
 - `/admin/users/[userId]` e `/admin/catalog/[serviceId]` agora concentram as edicoes mais densas do admin em paginas dedicadas, deixando as listas primarias focadas em leitura e navegacao
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API
 - parte da logica mais sensivel das server actions de auth e admin foi extraida para helpers puros, facilitando cobertura de teste sem acoplamento ao runtime do Next

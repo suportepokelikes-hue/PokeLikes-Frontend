@@ -13,6 +13,24 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
   return (
     <AdminActionForm action={action} submitLabel="Aplicar ajuste" pendingLabel="Aplicando..." tone="primary" returnTo={returnTo}>
       <div className="admin-user-form">
+        <div className="detail-card detail-card-wide">
+          <h2>Como usar</h2>
+          <dl className="detail-list">
+            <div>
+              <dt>Adicionar saldo</dt>
+              <dd>Use credito com ajuste manual.</dd>
+            </div>
+            <div>
+              <dt>Remover saldo</dt>
+              <dd>Use debito com reversao manual.</dd>
+            </div>
+            <div>
+              <dt>Tipo do lancamento</dt>
+              <dd>O tipo registra o motivo administrativo da movimentacao.</dd>
+            </div>
+          </dl>
+        </div>
+
         <label className="admin-user-field">
           <span>ID do usuario</span>
           <input type="text" name="userId" defaultValue={defaultUserId ?? ''} placeholder="ID do usuario" />
@@ -24,24 +42,24 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
         </label>
 
         <label className="admin-user-field">
-          <span>Direcao</span>
+          <span>Movimento</span>
           <select name="direction" defaultValue="credit">
-            <option value="credit">credit</option>
-            <option value="debit">debit</option>
+            <option value="credit">Adicionar saldo</option>
+            <option value="debit">Remover saldo</option>
           </select>
         </label>
 
         <label className="admin-user-field">
-          <span>Tipo</span>
+          <span>Motivo do lancamento</span>
           <select name="type" defaultValue="wallet_adjustment_admin">
-            <option value="wallet_adjustment_admin">wallet_adjustment_admin</option>
-            <option value="wallet_reversal_admin">wallet_reversal_admin</option>
+            <option value="wallet_adjustment_admin">Ajuste manual</option>
+            <option value="wallet_reversal_admin">Reversao manual</option>
           </select>
         </label>
 
         <label className="admin-user-field admin-user-field-wide">
-          <span>Motivo</span>
-          <input type="text" name="reason" placeholder="Contexto operacional do ajuste" />
+          <span>Observacao</span>
+          <input type="text" name="reason" placeholder="Ex.: bonus, correcao manual ou estorno" />
         </label>
       </div>
     </AdminActionForm>
