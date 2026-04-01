@@ -115,6 +115,7 @@ Tasks:
 - [x] simplificar os filtros do catalogo admin para busca textual ampla e selecao de fornecedor
 - [x] mover a criacao de servico no catalogo admin para drawer lateral e remover o seletor de pagina dessa tela
 - [x] mover tambem a edicao do catalogo publicado para drawer lateral na propria listagem
+- [x] reduzir o formulario do catalogo admin aos campos publicos principais e transformar rede social em selecao fechada
 
 ## Phase 6: Customer Profile
 

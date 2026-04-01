@@ -13,6 +13,15 @@ type AdminCatalogMutationFormProps = {
   creationDraft?: AdminCatalogCreationDraft;
 };
 
+const socialNetworkOptions = [
+  { label: 'Instagram', value: 'instagram' },
+  { label: 'TikTok', value: 'tiktok' },
+  { label: 'YouTube', value: 'youtube' },
+  { label: 'Facebook', value: 'facebook' },
+  { label: 'X', value: 'x' },
+  { label: 'Telegram', value: 'telegram' },
+];
+
 export function AdminCatalogMutationForm({
   mode,
   action,
@@ -21,7 +30,6 @@ export function AdminCatalogMutationForm({
   creationDraft,
 }: AdminCatalogMutationFormProps) {
   const isCreate = mode === 'create';
-  const metadataValue = service?.metadata ? JSON.stringify(service.metadata) : '';
 
   if (isCreate && !creationDraft) {
     return (
@@ -116,7 +124,13 @@ export function AdminCatalogMutationForm({
 
         <label className="admin-user-field">
           <span>Rede social</span>
-          <input type="text" name="socialNetwork" defaultValue={service?.socialNetwork ?? ''} placeholder="instagram" />
+          <select name="socialNetwork" defaultValue={service?.socialNetwork ?? 'instagram'}>
+            {socialNetworkOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="admin-user-field">
@@ -126,75 +140,6 @@ export function AdminCatalogMutationForm({
             <option value="inactive">Inativo</option>
           </select>
         </label>
-
-        <label className="admin-user-field">
-          <span>Ordem</span>
-          <input type="number" name="sortOrder" defaultValue={service?.sortOrder ?? ''} min={0} placeholder="0" />
-        </label>
-
-        {!isCreate ? (
-          <>
-            <label className="admin-user-field">
-              <span>Categoria</span>
-              <input type="text" name="category" defaultValue={service?.category ?? ''} placeholder="followers" />
-            </label>
-
-            <label className="admin-user-field">
-              <span>Tipo</span>
-              <input type="text" name="type" defaultValue={service?.type ?? ''} placeholder="default" />
-            </label>
-
-            <label className="admin-user-field">
-              <span>Quantidade minima</span>
-              <input type="number" name="minQuantity" defaultValue={service?.minQuantity ?? ''} min={1} placeholder="100" />
-            </label>
-
-            <label className="admin-user-field">
-              <span>Quantidade maxima</span>
-              <input type="number" name="maxQuantity" defaultValue={service?.maxQuantity ?? ''} min={1} placeholder="10000" />
-            </label>
-
-            <label className="admin-user-field">
-              <span>Fornecedor</span>
-              <input
-                type="text"
-                name="supplierName"
-                defaultValue={service?.supplierService.supplierName ?? ''}
-                placeholder="Nome do fornecedor"
-              />
-            </label>
-
-            <label className="admin-user-field">
-              <span>ID do servico no fornecedor</span>
-              <input
-                type="number"
-                name="supplierServiceId"
-                defaultValue={service?.supplierService.supplierServiceId ?? ''}
-                min={1}
-                placeholder="12345"
-              />
-            </label>
-
-            <label className="admin-user-field admin-user-field-wide">
-              <span>Metadata JSON</span>
-              <textarea
-                name="metadata"
-                defaultValue={metadataValue}
-                className="admin-catalog-textarea admin-catalog-textarea-code"
-                placeholder='{"key":"value"}'
-              />
-            </label>
-
-            <label className="admin-user-toggle">
-              <input type="checkbox" name="clearDescription" value="true" />
-              <span>Limpar descricao ao atualizar.</span>
-            </label>
-            <label className="admin-user-toggle">
-              <input type="checkbox" name="clearMetadata" value="true" />
-              <span>Limpar metadata ao atualizar.</span>
-            </label>
-          </>
-        ) : null}
       </div>
     </AdminActionForm>
   );

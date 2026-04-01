@@ -82,6 +82,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/admin/catalog` agora tambem usa `GET /admin/supplier/services` para guiar a criacao de `CatalogService` a partir de `SupplierService` sincronizado, reduzindo a necessidade de descoberta manual de IDs e limites tecnicos
 - `/admin/catalog` agora simplifica a filtragem para um unico campo de busca textual ampla e uma selecao de fornecedor, removendo os filtros secundarios para reduzir ruido operacional
 - a publicacao de servicos em `/admin/catalog` agora abre em drawer lateral a partir da lista sincronizada, em vez de manter o formulario de criacao exposto na propria pagina
+- o formulario de criacao/edicao do catalogo admin agora foi reduzido aos campos publicos principais, tratando categoria, tipo, limites e vinculo com fornecedor como dados herdados do servico sincronizado
 - `/admin/transactions` agora tambem executa `POST /admin/wallets/{userId}/adjustments`, permitindo credito e debito administrativos no mesmo contexto do ledger financeiro
 - o ajuste manual de carteira no admin agora explica melhor a diferenca entre adicionar saldo, remover saldo, ajuste manual e reversao manual, reduzindo erro operacional no formulario
 - o ajuste manual de carteira no admin agora deriva automaticamente o tipo do lancamento pela direcao: credito vira ajuste manual e debito vira reversao manual
