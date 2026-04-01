@@ -116,6 +116,7 @@ Tasks:
 - [x] mover a criacao de servico no catalogo admin para drawer lateral e remover o seletor de pagina dessa tela
 - [x] mover tambem a edicao do catalogo publicado para drawer lateral na propria listagem
 - [x] reduzir o formulario do catalogo admin aos campos publicos principais e transformar rede social em selecao fechada
+- [x] devolver no drawer do catalogo a visibilidade dos dados herdados do servico sincronizado em modo somente leitura
 
 ## Phase 6: Customer Profile
 

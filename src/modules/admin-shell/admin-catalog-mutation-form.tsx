@@ -30,6 +30,16 @@ export function AdminCatalogMutationForm({
   creationDraft,
 }: AdminCatalogMutationFormProps) {
   const isCreate = mode === 'create';
+  const inheritedService = service
+    ? {
+        supplierName: service.supplierService.supplierName,
+        supplierServiceId: service.supplierService.supplierServiceId,
+        category: service.category,
+        type: service.type,
+        minQuantity: service.minQuantity,
+        maxQuantity: service.maxQuantity,
+      }
+    : creationDraft;
 
   if (isCreate && !creationDraft) {
     return (
@@ -65,33 +75,33 @@ export function AdminCatalogMutationForm({
       hiddenFields={hiddenFields}
     >
       <div className="admin-catalog-form">
-        {isCreate && creationDraft ? (
+        {inheritedService ? (
           <div className="detail-card detail-card-wide">
-            <h2>Servico sincronizado</h2>
+            <h2>Dados herdados do servico sincronizado</h2>
             <dl className="detail-list">
               <div>
                 <dt>Fornecedor</dt>
-                <dd>{creationDraft.supplierName}</dd>
+                <dd>{inheritedService.supplierName}</dd>
               </div>
               <div>
                 <dt>SID</dt>
-                <dd>{creationDraft.supplierServiceId}</dd>
+                <dd>{inheritedService.supplierServiceId}</dd>
               </div>
               <div>
                 <dt>Categoria</dt>
-                <dd>{creationDraft.category}</dd>
+                <dd>{inheritedService.category}</dd>
               </div>
               <div>
                 <dt>Tipo</dt>
-                <dd>{creationDraft.type}</dd>
+                <dd>{inheritedService.type}</dd>
               </div>
               <div>
                 <dt>Faixa minima</dt>
-                <dd>{creationDraft.minQuantity}</dd>
+                <dd>{inheritedService.minQuantity}</dd>
               </div>
               <div>
                 <dt>Faixa maxima</dt>
-                <dd>{creationDraft.maxQuantity}</dd>
+                <dd>{inheritedService.maxQuantity}</dd>
               </div>
             </dl>
           </div>
