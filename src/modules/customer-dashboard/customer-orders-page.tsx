@@ -6,18 +6,33 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { listCustomerOrders } from '@/lib/api/customer';
+import { getCustomerOrderDetail, listCustomerOrders } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
+import { buildPathWithSearch } from '@/modules/admin-shell/shared';
 
 type CustomerOrdersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  activeOrderId?: string;
 };
 
-export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
+export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrdersPageProps) {
   try {
     const orders = await listCustomerOrders({ accessToken: session.accessToken });
+    let activeOrder = null;
+    let activeOrderError: string | null = null;
+
+    if (activeOrderId) {
+      try {
+        activeOrder = await getCustomerOrderDetail({ accessToken: session.accessToken }, activeOrderId);
+      } catch (error) {
+        activeOrderError = error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este pedido.';
+      }
+    }
+
+    const returnTo = buildPathWithSearch('/app/orders', {});
     const openCount = orders.items.filter((order) =>
       ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
     ).length;
@@ -59,7 +74,7 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
               {orders.items.map((order) => (
                 <tr key={order.id}>
                   <td>
-                    <Link href={`/app/orders/${order.id}`} className="table-link">
+                    <Link href={buildPathWithSearch('/app/orders', { orderId: order.id })} className="table-link">
                       {order.id}
                     </Link>
                   </td>
@@ -74,6 +89,85 @@ export async function CustomerOrdersPage({ session }: CustomerOrdersPageProps) {
             </DataTable>
           </section>
         )}
+
+        {activeOrder ? (
+          <AdminSlideOver
+            eyebrow="Pedido"
+            title={activeOrder.catalogService?.name || `Pedido ${activeOrder.id}`}
+            description="Acompanhe o andamento do pedido sem sair da lista."
+            closeHref={returnTo}
+          >
+            <section className="admin-drawer-stack">
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Status</p>
+                    <h3>Pedido {activeOrder.id}</h3>
+                  </div>
+                  <StatusBadge label={activeOrder.status} tone={mapOrderTone(activeOrder.status)} />
+                </div>
+                <dl className="detail-list">
+                  <div>
+                    <dt>Servico</dt>
+                    <dd>{activeOrder.catalogService?.name || 'Servico nao associado'}</dd>
+                  </div>
+                  <div>
+                    <dt>Quantidade</dt>
+                    <dd>{activeOrder.quantity}</dd>
+                  </div>
+                  <div>
+                    <dt>Cobranca</dt>
+                    <dd>{formatMoney(activeOrder.customerCharge)}</dd>
+                  </div>
+                  <div>
+                    <dt>Atualizado em</dt>
+                    <dd>{formatDateTime(activeOrder.updatedAt)}</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Entrega</p>
+                    <h3>Link informado</h3>
+                  </div>
+                </div>
+                <p className="code-block">{activeOrder.link}</p>
+              </article>
+
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Historico</p>
+                    <h3>Atualizacoes</h3>
+                  </div>
+                </div>
+                {activeOrder.events && activeOrder.events.length > 0 ? (
+                  <div className="stack-list">
+                    {activeOrder.events.map((event) => (
+                      <div key={event.id} className="stack-item">
+                        <div className="stack-item-head">
+                          <strong>{event.eventType}</strong>
+                          <span>{formatDateTime(event.createdAt)}</span>
+                        </div>
+                        <p>
+                          {event.fromStatus || '-'} {'->'} {event.toStatus || '-'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="section-copy">Ainda nao houve atualizacao para este pedido.</p>
+                )}
+              </article>
+            </section>
+          </AdminSlideOver>
+        ) : activeOrderError ? (
+          <AdminSlideOver eyebrow="Pedido" title="Pedido indisponivel" description={activeOrderError} closeHref={returnTo}>
+            <ErrorState title="Nao foi possivel abrir este pedido" description="Feche o painel e tente novamente pela lista." />
+          </AdminSlideOver>
+        ) : null}
       </main>
     );
   } catch (error) {

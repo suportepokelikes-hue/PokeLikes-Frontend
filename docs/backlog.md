@@ -133,6 +133,7 @@ Tasks:
 - [x] refinar dashboard do cliente com hero operacional e atalhos de fluxo
 - [x] refinar carteira, pagamentos, pedidos e perfil com cards de contexto e hierarquia mais forte
 - [x] aprofundar polish dos detalhes de pedido e pagamento do cliente
+- [x] mover os detalhes de pagamentos e pedidos do cliente para drawers laterais nas proprias listagens
 
 ## Phase 8: Public Visual Polish
 

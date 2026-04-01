@@ -1,5 +1,4 @@
-import { requireCustomerSession } from '@/lib/auth/guards';
-import { OrderDetailPage } from '@/modules/customer-transactions/order-detail-page';
+import { redirect } from 'next/navigation';
 
 type OrderDetailRouteProps = {
   params: Promise<{ orderId: string }>;
@@ -7,7 +6,5 @@ type OrderDetailRouteProps = {
 
 export default async function OrderDetailRoute({ params }: OrderDetailRouteProps) {
   const { orderId } = await params;
-  const session = await requireCustomerSession(`/app/orders/${orderId}`);
-
-  return <OrderDetailPage session={session} orderId={orderId} />;
+  redirect(`/app/orders?orderId=${encodeURIComponent(orderId)}`);
 }

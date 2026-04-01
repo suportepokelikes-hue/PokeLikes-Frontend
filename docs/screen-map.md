@@ -14,9 +14,9 @@
 - `/app/profile`
 - `/app/wallet`
 - `/app/payments`
-- `/app/payments/[paymentId]`
+- `/app/payments/[paymentId]` (redireciona para drawer em `/app/payments`)
 - `/app/orders`
-- `/app/orders/[orderId]`
+- `/app/orders/[orderId]` (redireciona para drawer em `/app/orders`)
 
 ## Admin
 

@@ -65,6 +65,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/app/profile` agora consome `GET /me` para expor os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente agora compartilham um tratamento visual mais editorial, com hero operacional, atalhos de fluxo e cards de contexto inspirados no Stitch dominante
 - os detalhes de pagamento e pedido do cliente agora seguem o mesmo padrao, com hero de status, resumo operacional e leitura mais clara dos dados assincronos do backend
+- `/app/payments` e `/app/orders` agora tambem absorvem os detalhes em drawers laterais na propria listagem, e as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento
 - a home publica, o catalogo e o detalhe de servico agora seguem um tratamento visual mais forte, com bento cards, destaque de availability e CTA mais claro para a jornada publica
 - os estados compartilhados de empty/error ficaram mais ricos visualmente e a area do cliente agora tambem possui `loading.tsx` segmentado
 - `/app/payments` agora tambem cria cobranca PIX por `POST /me/payments/pix`
@@ -155,10 +156,10 @@ src/
 - `/app/wallet` -> `GET /me/wallet`, `GET /me/wallet/transactions`
 - `/app/payments` -> `GET /me/payments`
 - `/app/payments` -> `POST /me/payments/pix`
-- `/app/payments/[paymentId]` -> `GET /me/payments/{paymentId}`
+- `/app/payments/[paymentId]` -> redireciona para `/app/payments?paymentId=...`
 - `/app/orders` -> `GET /me/orders`
 - `/catalog/[serviceId]` -> `POST /me/orders`
-- `/app/orders/[orderId]` -> `GET /me/orders/{orderId}`
+- `/app/orders/[orderId]` -> redireciona para `/app/orders?orderId=...`
 - `/admin` -> `GET /admin/dashboard/summary`
 - `/admin/users` -> `GET /admin/users`
 - `/admin/users` -> `POST /admin/users`

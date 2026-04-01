@@ -1,5 +1,4 @@
-import { requireCustomerSession } from '@/lib/auth/guards';
-import { PaymentDetailPage } from '@/modules/customer-transactions/payment-detail-page';
+import { redirect } from 'next/navigation';
 
 type PaymentDetailRouteProps = {
   params: Promise<{ paymentId: string }>;
@@ -7,7 +6,5 @@ type PaymentDetailRouteProps = {
 
 export default async function PaymentDetailRoute({ params }: PaymentDetailRouteProps) {
   const { paymentId } = await params;
-  const session = await requireCustomerSession(`/app/payments/${paymentId}`);
-
-  return <PaymentDetailPage session={session} paymentId={paymentId} />;
+  redirect(`/app/payments?paymentId=${encodeURIComponent(paymentId)}`);
 }

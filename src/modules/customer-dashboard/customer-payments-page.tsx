@@ -6,24 +6,39 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
+import { getCustomerPaymentDetail, getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
+import { buildPathWithSearch } from '@/modules/admin-shell/shared';
 import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
 
 type CustomerPaymentsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  activePaymentId?: string;
 };
 
-export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProps) {
+export async function CustomerPaymentsPage({ session, activePaymentId }: CustomerPaymentsPageProps) {
   try {
     const [wallet, payments] = await Promise.all([
       getWalletSummary({ accessToken: session.accessToken }),
       listCustomerPayments({ accessToken: session.accessToken }),
     ]);
+    let activePayment = null;
+    let activePaymentError: string | null = null;
+
+    if (activePaymentId) {
+      try {
+        activePayment = await getCustomerPaymentDetail({ accessToken: session.accessToken }, activePaymentId);
+      } catch (error) {
+        activePaymentError = error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este pagamento.';
+      }
+    }
+
+    const returnTo = buildPathWithSearch('/app/payments', {});
     const pendingCount = payments.items.filter((payment) => payment.status === 'pending').length;
     const confirmedCount = payments.items.filter((payment) => payment.status === 'confirmed').length;
 
@@ -82,7 +97,7 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
                   <td>
-                    <Link href={`/app/payments/${payment.id}`} className="table-link">
+                    <Link href={buildPathWithSearch('/app/payments', { paymentId: payment.id })} className="table-link">
                       {payment.id}
                     </Link>
                   </td>
@@ -97,6 +112,55 @@ export async function CustomerPaymentsPage({ session }: CustomerPaymentsPageProp
             </DataTable>
           </section>
         )}
+
+        {activePayment ? (
+          <AdminSlideOver
+            eyebrow="Pagamento PIX"
+            title={formatMoney(activePayment.amount)}
+            description="Veja o status do pagamento e copie os dados do PIX sem sair da lista."
+            closeHref={returnTo}
+          >
+            <section className="admin-drawer-stack">
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Status</p>
+                    <h3>Pagamento {activePayment.id}</h3>
+                  </div>
+                  <StatusBadge label={activePayment.status} tone={mapPaymentTone(activePayment.status)} />
+                </div>
+                <dl className="detail-list">
+                  <div>
+                    <dt>Valor</dt>
+                    <dd>{formatMoney(activePayment.amount)}</dd>
+                  </div>
+                  <div>
+                    <dt>Expira em</dt>
+                    <dd>{formatDateTime(activePayment.expiresAt)}</dd>
+                  </div>
+                  <div>
+                    <dt>Confirmado em</dt>
+                    <dd>{formatDateTime(activePayment.confirmedAt)}</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">PIX</p>
+                    <h3>Codigo copia e cola</h3>
+                  </div>
+                </div>
+                <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>
+              </article>
+            </section>
+          </AdminSlideOver>
+        ) : activePaymentError ? (
+          <AdminSlideOver eyebrow="Pagamento PIX" title="Pagamento indisponivel" description={activePaymentError} closeHref={returnTo}>
+            <ErrorState title="Nao foi possivel abrir este pagamento" description="Feche o painel e tente novamente pela lista." />
+          </AdminSlideOver>
+        ) : null}
       </main>
     );
   } catch (error) {
