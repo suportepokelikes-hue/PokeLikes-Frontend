@@ -10,8 +10,9 @@ export function getLoginPageContent(options: {
   reason?: AuthRedirectReason;
   returnTo?: string | null;
   notice?: AuthNotice;
+  referralCode?: string | null;
 }) {
-  const { reason, returnTo, notice } = options;
+  const { reason, returnTo, notice, referralCode } = options;
 
   return {
     brandLabel: 'Likes Uai',
@@ -49,7 +50,7 @@ export function getLoginPageContent(options: {
     ],
     submitLabel: 'Entrar',
     pendingLabel: 'Validando acesso...',
-    alternateHref: getRegisterPath({ reason, returnTo }),
+    alternateHref: getRegisterPath({ reason, returnTo, referralCode }),
     alternateLabel: 'Criar conta',
     alternatePrompt: 'Ainda nao tem cadastro?',
   };
@@ -59,8 +60,9 @@ export function getRegisterPageContent(options: {
   reason?: AuthRedirectReason;
   returnTo?: string | null;
   notice?: AuthNotice;
+  referralCode?: string | null;
 }) {
-  const { reason, returnTo, notice } = options;
+  const { reason, returnTo, notice, referralCode } = options;
 
   return {
     brandLabel: 'Likes Uai',
@@ -112,10 +114,20 @@ export function getRegisterPageContent(options: {
         autoComplete: 'new-password',
         description: 'Crie uma senha para acessar sua conta.',
       },
+      {
+        name: 'referralCode' as const,
+        label: 'Codigo de indicacao',
+        type: 'text' as const,
+        placeholder: 'Opcional',
+        autoComplete: 'off',
+        description: 'Se voce recebeu um codigo, confirme aqui para vincular a indicacao.',
+        defaultValue: referralCode ?? undefined,
+        required: false,
+      },
     ],
     submitLabel: 'Criar conta',
     pendingLabel: 'Criando conta...',
-    alternateHref: getLoginPath({ reason, returnTo }),
+    alternateHref: getLoginPath({ reason, returnTo, referralCode }),
     alternateLabel: 'Entrar',
     alternatePrompt: 'Ja possui acesso?',
   };

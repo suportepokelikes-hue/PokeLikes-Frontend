@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 
-import type { AuthSessionResponse } from '@/lib/api/contracts';
-import { getSessionCookieNames, toSessionCookieValues } from '@/lib/auth/session';
+import type { AuthSessionResponse, UserSummary } from '@/lib/api/contracts';
+import { getSessionCookieNames, serializeUser, toSessionCookieValues } from '@/lib/auth/session';
 
 const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const secureCookie = process.env.NODE_ENV === 'production';
@@ -23,6 +23,13 @@ export async function clearServerSessionCookies() {
   cookieStore.set(names.accessToken, '', createExpiredCookieOptions());
   cookieStore.set(names.refreshToken, '', createExpiredCookieOptions());
   cookieStore.set(names.user, '', createExpiredCookieOptions());
+}
+
+export async function writeServerUserCookie(user: UserSummary) {
+  const cookieStore = await cookies();
+  const names = getSessionCookieNames();
+
+  cookieStore.set(names.user, serializeUser(user), createCookieOptions());
 }
 
 function createCookieOptions() {

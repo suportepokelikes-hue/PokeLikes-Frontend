@@ -11,13 +11,22 @@ type AuthNotice = {
 type AuthEntrySearchParams = {
   reason?: string | string[];
   returnTo?: string | string[];
+  ref?: string | string[];
 };
 
-export function getLoginPath(options: { reason?: AuthRedirectReason; returnTo?: string | null } = {}) {
+export function getLoginPath(options: {
+  reason?: AuthRedirectReason;
+  returnTo?: string | null;
+  referralCode?: string | null;
+} = {}) {
   return buildAuthEntryPath('/login', options);
 }
 
-export function getRegisterPath(options: { reason?: AuthRedirectReason; returnTo?: string | null } = {}) {
+export function getRegisterPath(options: {
+  reason?: AuthRedirectReason;
+  returnTo?: string | null;
+  referralCode?: string | null;
+} = {}) {
   return buildAuthEntryPath('/register', options);
 }
 
@@ -93,9 +102,27 @@ export function normalizeReturnTo(value?: string | null) {
   }
 }
 
-function buildAuthEntryPath(pathname: '/login' | '/register', options: { reason?: AuthRedirectReason; returnTo?: string | null }) {
+export function normalizeReferralCode(value?: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = value.trim();
+
+  if (!normalized || normalized.length > 128) {
+    return null;
+  }
+
+  return normalized;
+}
+
+function buildAuthEntryPath(
+  pathname: '/login' | '/register',
+  options: { reason?: AuthRedirectReason; returnTo?: string | null; referralCode?: string | null },
+) {
   const searchParams = new URLSearchParams();
   const returnTo = normalizeReturnTo(options.returnTo);
+  const referralCode = normalizeReferralCode(options.referralCode);
 
   if (options.reason) {
     searchParams.set('reason', options.reason);
@@ -103,6 +130,10 @@ function buildAuthEntryPath(pathname: '/login' | '/register', options: { reason?
 
   if (returnTo) {
     searchParams.set('returnTo', returnTo);
+  }
+
+  if (referralCode) {
+    searchParams.set('ref', referralCode);
   }
 
   const query = searchParams.toString();

@@ -54,6 +54,8 @@ Tasks:
 - [x] guardas de rota
 - [x] refinar tratamento visual de erro, loading e feedback de auth para teste manual pela UI
 - [x] adicionar estados de logout expirado e retorno para rota de origem
+- [x] capturar `?ref=` no cadastro e enviar `referralCode` ao backend
+- [x] adicionar request e confirmacao de verificacao de email
 
 ## Phase 2: Public Catalog
 
@@ -124,6 +126,7 @@ Tasks:
 Tasks:
 
 - [x] criar rota de perfil do cliente consumindo `GET /me`
+- [x] adicionar card de referral com `GET /me/referral`, botoes de copia e CTA de verificacao de email
 - [ ] habilitar edicao de perfil quando o contrato local descrever o payload de `PATCH /me`
 
 ## Phase 7: Customer Visual Polish
@@ -190,9 +193,8 @@ Tasks:
 
 Na proxima sessao do Codex:
 
-- revisar o resultado visual da limpeza editorial tela a tela, agora com feedback manual do usuario
-- aprofundar o proximo passe em conteudo e UX com foco em hierarquia, ordem dos blocos e CTA das jornadas principais
-- revisar o comportamento das telas densas em largura menor depois da nova reorganizacao dos blocos e do novo shell recolhivel
+- revisar o novo fluxo de referral e verificacao de email com backend real, incluindo `previewToken` em ambiente local
+- avaliar se o dashboard do cliente deve ganhar um destaque adicional para status de referral pendente
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`

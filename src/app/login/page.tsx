@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 
-import { getAuthNotice, normalizeReturnTo, type AuthRedirectReason } from '@/lib/auth/navigation';
+import {
+  getAuthNotice,
+  normalizeReferralCode,
+  normalizeReturnTo,
+  type AuthRedirectReason,
+} from '@/lib/auth/navigation';
 import { redirectAuthenticatedUser } from '@/lib/auth/guards';
 import { loginAction } from '@/modules/auth/actions';
 import { AuthForm } from '@/modules/auth/auth-form';
@@ -20,10 +25,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const resolvedSearchParams = await searchParams;
   const returnTo = normalizeReturnTo(readSearchParam(resolvedSearchParams.returnTo));
   const reason = readSearchParam(resolvedSearchParams.reason) as AuthRedirectReason | undefined;
+  const referralCode = normalizeReferralCode(readSearchParam(resolvedSearchParams.ref));
   const content = getLoginPageContent({
     reason,
     returnTo,
     notice: getAuthNotice(resolvedSearchParams),
+    referralCode,
   });
 
   await redirectAuthenticatedUser(returnTo ?? undefined);

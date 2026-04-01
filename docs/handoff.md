@@ -61,6 +61,13 @@ Toda nova sessao do Codex neste repositorio deve:
 - a iconografia real agora tambem comeca a aparecer em estados compartilhados (`empty/error`) e nas jornadas principais de home publica, dashboard do cliente e entrada do admin
 - a copy das telas principais acabou de passar por uma limpeza editorial para remover linguagem tecnica, rotulos internos como "workspace" e blocos repetitivos de contexto
 - logo depois dessa limpeza, as jornadas principais tambem passaram por uma rodada estrutural de UX com CTA mais fortes, blocos reordenados e traducao adicional de labels tecnicos expostos na UI
+- o contrato mais novo do backend para auth/referral foi movido para `docs/api/openapi.yaml`, com modulos complementares em `docs/api/modules/auth.md` e `docs/api/modules/referrals.md`; `docs/contracts/backend-openapi.yaml` foi sincronizado com essa versao
+- `/register` agora entende `?ref=CODIGO`, preenche o codigo de indicacao no formulario e envia `referralCode` ao backend no `POST /auth/register`
+- `src/lib/api/auth.ts` agora cobre `POST /auth/email-verification/request` e `POST /auth/email-verification/confirm`
+- `src/lib/api/customer.ts` agora cobre `GET /me/referral`
+- `/app/profile` agora mostra o programa de indicacao do usuario, com codigo, link, regras, resumo, `rewardStatus`, estado de email e botoes de copia
+- a verificacao de email pode ser solicitada na propria area autenticada; fora de producao, `previewToken` aparece como atalho de desenvolvimento para `/verify-email?token=...`
+- `/verify-email` agora executa a confirmacao do token e atualiza o cookie de usuario quando a sessao atual pertence ao mesmo usuario confirmado
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
@@ -102,6 +109,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
 - preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
 - expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
+- revisar o UX do novo fluxo de referral e verificacao de email com backend real e decidir se ele tambem deve aparecer com mais destaque no dashboard do cliente
 
 
 ## Source Of Truth Precedence

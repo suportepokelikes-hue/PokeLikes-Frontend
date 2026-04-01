@@ -4,6 +4,7 @@ import type {
   OrderResource,
   PaginatedResponse,
   PaymentResource,
+  ReferralSummaryResponse,
   UserSummary,
   WalletSummary,
   WalletTransactionResource,
@@ -24,6 +25,13 @@ export function getWalletSummary({ accessToken }: AuthOptions) {
 export function getCustomerProfile({ accessToken }: AuthOptions) {
   return apiRequest<UserSummary>({
     path: '/me',
+    accessToken,
+  });
+}
+
+export function getCustomerReferralSummary({ accessToken }: AuthOptions) {
+  return apiRequest<ReferralSummaryResponse>({
+    path: '/me/referral',
     accessToken,
   });
 }

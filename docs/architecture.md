@@ -102,6 +102,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - parte da logica mais sensivel das server actions de auth e admin foi extraida para helpers puros, facilitando cobertura de teste sem acoplamento ao runtime do Next
 - o dominio de transacoes do cliente agora segue a mesma direcao, com helpers puros para parsing de PIX/pedido e cobertura da camada `src/lib/api/customer.ts`
 - `src/lib/api/auth.ts` agora tambem possui cobertura de wiring para registro, login, refresh, logout, `auth/me` e `/me`
+- `src/lib/api/auth.ts` e `src/lib/api/customer.ts` agora tambem cobrem o fluxo de referral e verificacao de email, incluindo `POST /auth/email-verification/request`, `POST /auth/email-verification/confirm` e `GET /me/referral`
 - o design system base agora tambem possui cobertura de renderizacao server-side para `empty-state`, `error-state`, `status-badge` e `page-header`
 - `/login` e `/register` agora derivam seu conteudo de helpers puros, o que permite validar copy, links de retorno e composicao de campos sem acoplar os testes ao runtime do Next
 - `AuthForm` agora delega sua composicao configuravel para `src/modules/auth/auth-form-content.ts`, o que permite validar notice, `returnTo`, campos e feedback de erro sem depender de runner browser
@@ -117,6 +118,10 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - essa mesma base de iconografia agora comeca a subir para estados compartilhados e jornadas principais, reforcando CTA, empty/error e leitura de cards sem depender apenas de texto
 - a copy das telas principais foi simplificada para cortar rotulos internos de sistema, explicacoes de arquitetura vazando para a UI e blocos redundantes de contexto nas areas publica, cliente e admin
 - as jornadas principais tambem passaram por uma rodada de UX estrutural, com CTA mais claros, blocos reordenados e traducao adicional dos labels tecnicos mais expostos na interface
+- `/register` agora entende `?ref=CODIGO`, preenche o codigo de indicacao no formulario e envia `referralCode` ao backend no cadastro
+- `/app/profile` agora tambem concentra o programa de indicacao do usuario, com codigo, link, resumo, `rewardStatus`, estado de email e request de verificacao no proprio frontend
+- `/verify-email` agora confirma tokens de verificacao lidos da URL e sincroniza o cookie de usuario quando a sessao atual pertence ao usuario confirmado
+- a documentacao contratual mais recente do backend agora vive em `docs/api/openapi.yaml` e `docs/api/modules/*`, com `docs/contracts/backend-openapi.yaml` mantido sincronizado como copia operacional do frontend
 
 ## Implemented Structure
 
@@ -153,6 +158,7 @@ src/
 - `/catalog/[serviceId]` -> `GET /catalog/services/{serviceId}`
 - `/app` -> `GET /me/wallet`, `GET /me/payments`, `GET /me/orders`
 - `/app/profile` -> `GET /me`
+- `/app/profile` -> `GET /me/referral`
 - `/app/wallet` -> `GET /me/wallet`, `GET /me/wallet/transactions`
 - `/app/payments` -> `GET /me/payments`
 - `/app/payments` -> `POST /me/payments/pix`
@@ -160,6 +166,7 @@ src/
 - `/app/orders` -> `GET /me/orders`
 - `/catalog/[serviceId]` -> `POST /me/orders`
 - `/app/orders/[orderId]` -> redireciona para `/app/orders?orderId=...`
+- `/verify-email` -> `POST /auth/email-verification/confirm`
 - `/admin` -> `GET /admin/dashboard/summary`
 - `/admin/users` -> `GET /admin/users`
 - `/admin/users` -> `POST /admin/users`

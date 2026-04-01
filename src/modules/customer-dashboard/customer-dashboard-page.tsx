@@ -98,8 +98,8 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
               <span className="surface-icon" aria-hidden="true">
                 <CircleUserRound size={18} strokeWidth={2.1} />
               </span>
-              <strong>Perfil</strong>
-              <p>Consultar seus dados.</p>
+              <strong>Perfil e indicacoes</strong>
+              <p>{session.user.emailVerified ? 'Consultar seus dados e seu codigo.' : 'Verificar email e acompanhar seu codigo.'}</p>
             </Link>
           </div>
         </section>

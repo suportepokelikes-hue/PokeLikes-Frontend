@@ -40,6 +40,9 @@ Usar como referência primária:
 Complementar com:
 
 - `docs/api-notes.md`
+- `docs/api/openapi.yaml`
+- `docs/api/modules/auth.md`
+- `docs/api/modules/referrals.md`
 - `docs/screen-map.md`
 
 ## Ordem recomendada de implementação

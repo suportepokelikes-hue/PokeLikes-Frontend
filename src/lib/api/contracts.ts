@@ -7,6 +7,8 @@ export type UserSummary = {
   email: string;
   phone?: string;
   status: string;
+  referralCode?: string;
+  emailVerified?: boolean;
 };
 
 export type UserStatus = 'active' | 'disabled';
@@ -39,6 +41,7 @@ export type RegisterRequest = {
   email: string;
   password: string;
   phone: string;
+  referralCode?: string;
 };
 
 export type LoginRequest = {
@@ -56,9 +59,57 @@ export type AuthSessionResponse = {
   user: UserSummary;
 };
 
+export type EmailVerificationConfirmRequest = {
+  token: string;
+};
+
+export type EmailVerificationRequestResponse = {
+  status: 'already_verified' | 'verification_requested';
+  expiresAt: string | null;
+  delivery: 'email' | 'preview';
+  previewToken?: string;
+};
+
 export type Money = {
   amount: string;
   currency: string;
+};
+
+export type ReferralRewardStatus =
+  | 'not_referred'
+  | 'pending_email_verification'
+  | 'pending_first_qualifying_topup'
+  | 'rewarded';
+
+export type ReferralRewardRules = {
+  minimumTopupAmount: Money;
+  referredBonusAmount: Money;
+  referrerBonusAmount: Money;
+};
+
+export type ReferralOwnReward = {
+  id: string;
+  status: 'pending' | 'rewarded' | 'blocked';
+  qualifyingPaymentId: string | null;
+  qualifyingAmount: Money;
+  referredBonusAmount: Money;
+  processedAt: string | null;
+};
+
+export type ReferralProgramSummary = {
+  invitedUsers: number;
+  rewardedUsers: number;
+  earnedAmount: Money;
+};
+
+export type ReferralSummaryResponse = {
+  referralCode: string;
+  referralLink: string;
+  emailVerified: boolean;
+  rewardRules: ReferralRewardRules;
+  rewardStatus: ReferralRewardStatus;
+  ownReferralReward: ReferralOwnReward | null;
+  summary: ReferralProgramSummary;
 };
 
 export type WalletSummary = {

@@ -87,6 +87,8 @@ export function deserializeUser(value: string): UserSummary | null {
       email: parsed.email,
       status: parsed.status,
       phone: typeof parsed.phone === 'string' ? parsed.phone : undefined,
+      referralCode: typeof parsed.referralCode === 'string' ? parsed.referralCode : undefined,
+      emailVerified: typeof parsed.emailVerified === 'boolean' ? parsed.emailVerified : undefined,
     };
   } catch {
     return null;

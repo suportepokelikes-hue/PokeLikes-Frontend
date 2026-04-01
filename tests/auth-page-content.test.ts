@@ -7,6 +7,7 @@ test('getLoginPageContent preserves auth return flow and login-specific copy', (
   const content = getLoginPageContent({
     reason: 'required',
     returnTo: '/admin/users/42',
+    referralCode: 'INDIQUE42',
     notice: {
       tone: 'info',
       title: 'Acesso necessario',
@@ -14,10 +15,10 @@ test('getLoginPageContent preserves auth return flow and login-specific copy', (
     },
   });
 
-  assert.equal(content.title, 'Entre para continuar no cliente ou no admin.');
+  assert.equal(content.title, 'Entre na sua conta.');
   assert.equal(content.notice?.title, 'Acesso necessario');
   assert.equal(content.returnTo, '/admin/users/42');
-  assert.equal(content.alternateHref, '/register?reason=required&returnTo=%2Fadmin%2Fusers%2F42');
+  assert.equal(content.alternateHref, '/register?reason=required&returnTo=%2Fadmin%2Fusers%2F42&ref=INDIQUE42');
   assert.equal(content.fields.length, 2);
   assert.deepEqual(
     content.fields.map((field) => field.name),
@@ -29,6 +30,7 @@ test('getRegisterPageContent preserves register-specific fields and alternate lo
   const content = getRegisterPageContent({
     reason: 'expired',
     returnTo: '/catalog/10',
+    referralCode: 'GANHE5',
     notice: {
       tone: 'warning',
       title: 'Sessao expirada',
@@ -36,12 +38,14 @@ test('getRegisterPageContent preserves register-specific fields and alternate lo
     },
   });
 
-  assert.equal(content.title, 'Crie sua conta para iniciar wallet, pagamentos e pedidos.');
+  assert.equal(content.title, 'Crie sua conta.');
   assert.equal(content.notice?.tone, 'warning');
-  assert.equal(content.alternateHref, '/login?reason=expired&returnTo=%2Fcatalog%2F10');
-  assert.equal(content.fields.length, 4);
+  assert.equal(content.alternateHref, '/login?reason=expired&returnTo=%2Fcatalog%2F10&ref=GANHE5');
+  assert.equal(content.fields.length, 5);
   assert.deepEqual(
     content.fields.map((field) => field.name),
-    ['name', 'email', 'phone', 'password'],
+    ['name', 'email', 'phone', 'password', 'referralCode'],
   );
+  assert.equal(content.fields[4]?.defaultValue, 'GANHE5');
+  assert.equal(content.fields[4]?.required, false);
 });

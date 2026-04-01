@@ -7,6 +7,7 @@ import {
   getCustomerOrderDetail,
   getCustomerPaymentDetail,
   getCustomerProfile,
+  getCustomerReferralSummary,
   getWalletSummary,
   listCustomerOrders,
   listCustomerPayments,
@@ -29,6 +30,7 @@ test('customer api functions target the expected endpoints and methods', async (
   try {
     await getWalletSummary({ accessToken: 'token' });
     await getCustomerProfile({ accessToken: 'token' });
+    await getCustomerReferralSummary({ accessToken: 'token' });
     await listCustomerPayments({ accessToken: 'token' });
     await listCustomerOrders({ accessToken: 'token' });
     await listWalletTransactions({ accessToken: 'token' });
@@ -51,6 +53,7 @@ test('customer api functions target the expected endpoints and methods', async (
     [
       { url: 'http://localhost:3001/v1/me/wallet', method: 'GET' },
       { url: 'http://localhost:3001/v1/me', method: 'GET' },
+      { url: 'http://localhost:3001/v1/me/referral', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/payments?page=1&pageSize=5&sortOrder=desc', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/orders?page=1&pageSize=5&sortOrder=desc', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/wallet/transactions?page=1&pageSize=10&sortOrder=desc', method: 'GET' },
@@ -61,8 +64,8 @@ test('customer api functions target the expected endpoints and methods', async (
     ],
   );
 
-  const pixRequest = requests[5];
-  const orderRequest = requests[7];
+  const pixRequest = requests[6];
+  const orderRequest = requests[8];
 
   assert.equal(new Headers(pixRequest.init?.headers).get('Authorization'), 'Bearer token');
   assert.equal(pixRequest.init?.body, JSON.stringify({ amount: '20' }));

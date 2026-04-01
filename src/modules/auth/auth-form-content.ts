@@ -3,13 +3,15 @@ import type { HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
 import type { AuthFormState } from './types';
 
 export type AuthField = {
-  name: 'name' | 'email' | 'phone' | 'password';
+  name: 'name' | 'email' | 'phone' | 'password' | 'referralCode';
   label: string;
   type: HTMLInputTypeAttribute;
   placeholder: string;
   autoComplete: string;
   inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode'];
   description?: string;
+  defaultValue?: string;
+  required?: boolean;
 };
 
 export type AuthNotice = {

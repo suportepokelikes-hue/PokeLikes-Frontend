@@ -5,6 +5,7 @@
 - `/`
 - `/login`
 - `/register`
+- `/verify-email`
 - `/catalog`
 - `/catalog/[serviceId]`
 

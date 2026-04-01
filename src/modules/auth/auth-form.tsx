@@ -107,7 +107,8 @@ export function AuthForm({
                   autoComplete={field.autoComplete}
                   placeholder={field.placeholder}
                   inputMode={field.inputMode}
-                  required
+                  defaultValue={field.defaultValue}
+                  required={field.required ?? true}
                 />
                 {field.description ? <small>{field.description}</small> : null}
               </label>

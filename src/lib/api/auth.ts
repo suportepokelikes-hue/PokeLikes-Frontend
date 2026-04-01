@@ -1,5 +1,7 @@
 import type {
   AuthSessionResponse,
+  EmailVerificationConfirmRequest,
+  EmailVerificationRequestResponse,
   LoginRequest,
   RefreshRequest,
   RegisterRequest,
@@ -50,5 +52,21 @@ export function getCurrentUser(accessToken: string): Promise<UserSummary> {
   return apiRequest<UserSummary>({
     path: '/me',
     accessToken,
+  });
+}
+
+export function requestEmailVerification(accessToken: string): Promise<EmailVerificationRequestResponse> {
+  return apiRequest<EmailVerificationRequestResponse>({
+    path: '/auth/email-verification/request',
+    method: 'POST',
+    accessToken,
+  });
+}
+
+export function confirmEmailVerification(payload: EmailVerificationConfirmRequest): Promise<UserSummary> {
+  return apiRequest<UserSummary>({
+    path: '/auth/email-verification/confirm',
+    method: 'POST',
+    body: payload,
   });
 }

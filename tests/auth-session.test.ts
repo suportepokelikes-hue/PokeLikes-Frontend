@@ -17,6 +17,8 @@ const sampleUser: UserSummary = {
   email: 'alice@likesuai.com',
   phone: '31999999999',
   status: 'active',
+  referralCode: 'LIKES42',
+  emailVerified: true,
 };
 
 test('serializeUser and deserializeUser preserve supported fields', () => {

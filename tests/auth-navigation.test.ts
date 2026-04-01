@@ -5,6 +5,8 @@ import {
   getAuthNotice,
   getLoginPath,
   getPostAuthRedirectPath,
+  getRegisterPath,
+  normalizeReferralCode,
   normalizeReturnTo,
 } from '../src/lib/auth/navigation';
 
@@ -19,6 +21,12 @@ test('normalizeReturnTo rejects unsafe or auth entry paths', () => {
 test('getLoginPath preserves safe returnTo and reason', () => {
   assert.equal(getLoginPath({ reason: 'required', returnTo: '/admin/users?page=2' }), '/login?reason=required&returnTo=%2Fadmin%2Fusers%3Fpage%3D2');
   assert.equal(getLoginPath({ reason: 'logged_out', returnTo: '/login' }), '/login?reason=logged_out');
+});
+
+test('auth entry paths preserve a normalized referral code when present', () => {
+  assert.equal(getRegisterPath({ referralCode: ' INDICA123 ' }), '/register?ref=INDICA123');
+  assert.equal(getLoginPath({ reason: 'required', referralCode: 'ABC' }), '/login?reason=required&ref=ABC');
+  assert.equal(normalizeReferralCode('   '), null);
 });
 
 test('getPostAuthRedirectPath prevents crossing protected areas', () => {

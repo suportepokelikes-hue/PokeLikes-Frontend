@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { getCustomerProfile, getWalletSummary } from '@/lib/api/customer';
+import { getCustomerProfile, getCustomerReferralSummary, getWalletSummary } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
+import { ReferralCard } from './referral-card';
 
 type CustomerProfilePageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -14,9 +15,10 @@ type CustomerProfilePageProps = {
 
 export async function CustomerProfilePage({ session }: CustomerProfilePageProps) {
   try {
-    const [profile, wallet] = await Promise.all([
+    const [profile, wallet, referral] = await Promise.all([
       getCustomerProfile({ accessToken: session.accessToken }),
       getWalletSummary({ accessToken: session.accessToken }),
+      getCustomerReferralSummary({ accessToken: session.accessToken }),
     ]);
 
     return (
@@ -62,9 +64,13 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
           </article>
 
           <article className="customer-note-card">
-            <strong>Edicao</strong>
-            <p>A edicao ainda nao esta disponivel.</p>
-            <p>Enquanto isso, use esta tela para consultar os dados atuais da conta.</p>
+            <strong>{profile.emailVerified ? 'Email verificado' : 'Verificacao pendente'}</strong>
+            <p>
+              {profile.emailVerified
+                ? 'Seu email ja esta confirmado.'
+                : 'Confirme seu email para liberar etapas pendentes do programa de indicacao.'}
+            </p>
+            <p>Seu codigo atual: {referral.referralCode}</p>
           </article>
         </section>
 
@@ -97,11 +103,22 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
                 </dd>
               </div>
               <div>
+                <dt>Email</dt>
+                <dd>
+                  <StatusBadge
+                    label={profile.emailVerified ? 'verificado' : 'pendente'}
+                    tone={profile.emailVerified ? 'success' : 'warning'}
+                  />
+                </dd>
+              </div>
+              <div>
                 <dt>Saldo atual</dt>
                 <dd>{formatMoney(wallet.availableBalance)}</dd>
               </div>
             </dl>
           </article>
+
+          <ReferralCard referral={referral} />
         </section>
       </main>
     );
