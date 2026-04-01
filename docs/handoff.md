@@ -41,6 +41,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - a edicao de um servico ja publicado no catalogo admin agora tambem acontece em drawer lateral na propria listagem; a rota `/admin/catalog/[serviceId]` ficou apenas como redirecionamento
 - o formulario do catalogo admin agora mostra so os campos publicos principais; os campos tecnicos herdados do fornecedor deixaram de ficar editaveis na UX normal
 - o drawer do catalogo admin continua mostrando fornecedor, SID, categoria, tipo e faixa como resumo somente leitura do servico sincronizado
+- `/admin/transactions` agora abre o ajuste manual de carteira em drawer lateral por `+ Ajuste manual`, mantendo a lista de transacoes como foco principal da tela
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
 - a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`
 - auth e admin agora possuem helpers puros extraidos das server actions para sustentar testes de mapeamento de erro e parsing de payload

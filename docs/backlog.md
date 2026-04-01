@@ -117,6 +117,7 @@ Tasks:
 - [x] mover tambem a edicao do catalogo publicado para drawer lateral na propria listagem
 - [x] reduzir o formulario do catalogo admin aos campos publicos principais e transformar rede social em selecao fechada
 - [x] devolver no drawer do catalogo a visibilidade dos dados herdados do servico sincronizado em modo somente leitura
+- [x] mover o ajuste manual de carteira em `/admin/transactions` para drawer lateral e limpar a copy da tela
 
 ## Phase 6: Customer Profile
 

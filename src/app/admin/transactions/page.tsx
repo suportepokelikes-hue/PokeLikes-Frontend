@@ -9,7 +9,14 @@ type AdminTransactionsRouteProps = {
 export default async function AdminTransactionsRoute({ searchParams }: AdminTransactionsRouteProps) {
   const resolvedSearchParams = await searchParams;
   const filters = parseAdminTransactionsParams(resolvedSearchParams);
-  const session = await requireAdminSession(buildAdminPath('/admin/transactions', filters));
+  const rawAdjust = Array.isArray(resolvedSearchParams.adjust) ? resolvedSearchParams.adjust[0] : resolvedSearchParams.adjust;
+  const isAdjustOpen = rawAdjust === '1';
+  const session = await requireAdminSession(
+    buildAdminPath('/admin/transactions', {
+      ...filters,
+      ...(isAdjustOpen ? { adjust: 1 } : {}),
+    }),
+  );
 
-  return <AdminTransactionsPage session={session} filters={filters} />;
+  return <AdminTransactionsPage session={session} filters={filters} isAdjustOpen={isAdjustOpen} />;
 }

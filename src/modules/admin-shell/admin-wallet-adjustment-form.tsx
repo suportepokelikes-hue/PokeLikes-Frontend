@@ -24,13 +24,13 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
       <div className="admin-user-form">
         {defaultUserId ? (
           <div className="admin-user-static">
-            <span>ID do usuario</span>
+            <span>Usuario</span>
             <strong>{defaultUserId}</strong>
           </div>
         ) : (
           <label className="admin-user-field">
             <span>ID do usuario</span>
-            <input type="text" name="userId" placeholder="ID do usuario" />
+            <input type="text" name="userId" placeholder="Cole o ID do usuario" />
           </label>
         )}
 
@@ -48,8 +48,8 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
         </label>
 
         <label className="admin-user-field admin-user-field-wide">
-          <span>Observacao</span>
-          <input type="text" name="reason" placeholder="Ex.: bonus, correcao manual ou estorno" />
+          <span>Motivo</span>
+          <input type="text" name="reason" placeholder="Ex.: bonus promocional, correcao manual ou estorno" />
         </label>
       </div>
     </AdminActionForm>
