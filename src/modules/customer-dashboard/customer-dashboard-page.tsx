@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CircleUserRound, CreditCard, ShoppingBag, Wallet } from 'lucide-react';
+import { ArrowRight, CircleUserRound, CreditCard, Gift, MailCheck, ShoppingBag, Wallet } from 'lucide-react';
 
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
@@ -7,10 +7,11 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { listCustomerOrders, listCustomerPayments, getWalletSummary } from '@/lib/api/customer';
+import { getCustomerReferralSummary, listCustomerOrders, listCustomerPayments, getWalletSummary } from '@/lib/api/customer';
 import type { SessionState } from '@/lib/auth/session';
 import { ApiClientError } from '@/lib/api/http';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import type { Money, ReferralRewardStatus } from '@/lib/api/contracts';
 
 type CustomerDashboardPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -18,15 +19,17 @@ type CustomerDashboardPageProps = {
 
 export async function CustomerDashboardPage({ session }: CustomerDashboardPageProps) {
   try {
-    const [wallet, payments, orders] = await Promise.all([
+    const [wallet, payments, orders, referral] = await Promise.all([
       getWalletSummary({ accessToken: session.accessToken }),
       listCustomerPayments({ accessToken: session.accessToken }),
       listCustomerOrders({ accessToken: session.accessToken }),
+      getCustomerReferralSummary({ accessToken: session.accessToken }),
     ]);
     const confirmedPayments = payments.items.filter((payment) => payment.status === 'confirmed').length;
     const openOrders = orders.items.filter((order) =>
       ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
     ).length;
+    const referralView = getReferralDashboardView(referral.rewardStatus, referral.rewardRules.minimumTopupAmount);
 
     return (
       <main className="page page-customer">
@@ -110,6 +113,53 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           <StatCard label="Pedidos recentes" value={`${orders.totalItems}`} meta="Ultimos registros" />
         </section>
 
+        <section className="customer-referral-banner">
+          <div className="customer-referral-copy">
+            <div className="customer-referral-head">
+              <span className="surface-icon" aria-hidden="true">
+                {referral.rewardStatus === 'pending_email_verification' ? (
+                  <MailCheck size={18} strokeWidth={2.1} />
+                ) : (
+                  <Gift size={18} strokeWidth={2.1} />
+                )}
+              </span>
+              <div>
+                <p className="eyebrow">Indicacoes</p>
+                <h2>{referralView.title}</h2>
+              </div>
+            </div>
+            <p>{referralView.description}</p>
+          </div>
+
+          <div className="customer-referral-meta">
+            <div>
+              <span>Seu codigo</span>
+              <strong>{referral.referralCode}</strong>
+            </div>
+            <div>
+              <span>Email</span>
+              <strong>{referral.emailVerified ? 'Verificado' : 'Pendente'}</strong>
+            </div>
+            <div>
+              <span>Total ganho</span>
+              <strong>{formatMoney(referral.summary.earnedAmount)}</strong>
+            </div>
+          </div>
+
+          <div className="customer-referral-actions">
+            <Link href="/app/profile#indicacoes" className="secondary-action">
+              <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
+              Abrir indicacoes
+            </Link>
+            {referral.rewardStatus === 'pending_first_qualifying_topup' ? (
+              <Link href="/app/payments" className="primary-action">
+                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
+                Fazer deposito qualificado
+              </Link>
+            ) : null}
+          </div>
+        </section>
+
         <section className="dashboard-grid">
           <article className="detail-card">
             <div className="panel-heading">
@@ -174,6 +224,32 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
         />
       </main>
     );
+  }
+}
+
+function getReferralDashboardView(status: ReferralRewardStatus, minimumTopupAmount: Money) {
+  switch (status) {
+    case 'pending_email_verification':
+      return {
+        title: 'Verifique seu email para liberar o bonus',
+        description: 'Seu cadastro entrou por indicacao. Confirme o email para seguir para a etapa do primeiro deposito qualificado.',
+      };
+    case 'pending_first_qualifying_topup':
+      return {
+        title: 'Seu bonus depende do primeiro deposito',
+        description: `Email verificado. Agora falta um deposito confirmado de pelo menos ${formatMoney(minimumTopupAmount)} para liberar o bonus da indicacao.`,
+      };
+    case 'rewarded':
+      return {
+        title: 'Seu bonus de indicacao ja foi aplicado',
+        description: 'Seu codigo continua ativo para novos convites, e o historico completo esta disponivel na area de perfil.',
+      };
+    case 'not_referred':
+    default:
+      return {
+        title: 'Seu codigo ja esta pronto para convidar',
+        description: 'Compartilhe seu link de indicacao e acompanhe convidados, recompensas e status do programa no seu perfil.',
+      };
   }
 }
 

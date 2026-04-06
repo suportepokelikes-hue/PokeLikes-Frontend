@@ -134,6 +134,7 @@ Tasks:
 Tasks:
 
 - [x] refinar dashboard do cliente com hero operacional e atalhos de fluxo
+- [x] destacar status de referral diretamente no dashboard do cliente
 - [x] refinar carteira, pagamentos, pedidos e perfil com cards de contexto e hierarquia mais forte
 - [x] aprofundar polish dos detalhes de pedido e pagamento do cliente
 - [x] mover os detalhes de pagamentos e pedidos do cliente para drawers laterais nas proprias listagens
@@ -194,7 +195,7 @@ Tasks:
 Na proxima sessao do Codex:
 
 - revisar o novo fluxo de referral e verificacao de email com backend real, incluindo `previewToken` em ambiente local
-- avaliar se o dashboard do cliente deve ganhar um destaque adicional para status de referral pendente
+- decidir se o fluxo de referral tambem precisa de destaque adicional fora de `/app` e `/app/profile`
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`

@@ -595,6 +595,69 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.customer-referral-banner {
+  border-radius: 1.4rem;
+  padding: 1.35rem 1.45rem;
+  background:
+    radial-gradient(circle at top right, rgba(0, 74, 198, 0.1), transparent 16rem),
+    linear-gradient(180deg, var(--surface-lowest), rgba(219, 225, 255, 0.26));
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: 1rem;
+}
+
+.customer-referral-copy,
+.customer-referral-meta {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.customer-referral-copy h2,
+.customer-referral-copy p,
+.customer-referral-meta p {
+  margin: 0;
+}
+
+.customer-referral-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.customer-referral-head h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.customer-referral-meta {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.customer-referral-meta div {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.82);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.customer-referral-meta span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--outline);
+  font-weight: 700;
+}
+
+.customer-referral-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .catalog-card {
   display: grid;
   gap: 1.05rem;
@@ -1760,6 +1823,7 @@ button {
   .admin-command-grid,
   .public-highlight-list,
   .customer-highlight-list,
+  .customer-referral-meta,
   .public-hero-grid,
   .customer-hero-grid,
   .referral-summary-grid,

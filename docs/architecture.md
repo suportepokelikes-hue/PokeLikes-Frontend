@@ -120,6 +120,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - as jornadas principais tambem passaram por uma rodada de UX estrutural, com CTA mais claros, blocos reordenados e traducao adicional dos labels tecnicos mais expostos na interface
 - `/register` agora entende `?ref=CODIGO`, preenche o codigo de indicacao no formulario e envia `referralCode` ao backend no cadastro
 - `/app/profile` agora tambem concentra o programa de indicacao do usuario, com codigo, link, resumo, `rewardStatus`, estado de email e request de verificacao no proprio frontend
+- `/app` agora tambem destaca o estado de referral no proprio dashboard do cliente, com CTA contextual para perfil ou deposito qualificado
 - `/verify-email` agora confirma tokens de verificacao lidos da URL e sincroniza o cookie de usuario quando a sessao atual pertence ao usuario confirmado
 - a documentacao contratual mais recente do backend agora vive em `docs/api/openapi.yaml` e `docs/api/modules/*`, com `docs/contracts/backend-openapi.yaml` mantido sincronizado como copia operacional do frontend
 

@@ -66,6 +66,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `src/lib/api/auth.ts` agora cobre `POST /auth/email-verification/request` e `POST /auth/email-verification/confirm`
 - `src/lib/api/customer.ts` agora cobre `GET /me/referral`
 - `/app/profile` agora mostra o programa de indicacao do usuario, com codigo, link, regras, resumo, `rewardStatus`, estado de email e botoes de copia
+- `/app` agora tambem exibe um destaque resumido do referral, com CTA para abrir indicacoes ou seguir para deposito qualificado quando for o caso
 - a verificacao de email pode ser solicitada na propria area autenticada; fora de producao, `previewToken` aparece como atalho de desenvolvimento para `/verify-email?token=...`
 - `/verify-email` agora executa a confirmacao do token e atualiza o cookie de usuario quando a sessao atual pertence ao mesmo usuario confirmado
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
