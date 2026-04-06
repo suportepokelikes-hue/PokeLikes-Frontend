@@ -26,6 +26,7 @@ import type {
   SinglePaymentReconciliationResponse,
   SupplierProviderStatusesResponse,
   SupplierServiceResource,
+  SupplierSyncName,
   SupplierSyncLogResource,
   SyncOrdersRequest,
   SyncOrdersResponse,
@@ -236,12 +237,36 @@ export function refreshSupplierProviders(accessToken: string) {
 }
 
 export function syncSupplierServices(accessToken: string, supplierName?: string) {
+  const normalizedSupplierName = normalizeSupplierSyncName(supplierName);
+
   return apiRequest({
     path: '/admin/supplier/services/sync',
     method: 'POST',
     accessToken,
-    ...(supplierName ? { body: { supplierName } } : {}),
+    body: normalizedSupplierName ? { supplierName: normalizedSupplierName } : {},
   });
+}
+
+export function normalizeSupplierSyncName(value?: string | null): SupplierSyncName | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const compact = value.trim().toLowerCase().replace(/[^a-z]/g, '');
+
+  if (!compact) {
+    return undefined;
+  }
+
+  if (compact === 'cheapsmmglobal') {
+    return 'cheapsmmglobal';
+  }
+
+  if (compact === 'instabarato') {
+    return 'instabarato';
+  }
+
+  return undefined;
 }
 
 function buildAdminPath(path: string, params: Record<string, string | number | boolean | null | undefined>) {

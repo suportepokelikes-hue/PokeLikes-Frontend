@@ -375,6 +375,8 @@ export type SupplierProviderStatusesResponse = {
   items: SupplierProviderStatusResource[];
 };
 
+export type SupplierSyncName = 'cheapsmmglobal' | 'instabarato';
+
 export type SupplierBalanceResource = {
   supplierName: string;
   balance: string;

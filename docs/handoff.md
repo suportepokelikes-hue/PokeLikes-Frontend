@@ -38,6 +38,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - o padrao compartilhado de toolbar/filtros (`AdminFilterBar` dentro de `PageHeader`) agora quebra melhor em larguras intermediarias e deve ser considerado a base para os modulos administrativos restantes
 - no catalogo admin, a filtragem foi simplificada para um unico campo de busca textual e uma selecao de fornecedor; os filtros secundarios antigos sairam da UX
 - a publicacao de um novo servico no catalogo admin agora acontece em drawer lateral acionado pela lista de servicos sincronizados, sem formulario fixo exposto na tela
+- o sync de servicos do fornecedor agora usa selecao com `label` amigavel e `value` backend-safe, e a camada admin normaliza `supplierName` para enviar apenas `{}` ou as chaves exatas `cheapsmmglobal` / `instabarato`
 - a edicao de um servico ja publicado no catalogo admin agora tambem acontece em drawer lateral na propria listagem; a rota `/admin/catalog/[serviceId]` ficou apenas como redirecionamento
 - o formulario do catalogo admin agora mostra so os campos publicos principais; os campos tecnicos herdados do fornecedor deixaram de ficar editaveis na UX normal
 - o drawer do catalogo admin continua mostrando fornecedor, SID, categoria, tipo e faixa como resumo somente leitura do servico sincronizado

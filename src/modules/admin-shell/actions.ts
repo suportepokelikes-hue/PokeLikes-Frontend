@@ -32,6 +32,7 @@ import {
   readRequiredString,
   readRole,
   readStatus,
+  readSupplierSyncName,
   readWalletDirection,
 } from '@/modules/admin-shell/action-helpers';
 
@@ -264,7 +265,15 @@ export async function refreshSupplierProvidersAction(_: AdminActionState, formDa
 
 export async function syncSupplierServicesAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
   const session = await requireAuthenticatedAdmin(formData);
-  const supplierName = readRequiredString(formData, 'supplierName');
+  const supplierNameInput = readRequiredString(formData, 'supplierName');
+  const supplierName = readSupplierSyncName(formData);
+
+  if (supplierNameInput && !supplierName) {
+    return {
+      status: 'error',
+      message: 'Fornecedor invalido. Escolha CheapSMMGlobal ou Instabarato.',
+    };
+  }
 
   try {
     await syncSupplierServices(session.accessToken, supplierName || undefined);

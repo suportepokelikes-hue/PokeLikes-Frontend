@@ -8,6 +8,7 @@ import {
   parseCatalogUpdatePayload,
   readRole,
   readStatus,
+  readSupplierSyncName,
   readWalletAdjustmentType,
   readWalletDirection,
 } from '../src/modules/admin-shell/action-helpers';
@@ -106,6 +107,10 @@ test('admin helper readers and error mapping keep only supported values', () => 
   assert.equal(readStatus(formData), 'disabled');
   assert.equal(readWalletDirection(formData), 'credit');
   assert.equal(readWalletAdjustmentType(formData), 'wallet_reversal_admin');
+  assert.equal(readSupplierSyncName(formData), undefined);
+
+  formData.set('supplierName', 'cheapsmmglobal');
+  assert.equal(readSupplierSyncName(formData), 'cheapsmmglobal');
 
   assert.deepEqual(mapAdminActionError(new ApiClientError('Falha operacional', 500), 'fallback'), {
     status: 'error',

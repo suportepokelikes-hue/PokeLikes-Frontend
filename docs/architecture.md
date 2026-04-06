@@ -82,6 +82,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/admin/catalog` agora tambem executa `POST /admin/catalog/services` e `PATCH /admin/catalog/services/{serviceId}` com formularios operacionais embutidos na propria listagem, incluindo suporte a `metadata` JSON e limpeza explicita de campos anulaveis
 - `/admin/catalog` agora tambem usa `GET /admin/supplier/services` para guiar a criacao de `CatalogService` a partir de `SupplierService` sincronizado, reduzindo a necessidade de descoberta manual de IDs e limites tecnicos
 - `/admin/catalog` agora simplifica a filtragem para um unico campo de busca textual ampla e uma selecao de fornecedor, removendo os filtros secundarios para reduzir ruido operacional
+- o sync de servicos do fornecedor agora normaliza `supplierName` na camada admin e envia para `POST /admin/supplier/services/sync` apenas `{}` ou as chaves exatas suportadas pelo backend: `cheapsmmglobal` e `instabarato`
 - a publicacao de servicos em `/admin/catalog` agora abre em drawer lateral a partir da lista sincronizada, em vez de manter o formulario de criacao exposto na propria pagina
 - o formulario de criacao/edicao do catalogo admin agora foi reduzido aos campos publicos principais, tratando categoria, tipo, limites e vinculo com fornecedor como dados herdados do servico sincronizado
 - esses dados herdados continuam visiveis no drawer do catalogo admin em modo somente leitura, para manter contexto operacional sem reabrir a edicao tecnica

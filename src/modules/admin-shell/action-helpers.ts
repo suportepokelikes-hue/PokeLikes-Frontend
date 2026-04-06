@@ -2,6 +2,7 @@ import type {
   AdminCatalogServiceUpdateRequest,
   AdminCatalogServiceUpsertRequest,
   CatalogServiceStatus,
+  SupplierSyncName,
   UserRole,
   UserStatus,
 } from '../../lib/api/contracts';
@@ -57,6 +58,16 @@ export function readWalletDirection(formData: FormData): 'credit' | 'debit' | un
 export function readWalletAdjustmentType(formData: FormData): 'wallet_adjustment_admin' | 'wallet_reversal_admin' | undefined {
   const value = readRequiredString(formData, 'type');
   return value === 'wallet_adjustment_admin' || value === 'wallet_reversal_admin' ? value : undefined;
+}
+
+export function readSupplierSyncName(formData: FormData): SupplierSyncName | undefined {
+  const value = readRequiredString(formData, 'supplierName');
+
+  if (value === 'cheapsmmglobal' || value === 'instabarato') {
+    return value;
+  }
+
+  return undefined;
 }
 
 export function parseCatalogCreatePayload(formData: FormData):

@@ -23,6 +23,12 @@ import {
 } from '@/modules/admin-shell/shared';
 import type { SupplierServicesListParams, SupplierSyncLogsListParams } from '@/modules/admin-shell/query';
 
+const supplierSyncOptions = [
+  { label: 'Fornecedor default', value: '' },
+  { label: 'CheapSMMGlobal', value: 'cheapsmmglobal' },
+  { label: 'Instabarato', value: 'instabarato' },
+] as const;
+
 type AdminSupplierPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   serviceFilters: SupplierServicesListParams;
@@ -71,7 +77,18 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                 pendingLabel="Sincronizando..."
                 tone="primary"
                 returnTo={serviceReturnTo}
-              />
+              >
+                <label className="admin-user-field">
+                  <span>Fornecedor</span>
+                  <select name="supplierName" defaultValue="" className="toolbar-input">
+                    {supplierSyncOptions.map((option) => (
+                      <option key={option.value || 'default'} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </AdminActionForm>
             </>
           }
         />

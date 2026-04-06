@@ -120,6 +120,7 @@ Tasks:
 - [x] reduzir o formulario do catalogo admin aos campos publicos principais e transformar rede social em selecao fechada
 - [x] devolver no drawer do catalogo a visibilidade dos dados herdados do servico sincronizado em modo somente leitura
 - [x] mover o ajuste manual de carteira em `/admin/transactions` para drawer lateral e limpar a copy da tela
+- [x] corrigir o payload do sync de servicos do fornecedor para usar apenas as chaves exatas suportadas pelo backend
 
 ## Phase 6: Customer Profile
 
