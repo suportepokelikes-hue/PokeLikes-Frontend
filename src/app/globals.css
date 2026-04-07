@@ -975,6 +975,49 @@ button {
   gap: 1rem;
 }
 
+.payment-qr-shell {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.payment-qr-image {
+  width: min(100%, 17rem);
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 0.85rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.payment-pix-actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.payment-pix-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.payment-pix-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.payment-pix-meta-error {
+  color: var(--danger);
+}
+
+.is-spinning {
+  animation: icon-spin 0.9s linear infinite;
+}
+
 @keyframes overlay-fade-in {
   from {
     opacity: 0;
@@ -1147,6 +1190,15 @@ button {
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+@keyframes icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 

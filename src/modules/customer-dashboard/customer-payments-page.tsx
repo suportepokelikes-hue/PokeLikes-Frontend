@@ -12,6 +12,8 @@ import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { buildPathWithSearch } from '@/modules/admin-shell/shared';
+import { PaymentPixActions } from '@/modules/customer-dashboard/payment-pix-actions';
+import { getPaymentQrImageSrc, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
 import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
@@ -41,6 +43,8 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
     const returnTo = buildPathWithSearch('/app/payments', {});
     const pendingCount = payments.items.filter((payment) => payment.status === 'pending').length;
     const confirmedCount = payments.items.filter((payment) => payment.status === 'confirmed').length;
+    const activePaymentStatus = activePayment ? getPaymentStatusView(activePayment.status) : null;
+    const activePaymentQrImageSrc = activePayment ? getPaymentQrImageSrc(activePayment.brCodeBase64) : null;
 
     return (
       <main className="page page-customer">
@@ -63,7 +67,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         <section className="dashboard-grid">
           <TransactionForm
             title="Gerar PIX"
-            description={`Saldo atual: ${formatMoney(wallet.availableBalance)}.`}
+            description={`Saldo atual: ${formatMoney(wallet.availableBalance)}. Gere um PIX para adicionar saldo a carteira.`}
             action={createPixPaymentAction}
             initialState={initialTransactionFormState}
             submitLabel="Criar PIX"
@@ -74,8 +78,8 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
 
           <article className="customer-note-card">
             <strong>Antes de confirmar</strong>
-            <p>O saldo so entra depois da confirmacao do pagamento.</p>
-            <p>Se o PIX expirar, gere um novo pagamento.</p>
+            <p>Depois de criar, abra o QR code ou copie o codigo PIX.</p>
+            <p>O saldo entra apenas quando o pagamento for confirmado.</p>
           </article>
         </section>
 
@@ -101,10 +105,10 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                       {payment.id}
                     </Link>
                   </td>
-                  <td>{payment.provider}</td>
+                  <td>PIX via {payment.provider}</td>
                   <td>{formatMoney(payment.amount)}</td>
                   <td>
-                    <StatusBadge label={payment.status} tone={mapPaymentTone(payment.status)} />
+                    <StatusBadge label={getPaymentStatusView(payment.status).badgeLabel} tone={getPaymentStatusView(payment.status).tone} />
                   </td>
                   <td>{formatDateTime(payment.expiresAt)}</td>
                 </tr>
@@ -117,7 +121,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           <AdminSlideOver
             eyebrow="Pagamento PIX"
             title={formatMoney(activePayment.amount)}
-            description="Veja o status do pagamento e copie os dados do PIX sem sair da lista."
+            description={activePaymentStatus?.description}
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
@@ -125,11 +129,19 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Status</p>
-                    <h3>Pagamento {activePayment.id}</h3>
+                    <h3>{activePaymentStatus?.title}</h3>
                   </div>
-                  <StatusBadge label={activePayment.status} tone={mapPaymentTone(activePayment.status)} />
+                  <StatusBadge label={activePaymentStatus?.badgeLabel ?? activePayment.status} tone={activePaymentStatus?.tone ?? 'neutral'} />
                 </div>
                 <dl className="detail-list">
+                  <div>
+                    <dt>ID</dt>
+                    <dd className="code-block">{activePayment.id}</dd>
+                  </div>
+                  <div>
+                    <dt>Provider</dt>
+                    <dd>{activePayment.provider}</dd>
+                  </div>
                   <div>
                     <dt>Valor</dt>
                     <dd>{formatMoney(activePayment.amount)}</dd>
@@ -142,7 +154,31 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                     <dt>Confirmado em</dt>
                     <dd>{formatDateTime(activePayment.confirmedAt)}</dd>
                   </div>
+                  <div>
+                    <dt>Criado em</dt>
+                    <dd>{formatDateTime(activePayment.createdAt)}</dd>
+                  </div>
+                  <div>
+                    <dt>Atualizado em</dt>
+                    <dd>{formatDateTime(activePayment.updatedAt)}</dd>
+                  </div>
                 </dl>
+              </article>
+
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">QR code</p>
+                    <h3>Escaneie para pagar</h3>
+                  </div>
+                </div>
+                {activePaymentQrImageSrc ? (
+                  <div className="payment-qr-shell">
+                    <img src={activePaymentQrImageSrc} alt="QR code PIX do pagamento" className="payment-qr-image" />
+                  </div>
+                ) : (
+                  <p className="section-copy">O QR code ainda nao esta disponivel. Use o codigo copia e cola abaixo.</p>
+                )}
               </article>
 
               <article className="admin-inline-panel">
@@ -153,6 +189,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                   </div>
                 </div>
                 <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>
+                <PaymentPixActions brCode={activePayment.brCode} autoRefresh={Boolean(activePaymentStatus?.autoRefresh)} />
               </article>
             </section>
           </AdminSlideOver>
@@ -173,20 +210,4 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
       </main>
     );
   }
-}
-
-function mapPaymentTone(status: string) {
-  if (status === 'confirmed') {
-    return 'success';
-  }
-
-  if (status === 'pending') {
-    return 'warning';
-  }
-
-  if (status === 'expired' || status === 'failed' || status === 'cancelled') {
-    return 'danger';
-  }
-
-  return 'neutral';
 }

@@ -74,6 +74,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
 - `/app/payments` e `/app/orders` agora tambem abrem seus detalhes em drawer lateral na propria listagem; as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento
+- o drawer de `/app/payments` agora tambem renderiza QR code a partir de `brCodeBase64`, oferece copia do codigo PIX por `brCode` e faz refresh manual/automatico enquanto o pagamento estiver pendente
 - a home publica, a listagem do catalogo e o detalhe do servico tambem receberam polimento visual alinhado ao Stitch dominante
 - `src/components/ui/empty-state.tsx` e `src/components/ui/error-state.tsx` agora sustentam um estado visual compartilhado mais forte, e `src/app/app/loading.tsx` cobre o loading do segmento autenticado do cliente
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
@@ -86,6 +87,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `normalizeReturnTo` passou a bloquear tambem `/login?...` e `/register?...`, corrigindo um risco de loop de auth detectado pelos testes
 - `src/lib/api/http.ts` passou a preservar corretamente o prefixo `/v1` da base URL ao montar requests com paths iniciados por `/`
 - `/app/payments` cria PIX real e `/app/payments/[paymentId]` mostra o detalhe do pagamento
+- o fluxo de PIX do cliente ja esta alinhado ao contrato atual do backend: `POST /me/payments/pix`, `GET /me/payments` e `GET /me/payments/{paymentId}`
 - `/catalog/[serviceId]` cria pedido real para cliente autenticado e `/app/orders/[orderId]` mostra o detalhe do pedido
 - `src/lib/api` centraliza o client HTTP e os endpoints iniciais de auth
 - `src/lib/auth` centraliza leitura de sessao em cookies e guards server-side

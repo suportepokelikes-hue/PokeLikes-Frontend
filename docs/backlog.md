@@ -75,6 +75,7 @@ Tasks:
 - [x] criar PIX
 - [x] acompanhar status do PIX na listagem existente
 - [x] detalhe do pagamento PIX
+- [x] renderizar QR code por `brCodeBase64` com copia de `brCode` e refresh de status
 
 ## Phase 4: Orders
 
@@ -199,4 +200,5 @@ Na proxima sessao do Codex:
 - decidir se o fluxo de referral tambem precisa de destaque adicional fora de `/app` e `/app/profile`
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
+- revisar o fluxo PIX com backend real para confirmar QR code, expiracao e tempos de confirmacao
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
