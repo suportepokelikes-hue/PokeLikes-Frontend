@@ -12,6 +12,7 @@ import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { buildPathWithSearch } from '@/modules/admin-shell/shared';
+import { getOrderEventView, getOrderStatusView, sortOrderEvents } from '@/modules/orders/order-view';
 
 type CustomerOrdersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -37,6 +38,8 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
       ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
     ).length;
     const completedCount = orders.items.filter((order) => order.status === 'completed').length;
+    const activeOrderStatusView = activeOrder ? getOrderStatusView(activeOrder.status) : null;
+    const activeEvents = activeOrder ? sortOrderEvents(activeOrder.events) : [];
 
     return (
       <main className="page page-customer">
@@ -71,21 +74,25 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
               <span className="panel-meta">Status e cobranca atual</span>
             </div>
             <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
-              {orders.items.map((order) => (
-                <tr key={order.id}>
-                  <td>
-                    <Link href={buildPathWithSearch('/app/orders', { orderId: order.id })} className="table-link">
-                      {order.id}
-                    </Link>
-                  </td>
-                  <td>{order.catalogService?.name || 'Servico nao associado'}</td>
-                  <td>
-                    <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
-                  </td>
-                  <td>{formatMoney(order.customerCharge)}</td>
-                  <td>{formatDateTime(order.updatedAt)}</td>
-                </tr>
-              ))}
+              {orders.items.map((order) => {
+                const statusView = getOrderStatusView(order.status);
+
+                return (
+                  <tr key={order.id}>
+                    <td>
+                      <Link href={buildPathWithSearch('/app/orders', { orderId: order.id })} className="table-link">
+                        {order.id}
+                      </Link>
+                    </td>
+                    <td>{order.catalogService?.name || 'Servico nao associado'}</td>
+                    <td>
+                      <StatusBadge label={statusView.label} tone={statusView.tone} />
+                    </td>
+                    <td>{formatMoney(order.customerCharge)}</td>
+                    <td>{formatDateTime(order.updatedAt)}</td>
+                  </tr>
+                );
+              })}
             </DataTable>
           </section>
         )}
@@ -104,8 +111,12 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                     <p className="eyebrow">Status</p>
                     <h3>Pedido {activeOrder.id}</h3>
                   </div>
-                  <StatusBadge label={activeOrder.status} tone={mapOrderTone(activeOrder.status)} />
+                  {activeOrderStatusView ? <StatusBadge label={activeOrderStatusView.label} tone={activeOrderStatusView.tone} /> : null}
                 </div>
+                {activeOrderStatusView ? <p className="section-copy">{activeOrderStatusView.description}</p> : null}
+                {activeOrder.status === 'queued_supplier_balance' ? (
+                  <p className="detail-note detail-note-warning">O pedido continua ativo. Seu saldo segue reservado enquanto o fornecedor retoma o processamento.</p>
+                ) : null}
                 <dl className="detail-list">
                   <div>
                     <dt>Servico</dt>
@@ -143,19 +154,26 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                     <h3>Atualizacoes</h3>
                   </div>
                 </div>
-                {activeOrder.events && activeOrder.events.length > 0 ? (
-                  <div className="stack-list">
-                    {activeOrder.events.map((event) => (
-                      <div key={event.id} className="stack-item">
-                        <div className="stack-item-head">
-                          <strong>{event.eventType}</strong>
-                          <span>{formatDateTime(event.createdAt)}</span>
+                {activeEvents.length > 0 ? (
+                  <div className="order-timeline">
+                    {activeEvents.map((event) => {
+                      const eventView = getOrderEventView(event, 'customer');
+
+                      return (
+                        <div key={event.id} className="order-timeline-item">
+                          <div className="stack-item-head">
+                            <strong>{eventView.title}</strong>
+                            <span>{formatDateTime(event.createdAt)}</span>
+                          </div>
+                          <p>{eventView.description}</p>
+                          {eventView.fromLabel || eventView.toLabel ? (
+                            <p className="order-timeline-status">
+                              {eventView.fromLabel || 'Sem status anterior'} {'->'} {eventView.toLabel || 'Sem status final'}
+                            </p>
+                          ) : null}
                         </div>
-                        <p>
-                          {event.fromStatus || '-'} {'->'} {event.toStatus || '-'}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="section-copy">Ainda nao houve atualizacao para este pedido.</p>
@@ -180,20 +198,4 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
       </main>
     );
   }
-}
-
-function mapOrderTone(status: string) {
-  if (status === 'completed') {
-    return 'success';
-  }
-
-  if (status === 'pending' || status === 'submitted' || status === 'queued_supplier_balance' || status === 'in_progress') {
-    return 'warning';
-  }
-
-  if (status === 'failed' || status === 'canceled' || status === 'partial') {
-    return 'danger';
-  }
-
-  return 'neutral';
 }

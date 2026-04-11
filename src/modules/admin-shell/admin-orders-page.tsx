@@ -12,6 +12,7 @@ import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { syncOrderAction, syncOrdersAction } from '@/modules/admin-shell/actions';
 import type { AdminOrdersListParams } from '@/modules/admin-shell/query';
 import { AdminFilterBar, AdminSummaryCard, PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
+import { getOrderStatusView } from '@/modules/orders/order-view';
 
 type AdminOrdersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -46,14 +47,14 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
                     type: 'select',
                     defaultValue: filters.status,
                     options: [
-                      { label: 'Pendente', value: 'pending' },
-                      { label: 'Submitted', value: 'submitted' },
-                      { label: 'Fila saldo', value: 'queued_supplier_balance' },
-                      { label: 'Em andamento', value: 'in_progress' },
+                      { label: 'Aguardando envio', value: 'pending' },
+                      { label: 'Enviado ao fornecedor', value: 'submitted' },
+                      { label: 'Aguardando saldo do fornecedor', value: 'queued_supplier_balance' },
+                      { label: 'Em processamento', value: 'in_progress' },
                       { label: 'Concluido', value: 'completed' },
                       { label: 'Parcial', value: 'partial' },
                       { label: 'Cancelado', value: 'canceled' },
-                      { label: 'Falho', value: 'failed' },
+                      { label: 'Falhou', value: 'failed' },
                     ],
                   },
                   { name: 'userId', label: 'ID do usuario', defaultValue: filters.userId },
@@ -103,36 +104,40 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         ) : (
           <>
             <DataTable columns={['ID', 'Usuario', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
-              {orders.items.map((order) => (
-                <tr key={order.id}>
-                  <td>{order.id}</td>
-                  <td>{order.user?.email || '-'}</td>
-                  <td>{order.catalogService?.name || 'Servico nao associado'}</td>
-                  <td>
-                    <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
-                  </td>
-                  <td>
-                    <div className="stack-list">
-                      <strong>{order.supplier.provider}</strong>
-                      <span className="panel-meta">{order.supplier.apiOrderId ?? 'Sem apiOrderId'}</span>
-                    </div>
-                  </td>
-                  <td>{formatMoney(order.customerCharge)}</td>
-                  <td>
-                    <AdminActionForm
-                      action={syncOrderAction}
-                      submitLabel="Sincronizar"
-                      pendingLabel="Sincronizando..."
-                      returnTo={returnTo}
-                      hiddenFields={[{ name: 'orderId', value: order.id }]}
-                      tone={['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status) ? 'primary' : 'secondary'}
-                    />
-                    <Link href={`/admin/orders/${order.id}`} className="panel-link">
-                      Ver detalhe
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {orders.items.map((order) => {
+                const statusView = getOrderStatusView(order.status);
+
+                return (
+                  <tr key={order.id}>
+                    <td>{order.id}</td>
+                    <td>{order.user?.email || '-'}</td>
+                    <td>{order.catalogService?.name || 'Servico nao associado'}</td>
+                    <td>
+                      <StatusBadge label={statusView.label} tone={statusView.tone} />
+                    </td>
+                    <td>
+                      <div className="stack-list">
+                        <strong>{order.supplier.provider}</strong>
+                        <span className="panel-meta">{order.supplier.apiOrderId ?? 'Sem apiOrderId'}</span>
+                      </div>
+                    </td>
+                    <td>{formatMoney(order.customerCharge)}</td>
+                    <td>
+                      <AdminActionForm
+                        action={syncOrderAction}
+                        submitLabel="Sincronizar"
+                        pendingLabel="Sincronizando..."
+                        returnTo={returnTo}
+                        hiddenFields={[{ name: 'orderId', value: order.id }]}
+                        tone={['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status) ? 'primary' : 'secondary'}
+                      />
+                      <Link href={`/admin/orders/${order.id}`} className="panel-link">
+                        Ver detalhe
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </DataTable>
             <PaginationSummary
               page={orders.page}
@@ -157,20 +162,4 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
       </main>
     );
   }
-}
-
-function mapOrderTone(status: string) {
-  if (status === 'completed') {
-    return 'success';
-  }
-
-  if (status === 'pending' || status === 'submitted' || status === 'queued_supplier_balance' || status === 'in_progress') {
-    return 'warning';
-  }
-
-  if (status === 'failed' || status === 'canceled' || status === 'partial') {
-    return 'danger';
-  }
-
-  return 'neutral';
 }

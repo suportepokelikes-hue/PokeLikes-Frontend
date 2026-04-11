@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -5,8 +7,9 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { listAdminAlerts } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
+import type { AlertResource, Money } from '@/lib/api/contracts';
 import type { SessionState } from '@/lib/auth/session';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { resolveAlertAction } from '@/modules/admin-shell/actions';
 import {
@@ -24,6 +27,21 @@ import type { AdminAlertsListParams } from '@/modules/admin-shell/query';
 type AdminAlertsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   filters: AdminAlertsListParams;
+};
+
+type SupplierFundsAlertContext = {
+  orderId?: string | null;
+  userId?: string | null;
+  catalogServiceId?: string | null;
+  serviceId?: string | number | null;
+  serviceName?: string | null;
+  quantity?: number | string | null;
+  estimatedCost?: Money | null;
+  link?: string | null;
+  customerFundsReserved?: boolean | null;
+  reservedAmount?: string | number | null;
+  reservedCurrency?: string | null;
+  occurredAt?: string | null;
 };
 
 export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps) {
@@ -126,9 +144,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
                       <span className="panel-meta">{renderAlertTimeline(alert)}</span>
                     </div>
                   </td>
-                  <td>
-                    <JsonPreview value={alert.context} fallback="Sem contexto adicional" />
-                  </td>
+                  <td>{renderAlertContext(alert)}</td>
                   <td>
                     {alert.status === 'open' ? (
                       <AdminActionForm
@@ -170,4 +186,106 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
       </main>
     );
   }
+}
+
+function renderAlertContext(alert: AlertResource) {
+  if (alert.type !== 'supplier_order_not_enough_funds') {
+    return <JsonPreview value={alert.context} fallback="Sem contexto adicional" />;
+  }
+
+  const context = parseSupplierFundsAlertContext(alert.context);
+
+  if (!context) {
+    return <JsonPreview value={alert.context} fallback="Sem contexto adicional" />;
+  }
+
+  return (
+    <div className="alert-context-grid">
+      {context.customerFundsReserved ? <span className="status-badge status-warning">Saldo do cliente reservado</span> : null}
+      {context.orderId ? (
+        <div>
+          <span>Pedido</span>
+          <strong>
+            <Link href={`/admin/orders/${context.orderId}`} className="table-link">
+              {context.orderId}
+            </Link>
+          </strong>
+        </div>
+      ) : null}
+      {context.serviceName ? (
+        <div>
+          <span>Servico</span>
+          <strong>{context.serviceName}</strong>
+        </div>
+      ) : null}
+      {context.quantity != null ? (
+        <div>
+          <span>Quantidade</span>
+          <strong>{String(context.quantity)}</strong>
+        </div>
+      ) : null}
+      {(context.reservedAmount != null || context.reservedCurrency) ? (
+        <div>
+          <span>Reserva do cliente</span>
+          <strong>{formatReservedAmount(context)}</strong>
+        </div>
+      ) : null}
+      {context.estimatedCost ? (
+        <div>
+          <span>Custo estimado</span>
+          <strong>{formatMoney(context.estimatedCost)}</strong>
+        </div>
+      ) : null}
+      {context.userId ? (
+        <div>
+          <span>Usuario</span>
+          <strong>{context.userId}</strong>
+        </div>
+      ) : null}
+      {context.serviceId != null ? (
+        <div>
+          <span>Servico no fornecedor</span>
+          <strong>{String(context.serviceId)}</strong>
+        </div>
+      ) : null}
+      {context.catalogServiceId ? (
+        <div>
+          <span>Servico do catalogo</span>
+          <strong>{context.catalogServiceId}</strong>
+        </div>
+      ) : null}
+      {context.occurredAt ? (
+        <div>
+          <span>Ocorrido em</span>
+          <strong>{formatDateTime(context.occurredAt)}</strong>
+        </div>
+      ) : null}
+      {context.link ? (
+        <div className="alert-context-wide">
+          <span>Link</span>
+          <strong className="code-block">{context.link}</strong>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function parseSupplierFundsAlertContext(value: unknown): SupplierFundsAlertContext | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as SupplierFundsAlertContext;
+}
+
+function formatReservedAmount(context: SupplierFundsAlertContext) {
+  if (context.reservedAmount == null) {
+    return context.reservedCurrency ?? '-';
+  }
+
+  if (!context.reservedCurrency) {
+    return String(context.reservedAmount);
+  }
+
+  return `${context.reservedAmount} ${context.reservedCurrency}`;
 }

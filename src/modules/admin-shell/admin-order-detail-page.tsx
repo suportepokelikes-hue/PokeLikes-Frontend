@@ -10,6 +10,7 @@ import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { syncOrderAction } from '@/modules/admin-shell/actions';
+import { getOrderEventView, getOrderStatusView, orderHasQueuedSupplierBalance, sortOrderEvents } from '@/modules/orders/order-view';
 
 type AdminOrderDetailPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -19,6 +20,9 @@ type AdminOrderDetailPageProps = {
 export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetailPageProps) {
   try {
     const order = await getAdminOrderDetail(session.accessToken, orderId);
+    const statusView = getOrderStatusView(order.status);
+    const timeline = sortOrderEvents(order.events);
+    const hadSupplierBalanceQueue = orderHasQueuedSupplierBalance(order);
 
     return (
       <main className="page page-admin">
@@ -31,7 +35,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
               <Link href="/admin/orders" className="secondary-action">
                 Voltar aos pedidos
               </Link>
-              <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
+              <StatusBadge label={statusView.label} tone={statusView.tone} />
               <AdminActionForm
                 action={syncOrderAction}
                 submitLabel="Sincronizar agora"
@@ -45,12 +49,12 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         />
 
         <section className="metric-list">
-          <article className={`metric-card metric-${mapOrderTone(order.status)}`}>
+          <article className={`metric-card metric-${statusView.tone === 'info' ? 'default' : statusView.tone}`}>
             <span>Status</span>
-            <strong>{order.status}</strong>
+            <strong>{statusView.label}</strong>
           </article>
           <article className="metric-card metric-accent">
-            <span>Cobranca</span>
+            <span>Cobranca do cliente</span>
             <strong>{formatMoney(order.customerCharge)}</strong>
           </article>
           <article className="metric-card metric-default">
@@ -58,6 +62,13 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
             <strong>{order.user?.name || 'Nao associado'}</strong>
           </article>
         </section>
+
+        {hadSupplierBalanceQueue ? (
+          <section className="detail-card detail-card-wide detail-note detail-note-warning">
+            <strong>Saldo do cliente reservado</strong>
+            <p>Este pedido passou por espera operacional de saldo do fornecedor. O valor do cliente permaneceu reservado durante essa etapa.</p>
+          </section>
+        ) : null}
 
         <section className="detail-grid">
           <article className="detail-card">
@@ -118,10 +129,6 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 <dd>{order.supplier.remains ?? '-'}</dd>
               </div>
               <div>
-                <dt>Ultimo erro</dt>
-                <dd>{order.supplier.errorMessage || order.supplier.errorCode || '-'}</dd>
-              </div>
-              <div>
                 <dt>Criado em</dt>
                 <dd>{formatDateTime(order.createdAt)}</dd>
               </div>
@@ -130,23 +137,39 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 <dd>{formatDateTime(order.updatedAt)}</dd>
               </div>
             </dl>
+            {order.supplier.errorCode || order.supplier.errorMessage ? (
+              <div className="detail-note detail-note-neutral">
+                <strong>Ultimo retorno do fornecedor</strong>
+                <p>
+                  {order.supplier.errorCode ? `Codigo: ${order.supplier.errorCode}. ` : ''}
+                  {order.supplier.errorMessage || 'Sem mensagem adicional.'}
+                </p>
+              </div>
+            ) : null}
           </article>
 
           <article className="detail-card detail-card-wide">
             <h2>Timeline</h2>
-            {order.events && order.events.length > 0 ? (
-              <div className="stack-list">
-                {order.events.map((event) => (
-                  <div key={event.id} className="stack-item">
-                    <div className="stack-item-head">
-                      <strong>{event.eventType}</strong>
-                      <span>{formatDateTime(event.createdAt)}</span>
+            {timeline.length > 0 ? (
+              <div className="order-timeline">
+                {timeline.map((event) => {
+                  const eventView = getOrderEventView(event, 'admin');
+
+                  return (
+                    <div key={event.id} className="order-timeline-item">
+                      <div className="stack-item-head">
+                        <strong>{eventView.title}</strong>
+                        <span>{formatDateTime(event.createdAt)}</span>
+                      </div>
+                      <p>{eventView.description}</p>
+                      {eventView.fromLabel || eventView.toLabel ? (
+                        <p className="order-timeline-status">
+                          {eventView.fromLabel || 'Sem status anterior'} {'->'} {eventView.toLabel || 'Sem status final'}
+                        </p>
+                      ) : null}
                     </div>
-                    <p>
-                      {event.fromStatus || '-'} {'->'} {event.toStatus || '-'}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <p className="section-copy">Ainda nao ha atualizacoes para este pedido.</p>
@@ -169,16 +192,4 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
       </main>
     );
   }
-}
-
-function mapOrderTone(status: string) {
-  if (status === 'completed') {
-    return 'success';
-  }
-
-  if (status === 'pending' || status === 'submitted' || status === 'queued_supplier_balance' || status === 'in_progress') {
-    return 'warning';
-  }
-
-  return 'danger';
 }

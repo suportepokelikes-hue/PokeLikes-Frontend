@@ -204,3 +204,5 @@ Na proxima sessao do Codex:
 - ampliar a cobertura E2E para operacoes admin e cenarios negativos
 - revisar o fluxo PIX com backend real para confirmar QR code, expiracao e tempos de confirmacao
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
+
+- [x] ajustar a semantica de pedidos e alertas para o fluxo operacional atual de saldo do fornecedor

@@ -211,3 +211,6 @@ src/
 - o proximo passo recomendado em qualidade e aumentar a cobertura de testes em torno de auth, query params e camada de API
 - o proximo passo recomendado no cliente continua sendo preparar a edicao de perfil assim que `PATCH /me` receber schema formal
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend
+
+- pedidos do cliente e do admin agora usam um helper compartilhado para mapear `queued_supplier_balance` como espera operacional, ordenar timeline e explicar a retomada para `submitted` sem jargao desnecessario
+- a central de alertas admin agora trata `supplier_order_not_enough_funds` com leitura estruturada do contexto operacional, destacando quando o saldo do cliente permanece reservado e mantendo fallback seguro para campos ausentes

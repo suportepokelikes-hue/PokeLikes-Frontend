@@ -1141,6 +1141,76 @@ button {
   gap: 1rem;
 }
 
+.detail-note {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+}
+
+.detail-note strong,
+.detail-note p {
+  margin: 0;
+}
+
+.detail-note-warning {
+  background: rgba(255, 219, 205, 0.56);
+}
+
+.detail-note-neutral {
+  background: rgba(219, 225, 255, 0.36);
+}
+
+.order-timeline {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.order-timeline-item {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--surface-low);
+  display: grid;
+  gap: 0.42rem;
+}
+
+.order-timeline-item strong,
+.order-timeline-item p {
+  margin: 0;
+}
+
+.order-timeline-status {
+  color: var(--outline);
+  font-size: 0.82rem;
+}
+
+.alert-context-grid {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.alert-context-grid div {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.alert-context-grid span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--outline);
+  font-weight: 700;
+}
+
+.alert-context-grid strong {
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.alert-context-wide {
+  grid-column: 1 / -1;
+}
+
 .payment-qr-shell {
   display: grid;
   place-items: center;

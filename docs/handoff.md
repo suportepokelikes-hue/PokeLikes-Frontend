@@ -175,3 +175,6 @@ Agents must not invent:
 If the UI needs a state not explicitly modeled, the agent should either:
 - derive it transparently from existing backend data, or
 - document the gap and stop short of inventing a fake contract
+
+- pedidos do cliente, dashboard do cliente, lista admin de pedidos e detalhe admin agora compartilham um mapa central de status/timeline para tratar `queued_supplier_balance` como espera operacional e explicar a retomada para `submitted`
+- a lista de alertas admin agora renderiza `supplier_order_not_enough_funds` com contexto estruturado, incluindo destaque para saldo reservado do cliente quando essa informacao vier do backend

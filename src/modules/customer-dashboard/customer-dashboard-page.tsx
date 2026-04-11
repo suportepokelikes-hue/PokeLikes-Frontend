@@ -12,6 +12,7 @@ import type { SessionState } from '@/lib/auth/session';
 import { ApiClientError } from '@/lib/api/http';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import type { Money, ReferralRewardStatus } from '@/lib/api/contracts';
+import { getOrderStatusView } from '@/modules/orders/order-view';
 
 type CustomerDashboardPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -170,7 +171,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             </div>
 
             {payments.items.length === 0 ? (
-              <EmptyState title="Nenhum pagamento encontrado" description="Crie um PIX para começar a acompanhar seus pagamentos." />
+              <EmptyState title="Nenhum pagamento encontrado" description="Crie um PIX para comecar a acompanhar seus pagamentos." />
             ) : (
               <DataTable columns={['ID', 'Valor', 'Status', 'Criado em']}>
                 {payments.items.map((payment) => (
@@ -199,16 +200,20 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
               <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo para fazer seu primeiro pedido." />
             ) : (
               <DataTable columns={['ID', 'Servico', 'Status', 'Atualizado em']}>
-                {orders.items.map((order) => (
-                  <tr key={order.id}>
-                    <td>{order.id}</td>
-                    <td>{order.catalogService?.name || 'Servico nao associado'}</td>
-                    <td>
-                      <StatusBadge label={order.status} tone={mapOrderTone(order.status)} />
-                    </td>
-                    <td>{formatDateTime(order.updatedAt)}</td>
-                  </tr>
-                ))}
+                {orders.items.map((order) => {
+                  const statusView = getOrderStatusView(order.status);
+
+                  return (
+                    <tr key={order.id}>
+                      <td>{order.id}</td>
+                      <td>{order.catalogService?.name || 'Servico nao associado'}</td>
+                      <td>
+                        <StatusBadge label={statusView.label} tone={statusView.tone} />
+                      </td>
+                      <td>{formatDateTime(order.updatedAt)}</td>
+                    </tr>
+                  );
+                })}
               </DataTable>
             )}
           </article>
@@ -263,22 +268,6 @@ function mapPaymentTone(status: string) {
   }
 
   if (status === 'expired' || status === 'failed' || status === 'cancelled') {
-    return 'danger';
-  }
-
-  return 'neutral';
-}
-
-function mapOrderTone(status: string) {
-  if (status === 'completed') {
-    return 'success';
-  }
-
-  if (status === 'pending' || status === 'submitted' || status === 'queued_supplier_balance' || status === 'in_progress') {
-    return 'warning';
-  }
-
-  if (status === 'failed' || status === 'canceled' || status === 'partial') {
     return 'danger';
   }
 
