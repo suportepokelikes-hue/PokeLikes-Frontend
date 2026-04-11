@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { getPaymentQrImageSrc, getPaymentStatusView } from '../src/modules/customer-dashboard/payment-view';
+import { getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '../src/modules/customer-dashboard/payment-view';
 
 test('getPaymentStatusView maps backend statuses into customer-facing PIX states', () => {
   assert.deepEqual(getPaymentStatusView('pending'), {
@@ -22,4 +22,9 @@ test('getPaymentQrImageSrc normalizes raw base64 into a usable image src', () =>
   assert.equal(getPaymentQrImageSrc(null), null);
   assert.equal(getPaymentQrImageSrc('data:image/png;base64,abc123'), 'data:image/png;base64,abc123');
   assert.equal(getPaymentQrImageSrc('abc123'), 'data:image/png;base64,abc123');
+});
+
+test('getPaymentShortId shortens long ids and preserves short ones', () => {
+  assert.equal(getPaymentShortId('1234567890'), '1234567890');
+  assert.equal(getPaymentShortId('pay_1234567890abcd'), 'pay_12...abcd');
 });

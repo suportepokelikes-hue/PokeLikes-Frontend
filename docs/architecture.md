@@ -69,7 +69,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - a home publica, o catalogo e o detalhe de servico agora seguem um tratamento visual mais forte, com bento cards, destaque de availability e CTA mais claro para a jornada publica
 - os estados compartilhados de empty/error ficaram mais ricos visualmente e a area do cliente agora tambem possui `loading.tsx` segmentado
 - `/app/payments` agora tambem cria cobranca PIX por `POST /me/payments/pix`
-- `/app/payments` agora renderiza o QR code via `brCodeBase64`, mantem copia por `brCode` e permite refresh manual/automatico do status enquanto o PIX estiver pendente
+- `/app/payments` agora renderiza o QR code via `brCodeBase64`, mantem copia por `brCode`, abre o pagamento atual com menos redirecionamentos e prioriza o PIX em aberto na propria tela
 - `/catalog/[serviceId]` agora permite criar pedido por `POST /me/orders` quando o cliente estiver autenticado
 - `/app/payments/[paymentId]` e `/app/orders/[orderId]` exibem detalhes reais do cliente
 - `/admin`, `/admin/users`, `/admin/payments` e `/admin/orders` consomem endpoints reais do admin

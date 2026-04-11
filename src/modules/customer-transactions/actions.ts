@@ -39,7 +39,7 @@ export async function createPixPaymentAction(
     return mapTransactionFormError(error, 'Nao foi possivel criar a cobranca PIX agora.');
   }
 
-  redirect(`/app/payments/${paymentId}`);
+  redirect(`/app/payments?paymentId=${encodeURIComponent(paymentId)}`);
 }
 
 export async function createOrderAction(_: TransactionFormState, formData: FormData): Promise<TransactionFormState> {

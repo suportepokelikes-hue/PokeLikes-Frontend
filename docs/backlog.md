@@ -76,6 +76,7 @@ Tasks:
 - [x] acompanhar status do PIX na listagem existente
 - [x] detalhe do pagamento PIX
 - [x] renderizar QR code por `brCodeBase64` com copia de `brCode` e refresh de status
+- [x] reduzir o ruido de UX em `/app/payments`, priorizando o PIX em aberto e removendo um redirecionamento desnecessario
 
 ## Phase 4: Orders
 

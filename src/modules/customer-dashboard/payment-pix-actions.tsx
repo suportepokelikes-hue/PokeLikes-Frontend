@@ -73,7 +73,7 @@ export function PaymentPixActions({ brCode, autoRefresh }: PaymentPixActionsProp
       </div>
 
       {copyState === 'error' ? <p className="payment-pix-meta payment-pix-meta-error">Nao foi possivel copiar o codigo PIX.</p> : null}
-      {autoRefresh ? <p className="payment-pix-meta">Atualizacao automatica ativa enquanto o pagamento estiver pendente.</p> : null}
+      {autoRefresh ? <p className="payment-pix-meta">Se o pagamento ainda estiver pendente, o status atualiza sozinho a cada 15 segundos.</p> : null}
     </div>
   );
 }

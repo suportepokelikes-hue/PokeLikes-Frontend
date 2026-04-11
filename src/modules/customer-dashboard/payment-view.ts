@@ -65,3 +65,13 @@ export function getPaymentQrImageSrc(brCodeBase64: string | null): string | null
 
   return `data:image/png;base64,${brCodeBase64}`;
 }
+
+export function getPaymentShortId(paymentId: string): string {
+  const normalized = paymentId.trim();
+
+  if (normalized.length <= 10) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, 6)}...${normalized.slice(-4)}`;
+}
