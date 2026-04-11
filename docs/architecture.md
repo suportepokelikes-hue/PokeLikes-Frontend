@@ -66,7 +66,8 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente agora compartilham um tratamento visual mais editorial, com hero operacional, atalhos de fluxo e cards de contexto inspirados no Stitch dominante
 - os detalhes de pagamento e pedido do cliente agora seguem o mesmo padrao, com hero de status, resumo operacional e leitura mais clara dos dados assincronos do backend
 - `/app/payments` e `/app/orders` agora tambem absorvem os detalhes em drawers laterais na propria listagem, e as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento
-- a home publica, o catalogo e o detalhe de servico agora seguem um tratamento visual mais forte, com bento cards, destaque de availability e CTA mais claro para a jornada publica
+- a home publica agora funciona como landing page comercial da plataforma, com proposta de valor, beneficios, prova de confianca e CTA principais para catalogo e cadastro
+- o catalogo e o detalhe de servico seguem um tratamento visual mais forte, com destaque de availability e CTA mais claro para a jornada publica
 - os estados compartilhados de empty/error ficaram mais ricos visualmente e a area do cliente agora tambem possui `loading.tsx` segmentado
 - `/app/payments` agora tambem cria cobranca PIX por `POST /me/payments/pix`
 - `/app/payments` agora renderiza o QR code via `brCodeBase64`, mantem copia por `brCode`, abre o pagamento atual com menos redirecionamentos e prioriza o PIX em aberto na propria tela

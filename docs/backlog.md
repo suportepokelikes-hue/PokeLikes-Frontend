@@ -150,6 +150,7 @@ Tasks:
 - [x] refinar catalogo publico com resumo de availability e toolbar expandida
 - [x] refinar detalhe de servico com destaque de preco, disponibilidade e checkout
 - [x] realinhar a linguagem visual publica com a referencia dominante do Stitch
+- [x] transformar a home publica em landing page comercial da plataforma
 
 ## Phase 9: Shared State Polish
 

@@ -75,7 +75,8 @@ Toda nova sessao do Codex neste repositorio deve:
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
 - `/app/payments` e `/app/orders` agora tambem abrem seus detalhes em drawer lateral na propria listagem; as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento
 - o drawer de `/app/payments` agora tambem renderiza QR code a partir de `brCodeBase64`, oferece copia do codigo PIX por `brCode`, faz refresh manual/automatico enquanto o pagamento estiver pendente e a propria tela prioriza o PIX em aberto
-- a home publica, a listagem do catalogo e o detalhe do servico tambem receberam polimento visual alinhado ao Stitch dominante
+- a home publica agora foi reescrita como landing page comercial da plataforma, com hero de marca, beneficios, prova de confianca e CTA de conversao
+- a listagem do catalogo e o detalhe do servico tambem receberam polimento visual alinhado ao Stitch dominante
 - `src/components/ui/empty-state.tsx` e `src/components/ui/error-state.tsx` agora sustentam um estado visual compartilhado mais forte, e `src/app/app/loading.tsx` cobre o loading do segmento autenticado do cliente
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
 - ja existem `/app/wallet`, `/app/payments`, `/app/orders`, `/admin/users`, `/admin/payments` e `/admin/orders`
