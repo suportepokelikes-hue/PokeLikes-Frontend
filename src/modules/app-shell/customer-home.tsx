@@ -58,7 +58,7 @@ export function CustomerHome({ user }: CustomerHomeProps) {
 
       <section className="card-grid compact-grid">
         {customerLinks.map((item) => (
-          <Link key={item.href} href={item.href} className="nav-card">
+          <Link key={item.href} href={item.href} prefetch={false} className="nav-card">
             <span>{item.label}</span>
             <strong>{item.href}</strong>
             <p>{item.description}</p>

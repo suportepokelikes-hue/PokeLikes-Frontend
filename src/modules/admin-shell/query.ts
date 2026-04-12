@@ -148,6 +148,10 @@ export function parseAdminCatalogCreationDraft(searchParams: Record<string, Sear
   };
 }
 
+export function parseAdminCatalogCreateSupplierServiceId(searchParams: Record<string, SearchParamValue>) {
+  return readPositiveInt(searchParams.createSupplierServiceId);
+}
+
 export function parseAdminPaymentsParams(searchParams: Record<string, SearchParamValue>): AdminPaymentsListParams {
   return {
     ...parseBaseListParams(searchParams),

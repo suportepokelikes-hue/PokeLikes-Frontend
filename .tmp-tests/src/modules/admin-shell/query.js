@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseAdminUsersParams = parseAdminUsersParams;
 exports.parseAdminCatalogParams = parseAdminCatalogParams;
 exports.parseAdminCatalogCreationDraft = parseAdminCatalogCreationDraft;
+exports.parseAdminCatalogCreateSupplierServiceId = parseAdminCatalogCreateSupplierServiceId;
 exports.parseAdminPaymentsParams = parseAdminPaymentsParams;
 exports.parseAdminOrdersParams = parseAdminOrdersParams;
 exports.parseAdminTransactionsParams = parseAdminTransactionsParams;
@@ -48,6 +49,9 @@ function parseAdminCatalogCreationDraft(searchParams) {
         minQuantity,
         maxQuantity,
     };
+}
+function parseAdminCatalogCreateSupplierServiceId(searchParams) {
+    return readPositiveInt(searchParams.createSupplierServiceId);
 }
 function parseAdminPaymentsParams(searchParams) {
     return {

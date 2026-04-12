@@ -43,6 +43,7 @@ type AdminCatalogPageProps = {
   filters: AdminCatalogListParams;
   supplierServiceFilters: SupplierServicesListParams;
   creationDraft?: AdminCatalogCreationDraft;
+  createSupplierServiceId?: number;
   activeServiceId?: string;
   activeAffiliateServiceId?: string;
 };
@@ -52,6 +53,7 @@ export async function AdminCatalogPage({
   filters,
   supplierServiceFilters,
   creationDraft,
+  createSupplierServiceId,
   activeServiceId,
   activeAffiliateServiceId,
 }: AdminCatalogPageProps) {
@@ -79,6 +81,11 @@ export async function AdminCatalogPage({
       .filter((name, index, items) => items.indexOf(name) === index)
       .sort((left, right) => left.localeCompare(right, 'pt-BR'));
     const selectedSupplierName = supplierServiceFilters.supplierName;
+    const resolvedCreationDraft = creationDraft ?? resolveCatalogCreationDraft(createSupplierServiceId, supplierServices.items);
+    const creationDraftError =
+      createSupplierServiceId && !resolvedCreationDraft
+        ? 'Nao foi possivel reencontrar o servico sincronizado selecionado para publicar no catalogo.'
+        : null;
 
     const targetAffiliateServiceIds = Array.from(
       new Set(
@@ -152,7 +159,7 @@ export async function AdminCatalogPage({
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
-              hiddenFields={buildSharedCatalogHiddenFields(filters, supplierServiceFilters, creationDraft)}
+              hiddenFields={buildSharedCatalogHiddenFields(filters, supplierServiceFilters, createSupplierServiceId)}
               fields={[
                 { name: 'search', label: 'Busca', type: 'search', placeholder: 'Busque por nome, descricao ou termo relevante', defaultValue: filters.search },
                 {
@@ -198,6 +205,7 @@ export async function AdminCatalogPage({
               <DataTable columns={['Fornecedor / SID', 'Servico', 'Categoria / tipo', 'Rate', 'Faixa', 'Flags', 'Acao']}>
                 {supplierServices.items.map((service) => {
                   const isSelected = creationDraft?.supplierServiceId === service.supplierServiceId;
+                  const isActiveCreateTarget = resolvedCreationDraft?.supplierServiceId === service.supplierServiceId;
 
                   return (
                     <tr key={service.id}>
@@ -225,7 +233,7 @@ export async function AdminCatalogPage({
                         </div>
                       </td>
                       <td>
-                        {isSelected ? (
+                        {isSelected || isActiveCreateTarget ? (
                           <StatusBadge label="Selecionado" tone="info" />
                         ) : (
                           <Link href={buildCreateDraftPath(filters, supplierServiceFilters, service, currentCatalogPage, currentCatalogPageSize)} className="table-link">
@@ -248,7 +256,7 @@ export async function AdminCatalogPage({
                   page: currentCatalogPage,
                   pageSize: currentCatalogPageSize,
                   supplierName: supplierServiceFilters.supplierName,
-                  ...buildDraftParams(creationDraft),
+                  ...buildDraftParams(resolvedCreationDraft),
                   servicesPageSize: currentServicesPageSize,
                 }}
                 label="servicos sincronizados"
@@ -361,7 +369,7 @@ export async function AdminCatalogPage({
           </>
         )}
 
-        {creationDraft ? (
+        {resolvedCreationDraft ? (
           <AdminSlideOver
             eyebrow="Publicar no catalogo"
             title="Novo servico publico"
@@ -372,8 +380,12 @@ export async function AdminCatalogPage({
               mode="create"
               action={createCatalogServiceAction}
               returnTo={returnTo}
-              creationDraft={creationDraft}
+              creationDraft={resolvedCreationDraft}
             />
+          </AdminSlideOver>
+        ) : creationDraftError ? (
+          <AdminSlideOver eyebrow="Publicar no catalogo" title="Servico sincronizado indisponivel" description={creationDraftError} closeHref={returnTo}>
+            <ErrorState title="Nao foi possivel abrir este servico" description="Feche o painel e tente novamente a partir da lista sincronizada." />
           </AdminSlideOver>
         ) : null}
 
@@ -643,12 +655,6 @@ function buildCreateDraftPath(
     servicesPageSize: supplierServiceFilters.pageSize,
     supplierName: supplierServiceFilters.supplierName,
     createSupplierServiceId: service.supplierServiceId,
-    createSupplierName: service.supplierName,
-    createName: service.name,
-    createCategory: service.category,
-    createType: service.type,
-    createMinQuantity: service.min,
-    createMaxQuantity: service.max,
   })}`;
 }
 
@@ -659,19 +665,13 @@ function buildDraftParams(creationDraft?: AdminCatalogCreationDraft) {
 
   return {
     createSupplierServiceId: creationDraft.supplierServiceId,
-    createSupplierName: creationDraft.supplierName,
-    createName: creationDraft.name,
-    createCategory: creationDraft.category,
-    createType: creationDraft.type,
-    createMinQuantity: creationDraft.minQuantity,
-    createMaxQuantity: creationDraft.maxQuantity,
   };
 }
 
 function buildSharedCatalogHiddenFields(
   filters: AdminCatalogListParams,
   supplierServiceFilters: SupplierServicesListParams,
-  creationDraft?: AdminCatalogCreationDraft,
+  createSupplierServiceId?: number,
 ) {
   return [
     ...(filters.search ? [{ name: 'search', value: filters.search }] : []),
@@ -679,6 +679,39 @@ function buildSharedCatalogHiddenFields(
     ...(filters.pageSize ? [{ name: 'pageSize', value: filters.pageSize }] : []),
     ...(supplierServiceFilters.page ? [{ name: 'servicesPage', value: supplierServiceFilters.page }] : []),
     ...(supplierServiceFilters.pageSize ? [{ name: 'servicesPageSize', value: supplierServiceFilters.pageSize }] : []),
-    ...Object.entries(buildDraftParams(creationDraft)).map(([name, value]) => ({ name, value })),
+    ...(createSupplierServiceId ? [{ name: 'createSupplierServiceId', value: createSupplierServiceId }] : []),
   ];
+}
+
+function resolveCatalogCreationDraft(
+  supplierServiceId: number | undefined,
+  supplierServices: Array<{
+    supplierServiceId: number;
+    supplierName: string;
+    name: string;
+    category: string;
+    type: string;
+    min: number;
+    max: number;
+  }>,
+): AdminCatalogCreationDraft | undefined {
+  if (!supplierServiceId) {
+    return undefined;
+  }
+
+  const service = supplierServices.find((item) => item.supplierServiceId === supplierServiceId);
+
+  if (!service) {
+    return undefined;
+  }
+
+  return {
+    supplierServiceId: service.supplierServiceId,
+    supplierName: service.supplierName,
+    name: service.name,
+    category: service.category,
+    type: service.type,
+    minQuantity: service.min,
+    maxQuantity: service.max,
+  };
 }

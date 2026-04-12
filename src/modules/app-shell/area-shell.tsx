@@ -98,7 +98,13 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
             const Icon = navIcons[link.icon] ?? LayoutDashboard;
 
             return (
-              <Link key={link.href} href={link.href} className={link.isCurrent ? 'is-current' : ''} onClick={() => setIsSidebarOpen(false)}>
+              <Link
+                key={link.href}
+                href={link.href}
+                prefetch={false}
+                className={link.isCurrent ? 'is-current' : ''}
+                onClick={() => setIsSidebarOpen(false)}
+              >
                 <span className="area-nav-icon" aria-hidden="true">
                   <Icon size={16} strokeWidth={2.15} />
                 </span>

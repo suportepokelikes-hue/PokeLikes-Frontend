@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   buildAdminPath,
+  parseAdminCatalogCreateSupplierServiceId,
   parseAdminAffiliateCommissionsParams,
   parseAdminAffiliatePayoutsParams,
   parseAdminAffiliatesParams,
@@ -66,6 +67,24 @@ test('parseSupplierServicesParams isolates supplier paging namespace', () => {
     type: undefined,
     isActiveAtSupplier: 'true',
   });
+});
+
+test('parseAdminCatalogCreateSupplierServiceId keeps the catalog drawer target stable from query params', () => {
+  assert.equal(
+    parseAdminCatalogCreateSupplierServiceId({
+      createSupplierServiceId: '123',
+      createName: 'Ignored in production routing',
+      createType: '',
+    }),
+    123,
+  );
+
+  assert.equal(
+    parseAdminCatalogCreateSupplierServiceId({
+      createSupplierServiceId: '0',
+    }),
+    undefined,
+  );
 });
 
 test('parseAdminAffiliatesParams keeps only supported affiliate filters', () => {

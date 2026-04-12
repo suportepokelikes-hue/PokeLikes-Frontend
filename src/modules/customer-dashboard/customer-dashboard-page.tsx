@@ -40,11 +40,11 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           description="Veja seu saldo, gere um PIX ou acompanhe seus pedidos."
           actions={
             <>
-              <Link href="/catalog" className="primary-action">
+              <Link href="/catalog" prefetch={false} className="primary-action">
                 <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
                 Novo pedido
               </Link>
-              <Link href="/app/payments" className="secondary-action">
+              <Link href="/app/payments" prefetch={false} className="secondary-action">
                 <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
                 Gerar PIX
               </Link>
@@ -77,28 +77,28 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           </article>
 
           <div className="customer-action-grid">
-            <Link href="/app/wallet" className="customer-action-card">
+            <Link href="/app/wallet" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <Wallet size={18} strokeWidth={2.1} />
               </span>
               <strong>Carteira</strong>
               <p>Ver saldo e movimentacoes.</p>
             </Link>
-            <Link href="/app/payments" className="customer-action-card">
+            <Link href="/app/payments" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CreditCard size={18} strokeWidth={2.1} />
               </span>
               <strong>Pagamentos</strong>
               <p>Gerar PIX e acompanhar status.</p>
             </Link>
-            <Link href="/app/orders" className="customer-action-card">
+            <Link href="/app/orders" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <ShoppingBag size={18} strokeWidth={2.1} />
               </span>
               <strong>Pedidos</strong>
               <p>Ver andamento e historico.</p>
             </Link>
-            <Link href="/app/profile" className="customer-action-card">
+            <Link href="/app/profile" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CircleUserRound size={18} strokeWidth={2.1} />
               </span>
@@ -148,12 +148,12 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           </div>
 
           <div className="customer-referral-actions">
-            <Link href="/app/profile#indicacoes" className="secondary-action">
+            <Link href="/app/profile#indicacoes" prefetch={false} className="secondary-action">
               <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
               Abrir indicacoes
             </Link>
             {referral.rewardStatus === 'pending_first_qualifying_topup' ? (
-              <Link href="/app/payments" className="primary-action">
+              <Link href="/app/payments" prefetch={false} className="primary-action">
                 <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
                 Fazer deposito qualificado
               </Link>
@@ -165,7 +165,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           <article className="detail-card">
             <div className="panel-heading">
               <h2>Pagamentos PIX</h2>
-              <Link href="/app/payments" className="panel-link">
+              <Link href="/app/payments" prefetch={false} className="panel-link">
                 Ver tudo
               </Link>
             </div>
@@ -191,7 +191,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           <article className="detail-card">
             <div className="panel-heading">
               <h2>Pedidos</h2>
-              <Link href="/app/orders" className="panel-link">
+              <Link href="/app/orders" prefetch={false} className="panel-link">
                 Ver tudo
               </Link>
             </div>

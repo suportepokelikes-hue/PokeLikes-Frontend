@@ -58,6 +58,16 @@ const query_1 = require("../src/modules/admin-shell/query");
         isActiveAtSupplier: 'true',
     });
 });
+(0, node_test_1.default)('parseAdminCatalogCreateSupplierServiceId keeps the catalog drawer target stable from query params', () => {
+    strict_1.default.equal((0, query_1.parseAdminCatalogCreateSupplierServiceId)({
+        createSupplierServiceId: '123',
+        createName: 'Ignored in production routing',
+        createType: '',
+    }), 123);
+    strict_1.default.equal((0, query_1.parseAdminCatalogCreateSupplierServiceId)({
+        createSupplierServiceId: '0',
+    }), undefined);
+});
 (0, node_test_1.default)('parseAdminAffiliatesParams keeps only supported affiliate filters', () => {
     const params = (0, query_1.parseAdminAffiliatesParams)({
         page: '2',

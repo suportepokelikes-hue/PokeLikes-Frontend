@@ -1,6 +1,7 @@
 import { requireAdminSession } from '@/lib/auth/guards';
 import {
   buildAdminPath,
+  parseAdminCatalogCreateSupplierServiceId,
   parseAdminCatalogCreationDraft,
   parseAdminCatalogParams,
   parseSupplierServicesParams,
@@ -16,6 +17,7 @@ export default async function AdminCatalogRoute({ searchParams }: AdminCatalogRo
   const filters = parseAdminCatalogParams(resolvedSearchParams);
   const supplierServiceFilters = parseSupplierServicesParams(resolvedSearchParams);
   const creationDraft = parseAdminCatalogCreationDraft(resolvedSearchParams);
+  const createSupplierServiceId = parseAdminCatalogCreateSupplierServiceId(resolvedSearchParams);
   const rawEditServiceId = Array.isArray(resolvedSearchParams.editServiceId)
     ? resolvedSearchParams.editServiceId[0]
     : resolvedSearchParams.editServiceId;
@@ -31,7 +33,7 @@ export default async function AdminCatalogRoute({ searchParams }: AdminCatalogRo
       ...(supplierServiceFilters.supplierName ? { supplierName: supplierServiceFilters.supplierName } : {}),
       ...(activeServiceId ? { editServiceId: activeServiceId } : {}),
       ...(activeAffiliateServiceId ? { editAffiliateServiceId: activeAffiliateServiceId } : {}),
-      ...(creationDraft ? { createSupplierServiceId: creationDraft.supplierServiceId } : {}),
+      ...(createSupplierServiceId ? { createSupplierServiceId } : {}),
     }),
   );
 
@@ -41,6 +43,7 @@ export default async function AdminCatalogRoute({ searchParams }: AdminCatalogRo
       filters={filters}
       supplierServiceFilters={supplierServiceFilters}
       creationDraft={creationDraft}
+      createSupplierServiceId={createSupplierServiceId}
       activeServiceId={activeServiceId}
       activeAffiliateServiceId={activeAffiliateServiceId}
     />
