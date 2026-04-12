@@ -112,6 +112,53 @@ export type ReferralSummaryResponse = {
   summary: ReferralProgramSummary;
 };
 
+export type AffiliateProfileStatus = string;
+
+export type AffiliateCommissionStatus = string;
+
+export type AffiliatePayoutStatus = string;
+
+export type AffiliateProfileResource = {
+  id: string;
+  affiliateCode: string;
+  status: AffiliateProfileStatus;
+  affiliateCommissionPercent: string;
+  approvedAt: string | null;
+  suspendedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: UserReference | null;
+};
+
+export type AffiliateSummaryResponse = {
+  affiliateProfile: AffiliateProfileResource | null;
+  totals: Record<string, number | Money>;
+};
+
+export type AffiliateCommissionResource = {
+  id: string;
+  status: AffiliateCommissionStatus;
+  affiliateCommissionPercent: string;
+  commissionAmount: Money;
+  createdAt: string;
+  updatedAt: string;
+  affiliateProfileId?: string;
+  orderId?: string | null;
+  payoutId?: string | null;
+  paidAt?: string | null;
+};
+
+export type AffiliatePayoutResource = {
+  id: string;
+  status: AffiliatePayoutStatus;
+  amount: Money;
+  createdAt: string;
+  updatedAt: string;
+  paidAt: string | null;
+  affiliateProfileId?: string | null;
+  note?: string | null;
+};
+
 export type WalletSummary = {
   id: string;
   availableBalance: Money;
@@ -308,6 +355,7 @@ export type CreateOrderRequest = {
   catalogServiceId: number;
   link: string;
   quantity: number;
+  affiliateCode?: string;
   runs?: number;
   interval?: number;
   comments?: string[];
@@ -570,6 +618,58 @@ export type AdminTransactionsListParams = {
   direction?: string;
   dateFrom?: string;
   dateTo?: string;
+};
+
+export type AdminAffiliateProfileListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: AffiliateProfileStatus;
+};
+
+export type AdminAffiliateCommissionsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: AffiliateCommissionStatus;
+  affiliateProfileId?: string;
+};
+
+export type AdminAffiliatePayoutsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: AffiliatePayoutStatus;
+  affiliateProfileId?: string;
+};
+
+export type AdminCreateAffiliatePayoutRequest = {
+  affiliateProfileId: string;
+  amount: string;
+  note?: string;
+};
+
+export type AdminCatalogAffiliateSettingsResource = {
+  catalogServiceId: string;
+  affiliateEnabled: boolean;
+  affiliateCommissionPercent: string | null;
+  updatedAt: string;
+  catalogService?: CatalogServiceReference | null;
+};
+
+export type AdminCatalogAffiliateSettingsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type AdminCatalogAffiliateSettingsUpdateRequest = {
+  affiliateEnabled?: boolean;
+  affiliateCommissionPercent?: string | null;
 };
 
 export type SupplierServicesListParams = {

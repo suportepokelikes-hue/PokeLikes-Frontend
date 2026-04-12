@@ -1,8 +1,15 @@
 import type {
+  AdminAffiliateCommissionsListParams,
+  AdminAffiliatePayoutsListParams,
+  AdminAffiliateProfileListParams,
   AdminAlertsListParams,
   AdminAuditsListParams,
+  AdminCatalogAffiliateSettingsListParams,
+  AdminCatalogAffiliateSettingsResource,
+  AdminCatalogAffiliateSettingsUpdateRequest,
   AdminCatalogServiceUpdateRequest,
   AdminCatalogServiceUpsertRequest,
+  AdminCreateAffiliatePayoutRequest,
   AdminCreateUserRequest,
   AdminWalletAdjustmentRequest,
   AdminWalletAdjustmentResponse,
@@ -15,6 +22,9 @@ import type {
   AdminPaymentDetailResource,
   AdminPaymentsSummaryResponse,
   AdminWalletTransactionResource,
+  AffiliateCommissionResource,
+  AffiliatePayoutResource,
+  AffiliateProfileResource,
   AlertResource,
   AuditResource,
   AdminOrderResource,
@@ -33,8 +43,8 @@ import type {
   SupplierServicesListParams,
   SupplierSyncLogsListParams,
   UserSummary,
-} from '@/lib/api/contracts';
-import { apiRequest } from '@/lib/api/http';
+} from './contracts';
+import { apiRequest } from './http';
 
 export function getAdminDashboardSummary(accessToken: string) {
   return apiRequest<DashboardSummaryResponse>({
@@ -72,6 +82,29 @@ export function updateAdminUser(accessToken: string, userId: string, body: Admin
     method: 'PATCH',
     accessToken,
     body,
+  });
+}
+
+export function listAdminAffiliates(accessToken: string, params: AdminAffiliateProfileListParams = {}) {
+  return apiRequest<PaginatedResponse<AffiliateProfileResource>>({
+    path: buildAdminPath('/admin/affiliates', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+    accessToken,
+  });
+}
+
+export function approveAdminAffiliate(accessToken: string, affiliateProfileId: string) {
+  return apiRequest<AffiliateProfileResource>({
+    path: `/admin/affiliates/${affiliateProfileId}/approve`,
+    method: 'POST',
+    accessToken,
+  });
+}
+
+export function suspendAdminAffiliate(accessToken: string, affiliateProfileId: string) {
+  return apiRequest<AffiliateProfileResource>({
+    path: `/admin/affiliates/${affiliateProfileId}/suspend`,
+    method: 'POST',
+    accessToken,
   });
 }
 
@@ -169,6 +202,29 @@ export function updateAdminCatalogService(accessToken: string, serviceId: string
   });
 }
 
+export function listAdminCatalogAffiliateSettings(
+  accessToken: string,
+  params: AdminCatalogAffiliateSettingsListParams = {},
+) {
+  return apiRequest<PaginatedResponse<AdminCatalogAffiliateSettingsResource>>({
+    path: buildAdminPath('/admin/catalog/affiliate-settings', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+    accessToken,
+  });
+}
+
+export function updateAdminCatalogAffiliateSettings(
+  accessToken: string,
+  catalogServiceId: string,
+  body: AdminCatalogAffiliateSettingsUpdateRequest,
+) {
+  return apiRequest<AdminCatalogAffiliateSettingsResource>({
+    path: `/admin/catalog/${catalogServiceId}/affiliate-settings`,
+    method: 'PATCH',
+    accessToken,
+    body,
+  });
+}
+
 export function listAdminTransactions(accessToken: string, params: AdminTransactionsListParams = {}) {
   return apiRequest<PaginatedResponse<AdminWalletTransactionResource>>({
     path: buildAdminPath('/admin/transactions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
@@ -179,6 +235,29 @@ export function listAdminTransactions(accessToken: string, params: AdminTransact
 export function createAdminWalletAdjustment(accessToken: string, userId: string, body: AdminWalletAdjustmentRequest) {
   return apiRequest<AdminWalletAdjustmentResponse>({
     path: `/admin/wallets/${userId}/adjustments`,
+    method: 'POST',
+    accessToken,
+    body,
+  });
+}
+
+export function listAdminAffiliateCommissions(accessToken: string, params: AdminAffiliateCommissionsListParams = {}) {
+  return apiRequest<PaginatedResponse<AffiliateCommissionResource>>({
+    path: buildAdminPath('/admin/affiliate-commissions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+    accessToken,
+  });
+}
+
+export function listAdminAffiliatePayouts(accessToken: string, params: AdminAffiliatePayoutsListParams = {}) {
+  return apiRequest<PaginatedResponse<AffiliatePayoutResource>>({
+    path: buildAdminPath('/admin/affiliate-payouts', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+    accessToken,
+  });
+}
+
+export function createAdminAffiliatePayout(accessToken: string, body: AdminCreateAffiliatePayoutRequest) {
+  return apiRequest<AffiliatePayoutResource>({
+    path: '/admin/affiliate-payouts',
     method: 'POST',
     accessToken,
     body,

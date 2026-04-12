@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import {
+  approveAdminAffiliate,
+  createAdminAffiliatePayout,
   createAdminCatalogService,
   createAdminWalletAdjustment,
   createAdminUser,
@@ -11,9 +13,11 @@ import {
   reconcileAdminPayments,
   refreshSupplierProviders,
   resolveAdminAlert,
+  suspendAdminAffiliate,
   syncAdminOrder,
   syncAdminOrders,
   syncSupplierServices,
+  updateAdminCatalogAffiliateSettings,
   updateAdminCatalogService,
   updateAdminUser,
 } from '@/lib/api/admin';
@@ -25,6 +29,8 @@ import { getLoginPath, normalizeReturnTo } from '@/lib/auth/navigation';
 import {
   type AdminActionState,
   mapAdminActionError,
+  parseAffiliatePayoutPayload,
+  parseCatalogAffiliateSettingsUpdatePayload,
   parseCatalogCreatePayload,
   parseCatalogUpdatePayload,
   readOptionalInt,
@@ -184,6 +190,38 @@ export async function updateCatalogServiceAction(_: AdminActionState, formData: 
   };
 }
 
+export async function updateCatalogAffiliateSettingsAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const serviceId = readRequiredString(formData, 'serviceId');
+
+  if (!serviceId) {
+    return {
+      status: 'error',
+      message: 'Informe um servico valido para atualizar a afiliacao.',
+    };
+  }
+
+  const payload = parseCatalogAffiliateSettingsUpdatePayload(formData);
+
+  if ('error' in payload) {
+    return payload.error;
+  }
+
+  try {
+    await updateAdminCatalogAffiliateSettings(session.accessToken, serviceId, payload.value);
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel atualizar a configuracao de afiliacao agora.');
+  }
+
+  revalidatePath('/admin');
+  revalidatePath('/admin/catalog');
+
+  return {
+    status: 'success',
+    message: 'Configuracao de afiliacao atualizada com sucesso.',
+  };
+}
+
 export async function createWalletAdjustmentAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
   const session = await requireAuthenticatedAdmin(formData);
   const userId = readRequiredString(formData, 'userId');
@@ -216,6 +254,82 @@ export async function createWalletAdjustmentAction(_: AdminActionState, formData
     };
   } catch (error) {
     return mapAdminActionError(error, 'Nao foi possivel aplicar o ajuste de carteira agora.');
+  }
+}
+
+export async function approveAffiliateAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const affiliateProfileId = readRequiredString(formData, 'affiliateProfileId');
+
+  if (!affiliateProfileId) {
+    return {
+      status: 'error',
+      message: 'Informe um perfil afiliado valido para aprovar.',
+    };
+  }
+
+  try {
+    await approveAdminAffiliate(session.accessToken, affiliateProfileId);
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel aprovar o perfil afiliado agora.');
+  }
+
+  revalidatePath('/admin');
+  revalidatePath('/admin/affiliates');
+
+  return {
+    status: 'success',
+    message: 'Perfil afiliado aprovado com sucesso.',
+  };
+}
+
+export async function suspendAffiliateAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const affiliateProfileId = readRequiredString(formData, 'affiliateProfileId');
+
+  if (!affiliateProfileId) {
+    return {
+      status: 'error',
+      message: 'Informe um perfil afiliado valido para suspender.',
+    };
+  }
+
+  try {
+    await suspendAdminAffiliate(session.accessToken, affiliateProfileId);
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel suspender o perfil afiliado agora.');
+  }
+
+  revalidatePath('/admin');
+  revalidatePath('/admin/affiliates');
+
+  return {
+    status: 'success',
+    message: 'Perfil afiliado suspenso com sucesso.',
+  };
+}
+
+export async function createAffiliatePayoutAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const payload = parseAffiliatePayoutPayload(formData);
+
+  if ('error' in payload) {
+    return payload.error;
+  }
+
+  try {
+    const result = await createAdminAffiliatePayout(session.accessToken, payload.value);
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/affiliate-payouts');
+    revalidatePath('/admin/affiliate-commissions');
+
+    return {
+      status: 'success',
+      message: `Payout ${result.id} registrado para ${payload.value.affiliateProfileId}.`,
+    };
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel registrar o payout manual agora.');
   }
 }
 

@@ -1,4 +1,6 @@
 import type {
+  AdminCreateAffiliatePayoutRequest,
+  AdminCatalogAffiliateSettingsUpdateRequest,
   AdminCatalogServiceUpdateRequest,
   AdminCatalogServiceUpsertRequest,
   CatalogServiceStatus,
@@ -60,6 +62,20 @@ export function readWalletAdjustmentType(formData: FormData): 'wallet_adjustment
   return value === 'wallet_adjustment_admin' || value === 'wallet_reversal_admin' ? value : undefined;
 }
 
+export function readBooleanString(formData: FormData, key: string): boolean | undefined {
+  const value = readRequiredString(formData, key);
+
+  if (value === 'true') {
+    return true;
+  }
+
+  if (value === 'false') {
+    return false;
+  }
+
+  return undefined;
+}
+
 export function readSupplierSyncName(formData: FormData): SupplierSyncName | undefined {
   const value = readRequiredString(formData, 'supplierName');
 
@@ -110,6 +126,85 @@ export function parseCatalogUpdatePayload(formData: FormData):
   }
 
   return { value: base.value };
+}
+
+export function parseAffiliatePayoutPayload(formData: FormData):
+  | { value: AdminCreateAffiliatePayoutRequest; commissionIds: string[] }
+  | { error: AdminActionState } {
+  const affiliateProfileId = readRequiredString(formData, 'affiliateProfileId');
+  const amount = readRequiredString(formData, 'amount');
+  const commissionReferences = readRequiredString(formData, 'commissionIds');
+  const note = readOptionalString(formData, 'note');
+  const commissionIds = splitCommissionIds(commissionReferences);
+
+  if (!affiliateProfileId || !amount) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Perfil afiliado e valor sao obrigatorios para registrar o payout.',
+      },
+    };
+  }
+
+  if (commissionIds.length === 0) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Informe ao menos um ID de comissao approved para rastreio operacional.',
+      },
+    };
+  }
+
+  const composedNote = [`Comissoes consideradas: ${commissionIds.join(', ')}`, ...(note ? [`Observacao: ${note}`] : [])].join('\n');
+
+  return {
+    value: {
+      affiliateProfileId,
+      amount,
+      note: composedNote,
+    },
+    commissionIds,
+  };
+}
+
+export function parseCatalogAffiliateSettingsUpdatePayload(formData: FormData):
+  | { value: AdminCatalogAffiliateSettingsUpdateRequest }
+  | { error: AdminActionState } {
+  const affiliateEnabled = readBooleanString(formData, 'affiliateEnabled');
+  const affiliateCommissionPercent = normalizePercentInput(readOptionalString(formData, 'affiliateCommissionPercent'));
+
+  if (affiliateEnabled === undefined) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Informe se o servico deve ficar afiliavel ou nao.',
+      },
+    };
+  }
+
+  if (affiliateEnabled) {
+    if (!affiliateCommissionPercent) {
+      return {
+        error: {
+          status: 'error',
+          message: 'Informe um percentual maior que zero para ativar a afiliacao.',
+        },
+      };
+    }
+
+    return {
+      value: {
+        affiliateEnabled: true,
+        affiliateCommissionPercent,
+      },
+    };
+  }
+
+  return {
+    value: {
+      affiliateEnabled: false,
+    },
+  };
 }
 
 export function mapAdminActionError(error: unknown, fallback: string): AdminActionState {
@@ -225,4 +320,39 @@ function parseOptionalJson(value: string): { value?: unknown; error?: true } {
   } catch {
     return { error: true };
   }
+}
+
+function splitCommissionIds(value: string) {
+  if (!value) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      value
+        .split(/[\n,;]+/)
+        .map((item) => item.trim())
+      .filter(Boolean),
+    ),
+  );
+}
+
+function normalizePercentInput(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = value.replace(',', '.').trim();
+
+  if (!/^\d+(\.\d+)?$/.test(normalized)) {
+    return undefined;
+  }
+
+  const parsed = Number(normalized);
+
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return undefined;
+  }
+
+  return normalized;
 }

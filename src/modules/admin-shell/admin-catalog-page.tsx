@@ -7,12 +7,23 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { listAdminCatalogServices, listSupplierProviders, listSupplierServices } from '@/lib/api/admin';
+import {
+  listAdminCatalogAffiliateSettings,
+  listAdminCatalogServices,
+  listSupplierProviders,
+  listSupplierServices,
+} from '@/lib/api/admin';
+import type { AdminCatalogAffiliateSettingsResource, CatalogServiceResource } from '@/lib/api/contracts';
 import { getCatalogService } from '@/lib/api/catalog';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
-import { formatMoney } from '@/lib/format';
-import { createCatalogServiceAction, updateCatalogServiceAction } from '@/modules/admin-shell/actions';
+import { formatDateTime, formatMoney } from '@/lib/format';
+import {
+  createCatalogServiceAction,
+  updateCatalogAffiliateSettingsAction,
+  updateCatalogServiceAction,
+} from '@/modules/admin-shell/actions';
+import { AdminCatalogAffiliateSettingsForm } from '@/modules/admin-shell/admin-catalog-affiliate-settings-form';
 import { AdminCatalogMutationForm } from '@/modules/admin-shell/admin-catalog-mutation-form';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import {
@@ -33,6 +44,7 @@ type AdminCatalogPageProps = {
   supplierServiceFilters: SupplierServicesListParams;
   creationDraft?: AdminCatalogCreationDraft;
   activeServiceId?: string;
+  activeAffiliateServiceId?: string;
 };
 
 export async function AdminCatalogPage({
@@ -41,6 +53,7 @@ export async function AdminCatalogPage({
   supplierServiceFilters,
   creationDraft,
   activeServiceId,
+  activeAffiliateServiceId,
 }: AdminCatalogPageProps) {
   try {
     const [catalog, providerStatuses, supplierServices] = await Promise.all([
@@ -49,11 +62,16 @@ export async function AdminCatalogPage({
       listSupplierServices(session.accessToken, supplierServiceFilters),
     ]);
 
+    const currentCatalogPage = filters.page ?? catalog.page;
+    const currentCatalogPageSize = filters.pageSize ?? catalog.pageSize;
+    const currentServicesPage = supplierServiceFilters.page ?? supplierServices.page;
+    const currentServicesPageSize = supplierServiceFilters.pageSize ?? supplierServices.pageSize;
     const returnTo = buildPathWithSearch('/admin/catalog', {
       search: filters.search,
-      pageSize: filters.pageSize,
-      servicesPage: supplierServiceFilters.page,
-      servicesPageSize: supplierServiceFilters.pageSize,
+      page: currentCatalogPage,
+      pageSize: currentCatalogPageSize,
+      servicesPage: currentServicesPage,
+      servicesPageSize: currentServicesPageSize,
       supplierName: supplierServiceFilters.supplierName,
     });
     const providerOptions = providerStatuses.items
@@ -61,14 +79,54 @@ export async function AdminCatalogPage({
       .filter((name, index, items) => items.indexOf(name) === index)
       .sort((left, right) => left.localeCompare(right, 'pt-BR'));
     const selectedSupplierName = supplierServiceFilters.supplierName;
-    let activeService = null;
+
+    const targetAffiliateServiceIds = Array.from(
+      new Set(
+        [...catalog.items.map((service) => service.id), activeServiceId, activeAffiliateServiceId].filter(
+          (value): value is string => Boolean(value),
+        ),
+      ),
+    );
+
+    let affiliateSettingsByServiceId = new Map<string, AdminCatalogAffiliateSettingsResource>();
+    let affiliateSettingsError: string | null = null;
+
+    try {
+      affiliateSettingsByServiceId = await loadCatalogAffiliateSettingsByServiceId(
+        session.accessToken,
+        targetAffiliateServiceIds,
+        filters.search,
+        currentCatalogPage,
+        currentCatalogPageSize,
+      );
+    } catch (error) {
+      affiliateSettingsError =
+        error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar a leitura de afiliacao do catalogo.';
+    }
+
+    let activeService: CatalogServiceResource | null = null;
     let activeServiceError: string | null = null;
 
     if (activeServiceId) {
       try {
-        activeService = await getCatalogService(activeServiceId);
+        activeService = await resolveCatalogServiceForDrawer(activeServiceId, catalog.items);
       } catch (error) {
         activeServiceError = error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este servico.';
+      }
+    }
+
+    let activeAffiliateService: CatalogServiceResource | null = null;
+    let activeAffiliateServiceError: string | null = null;
+
+    if (activeAffiliateServiceId) {
+      try {
+        activeAffiliateService =
+          activeService?.id === activeAffiliateServiceId
+            ? activeService
+            : await resolveCatalogServiceForDrawer(activeAffiliateServiceId, catalog.items);
+      } catch (error) {
+        activeAffiliateServiceError =
+          error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este servico para configurar afiliacao.';
       }
     }
 
@@ -80,13 +138,17 @@ export async function AdminCatalogPage({
     const degradedCount = visibleCatalogItems.filter(
       (service) => service.availability.providerStatus === 'degraded_low_balance' || service.availability.providerStatus === 'unavailable',
     ).length;
+    const affiliateEnabledCount = visibleCatalogItems.filter(
+      (service) => affiliateSettingsByServiceId.get(service.id)?.affiliateEnabled,
+    ).length;
+    const activeAffiliateSettings = activeAffiliateServiceId ? affiliateSettingsByServiceId.get(activeAffiliateServiceId) : undefined;
 
     return (
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / catalogo"
           title="Catalogo"
-          description="Selecione um servico sincronizado e publique a versao publica da plataforma."
+          description="Selecione um servico sincronizado, publique a versao publica e ajuste a afiliabilidade sem sair da mesma tela."
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
@@ -113,6 +175,7 @@ export async function AdminCatalogPage({
           />
           <AdminSummaryCard label="Ativos" value={String(activeCount)} meta="Disponiveis para venda" tone="accent" />
           <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco operacional`} tone="warning" />
+          <AdminSummaryCard label="Afiliaveis" value={String(affiliateEnabledCount)} meta="Com comissao ativa na pagina atual" />
         </section>
 
         <section className="detail-card detail-card-wide">
@@ -165,7 +228,7 @@ export async function AdminCatalogPage({
                         {isSelected ? (
                           <StatusBadge label="Selecionado" tone="info" />
                         ) : (
-                          <Link href={buildCreateDraftPath(filters, supplierServiceFilters, service)} className="table-link">
+                          <Link href={buildCreateDraftPath(filters, supplierServiceFilters, service, currentCatalogPage, currentCatalogPageSize)} className="table-link">
                             Criar no catalogo
                           </Link>
                         )}
@@ -182,10 +245,11 @@ export async function AdminCatalogPage({
                 pathname="/admin/catalog"
                 params={{
                   search: filters.search,
-                  pageSize: filters.pageSize,
+                  page: currentCatalogPage,
+                  pageSize: currentCatalogPageSize,
                   supplierName: supplierServiceFilters.supplierName,
                   ...buildDraftParams(creationDraft),
-                  servicesPageSize: supplierServiceFilters.pageSize ?? supplierServices.pageSize,
+                  servicesPageSize: currentServicesPageSize,
                 }}
                 label="servicos sincronizados"
               />
@@ -203,60 +267,79 @@ export async function AdminCatalogPage({
           <p>Escolha um item na lista acima para abrir o drawer de publicacao com os dados tecnicos ja preenchidos.</p>
         </section>
 
+        {affiliateSettingsError ? (
+          <section className="feedback-panel">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Afiliados no catalogo</p>
+                <h2>Leitura operacional indisponivel</h2>
+              </div>
+            </div>
+            <p>{affiliateSettingsError}</p>
+          </section>
+        ) : null}
+
         {visibleCatalogItems.length === 0 ? (
           <EmptyState title="Nenhum servico publicado" description="Publique um servico sincronizado para ele aparecer no catalogo da plataforma." />
         ) : (
           <>
-            <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Fornecedor', 'Faixa', 'Acoes']}>
-              {visibleCatalogItems.map((service) => (
-                <Fragment key={service.id}>
-                  <tr>
-                    <td>
-                      <div className="stack-list">
-                        <strong>{service.name}</strong>
-                        <span className="panel-meta">
-                          {service.socialNetwork} / {service.category} / {service.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td>{formatMoney(service.publicPrice)}</td>
-                    <td>
-                      <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
-                    </td>
-                    <td>{renderCatalogAvailability(service)}</td>
-                    <td>
-                      <div className="stack-list">
-                        <strong>{service.supplierService.supplierName}</strong>
-                        <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
-                        {service.supplierService.providerStatus ? (
-                          <StatusBadge
-                            label={service.supplierService.providerStatus.providerStatus}
-                            tone={mapProviderTone(service.supplierService.providerStatus.providerStatus)}
-                          />
-                        ) : null}
-                      </div>
-                    </td>
-                    <td>
-                      {service.minQuantity} - {service.maxQuantity}
-                    </td>
-                    <td>
-                      <Link
-                        href={buildPathWithSearch('/admin/catalog', {
-                          search: filters.search,
-                          pageSize: filters.pageSize,
-                          supplierName: supplierServiceFilters.supplierName,
-                          servicesPage: supplierServiceFilters.page,
-                          servicesPageSize: supplierServiceFilters.pageSize,
-                          editServiceId: service.id,
-                        })}
-                        className="table-link"
-                      >
-                        Editar servico
-                      </Link>
-                    </td>
-                  </tr>
-                </Fragment>
-              ))}
+            <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Afiliados', 'Fornecedor', 'Faixa', 'Acoes']}>
+              {visibleCatalogItems.map((service) => {
+                const affiliateSettings = affiliateSettingsByServiceId.get(service.id);
+
+                return (
+                  <Fragment key={service.id}>
+                    <tr>
+                      <td>
+                        <div className="stack-list">
+                          <strong>{service.name}</strong>
+                          <span className="panel-meta">
+                            {service.socialNetwork} / {service.category} / {service.type}
+                          </span>
+                          <span className="panel-meta">ID {service.id}</span>
+                        </div>
+                      </td>
+                      <td>{formatMoney(service.publicPrice)}</td>
+                      <td>
+                        <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
+                      </td>
+                      <td>{renderCatalogAvailability(service)}</td>
+                      <td>{renderCatalogAffiliateState(affiliateSettings, affiliateSettingsError)}</td>
+                      <td>
+                        <div className="stack-list">
+                          <strong>{service.supplierService.supplierName}</strong>
+                          <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
+                          {service.supplierService.providerStatus ? (
+                            <StatusBadge
+                              label={service.supplierService.providerStatus.providerStatus}
+                              tone={mapProviderTone(service.supplierService.providerStatus.providerStatus)}
+                            />
+                          ) : null}
+                        </div>
+                      </td>
+                      <td>
+                        {service.minQuantity} - {service.maxQuantity}
+                      </td>
+                      <td>
+                        <div className="stack-list">
+                          <Link
+                            href={buildCatalogEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
+                            className="table-link"
+                          >
+                            Editar servico
+                          </Link>
+                          <Link
+                            href={buildCatalogAffiliateEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
+                            className="table-link"
+                          >
+                            Editar afiliacao
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  </Fragment>
+                );
+              })}
             </DataTable>
 
             <PaginationSummary
@@ -264,16 +347,16 @@ export async function AdminCatalogPage({
               pageSize={catalog.pageSize}
               totalItems={catalog.totalItems}
               totalPages={catalog.totalPages}
-                pathname="/admin/catalog"
-                params={{
-                  search: filters.search,
-                  pageSize: filters.pageSize,
-                  supplierName: supplierServiceFilters.supplierName,
-                  servicesPage: supplierServiceFilters.page,
-                  servicesPageSize: supplierServiceFilters.pageSize,
-                  ...buildDraftParams(creationDraft),
-                }}
-                label="servicos"
+              pathname="/admin/catalog"
+              params={{
+                search: filters.search,
+                pageSize: currentCatalogPageSize,
+                supplierName: supplierServiceFilters.supplierName,
+                servicesPage: currentServicesPage,
+                servicesPageSize: currentServicesPageSize,
+                ...buildDraftParams(creationDraft),
+              }}
+              label="servicos"
             />
           </>
         )}
@@ -325,6 +408,57 @@ export async function AdminCatalogPage({
             <ErrorState title="Nao foi possivel abrir este servico" description="Feche o painel e tente novamente pela listagem." />
           </AdminSlideOver>
         ) : null}
+
+        {activeAffiliateService ? (
+          <AdminSlideOver
+            eyebrow="Catalogo / afiliados"
+            title={activeAffiliateService.name}
+            description="Ative ou desligue a afiliabilidade e ajuste a comissao humana do servico publicado."
+            closeHref={returnTo}
+          >
+            <section className="admin-drawer-stack">
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Afiliacao do servico</p>
+                    <h3>Configuracao operacional</h3>
+                  </div>
+                  <div className="feedback-actions">
+                    <StatusBadge
+                      label={activeAffiliateSettings?.affiliateEnabled ? 'habilitado' : activeAffiliateSettings ? 'desligado' : 'sem leitura'}
+                      tone={activeAffiliateSettings?.affiliateEnabled ? 'success' : activeAffiliateSettings ? 'neutral' : 'warning'}
+                    />
+                    <StatusBadge
+                      label={
+                        activeAffiliateSettings?.affiliateEnabled && activeAffiliateSettings.affiliateCommissionPercent
+                          ? formatAffiliateCommissionPercent(activeAffiliateSettings.affiliateCommissionPercent)
+                          : 'sem percentual ativo'
+                      }
+                      tone={activeAffiliateSettings?.affiliateEnabled ? 'info' : 'neutral'}
+                    />
+                  </div>
+                </div>
+                <p className="section-copy">
+                  {activeAffiliateSettings
+                    ? `Ultima atualizacao em ${formatDateTime(activeAffiliateSettings.updatedAt)}.`
+                    : affiliateSettingsError
+                      ? affiliateSettingsError
+                      : 'Sem leitura previa de afiliacao para este servico. Ao salvar, o contrato atual do backend sera respeitado.'}
+                </p>
+                <AdminCatalogAffiliateSettingsForm
+                  action={updateCatalogAffiliateSettingsAction}
+                  returnTo={returnTo}
+                  service={activeAffiliateService}
+                  settings={activeAffiliateSettings}
+                />
+              </article>
+            </section>
+          </AdminSlideOver>
+        ) : activeAffiliateServiceError ? (
+          <AdminSlideOver eyebrow="Catalogo / afiliados" title="Servico indisponivel" description={activeAffiliateServiceError} closeHref={returnTo}>
+            <ErrorState title="Nao foi possivel abrir a afiliacao deste servico" description="Feche o painel e tente novamente pela listagem." />
+          </AdminSlideOver>
+        ) : null}
       </main>
     );
   } catch (error) {
@@ -339,6 +473,153 @@ export async function AdminCatalogPage({
   }
 }
 
+async function resolveCatalogServiceForDrawer(serviceId: string, currentItems: CatalogServiceResource[]) {
+  const cachedService = currentItems.find((service) => service.id === serviceId);
+
+  if (cachedService) {
+    return cachedService;
+  }
+
+  return getCatalogService(serviceId);
+}
+
+async function loadCatalogAffiliateSettingsByServiceId(
+  accessToken: string,
+  serviceIds: string[],
+  search?: string,
+  preferredPage = 1,
+  preferredPageSize = 10,
+) {
+  const remaining = new Set(serviceIds);
+  const settingsByServiceId = new Map<string, AdminCatalogAffiliateSettingsResource>();
+
+  if (remaining.size === 0) {
+    return settingsByServiceId;
+  }
+
+  const pageSize = Math.max(preferredPageSize, remaining.size, 25);
+  const firstPage = Math.max(preferredPage, 1);
+  const firstResponse = await listAdminCatalogAffiliateSettings(accessToken, {
+    search,
+    page: firstPage,
+    pageSize,
+  });
+
+  collectCatalogAffiliateSettings(firstResponse.items, remaining, settingsByServiceId);
+
+  for (let page = 1; page <= firstResponse.totalPages && remaining.size > 0; page += 1) {
+    if (page === firstPage) {
+      continue;
+    }
+
+    const response = await listAdminCatalogAffiliateSettings(accessToken, {
+      search,
+      page,
+      pageSize,
+    });
+
+    collectCatalogAffiliateSettings(response.items, remaining, settingsByServiceId);
+  }
+
+  return settingsByServiceId;
+}
+
+function collectCatalogAffiliateSettings(
+  items: AdminCatalogAffiliateSettingsResource[],
+  remaining: Set<string>,
+  settingsByServiceId: Map<string, AdminCatalogAffiliateSettingsResource>,
+) {
+  for (const item of items) {
+    if (!remaining.has(item.catalogServiceId)) {
+      continue;
+    }
+
+    settingsByServiceId.set(item.catalogServiceId, item);
+    remaining.delete(item.catalogServiceId);
+  }
+}
+
+function renderCatalogAffiliateState(settings: AdminCatalogAffiliateSettingsResource | undefined, loadError: string | null) {
+  if (loadError) {
+    return (
+      <div className="stack-list">
+        <StatusBadge label="sem leitura" tone="warning" />
+        <span className="panel-meta">Falha ao carregar afiliacao</span>
+      </div>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <div className="stack-list">
+        <StatusBadge label="nao configurado" tone="neutral" />
+        <span className="panel-meta">Abra o drawer para definir a regra</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="stack-list">
+      <StatusBadge label={settings.affiliateEnabled ? 'habilitado' : 'desligado'} tone={settings.affiliateEnabled ? 'success' : 'neutral'} />
+      <span className="panel-meta">
+        {settings.affiliateCommissionPercent
+          ? `${formatAffiliateCommissionPercent(settings.affiliateCommissionPercent)}${settings.affiliateEnabled ? '' : ' em referencia'}`
+          : 'Sem percentual ativo'}
+      </span>
+      <span className="panel-meta">Atualizado em {formatDateTime(settings.updatedAt)}</span>
+    </div>
+  );
+}
+
+function formatAffiliateCommissionPercent(value: string) {
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed)) {
+    return `${value}%`;
+  }
+
+  return `${new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: parsed % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(parsed)}%`;
+}
+
+function buildCatalogEditPath(
+  filters: AdminCatalogListParams,
+  supplierServiceFilters: SupplierServicesListParams,
+  serviceId: string,
+  page: number,
+  pageSize: number,
+) {
+  return buildPathWithSearch('/admin/catalog', {
+    search: filters.search,
+    page,
+    pageSize,
+    supplierName: supplierServiceFilters.supplierName,
+    servicesPage: supplierServiceFilters.page,
+    servicesPageSize: supplierServiceFilters.pageSize,
+    editServiceId: serviceId,
+  });
+}
+
+function buildCatalogAffiliateEditPath(
+  filters: AdminCatalogListParams,
+  supplierServiceFilters: SupplierServicesListParams,
+  serviceId: string,
+  page: number,
+  pageSize: number,
+) {
+  return buildPathWithSearch('/admin/catalog', {
+    search: filters.search,
+    page,
+    pageSize,
+    supplierName: supplierServiceFilters.supplierName,
+    servicesPage: supplierServiceFilters.page,
+    servicesPageSize: supplierServiceFilters.pageSize,
+    editAffiliateServiceId: serviceId,
+  });
+}
+
 function buildCreateDraftPath(
   filters: AdminCatalogListParams,
   supplierServiceFilters: SupplierServicesListParams,
@@ -351,10 +632,13 @@ function buildCreateDraftPath(
     min: number;
     max: number;
   },
+  page: number,
+  pageSize: number,
 ) {
   return `${buildPathWithSearch('/admin/catalog', {
     search: filters.search,
-    pageSize: filters.pageSize,
+    page,
+    pageSize,
     servicesPage: supplierServiceFilters.page,
     servicesPageSize: supplierServiceFilters.pageSize,
     supplierName: supplierServiceFilters.supplierName,
