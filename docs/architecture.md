@@ -23,6 +23,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 ### Customer
 
 - perfil/sessao
+- afiliados
 - wallet
 - criar PIX
 - listar pagamentos
@@ -33,6 +34,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 
 - dashboard
 - users
+- affiliates
 - catalog
 - payments
 - orders
@@ -45,6 +47,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 
 - o frontend consome a API do backend por uma camada unica em `src/lib/api`
 - contratos usados no bootstrap nascem do `docs/contracts/backend-openapi.yaml`
+- para afiliados, o contrato operacional validado continua sendo `docs/contracts/backend-openapi.yaml`, mesmo quando `docs/api/openapi.yaml` divergir
 - evitar `fetch` espalhado em componentes de tela
 - auth/session seguem separados da camada de dominio
 
@@ -101,6 +104,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o header do shell autenticado foi simplificado para manter apenas a busca no topo; a identificacao do usuario e o logout seguem concentrados no badge lateral inferior, sem duplicacao visual
 - a toolbar de filtros e a area de acoes do `PageHeader` foram reforcadas para quebrar de forma fluida em larguras intermediarias, evitando overflow horizontal nas listas admin e nos modulos que reutilizam o mesmo padrao
 - `/admin/catalog` agora tambem absorveu a edicao do servico publicado em drawer lateral dentro da propria listagem; a rota `/admin/catalog/[serviceId]` ficou apenas como redirecionamento para esse fluxo
+- `/admin/catalog` agora tambem le `GET /admin/catalog/affiliate-settings` como complemento operacional da listagem publicada e abre a edicao de afiliabilidade do servico em drawer lateral usando `PATCH /admin/catalog/{serviceId}/affiliate-settings`
 - o frontend agora possui uma base de testes sem dependencia extra, usando `node:test` + `tsc` para validar utilitarios criticos de auth, parsing administrativo, serializacao de sessao e camada HTTP base da API
 - parte da logica mais sensivel das server actions de auth e admin foi extraida para helpers puros, facilitando cobertura de teste sem acoplamento ao runtime do Next
 - o dominio de transacoes do cliente agora segue a mesma direcao, com helpers puros para parsing de PIX/pedido e cobertura da camada `src/lib/api/customer.ts`
@@ -123,9 +127,16 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - as jornadas principais tambem passaram por uma rodada de UX estrutural, com CTA mais claros, blocos reordenados e traducao adicional dos labels tecnicos mais expostos na interface
 - `/register` agora entende `?ref=CODIGO`, preenche o codigo de indicacao no formulario e envia `referralCode` ao backend no cadastro
 - `/app/profile` agora tambem concentra o programa de indicacao do usuario, com codigo, link, resumo, `rewardStatus`, estado de email e request de verificacao no proprio frontend
+- `/app/affiliate` agora concentra a primeira area autenticada de afiliados no cliente; quando `GET /me/affiliate` retorna `null`, a propria tela assume a entrada do programa com CTA de apply, e quando existe perfil ela mostra status, summary e listagem das proprias comissoes
+- o shell autenticado do cliente agora possui entrada dedicada para `Afiliados`, e o shell admin e a home admin ja apontam para `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts`
+- `/catalog` e `/catalog/[serviceId]` agora capturam `?aff=` de forma discreta no frontend, preservam o codigo localmente no navegador, reaproveitam `affiliateCode` no `POST /me/orders` quando houver pedido e nao interferem no fluxo separado de `?ref=`/`referralCode`
+- `/admin/affiliates` agora concentra a primeira superficie administrativa de afiliados, com listagem paginada, filtro basico e acoes inline de aprovar e suspender
+- `/admin/affiliate-commissions` agora concentra a leitura operacional das comissoes de afiliados, com filtros aderentes ao contrato e tabela densa
+- `/admin/affiliate-payouts` agora concentra a operacao financeira de payouts, incluindo registro manual minimo com rastreio textual das comissoes dentro de `note`, porque o contrato validado consumido pelo frontend ainda aceita apenas `affiliateProfileId`, `amount` e `note`
+- `/admin/catalog` manteve a configuracao de afiliabilidade dentro do proprio modulo de catalogo, por leitura complementar e drawer lateral, sem abrir um modulo administrativo separado para affiliate settings por servico
 - `/app` agora tambem destaca o estado de referral no proprio dashboard do cliente, com CTA contextual para perfil ou deposito qualificado
 - `/verify-email` agora confirma tokens de verificacao lidos da URL e sincroniza o cookie de usuario quando a sessao atual pertence ao usuario confirmado
-- a documentacao contratual mais recente do backend agora vive em `docs/api/openapi.yaml` e `docs/api/modules/*`, com `docs/contracts/backend-openapi.yaml` mantido sincronizado como copia operacional do frontend
+- para trabalho de frontend, o contrato operacional validado continua sendo `docs/contracts/backend-openapi.yaml`; `docs/api/openapi.yaml` ainda diverge na parte financeira de afiliados e nao deve guiar payloads de payout ate ser resincronizado
 
 ## Implemented Structure
 
@@ -160,15 +171,22 @@ src/
 
 - `/catalog` -> `GET /catalog/services`
 - `/catalog/[serviceId]` -> `GET /catalog/services/{serviceId}`
+- `/catalog` -> captura local de `?aff=`
+- `/catalog/[serviceId]` -> captura local de `?aff=`
 - `/app` -> `GET /me/wallet`, `GET /me/payments`, `GET /me/orders`
 - `/app/profile` -> `GET /me`
 - `/app/profile` -> `GET /me/referral`
+- `/app/affiliate` -> `GET /me/affiliate`
+- `/app/affiliate` -> `POST /me/affiliate/apply`
+- `/app/affiliate` -> `GET /me/affiliate/summary`
+- `/app/affiliate` -> `GET /me/affiliate/commissions`
 - `/app/wallet` -> `GET /me/wallet`, `GET /me/wallet/transactions`
 - `/app/payments` -> `GET /me/payments`
 - `/app/payments` -> `POST /me/payments/pix`
 - `/app/payments/[paymentId]` -> redireciona para `/app/payments?paymentId=...`
 - `/app/orders` -> `GET /me/orders`
 - `/catalog/[serviceId]` -> `POST /me/orders`
+- `/catalog/[serviceId]` -> envia `affiliateCode` opcional em `POST /me/orders` quando houver codigo persistido
 - `/app/orders/[orderId]` -> redireciona para `/app/orders?orderId=...`
 - `/verify-email` -> `POST /auth/email-verification/confirm`
 - `/admin` -> `GET /admin/dashboard/summary`
@@ -176,11 +194,19 @@ src/
 - `/admin/users` -> `POST /admin/users`
 - `/admin/users` -> `PATCH /admin/users/{userId}`
 - `/admin/users/[userId]` -> redireciona para `/admin/users?editUserId=...`
+- `/admin/affiliates` -> `GET /admin/affiliates`
+- `/admin/affiliates` -> `POST /admin/affiliates/{affiliateProfileId}/approve`
+- `/admin/affiliates` -> `POST /admin/affiliates/{affiliateProfileId}/suspend`
+- `/admin/affiliate-commissions` -> `GET /admin/affiliate-commissions`
+- `/admin/affiliate-payouts` -> `GET /admin/affiliate-payouts`
+- `/admin/affiliate-payouts` -> `POST /admin/affiliate-payouts`
 - `/admin/payments` -> `GET /admin/payments`
 - `/admin/orders` -> `GET /admin/orders`
 - `/admin/catalog` -> `GET /admin/catalog/services`
 - `/admin/catalog` -> `POST /admin/catalog/services`
 - `/admin/catalog` -> `PATCH /admin/catalog/services/{serviceId}`
+- `/admin/catalog` -> `GET /admin/catalog/affiliate-settings`
+- `/admin/catalog` -> `PATCH /admin/catalog/{serviceId}/affiliate-settings`
 - `/admin/catalog/[serviceId]` -> redireciona para `/admin/catalog?editServiceId=...`
 - `/admin/supplier` -> `GET /admin/supplier/providers`, `GET /admin/supplier/services`, `GET /admin/supplier/sync-logs`
 - `/admin/alerts` -> `GET /admin/alerts`
@@ -194,10 +220,19 @@ src/
 
 - status de sessao, disponibilidade e estados assincronos continuam sendo parte central da UX
 - a area do cliente deve priorizar clareza de fluxo para wallet, PIX e pedidos
+- a area de afiliados do cliente trata explicitamente o estado sem perfil, o status do programa e a leitura das comissoes como parte da jornada principal
 - a area admin deve priorizar densidade informacional e observabilidade operacional
+- no admin, afiliados e payout manual sao parte do fluxo operacional, nao um detalhe secundario escondido fora do catalogo e das listas financeiras
 - a direcao de conteudo agora privilegia linguagem de tarefa em vez de linguagem de implementacao: menos explicacao tecnica, menos repeticao e mais foco em decisao e acao
 - a area admin consolidou um shell unico com navegacao por modulo e tabelas reutilizaveis para catalogo, fornecedores, alertas, auditoria e transacoes
 - a referencia visual dominante agora e a linguagem “architectural minimalist” dos exports do Stitch em `docs/stitch_cliente_dashboard`, com sidebar fixa, topo leve, cards tonais e hierarquia editorial
+
+## Affiliate Contract Notes
+
+- `docs/contracts/backend-openapi.yaml` continua sendo a fonte contratual validada para a V1 de afiliados no frontend
+- `docs/api/openapi.yaml` ainda diverge na parte financeira de afiliados: ali aparecem `commissionIds`, `notes` e um recurso de retorno mais rico para payout, mas esses campos nao sao usados pelo frontend enquanto a copia validada nao for resincronizada
+- por isso, o payout manual do frontend continua seguindo o contrato validado e envia apenas `affiliateProfileId`, `amount` e `note`
+- quando o operador informa IDs de comissao no payout manual, o frontend os preserva como rastreio textual dentro de `note`, sem inventar um payload fora do contrato
 
 ## Remaining Direction
 
@@ -210,6 +245,10 @@ src/
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
 - o proximo passo recomendado em qualidade e aumentar a cobertura de testes em torno de auth, query params e camada de API
 - o proximo passo recomendado no cliente continua sendo preparar a edicao de perfil assim que `PATCH /me` receber schema formal
+- a V1 frontend de afiliados pode ser considerada fechada com customer, catalogo publico, checkout, admin e catalog affiliate settings entregues contra o contrato validado
+- o proximo passo recomendado para afiliados agora e ampliar os E2E de `?aff= -> catalogo -> pedido` e do drawer de affiliate settings em `/admin/catalog`
+- depois disso, o foco deve ir para a politica de expiracao/substituicao do `affiliateCode` persistido no navegador e para a resincronizacao entre `docs/api/openapi.yaml` e `docs/contracts/backend-openapi.yaml`
+- so depois dessa resincronizacao vale revisitar uma eventual formalizacao de `commissionIds` no payout
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend
 
 - pedidos do cliente e do admin agora usam um helper compartilhado para mapear `queued_supplier_balance` como espera operacional, ordenar timeline e explicar a retomada para `submitted` sem jargao desnecessario

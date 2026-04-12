@@ -38,3 +38,36 @@ test('getAreaShellView marks the current admin link and exposes user meta', () =
   assert.equal(view.links.find((link) => link.href === '/admin/orders')?.isCurrent, true);
   assert.equal(view.links.find((link) => link.href === '/admin/users')?.isCurrent, false);
 });
+
+test('getAreaShellView includes the affiliate route in the customer shell', () => {
+  const customerView = getAreaShellView({
+    area: 'customer',
+    user: {
+      id: '11',
+      role: 'customer',
+      name: 'Cliente',
+      email: 'cliente@likesuai.com',
+      status: 'active',
+    },
+    title: 'Afiliados',
+    pathname: '/app/affiliate',
+    children: 'conteudo-cliente',
+  });
+
+  assert.equal(customerView.links.find((link) => link.href === '/app/affiliate')?.isCurrent, true);
+  assert.equal(customerView.links.find((link) => link.href === '/app/profile')?.isCurrent, false);
+});
+
+test('getAreaShellView includes the affiliate route in the admin shell', () => {
+  const adminView = getAreaShellView({
+    area: 'admin',
+    user,
+    title: 'Payouts afiliados',
+    pathname: '/admin/affiliate-payouts',
+    children: 'conteudo-admin',
+  });
+
+  assert.equal(adminView.links.find((link) => link.href === '/admin/affiliate-payouts')?.isCurrent, true);
+  assert.equal(adminView.links.find((link) => link.href === '/admin/affiliate-commissions')?.isCurrent, false);
+  assert.equal(adminView.links.find((link) => link.href === '/admin/orders')?.isCurrent, false);
+});

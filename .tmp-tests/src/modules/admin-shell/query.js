@@ -2,9 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseAdminUsersParams = parseAdminUsersParams;
 exports.parseAdminCatalogParams = parseAdminCatalogParams;
+exports.parseAdminCatalogCreationDraft = parseAdminCatalogCreationDraft;
 exports.parseAdminPaymentsParams = parseAdminPaymentsParams;
 exports.parseAdminOrdersParams = parseAdminOrdersParams;
 exports.parseAdminTransactionsParams = parseAdminTransactionsParams;
+exports.parseAdminAffiliatesParams = parseAdminAffiliatesParams;
+exports.parseAdminAffiliateCommissionsParams = parseAdminAffiliateCommissionsParams;
+exports.parseAdminAffiliatePayoutsParams = parseAdminAffiliatePayoutsParams;
 exports.parseAdminAlertsParams = parseAdminAlertsParams;
 exports.parseAdminAuditsParams = parseAdminAuditsParams;
 exports.parseSupplierServicesParams = parseSupplierServicesParams;
@@ -22,6 +26,27 @@ function parseAdminCatalogParams(searchParams) {
         socialNetwork: readString(searchParams.socialNetwork),
         category: readString(searchParams.category),
         type: readString(searchParams.type),
+    };
+}
+function parseAdminCatalogCreationDraft(searchParams) {
+    const supplierServiceId = readPositiveInt(searchParams.createSupplierServiceId);
+    const supplierName = readString(searchParams.createSupplierName);
+    const name = readString(searchParams.createName);
+    const category = readString(searchParams.createCategory);
+    const type = readString(searchParams.createType);
+    const minQuantity = readPositiveInt(searchParams.createMinQuantity);
+    const maxQuantity = readPositiveInt(searchParams.createMaxQuantity);
+    if (!supplierServiceId || !supplierName || !name || !category || !type || !minQuantity || !maxQuantity) {
+        return undefined;
+    }
+    return {
+        supplierServiceId,
+        supplierName,
+        name,
+        category,
+        type,
+        minQuantity,
+        maxQuantity,
     };
 }
 function parseAdminPaymentsParams(searchParams) {
@@ -51,6 +76,38 @@ function parseAdminTransactionsParams(searchParams) {
         dateTo: readString(searchParams.dateTo),
     };
 }
+function parseAdminAffiliatesParams(searchParams) {
+    const sortOrder = readString(searchParams.sortOrder);
+    return {
+        page: readPositiveInt(searchParams.page),
+        pageSize: readPositiveInt(searchParams.pageSize),
+        search: readString(searchParams.search),
+        sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
+        status: readString(searchParams.status),
+    };
+}
+function parseAdminAffiliateCommissionsParams(searchParams) {
+    const sortOrder = readString(searchParams.sortOrder);
+    return {
+        page: readPositiveInt(searchParams.page),
+        pageSize: readPositiveInt(searchParams.pageSize),
+        search: readString(searchParams.search),
+        sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
+        status: readString(searchParams.status),
+        affiliateProfileId: readString(searchParams.affiliateProfileId),
+    };
+}
+function parseAdminAffiliatePayoutsParams(searchParams) {
+    const sortOrder = readString(searchParams.sortOrder);
+    return {
+        page: readPositiveInt(searchParams.page),
+        pageSize: readPositiveInt(searchParams.pageSize),
+        search: readString(searchParams.search),
+        sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
+        status: readString(searchParams.status),
+        affiliateProfileId: readString(searchParams.affiliateProfileId),
+    };
+}
 function parseAdminAlertsParams(searchParams) {
     return {
         ...parseBaseListParams(searchParams),
@@ -73,9 +130,9 @@ function parseSupplierServicesParams(searchParams) {
         page: readPositiveInt(searchParams.servicesPage ?? searchParams.page),
         pageSize: readPositiveInt(searchParams.servicesPageSize ?? searchParams.pageSize),
         search: readString(searchParams.servicesSearch ?? searchParams.search),
-        supplierName: readString(searchParams.supplierName),
-        category: readString(searchParams.category),
-        type: readString(searchParams.type),
+        supplierName: readString(searchParams.supplierName ?? searchParams.servicesSupplierName),
+        category: readString(searchParams.servicesCategory ?? searchParams.category),
+        type: readString(searchParams.servicesType ?? searchParams.type),
         isActiveAtSupplier: isActiveAtSupplier === 'true' || isActiveAtSupplier === 'false' ? isActiveAtSupplier : undefined,
     };
 }

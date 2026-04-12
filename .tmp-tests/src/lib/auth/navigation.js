@@ -5,6 +5,7 @@ exports.getRegisterPath = getRegisterPath;
 exports.getPostAuthRedirectPath = getPostAuthRedirectPath;
 exports.getAuthNotice = getAuthNotice;
 exports.normalizeReturnTo = normalizeReturnTo;
+exports.normalizeReferralCode = normalizeReferralCode;
 function getLoginPath(options = {}) {
     return buildAuthEntryPath('/login', options);
 }
@@ -70,14 +71,28 @@ function normalizeReturnTo(value) {
         return null;
     }
 }
+function normalizeReferralCode(value) {
+    if (!value) {
+        return null;
+    }
+    const normalized = value.trim();
+    if (!normalized || normalized.length > 128) {
+        return null;
+    }
+    return normalized;
+}
 function buildAuthEntryPath(pathname, options) {
     const searchParams = new URLSearchParams();
     const returnTo = normalizeReturnTo(options.returnTo);
+    const referralCode = normalizeReferralCode(options.referralCode);
     if (options.reason) {
         searchParams.set('reason', options.reason);
     }
     if (returnTo) {
         searchParams.set('returnTo', returnTo);
+    }
+    if (referralCode) {
+        searchParams.set('ref', referralCode);
     }
     const query = searchParams.toString();
     return query ? `${pathname}?${query}` : pathname;

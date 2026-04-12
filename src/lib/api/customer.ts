@@ -1,4 +1,7 @@
 import type {
+  AffiliateCommissionResource,
+  AffiliateProfileResource,
+  AffiliateSummaryResponse,
   CreateOrderRequest,
   CreatePixPaymentRequest,
   OrderResource,
@@ -32,6 +35,35 @@ export function getCustomerProfile({ accessToken }: AuthOptions) {
 export function getCustomerReferralSummary({ accessToken }: AuthOptions) {
   return apiRequest<ReferralSummaryResponse>({
     path: '/me/referral',
+    accessToken,
+  });
+}
+
+export function getCustomerAffiliateProfile({ accessToken }: AuthOptions) {
+  return apiRequest<AffiliateProfileResource | null>({
+    path: '/me/affiliate',
+    accessToken,
+  });
+}
+
+export function applyToAffiliateProgram({ accessToken }: AuthOptions) {
+  return apiRequest<AffiliateProfileResource>({
+    path: '/me/affiliate/apply',
+    method: 'POST',
+    accessToken,
+  });
+}
+
+export function getCustomerAffiliateSummary({ accessToken }: AuthOptions) {
+  return apiRequest<AffiliateSummaryResponse>({
+    path: '/me/affiliate/summary',
+    accessToken,
+  });
+}
+
+export function listCustomerAffiliateCommissions({ accessToken }: AuthOptions) {
+  return apiRequest<PaginatedResponse<AffiliateCommissionResource>>({
+    path: '/me/affiliate/commissions?page=1&pageSize=10&sortOrder=desc',
     accessToken,
   });
 }

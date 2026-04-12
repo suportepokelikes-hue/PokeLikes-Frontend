@@ -4,28 +4,33 @@ import { notFound } from 'next/navigation';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { appendAffiliateCodeToPath } from '@/lib/affiliate-code';
 import { getCatalogService } from '@/lib/api/catalog';
 import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath, getRegisterPath } from '@/lib/auth/navigation';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { AffiliateCodeCapture } from './affiliate-code-capture';
+import { AffiliateCodeInput } from './affiliate-code-input';
 import { createOrderAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm, TransactionTextarea } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
 
 type CatalogDetailPageProps = {
   serviceId: string;
+  affiliateCodeFromUrl?: string;
 };
 
-export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
+export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: CatalogDetailPageProps) {
   try {
     const session = await getServerSession();
     const service = await getCatalogService(serviceId);
-    const returnTo = `/catalog/${serviceId}`;
+    const returnTo = appendAffiliateCodeToPath(`/catalog/${serviceId}`, affiliateCodeFromUrl);
 
     return (
       <main className="page page-public">
+        <AffiliateCodeCapture initialAffiliateCode={affiliateCodeFromUrl} />
         <PageHeader
           eyebrow="Detalhe do servico"
           title={service.name}
@@ -38,7 +43,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                   Comprar agora
                 </Link>
               ) : null}
-              <Link href="/catalog" className="secondary-action">
+              <Link href={appendAffiliateCodeToPath('/catalog', affiliateCodeFromUrl)} className="secondary-action">
                 Voltar ao catalogo
               </Link>
             </div>
@@ -97,6 +102,7 @@ export async function CatalogDetailPage({ serviceId }: CatalogDetailPageProps) {
                 returnTo={returnTo}
               >
                 <input type="hidden" name="catalogServiceId" value={service.id} />
+                <AffiliateCodeInput initialAffiliateCode={affiliateCodeFromUrl} />
                 <div className="transaction-grid">
                   <TransactionField label="Servico" name="serviceName" defaultValue={service.name} readOnly />
                   <TransactionField

@@ -5,6 +5,9 @@ exports.listAdminUsers = listAdminUsers;
 exports.createAdminUser = createAdminUser;
 exports.getAdminUserDetail = getAdminUserDetail;
 exports.updateAdminUser = updateAdminUser;
+exports.listAdminAffiliates = listAdminAffiliates;
+exports.approveAdminAffiliate = approveAdminAffiliate;
+exports.suspendAdminAffiliate = suspendAdminAffiliate;
 exports.listAdminPayments = listAdminPayments;
 exports.getAdminPaymentsSummary = getAdminPaymentsSummary;
 exports.getAdminPaymentDetail = getAdminPaymentDetail;
@@ -17,8 +20,13 @@ exports.syncAdminOrder = syncAdminOrder;
 exports.listAdminCatalogServices = listAdminCatalogServices;
 exports.createAdminCatalogService = createAdminCatalogService;
 exports.updateAdminCatalogService = updateAdminCatalogService;
+exports.listAdminCatalogAffiliateSettings = listAdminCatalogAffiliateSettings;
+exports.updateAdminCatalogAffiliateSettings = updateAdminCatalogAffiliateSettings;
 exports.listAdminTransactions = listAdminTransactions;
 exports.createAdminWalletAdjustment = createAdminWalletAdjustment;
+exports.listAdminAffiliateCommissions = listAdminAffiliateCommissions;
+exports.listAdminAffiliatePayouts = listAdminAffiliatePayouts;
+exports.createAdminAffiliatePayout = createAdminAffiliatePayout;
 exports.listSupplierProviders = listSupplierProviders;
 exports.listSupplierServices = listSupplierServices;
 exports.listSupplierSyncLogs = listSupplierSyncLogs;
@@ -27,7 +35,8 @@ exports.listAdminAudits = listAdminAudits;
 exports.resolveAdminAlert = resolveAdminAlert;
 exports.refreshSupplierProviders = refreshSupplierProviders;
 exports.syncSupplierServices = syncSupplierServices;
-const http_1 = require("@/lib/api/http");
+exports.normalizeSupplierSyncName = normalizeSupplierSyncName;
+const http_1 = require("./http");
 function getAdminDashboardSummary(accessToken) {
     return (0, http_1.apiRequest)({
         path: '/admin/dashboard/summary',
@@ -60,6 +69,26 @@ function updateAdminUser(accessToken, userId, body) {
         method: 'PATCH',
         accessToken,
         body,
+    });
+}
+function listAdminAffiliates(accessToken, params = {}) {
+    return (0, http_1.apiRequest)({
+        path: buildAdminPath('/admin/affiliates', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+        accessToken,
+    });
+}
+function approveAdminAffiliate(accessToken, affiliateProfileId) {
+    return (0, http_1.apiRequest)({
+        path: `/admin/affiliates/${affiliateProfileId}/approve`,
+        method: 'POST',
+        accessToken,
+    });
+}
+function suspendAdminAffiliate(accessToken, affiliateProfileId) {
+    return (0, http_1.apiRequest)({
+        path: `/admin/affiliates/${affiliateProfileId}/suspend`,
+        method: 'POST',
+        accessToken,
     });
 }
 function listAdminPayments(accessToken, params = {}) {
@@ -144,6 +173,20 @@ function updateAdminCatalogService(accessToken, serviceId, body) {
         body,
     });
 }
+function listAdminCatalogAffiliateSettings(accessToken, params = {}) {
+    return (0, http_1.apiRequest)({
+        path: buildAdminPath('/admin/catalog/affiliate-settings', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+        accessToken,
+    });
+}
+function updateAdminCatalogAffiliateSettings(accessToken, catalogServiceId, body) {
+    return (0, http_1.apiRequest)({
+        path: `/admin/catalog/${catalogServiceId}/affiliate-settings`,
+        method: 'PATCH',
+        accessToken,
+        body,
+    });
+}
 function listAdminTransactions(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
         path: buildAdminPath('/admin/transactions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
@@ -153,6 +196,26 @@ function listAdminTransactions(accessToken, params = {}) {
 function createAdminWalletAdjustment(accessToken, userId, body) {
     return (0, http_1.apiRequest)({
         path: `/admin/wallets/${userId}/adjustments`,
+        method: 'POST',
+        accessToken,
+        body,
+    });
+}
+function listAdminAffiliateCommissions(accessToken, params = {}) {
+    return (0, http_1.apiRequest)({
+        path: buildAdminPath('/admin/affiliate-commissions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+        accessToken,
+    });
+}
+function listAdminAffiliatePayouts(accessToken, params = {}) {
+    return (0, http_1.apiRequest)({
+        path: buildAdminPath('/admin/affiliate-payouts', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+        accessToken,
+    });
+}
+function createAdminAffiliatePayout(accessToken, body) {
+    return (0, http_1.apiRequest)({
+        path: '/admin/affiliate-payouts',
         method: 'POST',
         accessToken,
         body,
@@ -203,12 +266,29 @@ function refreshSupplierProviders(accessToken) {
     });
 }
 function syncSupplierServices(accessToken, supplierName) {
+    const normalizedSupplierName = normalizeSupplierSyncName(supplierName);
     return (0, http_1.apiRequest)({
         path: '/admin/supplier/services/sync',
         method: 'POST',
         accessToken,
-        ...(supplierName ? { body: { supplierName } } : {}),
+        body: normalizedSupplierName ? { supplierName: normalizedSupplierName } : {},
     });
+}
+function normalizeSupplierSyncName(value) {
+    if (!value) {
+        return undefined;
+    }
+    const compact = value.trim().toLowerCase().replace(/[^a-z]/g, '');
+    if (!compact) {
+        return undefined;
+    }
+    if (compact === 'cheapsmmglobal') {
+        return 'cheapsmmglobal';
+    }
+    if (compact === 'instabarato') {
+        return 'instabarato';
+    }
+    return undefined;
 }
 function buildAdminPath(path, params) {
     const searchParams = new URLSearchParams();

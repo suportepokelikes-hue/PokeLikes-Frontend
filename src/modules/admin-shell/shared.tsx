@@ -257,6 +257,42 @@ export function mapAlertStatusTone(status: string): BadgeTone {
   return status === 'resolved' ? 'neutral' : 'danger';
 }
 
+export function mapAffiliateStatusTone(status: string): BadgeTone {
+  if (status === 'active') {
+    return 'success';
+  }
+
+  if (status === 'pending') {
+    return 'warning';
+  }
+
+  if (status === 'suspended') {
+    return 'danger';
+  }
+
+  return 'neutral';
+}
+
+export function mapAffiliateFinanceStatusTone(status: string): BadgeTone {
+  if (status === 'paid') {
+    return 'success';
+  }
+
+  if (status === 'approved') {
+    return 'warning';
+  }
+
+  if (status === 'pending') {
+    return 'info';
+  }
+
+  if (status === 'failed' || status === 'cancelled' || status === 'canceled') {
+    return 'danger';
+  }
+
+  return 'neutral';
+}
+
 export function mapSyncStatusTone(status: string): BadgeTone {
   return status === 'success' ? 'success' : 'danger';
 }
@@ -282,4 +318,18 @@ export function buildPathWithSearch(pathname: string, params: Record<string, str
 
   const query = searchParams.toString();
   return query ? `${pathname}?${query}` : pathname;
+}
+
+export function summarizeText(value: string | null | undefined, maxLength = 72) {
+  if (!value) {
+    return '-';
+  }
+
+  const compact = value.replace(/\s+/g, ' ').trim();
+
+  if (compact.length <= maxLength) {
+    return compact;
+  }
+
+  return `${compact.slice(0, Math.max(maxLength - 1, 1)).trimEnd()}…`;
 }

@@ -59,6 +59,7 @@ export function parseCreateOrderPayload(formData: FormData): { value: CreateOrde
   const interval = readOptionalInt(formData, 'interval');
   const comments = readOptionalStringArray(formData, 'comments');
   const answerNumberRaw = readRequiredString(formData, 'answerNumber');
+  const affiliateCode = readRequiredString(formData, 'affiliateCode');
 
   if (Number.isNaN(catalogServiceId)) {
     return {
@@ -88,6 +89,7 @@ export function parseCreateOrderPayload(formData: FormData): { value: CreateOrde
       ...(interval !== undefined ? { interval } : {}),
       ...(comments.length > 0 ? { comments } : {}),
       ...(answerNumberRaw ? { answerNumber: answerNumberRaw } : {}),
+      ...(affiliateCode ? { affiliateCode } : {}),
     },
   };
 }

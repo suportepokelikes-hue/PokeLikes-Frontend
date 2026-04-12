@@ -16,6 +16,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   return (
     <CatalogListPage
       searchParams={{
+        aff: readString(resolved.aff),
         search: readString(resolved.search),
         socialNetwork: readString(resolved.socialNetwork),
         category: readString(resolved.category),

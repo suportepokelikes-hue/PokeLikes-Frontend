@@ -80,6 +80,33 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
         status: 'inactive',
     });
 });
+(0, node_test_1.default)('catalog affiliate settings parser enforces a human commission percent only when enabled', () => {
+    const enabledForm = new FormData();
+    enabledForm.set('affiliateEnabled', 'true');
+    enabledForm.set('affiliateCommissionPercent', '12,5');
+    const enabledParsed = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(enabledForm);
+    strict_1.default.ok('value' in enabledParsed);
+    strict_1.default.deepEqual(enabledParsed.value, {
+        affiliateEnabled: true,
+        affiliateCommissionPercent: '12.5',
+    });
+    const disabledForm = new FormData();
+    disabledForm.set('affiliateEnabled', 'false');
+    const disabledParsed = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(disabledForm);
+    strict_1.default.ok('value' in disabledParsed);
+    strict_1.default.deepEqual(disabledParsed.value, {
+        affiliateEnabled: false,
+    });
+    const invalidEnabledForm = new FormData();
+    invalidEnabledForm.set('affiliateEnabled', 'true');
+    invalidEnabledForm.set('affiliateCommissionPercent', '0');
+    strict_1.default.deepEqual((0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(invalidEnabledForm), {
+        error: {
+            status: 'error',
+            message: 'Informe um percentual maior que zero para ativar a afiliacao.',
+        },
+    });
+});
 (0, node_test_1.default)('admin helper readers and error mapping keep only supported values', () => {
     const formData = new FormData();
     formData.set('role', 'admin');
@@ -90,6 +117,9 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     strict_1.default.equal((0, action_helpers_1.readStatus)(formData), 'disabled');
     strict_1.default.equal((0, action_helpers_1.readWalletDirection)(formData), 'credit');
     strict_1.default.equal((0, action_helpers_1.readWalletAdjustmentType)(formData), 'wallet_reversal_admin');
+    strict_1.default.equal((0, action_helpers_1.readSupplierSyncName)(formData), undefined);
+    formData.set('supplierName', 'cheapsmmglobal');
+    strict_1.default.equal((0, action_helpers_1.readSupplierSyncName)(formData), 'cheapsmmglobal');
     strict_1.default.deepEqual((0, action_helpers_1.mapAdminActionError)(new http_1.ApiClientError('Falha operacional', 500), 'fallback'), {
         status: 'error',
         message: 'Falha operacional',
@@ -97,5 +127,29 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     strict_1.default.deepEqual((0, action_helpers_1.mapAdminActionError)(new Error('boom'), 'fallback'), {
         status: 'error',
         message: 'fallback',
+    });
+});
+(0, node_test_1.default)('affiliate payout parser keeps commission references only inside note for the current contract', () => {
+    const formData = new FormData();
+    formData.set('affiliateProfileId', 'aff-123');
+    formData.set('amount', '150.00');
+    formData.set('commissionIds', ' com-1,\ncom-2\ncom-1 ');
+    formData.set('note', 'Validado pelo financeiro');
+    const parsed = (0, action_helpers_1.parseAffiliatePayoutPayload)(formData);
+    strict_1.default.ok('value' in parsed);
+    strict_1.default.deepEqual(parsed.commissionIds, ['com-1', 'com-2']);
+    strict_1.default.deepEqual(parsed.value, {
+        affiliateProfileId: 'aff-123',
+        amount: '150.00',
+        note: 'Comissoes consideradas: com-1, com-2\nObservacao: Validado pelo financeiro',
+    });
+    const missingIds = new FormData();
+    missingIds.set('affiliateProfileId', 'aff-123');
+    missingIds.set('amount', '150.00');
+    strict_1.default.deepEqual((0, action_helpers_1.parseAffiliatePayoutPayload)(missingIds), {
+        error: {
+            status: 'error',
+            message: 'Informe ao menos um ID de comissao approved para rastreio operacional.',
+        },
     });
 });

@@ -31,6 +31,7 @@ test('parseCreateOrderPayload builds supported optional fields', () => {
   formData.set('catalogServiceId', '10');
   formData.set('link', 'https://instagram.com/perfil');
   formData.set('quantity', '250');
+  formData.set('affiliateCode', ' AFILIA30 ');
   formData.set('runs', '3');
   formData.set('interval', '15');
   formData.set('comments', 'primeiro\n\nsegundo');
@@ -43,6 +44,7 @@ test('parseCreateOrderPayload builds supported optional fields', () => {
     catalogServiceId: 10,
     link: 'https://instagram.com/perfil',
     quantity: 250,
+    affiliateCode: 'AFILIA30',
     runs: 3,
     interval: 15,
     comments: ['primeiro', 'segundo'],

@@ -2,8 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  applyToAffiliateProgram,
+  getCustomerAffiliateProfile,
+  getCustomerAffiliateSummary,
   createCustomerOrder,
   createPixPayment,
+  listCustomerAffiliateCommissions,
   getCustomerOrderDetail,
   getCustomerPaymentDetail,
   getCustomerProfile,
@@ -31,6 +35,10 @@ test('customer api functions target the expected endpoints and methods', async (
     await getWalletSummary({ accessToken: 'token' });
     await getCustomerProfile({ accessToken: 'token' });
     await getCustomerReferralSummary({ accessToken: 'token' });
+    await getCustomerAffiliateProfile({ accessToken: 'token' });
+    await applyToAffiliateProgram({ accessToken: 'token' });
+    await getCustomerAffiliateSummary({ accessToken: 'token' });
+    await listCustomerAffiliateCommissions({ accessToken: 'token' });
     await listCustomerPayments({ accessToken: 'token' });
     await listCustomerOrders({ accessToken: 'token' });
     await listWalletTransactions({ accessToken: 'token' });
@@ -38,7 +46,7 @@ test('customer api functions target the expected endpoints and methods', async (
     await getCustomerPaymentDetail({ accessToken: 'token' }, 'pay-1');
     await createCustomerOrder(
       { accessToken: 'token' },
-      { catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100 },
+      { catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' },
     );
     await getCustomerOrderDetail({ accessToken: 'token' }, 'ord-1');
   } finally {
@@ -54,6 +62,10 @@ test('customer api functions target the expected endpoints and methods', async (
       { url: 'http://localhost:3001/v1/me/wallet', method: 'GET' },
       { url: 'http://localhost:3001/v1/me', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/referral', method: 'GET' },
+      { url: 'http://localhost:3001/v1/me/affiliate', method: 'GET' },
+      { url: 'http://localhost:3001/v1/me/affiliate/apply', method: 'POST' },
+      { url: 'http://localhost:3001/v1/me/affiliate/summary', method: 'GET' },
+      { url: 'http://localhost:3001/v1/me/affiliate/commissions?page=1&pageSize=10&sortOrder=desc', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/payments?page=1&pageSize=5&sortOrder=desc', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/orders?page=1&pageSize=5&sortOrder=desc', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/wallet/transactions?page=1&pageSize=10&sortOrder=desc', method: 'GET' },
@@ -64,10 +76,13 @@ test('customer api functions target the expected endpoints and methods', async (
     ],
   );
 
-  const pixRequest = requests[6];
-  const orderRequest = requests[8];
+  const pixRequest = requests[10];
+  const orderRequest = requests[12];
 
   assert.equal(new Headers(pixRequest.init?.headers).get('Authorization'), 'Bearer token');
   assert.equal(pixRequest.init?.body, JSON.stringify({ amount: '20' }));
-  assert.equal(orderRequest.init?.body, JSON.stringify({ catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100 }));
+  assert.equal(
+    orderRequest.init?.body,
+    JSON.stringify({ catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' }),
+  );
 });

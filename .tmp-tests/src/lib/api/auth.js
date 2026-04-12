@@ -6,7 +6,9 @@ exports.refreshSession = refreshSession;
 exports.logout = logout;
 exports.getAuthMe = getAuthMe;
 exports.getCurrentUser = getCurrentUser;
-const http_1 = require("@/lib/api/http");
+exports.requestEmailVerification = requestEmailVerification;
+exports.confirmEmailVerification = confirmEmailVerification;
+const http_1 = require("./http");
 function registerCustomer(payload) {
     return (0, http_1.apiRequest)({
         path: '/auth/register',
@@ -45,5 +47,19 @@ function getCurrentUser(accessToken) {
     return (0, http_1.apiRequest)({
         path: '/me',
         accessToken,
+    });
+}
+function requestEmailVerification(accessToken) {
+    return (0, http_1.apiRequest)({
+        path: '/auth/email-verification/request',
+        method: 'POST',
+        accessToken,
+    });
+}
+function confirmEmailVerification(payload) {
+    return (0, http_1.apiRequest)({
+        path: '/auth/email-verification/confirm',
+        method: 'POST',
+        body: payload,
     });
 }

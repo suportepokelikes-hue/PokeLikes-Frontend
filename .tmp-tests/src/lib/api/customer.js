@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWalletSummary = getWalletSummary;
 exports.getCustomerProfile = getCustomerProfile;
+exports.getCustomerReferralSummary = getCustomerReferralSummary;
+exports.getCustomerAffiliateProfile = getCustomerAffiliateProfile;
+exports.applyToAffiliateProgram = applyToAffiliateProgram;
+exports.getCustomerAffiliateSummary = getCustomerAffiliateSummary;
+exports.listCustomerAffiliateCommissions = listCustomerAffiliateCommissions;
 exports.listCustomerPayments = listCustomerPayments;
 exports.listCustomerOrders = listCustomerOrders;
 exports.listWalletTransactions = listWalletTransactions;
@@ -19,6 +24,37 @@ function getWalletSummary({ accessToken }) {
 function getCustomerProfile({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me',
+        accessToken,
+    });
+}
+function getCustomerReferralSummary({ accessToken }) {
+    return (0, http_1.apiRequest)({
+        path: '/me/referral',
+        accessToken,
+    });
+}
+function getCustomerAffiliateProfile({ accessToken }) {
+    return (0, http_1.apiRequest)({
+        path: '/me/affiliate',
+        accessToken,
+    });
+}
+function applyToAffiliateProgram({ accessToken }) {
+    return (0, http_1.apiRequest)({
+        path: '/me/affiliate/apply',
+        method: 'POST',
+        accessToken,
+    });
+}
+function getCustomerAffiliateSummary({ accessToken }) {
+    return (0, http_1.apiRequest)({
+        path: '/me/affiliate/summary',
+        accessToken,
+    });
+}
+function listCustomerAffiliateCommissions({ accessToken }) {
+    return (0, http_1.apiRequest)({
+        path: '/me/affiliate/commissions?page=1&pageSize=10&sortOrder=desc',
         accessToken,
     });
 }

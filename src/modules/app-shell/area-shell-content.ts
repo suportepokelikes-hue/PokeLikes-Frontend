@@ -32,6 +32,7 @@ const areaConfig = {
       { href: '/', label: 'Publico', icon: 'public' },
       { href: '/app', label: 'Dashboard', icon: 'dashboard' },
       { href: '/app/profile', label: 'Perfil', icon: 'profile' },
+      { href: '/app/affiliate', label: 'Afiliados', icon: 'affiliate' },
       { href: '/app/wallet', label: 'Carteira', icon: 'wallet' },
       { href: '/app/payments', label: 'Pagamentos', icon: 'payments' },
       { href: '/app/orders', label: 'Pedidos', icon: 'orders' },
@@ -44,6 +45,9 @@ const areaConfig = {
     links: [
       { href: '/admin', label: 'Dashboard', icon: 'dashboard' },
       { href: '/admin/users', label: 'Usuarios', icon: 'users' },
+      { href: '/admin/affiliates', label: 'Afiliados', icon: 'affiliate' },
+      { href: '/admin/affiliate-commissions', label: 'Comissoes afiliados', icon: 'affiliate' },
+      { href: '/admin/affiliate-payouts', label: 'Payouts afiliados', icon: 'affiliate' },
       { href: '/admin/catalog', label: 'Catalogo', icon: 'catalog' },
       { href: '/admin/payments', label: 'Pagamentos', icon: 'payments' },
       { href: '/admin/orders', label: 'Pedidos', icon: 'orders' },

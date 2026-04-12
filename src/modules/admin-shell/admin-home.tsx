@@ -1,4 +1,4 @@
-import { ArrowRight, Bell, FolderKanban, ReceiptText, ShieldCheck, Users, Wallet } from 'lucide-react';
+import { ArrowRight, Bell, FolderKanban, Gift, ReceiptText, ShieldCheck, Users, Wallet } from 'lucide-react';
 import Link from 'next/link';
 
 import { PageHeader } from '@/components/ui/page-header';
@@ -23,6 +23,9 @@ const priorityLinks = [
 ];
 
 const adminLinks = [
+  { href: '/admin/affiliates', label: 'Afiliados', description: 'Perfis, aprovacoes e suspensoes.', icon: Gift },
+  { href: '/admin/affiliate-commissions', label: 'Comissoes afiliados', description: 'Valores e status das comissoes.', icon: ReceiptText },
+  { href: '/admin/affiliate-payouts', label: 'Payouts afiliados', description: 'Registro manual e historico de payouts.', icon: Wallet },
   { href: '/admin/catalog', label: 'Catalogo', description: 'Servicos, precos e disponibilidade.', icon: FolderKanban },
   { href: '/admin/supplier', label: 'Fornecedores', description: 'Status e sincronizacao de fornecedores.', icon: ShieldCheck },
   { href: '/admin/audits', label: 'Auditoria', description: 'Historico de acoes administrativas.', icon: ShieldCheck },

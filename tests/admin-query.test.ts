@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 
 import {
   buildAdminPath,
+  parseAdminAffiliateCommissionsParams,
+  parseAdminAffiliatePayoutsParams,
+  parseAdminAffiliatesParams,
   parseAdminTransactionsParams,
   parseSupplierServicesParams,
 } from '../src/modules/admin-shell/query';
@@ -62,5 +65,66 @@ test('parseSupplierServicesParams isolates supplier paging namespace', () => {
     category: undefined,
     type: undefined,
     isActiveAtSupplier: 'true',
+  });
+});
+
+test('parseAdminAffiliatesParams keeps only supported affiliate filters', () => {
+  const params = parseAdminAffiliatesParams({
+    page: '2',
+    pageSize: '20',
+    search: '  AFILIA30  ',
+    status: 'pending',
+    sortOrder: 'asc',
+    sortBy: 'createdAt',
+  });
+
+  assert.deepEqual(params, {
+    page: 2,
+    pageSize: 20,
+    search: 'AFILIA30',
+    status: 'pending',
+    sortOrder: 'asc',
+  });
+});
+
+test('parseAdminAffiliateCommissionsParams keeps only supported commission filters', () => {
+  const params = parseAdminAffiliateCommissionsParams({
+    page: '3',
+    pageSize: '50',
+    search: ' com-99 ',
+    status: 'approved',
+    affiliateProfileId: 'aff-1',
+    sortOrder: 'desc',
+    userId: 'ignored',
+  });
+
+  assert.deepEqual(params, {
+    page: 3,
+    pageSize: 50,
+    search: 'com-99',
+    status: 'approved',
+    affiliateProfileId: 'aff-1',
+    sortOrder: 'desc',
+  });
+});
+
+test('parseAdminAffiliatePayoutsParams keeps only supported payout filters', () => {
+  const params = parseAdminAffiliatePayoutsParams({
+    page: '1',
+    pageSize: '10',
+    search: ' payout-1 ',
+    status: 'paid',
+    affiliateProfileId: 'aff-2',
+    sortOrder: 'asc',
+    dateFrom: 'ignored',
+  });
+
+  assert.deepEqual(params, {
+    page: 1,
+    pageSize: 10,
+    search: 'payout-1',
+    status: 'paid',
+    affiliateProfileId: 'aff-2',
+    sortOrder: 'asc',
   });
 });

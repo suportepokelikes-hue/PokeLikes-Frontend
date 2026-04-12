@@ -17,6 +17,11 @@ const navigation_1 = require("../src/lib/auth/navigation");
     strict_1.default.equal((0, navigation_1.getLoginPath)({ reason: 'required', returnTo: '/admin/users?page=2' }), '/login?reason=required&returnTo=%2Fadmin%2Fusers%3Fpage%3D2');
     strict_1.default.equal((0, navigation_1.getLoginPath)({ reason: 'logged_out', returnTo: '/login' }), '/login?reason=logged_out');
 });
+(0, node_test_1.default)('auth entry paths preserve a normalized referral code when present', () => {
+    strict_1.default.equal((0, navigation_1.getRegisterPath)({ referralCode: ' INDICA123 ' }), '/register?ref=INDICA123');
+    strict_1.default.equal((0, navigation_1.getLoginPath)({ reason: 'required', referralCode: 'ABC' }), '/login?reason=required&ref=ABC');
+    strict_1.default.equal((0, navigation_1.normalizeReferralCode)('   '), null);
+});
 (0, node_test_1.default)('getPostAuthRedirectPath prevents crossing protected areas', () => {
     strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('customer', '/admin/users/123'), '/app');
     strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('admin', '/app/orders/1'), '/admin');

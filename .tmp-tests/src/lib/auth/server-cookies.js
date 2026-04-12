@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeServerSessionCookies = writeServerSessionCookies;
 exports.clearServerSessionCookies = clearServerSessionCookies;
+exports.writeServerUserCookie = writeServerUserCookie;
 const headers_1 = require("next/headers");
 const session_1 = require("@/lib/auth/session");
 const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -20,6 +21,11 @@ async function clearServerSessionCookies() {
     cookieStore.set(names.accessToken, '', createExpiredCookieOptions());
     cookieStore.set(names.refreshToken, '', createExpiredCookieOptions());
     cookieStore.set(names.user, '', createExpiredCookieOptions());
+}
+async function writeServerUserCookie(user) {
+    const cookieStore = await (0, headers_1.cookies)();
+    const names = (0, session_1.getSessionCookieNames)();
+    cookieStore.set(names.user, (0, session_1.serializeUser)(user), createCookieOptions());
 }
 function createCookieOptions() {
     return {

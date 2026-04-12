@@ -4,18 +4,23 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { appendAffiliateCodeToPath } from '@/lib/affiliate-code';
 import { listCatalogServices, type CatalogListParams } from '@/lib/api/catalog';
 import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import { formatMoney } from '@/lib/format';
+import { AffiliateCodeCapture } from './affiliate-code-capture';
 
 type CatalogListPageProps = {
-  searchParams: CatalogListParams;
+  searchParams: CatalogListParams & {
+    aff?: string;
+  };
 };
 
 export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
   try {
-    const response = await listCatalogServices(searchParams);
+    const { aff: affiliateCodeFromUrl, ...catalogFilters } = searchParams;
+    const response = await listCatalogServices(catalogFilters);
     const purchasableCount = response.items.filter((service) => service.availability.isPurchasable).length;
     const degradedCount = response.items.filter(
       (service) => service.availability.providerStatus === 'degraded_low_balance' || service.availability.providerStatus === 'unavailable',
@@ -23,11 +28,12 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
 
     return (
       <main className="page page-public">
+        <AffiliateCodeCapture initialAffiliateCode={affiliateCodeFromUrl} />
         <PageHeader
           eyebrow="Catalogo publico"
           title="Servicos disponiveis"
           description="Explore os servicos disponiveis e filtre o que voce precisa."
-          actions={<CatalogFilterBar initialValues={searchParams} />}
+          actions={<CatalogFilterBar initialValues={catalogFilters} affiliateCodeFromUrl={affiliateCodeFromUrl} />}
         />
 
         <section className="catalog-overview-grid">
@@ -85,7 +91,7 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
           <>
             <section className="catalog-grid">
               {response.items.map((service) => (
-                <CatalogCard key={service.id} service={service} />
+                <CatalogCard key={service.id} service={service} affiliateCodeFromUrl={affiliateCodeFromUrl} />
               ))}
             </section>
 
@@ -108,9 +114,9 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
   }
 }
 
-function CatalogCard({ service }: { service: CatalogServiceResource }) {
+function CatalogCard({ service, affiliateCodeFromUrl }: { service: CatalogServiceResource; affiliateCodeFromUrl?: string }) {
   return (
-    <Link href={`/catalog/${service.id}`} className="catalog-card">
+    <Link href={appendAffiliateCodeToPath(`/catalog/${service.id}`, affiliateCodeFromUrl)} className="catalog-card">
       <div className="catalog-card-head">
         <div className="stack-list">
           <StatusBadge
@@ -154,9 +160,16 @@ function CatalogCard({ service }: { service: CatalogServiceResource }) {
   );
 }
 
-function CatalogFilterBar({ initialValues }: { initialValues: CatalogListParams }) {
+function CatalogFilterBar({
+  initialValues,
+  affiliateCodeFromUrl,
+}: {
+  initialValues: CatalogListParams;
+  affiliateCodeFromUrl?: string;
+}) {
   return (
     <form className="toolbar" action="/catalog">
+      {affiliateCodeFromUrl ? <input type="hidden" name="aff" value={affiliateCodeFromUrl} /> : null}
       <input
         type="search"
         name="search"

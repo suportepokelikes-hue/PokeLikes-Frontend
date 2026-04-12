@@ -58,3 +58,58 @@ const query_1 = require("../src/modules/admin-shell/query");
         isActiveAtSupplier: 'true',
     });
 });
+(0, node_test_1.default)('parseAdminAffiliatesParams keeps only supported affiliate filters', () => {
+    const params = (0, query_1.parseAdminAffiliatesParams)({
+        page: '2',
+        pageSize: '20',
+        search: '  AFILIA30  ',
+        status: 'pending',
+        sortOrder: 'asc',
+        sortBy: 'createdAt',
+    });
+    strict_1.default.deepEqual(params, {
+        page: 2,
+        pageSize: 20,
+        search: 'AFILIA30',
+        status: 'pending',
+        sortOrder: 'asc',
+    });
+});
+(0, node_test_1.default)('parseAdminAffiliateCommissionsParams keeps only supported commission filters', () => {
+    const params = (0, query_1.parseAdminAffiliateCommissionsParams)({
+        page: '3',
+        pageSize: '50',
+        search: ' com-99 ',
+        status: 'approved',
+        affiliateProfileId: 'aff-1',
+        sortOrder: 'desc',
+        userId: 'ignored',
+    });
+    strict_1.default.deepEqual(params, {
+        page: 3,
+        pageSize: 50,
+        search: 'com-99',
+        status: 'approved',
+        affiliateProfileId: 'aff-1',
+        sortOrder: 'desc',
+    });
+});
+(0, node_test_1.default)('parseAdminAffiliatePayoutsParams keeps only supported payout filters', () => {
+    const params = (0, query_1.parseAdminAffiliatePayoutsParams)({
+        page: '1',
+        pageSize: '10',
+        search: ' payout-1 ',
+        status: 'paid',
+        affiliateProfileId: 'aff-2',
+        sortOrder: 'asc',
+        dateFrom: 'ignored',
+    });
+    strict_1.default.deepEqual(params, {
+        page: 1,
+        pageSize: 10,
+        search: 'payout-1',
+        status: 'paid',
+        affiliateProfileId: 'aff-2',
+        sortOrder: 'asc',
+    });
+});

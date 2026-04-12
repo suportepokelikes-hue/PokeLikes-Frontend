@@ -15,7 +15,7 @@ Toda nova sessao do Codex neste repositorio deve:
 ## What The Next Session Should Know
 
 - a foundation inicial do frontend ja foi implementada
-- ainda nao existem telas completas de negocio
+- ja existem telas completas de negocio nas areas publica, cliente e admin, incluindo a V1 frontend de afiliados
 - o backend ja existe e o contrato local foi copiado para `docs/contracts/backend-openapi.yaml`
 - ja existem `/`, `/app` e `/admin` com shell visual e guardas por papel
 - ja existem `/login` e `/register` com server actions conectadas ao backend
@@ -42,6 +42,9 @@ Toda nova sessao do Codex neste repositorio deve:
 - a edicao de um servico ja publicado no catalogo admin agora tambem acontece em drawer lateral na propria listagem; a rota `/admin/catalog/[serviceId]` ficou apenas como redirecionamento
 - o formulario do catalogo admin agora mostra so os campos publicos principais; os campos tecnicos herdados do fornecedor deixaram de ficar editaveis na UX normal
 - o drawer do catalogo admin continua mostrando fornecedor, SID, categoria, tipo e faixa como resumo somente leitura do servico sincronizado
+- `/admin/catalog` agora tambem combina `GET /admin/catalog/affiliate-settings` com a lista publicada para exibir status de afiliabilidade e percentual de comissao na propria tabela
+- a configuracao de afiliabilidade por servico abre em drawer lateral dentro de `/admin/catalog`, usando `PATCH /admin/catalog/{serviceId}/affiliate-settings` com apenas `affiliateEnabled` e `affiliateCommissionPercent`
+- o formulario de afiliabilidade do catalogo trata o percentual como valor humano (`30.00 = 30%`) e exige valor maior que zero quando a afiliacao e ativada
 - `/admin/transactions` agora abre o ajuste manual de carteira em drawer lateral por `+ Ajuste manual`, mantendo a lista de transacoes como foco principal da tela
 - existe uma base inicial de testes em `tests/` com script `npm run test`, cobrindo auth/navigation e parsing administrativo
 - a base de testes agora tambem cobre serializacao de sessao e `src/lib/api/http.ts`
@@ -62,11 +65,25 @@ Toda nova sessao do Codex neste repositorio deve:
 - a iconografia real agora tambem comeca a aparecer em estados compartilhados (`empty/error`) e nas jornadas principais de home publica, dashboard do cliente e entrada do admin
 - a copy das telas principais acabou de passar por uma limpeza editorial para remover linguagem tecnica, rotulos internos como "workspace" e blocos repetitivos de contexto
 - logo depois dessa limpeza, as jornadas principais tambem passaram por uma rodada estrutural de UX com CTA mais fortes, blocos reordenados e traducao adicional de labels tecnicos expostos na UI
-- o contrato mais novo do backend para auth/referral foi movido para `docs/api/openapi.yaml`, com modulos complementares em `docs/api/modules/auth.md` e `docs/api/modules/referrals.md`; `docs/contracts/backend-openapi.yaml` foi sincronizado com essa versao
+- existe uma copia adicional em `docs/api/openapi.yaml`, mas para trabalho de frontend o contrato operacional validado continua sendo `docs/contracts/backend-openapi.yaml`; hoje ha divergencia conhecida na area financeira de afiliados e ela nao deve guiar payloads ate ser resincronizada
+- na pratica, essa divergencia aparece especialmente no payout manual: `docs/api/openapi.yaml` descreve `commissionIds`/`notes`, enquanto o frontend continua seguindo a copia validada com `affiliateProfileId`, `amount` e `note`
 - `/register` agora entende `?ref=CODIGO`, preenche o codigo de indicacao no formulario e envia `referralCode` ao backend no `POST /auth/register`
 - `src/lib/api/auth.ts` agora cobre `POST /auth/email-verification/request` e `POST /auth/email-verification/confirm`
 - `src/lib/api/customer.ts` agora cobre `GET /me/referral`
 - `/app/profile` agora mostra o programa de indicacao do usuario, com codigo, link, regras, resumo, `rewardStatus`, estado de email e botoes de copia
+- `/app/affiliate` agora existe como area separada da conta, consumindo `GET /me/affiliate`, `POST /me/affiliate/apply`, `GET /me/affiliate/summary` e `GET /me/affiliate/commissions`
+- quando `GET /me/affiliate` retorna `null`, `/app/affiliate` trata isso como entrada no programa, mostra CTA de apply e recarrega a propria rota depois da solicitacao
+- quando o perfil existe, `/app/affiliate` passa a refletir status, summary, codigo publico e comissoes do proprio usuario
+- o shell autenticado do cliente agora possui entrada dedicada para `Afiliados`
+- `/admin/affiliates` agora existe como primeiro modulo administrativo de afiliados, consumindo `GET /admin/affiliates`, `POST /admin/affiliates/{affiliateProfileId}/approve` e `POST /admin/affiliates/{affiliateProfileId}/suspend`
+- a listagem administrativa de afiliados segue o padrao do shell admin: filtros por query string, tabela densa, estados explicitos e `AdminActionForm` inline para aprovar ou suspender sem inventar reativacao
+- `/admin/affiliate-commissions` agora existe como modulo administrativo de leitura financeira dos afiliados, consumindo `GET /admin/affiliate-commissions`
+- `/admin/affiliate-payouts` agora existe como modulo administrativo de payout, consumindo `GET /admin/affiliate-payouts` e `POST /admin/affiliate-payouts`
+- o payout manual pede `affiliateProfileId`, valor total e IDs de comissao em texto livre; como `docs/contracts/backend-openapi.yaml` ainda aceita apenas `affiliateProfileId`, `amount` e `note`, os IDs informados sao consolidados dentro de `note` para manter rastreio operacional sem inventar payload
+- o catalogo publico agora captura `?aff=` em `/catalog` e `/catalog/[serviceId]`, preserva esse codigo em storage local simples e o reaproveita no checkout de `POST /me/orders` como `affiliateCode` opcional
+- o fluxo de `?ref=` do cadastro continua separado; a logica nova de afiliados nao toca registro nem substitui o referral existente
+- o shell admin e a home admin agora apontam explicitamente para `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts`
+- `/admin/catalog` continua sendo o unico modulo administrativo para servicos; a leitura e a edicao de affiliate settings vivem na mesma listagem via drawer lateral, sem modulo separado
 - `/app` agora tambem exibe um destaque resumido do referral, com CTA para abrir indicacoes ou seguir para deposito qualificado quando for o caso
 - a verificacao de email pode ser solicitada na propria area autenticada; fora de producao, `previewToken` aparece como atalho de desenvolvimento para `/verify-email?token=...`
 - `/verify-email` agora executa a confirmacao do token e atualiza o cookie de usuario quando a sessao atual pertence ao mesmo usuario confirmado
@@ -80,7 +97,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `src/components/ui/empty-state.tsx` e `src/components/ui/error-state.tsx` agora sustentam um estado visual compartilhado mais forte, e `src/app/app/loading.tsx` cobre o loading do segmento autenticado do cliente
 - ja existem `/catalog` e `/catalog/[serviceId]` conectados ao backend real
 - ja existem `/app/wallet`, `/app/payments`, `/app/orders`, `/admin/users`, `/admin/payments` e `/admin/orders`
-- ja existem `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits` e `/admin/transactions` conectados ao backend real
+- ja existem `/admin/catalog`, `/admin/supplier`, `/admin/alerts`, `/admin/audits`, `/admin/transactions`, `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts` conectados ao backend real
 - `/admin/users` nao e mais somente leitura; a propria lista contem formularios de criacao e atualizacao operacional
 - `/admin/catalog` nao e mais somente leitura; a propria lista contem formularios de criacao e atualizacao operacional
 - `/admin/catalog` e `/admin/users` agora usam a lista para leitura + criacao, e reservam a edicao para paginas dedicadas
@@ -102,19 +119,12 @@ Toda nova sessao do Codex neste repositorio deve:
 
 ## Expected First Implementation Step
 
-- revisar o novo alinhamento visual do frontend contra os PNGs/code.html do Stitch e corrigir os pontos que ainda destoarem
-- aprofundar a proxima rodada em conteudo e UX agora que a base visual, os microdetalhes e a limpeza editorial estao mais estaveis
-- revisar o comportamento dessas novas hierarquias em larguras menores e terminar o refinamento das telas admin mais densas
-- expandir admin para catalogo, fornecedores, alertas, auditoria e transacoes
-- revisar presets e refinamento visual dos filtros administrativos agora que a navegacao esta funcional
-- implementar criacao e edicao de servicos em `/admin/catalog`
-- integrar ajuste manual de carteira no admin
-- revisar agora se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
-- consolidar a massa de dados e ampliar a cobertura Playwright para cenarios admin e negativos
-- habilitar edicao de perfil do cliente quando o request body de `PATCH /me` for detalhado no contrato
-- preparar a entrada segura de edicao de perfil quando o contrato de `PATCH /me` for detalhado
-- expandir cliente para perfil, refinamento de payment/order e estados visuais finais do Stitch
-- revisar o UX do novo fluxo de referral e verificacao de email com backend real e decidir se ele tambem deve aparecer com mais destaque no dashboard do cliente
+- tratar a V1 frontend de afiliados como concluida no escopo atual; nao reabrir implementacao sem necessidade contratual ou de qualidade
+- ampliar a cobertura Playwright para a jornada `?aff= -> catalogo -> pedido`
+- ampliar a cobertura Playwright para o drawer de affiliate settings em `/admin/catalog`
+- decidir a politica de expiracao, substituicao ou limpeza do `affiliateCode` persistido
+- resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml` antes de qualquer evolucao de payloads de payout
+- so depois avaliar se faz sentido formalizar `commissionIds` no contrato futuro
 
 
 ## Source Of Truth Precedence
@@ -122,11 +132,12 @@ Toda nova sessao do Codex neste repositorio deve:
 When sources conflict, use this precedence:
 
 1. current code and validated contracts
-2. `docs/api/openapi.yaml` for REST behavior
-3. `docs/architecture-v1.md` for intended architecture
-4. `docs/backlog-v1.md` for execution order and next step
-5. design references (e.g. Stitch exports) for visual direction
-6. prior thread summaries or assumptions
+2. `docs/contracts/backend-openapi.yaml` for REST behavior
+3. `docs/api/openapi.yaml` only when it is consistent with the validated contract copy above
+4. `docs/architecture-v1.md` for intended architecture
+5. `docs/backlog-v1.md` for execution order and next step
+6. design references (e.g. Stitch exports) for visual direction
+7. prior thread summaries or assumptions
 
 ## Frontend Consistency Policy
 

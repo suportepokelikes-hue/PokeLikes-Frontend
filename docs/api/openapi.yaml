@@ -15,6 +15,7 @@ tags:
   - name: Wallet
   - name: Payments
   - name: Referrals
+  - name: Affiliates
   - name: Catalog
   - name: Supplier
   - name: Orders
@@ -321,6 +322,83 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+  /me/affiliate/apply:
+    post:
+      tags: [Affiliates]
+      summary: Apply for affiliate profile
+      description: |
+        Creates the authenticated user's `AffiliateProfile` when it does not exist.
+        If the user already has a profile, the current profile is returned unchanged.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Affiliate profile created or returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateProfileResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /me/affiliate:
+    get:
+      tags: [Affiliates]
+      summary: Current user's affiliate profile
+      description: |
+        Returns the authenticated user's `AffiliateProfile`.
+        When the user has not applied yet, the response is `null`.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Affiliate profile or null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AffiliateProfileResource'
+                  - type: 'null'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /me/affiliate/summary:
+    get:
+      tags: [Affiliates]
+      summary: Current affiliate dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Affiliate summary for the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateSummaryResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /me/affiliate/commissions:
+    get:
+      tags: [Affiliates]
+      summary: Current affiliate commissions
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, paid]
+      responses:
+        '200':
+          description: Paginated affiliate commission list for the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAffiliateCommissionsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /webhooks/payments/{provider}:
     post:
       tags: [Payments]
@@ -355,6 +433,10 @@ paths:
     post:
       tags: [Orders]
       summary: Create order
+      description: |
+        Creates an order for the authenticated user using wallet balance.
+        `affiliateCode` is optional. If the informed code is invalid, checkout continues without
+        affiliate attribution and the order is not blocked.
       security:
         - bearerAuth: []
       requestBody:
@@ -372,8 +454,8 @@ paths:
                 $ref: '#/components/schemas/OrderResource'
         '400':
           $ref: '#/components/responses/ValidationError'
-        '402':
-          $ref: '#/components/responses/InsufficientWalletBalanceError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
     get:
       tags: [Orders]
       summary: Current user orders
@@ -533,7 +615,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedCatalogServicesResponse'
+                $ref: '#/components/schemas/PaginatedAdminCatalogServicesResponse'
     post:
       tags: [Catalog]
       summary: Admin create catalog service
@@ -551,7 +633,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogServiceResource'
+                $ref: '#/components/schemas/AdminCatalogServiceResource'
   /admin/catalog/services/{serviceId}:
     patch:
       tags: [Catalog]
@@ -572,7 +654,280 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogServiceResource'
+                $ref: '#/components/schemas/AdminCatalogServiceResource'
+  /admin/catalog/affiliate-settings:
+    get:
+      tags: [Catalog]
+      summary: Admin catalog affiliate settings list
+      description: |
+        Admin-only list of catalog services focused on affiliate eligibility configuration.
+        `affiliateCommissionPercent` uses human-readable percentage semantics such as
+        `30.00 = 30%` and `12.50 = 12.5%`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive]
+        - name: isAffiliateEnabled
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Paginated admin catalog list with affiliate settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminCatalogServicesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/catalog/{catalogServiceId}/affiliate-settings:
+    patch:
+      tags: [Catalog]
+      summary: Admin update catalog affiliate settings
+      description: |
+        Updates affiliate eligibility for a catalog service.
+        When `isAffiliateEnabled` is `true`, `affiliateCommissionPercent` is required and must
+        be a positive percentage with up to 2 decimal places.
+        When `isAffiliateEnabled` is `false`, the backend clears the stored percentage to `null`.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CatalogServiceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCatalogAffiliateSettingsUpdateRequest'
+      responses:
+        '200':
+          description: Updated admin catalog resource with affiliate settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCatalogServiceResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/affiliates:
+    get:
+      tags: [Affiliates]
+      summary: Admin affiliate profile list
+      description: |
+        Admin-only moderation list for `AffiliateProfile`.
+        Affiliate is not a separate user role; it is a normal `User` with affiliate profile state.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, active, suspended]
+      responses:
+        '200':
+          description: Paginated admin affiliate profile list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAffiliateProfilesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/affiliates/{affiliateProfileId}/approve:
+    post:
+      tags: [Affiliates]
+      summary: Admin approve affiliate profile
+      description: |
+        Approves a pending affiliate profile.
+        If the profile is already active, the current profile is returned.
+        Suspended profiles cannot be approved directly and return conflict.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AffiliateProfileId'
+      responses:
+        '200':
+          description: Affiliate profile after approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateProfileResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/affiliates/{affiliateProfileId}/suspend:
+    post:
+      tags: [Affiliates]
+      summary: Admin suspend affiliate profile
+      description: |
+        Suspends an affiliate profile.
+        If the profile is already suspended, the current profile is returned unchanged.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AffiliateProfileId'
+      responses:
+        '200':
+          description: Affiliate profile after suspension
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateProfileResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/affiliate-commissions:
+    get:
+      tags: [Affiliates]
+      summary: Admin affiliate commission list
+      description: |
+        Operational list of affiliate commissions.
+        `userId` filters by the affiliate user, not the customer who placed the order.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, paid]
+        - name: affiliateProfileId
+          in: query
+          schema:
+            type: integer
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Paginated affiliate commission list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminAffiliateCommissionsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/affiliate-payouts:
+    get:
+      tags: [Affiliates]
+      summary: Admin affiliate payout list
+      description: |
+        Operational list of affiliate payouts.
+        `userId` filters by the affiliate user, not the admin who processed the payout.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [requested, processing, paid, failed, cancelled]
+        - name: affiliateProfileId
+          in: query
+          schema:
+            type: integer
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Paginated affiliate payout list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAffiliatePayoutsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+    post:
+      tags: [Affiliates]
+      summary: Admin create manual affiliate payout
+      description: |
+        Manual payout marks the selected `approved` affiliate commissions as `paid`
+        and creates an `AffiliatePayout` record.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateAffiliatePayoutRequest'
+      responses:
+        '201':
+          description: Created affiliate payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
   /admin/orders:
     get:
       tags: [Orders]
@@ -1137,12 +1492,26 @@ components:
       required: true
       schema:
         type: string
+    CatalogServiceId:
+      name: catalogServiceId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
     OrderId:
       name: orderId
       in: path
       required: true
       schema:
         type: string
+    AffiliateProfileId:
+      name: affiliateProfileId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
     AlertId:
       name: alertId
       in: path
@@ -1162,8 +1531,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     NotFoundError:
       description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ConflictError:
+      description: Conflict
       content:
         application/json:
           schema:
@@ -1382,6 +1763,195 @@ components:
         summary:
           $ref: '#/components/schemas/ReferralProgramSummary'
       required: [referralCode, referralLink, emailVerified, rewardRules, rewardStatus, ownReferralReward, summary]
+    AffiliateProfileResource:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, active, suspended]
+        publicCode:
+          type: string
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        suspendedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, status, publicCode, approvedAt, suspendedAt, createdAt, updatedAt]
+    AdminAffiliateProfileResource:
+      allOf:
+        - $ref: '#/components/schemas/AffiliateProfileResource'
+        - type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/UserReference'
+          required: [user]
+    AffiliateSummaryTotalsResource:
+      type: object
+      properties:
+        commissionsPendingCount:
+          type: integer
+        commissionsApprovedCount:
+          type: integer
+        commissionsRejectedCount:
+          type: integer
+        commissionsPaidCount:
+          type: integer
+        commissionsPendingAmount:
+          type: string
+        commissionsApprovedAmount:
+          type: string
+        commissionsPaidAmount:
+          type: string
+        totalRevenueAttributed:
+          type: string
+      required:
+        [commissionsPendingCount, commissionsApprovedCount, commissionsRejectedCount, commissionsPaidCount, commissionsPendingAmount, commissionsApprovedAmount, commissionsPaidAmount, totalRevenueAttributed]
+    AffiliateSummaryResource:
+      type: object
+      properties:
+        affiliateProfile:
+          oneOf:
+            - $ref: '#/components/schemas/AffiliateProfileResource'
+            - type: 'null'
+        totals:
+          $ref: '#/components/schemas/AffiliateSummaryTotalsResource'
+      required: [affiliateProfile, totals]
+    AffiliateCommissionResource:
+      type: object
+      description: |
+        Affiliate commissions are created as `pending`.
+        The current implementation approves on order `completed`, rejects on order
+        `failed` or `canceled`, and keeps `partial` as `pending`.
+      properties:
+        id:
+          type: string
+        orderId:
+          type: string
+        catalogServiceId:
+          type: string
+        publicPriceSnapshot:
+          type: string
+        supplierCostSnapshot:
+          type: string
+        grossMarginSnapshot:
+          type: string
+        commissionPercentSnapshot:
+          type: string
+          description: Human-readable percentage snapshot. `30.00` means `30%`.
+        commissionAmount:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected, paid]
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectedAt:
+          type: string
+          format: date-time
+          nullable: true
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        [id, orderId, catalogServiceId, publicPriceSnapshot, supplierCostSnapshot, grossMarginSnapshot, commissionPercentSnapshot, commissionAmount, status, approvedAt, rejectedAt, paidAt, createdAt]
+    AdminAffiliateCommissionResource:
+      allOf:
+        - $ref: '#/components/schemas/AffiliateCommissionResource'
+        - type: object
+          properties:
+            affiliateProfileId:
+              type: string
+            affiliate:
+              type: object
+              properties:
+                userId:
+                  type: string
+                publicCode:
+                  type: string
+              required: [userId, publicCode]
+          required: [affiliateProfileId, affiliate]
+    AffiliatePayoutResource:
+      type: object
+      description: Manual admin payout record for affiliate commissions.
+      properties:
+        id:
+          type: string
+        affiliateProfileId:
+          type: string
+        amount:
+          type: string
+        status:
+          type: string
+          enum: [requested, processing, paid, failed, cancelled]
+        processedByUserId:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        processedAt:
+          type: string
+          format: date-time
+          nullable: true
+        affiliate:
+          type: object
+          properties:
+            userId:
+              type: string
+            publicCode:
+              type: string
+          required: [userId, publicCode]
+      required:
+        [id, affiliateProfileId, amount, status, processedByUserId, notes, createdAt, processedAt, affiliate]
+    CreatedAffiliatePayoutResource:
+      allOf:
+        - $ref: '#/components/schemas/AffiliatePayoutResource'
+        - type: object
+          properties:
+            commissionIds:
+              type: array
+              items:
+                type: string
+            commissionCount:
+              type: integer
+          required: [commissionIds, commissionCount]
+    AdminCreateAffiliatePayoutRequest:
+      type: object
+      properties:
+        affiliateProfileId:
+          type: integer
+          minimum: 1
+        commissionIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: integer
+            minimum: 1
+        notes:
+          type: string
+          nullable: true
+      required: [affiliateProfileId, commissionIds]
     UserReference:
       type: object
       properties:
@@ -1669,6 +2239,18 @@ components:
           $ref: '#/components/schemas/CatalogSupplierServiceReference'
       required:
         [id, name, description, publicPrice, status, sortOrder, socialNetwork, category, type, minQuantity, maxQuantity, availability, metadata, supplierService]
+    AdminCatalogServiceResource:
+      allOf:
+        - $ref: '#/components/schemas/CatalogServiceResource'
+        - type: object
+          properties:
+            isAffiliateEnabled:
+              type: boolean
+            affiliateCommissionPercent:
+              type: string
+              nullable: true
+              description: Human-readable percentage. `30.00` means `30%`.
+          required: [isAffiliateEnabled, affiliateCommissionPercent]
     AdminCatalogServiceUpsertRequest:
       type: object
       properties:
@@ -1733,28 +2315,50 @@ components:
           type: integer
         metadata:
           nullable: true
+    AdminCatalogAffiliateSettingsUpdateRequest:
+      type: object
+      properties:
+        isAffiliateEnabled:
+          type: boolean
+        affiliateCommissionPercent:
+          oneOf:
+            - type: string
+            - type: 'null'
+          description: |
+            Human-readable percentage with up to 2 decimal places.
+            Required when `isAffiliateEnabled=true`.
+      required: [isAffiliateEnabled]
     CreateOrderRequest:
       type: object
       properties:
         catalogServiceId:
           type: integer
+          minimum: 1
         link:
           type: string
         quantity:
           type: integer
+          minimum: 1
+          description: Required for quantity-based services. Not used for `Package`.
         runs:
           type: integer
+          minimum: 1
         interval:
           type: integer
+          minimum: 1
         comments:
           type: array
           items:
             type: string
+          description: Used for `Custom Comments` services. Quantity is derived from the number of comments.
         answerNumber:
           oneOf:
             - type: string
             - type: integer
-      required: [catalogServiceId, link, quantity]
+        affiliateCode:
+          type: string
+          description: Optional affiliate public code. Invalid codes do not block checkout.
+      required: [catalogServiceId, link]
     CatalogServiceReference:
       type: object
       properties:
@@ -2352,6 +2956,86 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CatalogServiceResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminCatalogServicesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminCatalogServiceResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAffiliateProfilesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminAffiliateProfileResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAffiliateCommissionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AffiliateCommissionResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminAffiliateCommissionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminAffiliateCommissionResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAffiliatePayoutsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AffiliatePayoutResource'
         page:
           type: integer
         pageSize:

@@ -51,6 +51,32 @@ export type AdminTransactionsListParams = AdminBaseListParams & {
   dateTo?: string;
 };
 
+export type AdminAffiliateProfilesListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: string;
+};
+
+export type AdminAffiliateCommissionsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: string;
+  affiliateProfileId?: string;
+};
+
+export type AdminAffiliatePayoutsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: string;
+  affiliateProfileId?: string;
+};
+
 export type AdminAlertsListParams = AdminBaseListParams & {
   status?: string;
   severity?: string;
@@ -149,6 +175,44 @@ export function parseAdminTransactionsParams(searchParams: Record<string, Search
     direction: readString(searchParams.direction),
     dateFrom: readString(searchParams.dateFrom),
     dateTo: readString(searchParams.dateTo),
+  };
+}
+
+export function parseAdminAffiliatesParams(searchParams: Record<string, SearchParamValue>): AdminAffiliateProfilesListParams {
+  const sortOrder = readString(searchParams.sortOrder);
+
+  return {
+    page: readPositiveInt(searchParams.page),
+    pageSize: readPositiveInt(searchParams.pageSize),
+    search: readString(searchParams.search),
+    sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
+    status: readString(searchParams.status),
+  };
+}
+
+export function parseAdminAffiliateCommissionsParams(searchParams: Record<string, SearchParamValue>): AdminAffiliateCommissionsListParams {
+  const sortOrder = readString(searchParams.sortOrder);
+
+  return {
+    page: readPositiveInt(searchParams.page),
+    pageSize: readPositiveInt(searchParams.pageSize),
+    search: readString(searchParams.search),
+    sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
+    status: readString(searchParams.status),
+    affiliateProfileId: readString(searchParams.affiliateProfileId),
+  };
+}
+
+export function parseAdminAffiliatePayoutsParams(searchParams: Record<string, SearchParamValue>): AdminAffiliatePayoutsListParams {
+  const sortOrder = readString(searchParams.sortOrder);
+
+  return {
+    page: readPositiveInt(searchParams.page),
+    pageSize: readPositiveInt(searchParams.pageSize),
+    search: readString(searchParams.search),
+    sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
+    status: readString(searchParams.status),
+    affiliateProfileId: readString(searchParams.affiliateProfileId),
   };
 }
 

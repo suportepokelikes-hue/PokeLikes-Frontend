@@ -26,7 +26,7 @@ async function createPixPaymentAction(_, formData) {
     catch (error) {
         return (0, action_helpers_1.mapTransactionFormError)(error, 'Nao foi possivel criar a cobranca PIX agora.');
     }
-    (0, navigation_1.redirect)(`/app/payments/${paymentId}`);
+    (0, navigation_1.redirect)(`/app/payments?paymentId=${encodeURIComponent(paymentId)}`);
 }
 async function createOrderAction(_, formData) {
     const session = await (0, cookies_1.getServerSession)();

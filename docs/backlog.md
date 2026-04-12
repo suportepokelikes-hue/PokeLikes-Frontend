@@ -85,6 +85,7 @@ Tasks:
 - [x] checkout
 - [x] meus pedidos
 - [x] detalhe do pedido
+- [x] capturar `?aff=` no catalogo, persistir o codigo localmente e enviar `affiliateCode` opcional no checkout do pedido sem interferir no fluxo existente de `?ref=`
 
 ## Phase 5: Admin
 
@@ -99,6 +100,9 @@ Tasks:
 - [x] alerts
 - [x] audits
 - [x] transactions
+- [x] affiliates com listagem, filtro basico e acoes de aprovar/suspender em `/admin/affiliates`
+- [x] affiliate commissions e affiliate payouts com registro manual minimo em `/admin/affiliate-commissions` e `/admin/affiliate-payouts`, mantendo as referencias de comissao no `note` porque este continua sendo o payload real do contrato local
+- [x] integrar a configuracao de afiliabilidade por servico dentro de `/admin/catalog`, com leitura complementar e drawer minimo para editar status e percentual humano sem criar um modulo separado
 - [x] adicionar mutacoes operacionais iniciais no admin para resolve de alertas e refresh/sync de fornecedores
 - [x] expandir mutacoes operacionais reais no admin para conciliacao e sync de pedidos/pagamentos
 - [x] abrir drill-down administrativo para detalhe de pagamento e pedido
@@ -130,7 +134,26 @@ Tasks:
 
 - [x] criar rota de perfil do cliente consumindo `GET /me`
 - [x] adicionar card de referral com `GET /me/referral`, botoes de copia e CTA de verificacao de email
+- [x] criar `/app/affiliate` com tratamento de `AffiliateProfile = null`, apply, status do perfil, summary, listagem das comissoes do usuario e entrada dedicada no shell do cliente
 - [ ] habilitar edicao de perfil quando o contrato local descrever o payload de `PATCH /me`
+
+## Affiliate V1 Checkpoint
+
+Pronto na V1:
+
+- [x] `/app/affiliate` cobre entrada no programa, apply, status do perfil, summary e comissoes do usuario
+- [x] o shell do cliente expoe `Afiliados`, e o shell admin e a home admin apontam para os modulos administrativos de afiliados
+- [x] `?aff=` e capturado em `/catalog` e `/catalog/[serviceId]`, o codigo fica persistido localmente e `affiliateCode` segue para `POST /me/orders` quando existir
+- [x] o fluxo novo de afiliados permanece separado do `?ref=`/`referralCode` ja existente no cadastro
+- [x] `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts` estao entregues contra `docs/contracts/backend-openapi.yaml`
+- [x] o payout manual segue o contrato validado atual, mantendo referencias de comissao apenas dentro de `note`
+- [x] `/admin/catalog` ja incorpora affiliate settings por leitura complementar e drawer lateral no mesmo modulo operacional
+
+Fora de escopo da V1:
+
+- politica de expiracao, substituicao ou limpeza automatica do `affiliateCode` persistido
+- ampliacao de E2E para toda a jornada publica/admin de afiliados
+- evolucao contratual para `commissionIds` dedicados no payload de payout
 
 ## Phase 7: Customer Visual Polish
 
@@ -198,11 +221,13 @@ Tasks:
 
 Na proxima sessao do Codex:
 
-- revisar o novo fluxo de referral e verificacao de email com backend real, incluindo `previewToken` em ambiente local
-- decidir se o fluxo de referral tambem precisa de destaque adicional fora de `/app` e `/app/profile`
+- tratar a V1 frontend de afiliados como encerrada e focar a proxima iteracao em qualidade e governanca
+- cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
+- cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
+- decidir a politica de permanencia, substituicao e limpeza do `affiliateCode` armazenado no navegador
+- resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml`, especialmente na parte financeira de afiliados
+- so depois revisitar uma eventual formalizacao de `commissionIds` no payout, mantendo a separacao em relacao ao referral do usuario
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
-- ampliar a cobertura E2E para operacoes admin e cenarios negativos
-- revisar o fluxo PIX com backend real para confirmar QR code, expiracao e tempos de confirmacao
 - habilitar edicao de perfil do cliente quando o contrato local descrever o payload de `PATCH /me`
 
 - [x] ajustar a semantica de pedidos e alertas para o fluxo operacional atual de saldo do fornecedor

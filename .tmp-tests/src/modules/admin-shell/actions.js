@@ -5,7 +5,11 @@ exports.createUserAction = createUserAction;
 exports.updateUserAction = updateUserAction;
 exports.createCatalogServiceAction = createCatalogServiceAction;
 exports.updateCatalogServiceAction = updateCatalogServiceAction;
+exports.updateCatalogAffiliateSettingsAction = updateCatalogAffiliateSettingsAction;
 exports.createWalletAdjustmentAction = createWalletAdjustmentAction;
+exports.approveAffiliateAction = approveAffiliateAction;
+exports.suspendAffiliateAction = suspendAffiliateAction;
+exports.createAffiliatePayoutAction = createAffiliatePayoutAction;
 exports.resolveAlertAction = resolveAlertAction;
 exports.refreshSupplierProvidersAction = refreshSupplierProvidersAction;
 exports.syncSupplierServicesAction = syncSupplierServicesAction;
@@ -60,8 +64,7 @@ async function updateUserAction(_, formData) {
     const password = (0, action_helpers_1.readRequiredString)(formData, 'password');
     const role = (0, action_helpers_1.readRole)(formData);
     const status = (0, action_helpers_1.readStatus)(formData);
-    const clearPhone = (0, action_helpers_1.readRequiredString)(formData, 'clearPhone') === 'true';
-    const phone = clearPhone ? '' : (0, action_helpers_1.readRequiredString)(formData, 'phone');
+    const phone = (0, action_helpers_1.readRequiredString)(formData, 'phone');
     if (!userId) {
         return {
             status: 'error',
@@ -71,7 +74,7 @@ async function updateUserAction(_, formData) {
     const payload = {
         ...(name ? { name } : {}),
         ...(password ? { password } : {}),
-        ...(clearPhone ? { phone: null } : phone ? { phone } : {}),
+        ...(phone ? { phone } : {}),
         ...(role ? { role } : {}),
         ...(status ? { status } : {}),
     };
@@ -145,24 +148,49 @@ async function updateCatalogServiceAction(_, formData) {
         message: 'Servico de catalogo atualizado com sucesso.',
     };
 }
+async function updateCatalogAffiliateSettingsAction(_, formData) {
+    const session = await requireAuthenticatedAdmin(formData);
+    const serviceId = (0, action_helpers_1.readRequiredString)(formData, 'serviceId');
+    if (!serviceId) {
+        return {
+            status: 'error',
+            message: 'Informe um servico valido para atualizar a afiliacao.',
+        };
+    }
+    const payload = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(formData);
+    if ('error' in payload) {
+        return payload.error;
+    }
+    try {
+        await (0, admin_1.updateAdminCatalogAffiliateSettings)(session.accessToken, serviceId, payload.value);
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel atualizar a configuracao de afiliacao agora.');
+    }
+    (0, cache_1.revalidatePath)('/admin');
+    (0, cache_1.revalidatePath)('/admin/catalog');
+    return {
+        status: 'success',
+        message: 'Configuracao de afiliacao atualizada com sucesso.',
+    };
+}
 async function createWalletAdjustmentAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
     const userId = (0, action_helpers_1.readRequiredString)(formData, 'userId');
     const amount = (0, action_helpers_1.readRequiredString)(formData, 'amount');
     const direction = (0, action_helpers_1.readWalletDirection)(formData);
-    const type = (0, action_helpers_1.readWalletAdjustmentType)(formData);
     const reason = (0, action_helpers_1.readOptionalString)(formData, 'reason');
     if (!userId || !amount || !direction) {
         return {
             status: 'error',
-            message: 'User ID, valor e direcao sao obrigatorios para ajustar a carteira.',
+            message: 'ID do usuario, valor e direcao sao obrigatorios para ajustar a carteira.',
         };
     }
     try {
         const result = await (0, admin_1.createAdminWalletAdjustment)(session.accessToken, userId, {
             amount,
             direction,
-            ...(type ? { type } : {}),
+            type: direction === 'credit' ? 'wallet_adjustment_admin' : 'wallet_reversal_admin',
             ...(reason ? { reason } : {}),
         });
         (0, cache_1.revalidatePath)('/admin');
@@ -175,6 +203,70 @@ async function createWalletAdjustmentAction(_, formData) {
     }
     catch (error) {
         return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel aplicar o ajuste de carteira agora.');
+    }
+}
+async function approveAffiliateAction(_, formData) {
+    const session = await requireAuthenticatedAdmin(formData);
+    const affiliateProfileId = (0, action_helpers_1.readRequiredString)(formData, 'affiliateProfileId');
+    if (!affiliateProfileId) {
+        return {
+            status: 'error',
+            message: 'Informe um perfil afiliado valido para aprovar.',
+        };
+    }
+    try {
+        await (0, admin_1.approveAdminAffiliate)(session.accessToken, affiliateProfileId);
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel aprovar o perfil afiliado agora.');
+    }
+    (0, cache_1.revalidatePath)('/admin');
+    (0, cache_1.revalidatePath)('/admin/affiliates');
+    return {
+        status: 'success',
+        message: 'Perfil afiliado aprovado com sucesso.',
+    };
+}
+async function suspendAffiliateAction(_, formData) {
+    const session = await requireAuthenticatedAdmin(formData);
+    const affiliateProfileId = (0, action_helpers_1.readRequiredString)(formData, 'affiliateProfileId');
+    if (!affiliateProfileId) {
+        return {
+            status: 'error',
+            message: 'Informe um perfil afiliado valido para suspender.',
+        };
+    }
+    try {
+        await (0, admin_1.suspendAdminAffiliate)(session.accessToken, affiliateProfileId);
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel suspender o perfil afiliado agora.');
+    }
+    (0, cache_1.revalidatePath)('/admin');
+    (0, cache_1.revalidatePath)('/admin/affiliates');
+    return {
+        status: 'success',
+        message: 'Perfil afiliado suspenso com sucesso.',
+    };
+}
+async function createAffiliatePayoutAction(_, formData) {
+    const session = await requireAuthenticatedAdmin(formData);
+    const payload = (0, action_helpers_1.parseAffiliatePayoutPayload)(formData);
+    if ('error' in payload) {
+        return payload.error;
+    }
+    try {
+        const result = await (0, admin_1.createAdminAffiliatePayout)(session.accessToken, payload.value);
+        (0, cache_1.revalidatePath)('/admin');
+        (0, cache_1.revalidatePath)('/admin/affiliate-payouts');
+        (0, cache_1.revalidatePath)('/admin/affiliate-commissions');
+        return {
+            status: 'success',
+            message: `Payout ${result.id} registrado para ${payload.value.affiliateProfileId}.`,
+        };
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel registrar o payout manual agora.');
     }
 }
 async function resolveAlertAction(_, formData) {
@@ -216,7 +308,14 @@ async function refreshSupplierProvidersAction(_, formData) {
 }
 async function syncSupplierServicesAction(_, formData) {
     const session = await requireAuthenticatedAdmin(formData);
-    const supplierName = (0, action_helpers_1.readRequiredString)(formData, 'supplierName');
+    const supplierNameInput = (0, action_helpers_1.readRequiredString)(formData, 'supplierName');
+    const supplierName = (0, action_helpers_1.readSupplierSyncName)(formData);
+    if (supplierNameInput && !supplierName) {
+        return {
+            status: 'error',
+            message: 'Fornecedor invalido. Escolha CheapSMMGlobal ou Instabarato.',
+        };
+    }
     try {
         await (0, admin_1.syncSupplierServices)(session.accessToken, supplierName || undefined);
     }

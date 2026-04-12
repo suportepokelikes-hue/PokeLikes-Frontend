@@ -19,12 +19,17 @@ const customer_1 = require("../src/lib/api/customer");
     try {
         await (0, customer_1.getWalletSummary)({ accessToken: 'token' });
         await (0, customer_1.getCustomerProfile)({ accessToken: 'token' });
+        await (0, customer_1.getCustomerReferralSummary)({ accessToken: 'token' });
+        await (0, customer_1.getCustomerAffiliateProfile)({ accessToken: 'token' });
+        await (0, customer_1.applyToAffiliateProgram)({ accessToken: 'token' });
+        await (0, customer_1.getCustomerAffiliateSummary)({ accessToken: 'token' });
+        await (0, customer_1.listCustomerAffiliateCommissions)({ accessToken: 'token' });
         await (0, customer_1.listCustomerPayments)({ accessToken: 'token' });
         await (0, customer_1.listCustomerOrders)({ accessToken: 'token' });
         await (0, customer_1.listWalletTransactions)({ accessToken: 'token' });
         await (0, customer_1.createPixPayment)({ accessToken: 'token' }, { amount: '20' });
         await (0, customer_1.getCustomerPaymentDetail)({ accessToken: 'token' }, 'pay-1');
-        await (0, customer_1.createCustomerOrder)({ accessToken: 'token' }, { catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100 });
+        await (0, customer_1.createCustomerOrder)({ accessToken: 'token' }, { catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' });
         await (0, customer_1.getCustomerOrderDetail)({ accessToken: 'token' }, 'ord-1');
     }
     finally {
@@ -36,6 +41,11 @@ const customer_1 = require("../src/lib/api/customer");
     })), [
         { url: 'http://localhost:3001/v1/me/wallet', method: 'GET' },
         { url: 'http://localhost:3001/v1/me', method: 'GET' },
+        { url: 'http://localhost:3001/v1/me/referral', method: 'GET' },
+        { url: 'http://localhost:3001/v1/me/affiliate', method: 'GET' },
+        { url: 'http://localhost:3001/v1/me/affiliate/apply', method: 'POST' },
+        { url: 'http://localhost:3001/v1/me/affiliate/summary', method: 'GET' },
+        { url: 'http://localhost:3001/v1/me/affiliate/commissions?page=1&pageSize=10&sortOrder=desc', method: 'GET' },
         { url: 'http://localhost:3001/v1/me/payments?page=1&pageSize=5&sortOrder=desc', method: 'GET' },
         { url: 'http://localhost:3001/v1/me/orders?page=1&pageSize=5&sortOrder=desc', method: 'GET' },
         { url: 'http://localhost:3001/v1/me/wallet/transactions?page=1&pageSize=10&sortOrder=desc', method: 'GET' },
@@ -44,9 +54,9 @@ const customer_1 = require("../src/lib/api/customer");
         { url: 'http://localhost:3001/v1/me/orders', method: 'POST' },
         { url: 'http://localhost:3001/v1/me/orders/ord-1', method: 'GET' },
     ]);
-    const pixRequest = requests[5];
-    const orderRequest = requests[7];
+    const pixRequest = requests[10];
+    const orderRequest = requests[12];
     strict_1.default.equal(new Headers(pixRequest.init?.headers).get('Authorization'), 'Bearer token');
     strict_1.default.equal(pixRequest.init?.body, JSON.stringify({ amount: '20' }));
-    strict_1.default.equal(orderRequest.init?.body, JSON.stringify({ catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100 }));
+    strict_1.default.equal(orderRequest.init?.body, JSON.stringify({ catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' }));
 });

@@ -13,6 +13,8 @@ const sampleUser = {
     email: 'alice@likesuai.com',
     phone: '31999999999',
     status: 'active',
+    referralCode: 'LIKES42',
+    emailVerified: true,
 };
 (0, node_test_1.default)('serializeUser and deserializeUser preserve supported fields', () => {
     const encoded = (0, session_1.serializeUser)(sampleUser);

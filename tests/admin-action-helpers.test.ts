@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import { ApiClientError } from '../src/lib/api/http';
 import {
   mapAdminActionError,
+  parseAffiliatePayoutPayload,
+  parseCatalogAffiliateSettingsUpdatePayload,
   parseCatalogCreatePayload,
   parseCatalogUpdatePayload,
   readRole,
@@ -96,6 +98,41 @@ test('catalog update parser supports explicit clearing of nullable fields', () =
   });
 });
 
+test('catalog affiliate settings parser enforces a human commission percent only when enabled', () => {
+  const enabledForm = new FormData();
+  enabledForm.set('affiliateEnabled', 'true');
+  enabledForm.set('affiliateCommissionPercent', '12,5');
+
+  const enabledParsed = parseCatalogAffiliateSettingsUpdatePayload(enabledForm);
+
+  assert.ok('value' in enabledParsed);
+  assert.deepEqual(enabledParsed.value, {
+    affiliateEnabled: true,
+    affiliateCommissionPercent: '12.5',
+  });
+
+  const disabledForm = new FormData();
+  disabledForm.set('affiliateEnabled', 'false');
+
+  const disabledParsed = parseCatalogAffiliateSettingsUpdatePayload(disabledForm);
+
+  assert.ok('value' in disabledParsed);
+  assert.deepEqual(disabledParsed.value, {
+    affiliateEnabled: false,
+  });
+
+  const invalidEnabledForm = new FormData();
+  invalidEnabledForm.set('affiliateEnabled', 'true');
+  invalidEnabledForm.set('affiliateCommissionPercent', '0');
+
+  assert.deepEqual(parseCatalogAffiliateSettingsUpdatePayload(invalidEnabledForm), {
+    error: {
+      status: 'error',
+      message: 'Informe um percentual maior que zero para ativar a afiliacao.',
+    },
+  });
+});
+
 test('admin helper readers and error mapping keep only supported values', () => {
   const formData = new FormData();
   formData.set('role', 'admin');
@@ -120,5 +157,34 @@ test('admin helper readers and error mapping keep only supported values', () => 
   assert.deepEqual(mapAdminActionError(new Error('boom'), 'fallback'), {
     status: 'error',
     message: 'fallback',
+  });
+});
+
+test('affiliate payout parser keeps commission references only inside note for the current contract', () => {
+  const formData = new FormData();
+  formData.set('affiliateProfileId', 'aff-123');
+  formData.set('amount', '150.00');
+  formData.set('commissionIds', ' com-1,\ncom-2\ncom-1 ');
+  formData.set('note', 'Validado pelo financeiro');
+
+  const parsed = parseAffiliatePayoutPayload(formData);
+
+  assert.ok('value' in parsed);
+  assert.deepEqual(parsed.commissionIds, ['com-1', 'com-2']);
+  assert.deepEqual(parsed.value, {
+    affiliateProfileId: 'aff-123',
+    amount: '150.00',
+    note: 'Comissoes consideradas: com-1, com-2\nObservacao: Validado pelo financeiro',
+  });
+
+  const missingIds = new FormData();
+  missingIds.set('affiliateProfileId', 'aff-123');
+  missingIds.set('amount', '150.00');
+
+  assert.deepEqual(parseAffiliatePayoutPayload(missingIds), {
+    error: {
+      status: 'error',
+      message: 'Informe ao menos um ID de comissao approved para rastreio operacional.',
+    },
   });
 });
