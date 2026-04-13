@@ -48,6 +48,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o frontend consome a API do backend por uma camada unica em `src/lib/api`
 - contratos usados no bootstrap nascem do `docs/contracts/backend-openapi.yaml`
 - para afiliados, o contrato operacional validado continua sendo `docs/contracts/backend-openapi.yaml`, mesmo quando `docs/api/openapi.yaml` divergir
+- `docs/api/openapi.yaml` fica apenas como copia auxiliar para diff e conferencia, nunca como fonte primaria de payload quando divergir
 - evitar `fetch` espalhado em componentes de tela
 - auth/session seguem separados da camada de dominio
 
@@ -129,7 +130,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - `/app/profile` agora tambem concentra o programa de indicacao do usuario, com codigo, link, resumo, `rewardStatus`, estado de email e request de verificacao no proprio frontend
 - `/app/affiliate` agora concentra a primeira area autenticada de afiliados no cliente; quando `GET /me/affiliate` retorna `null`, a propria tela assume a entrada do programa com CTA de apply, e quando existe perfil ela mostra status, summary e listagem das proprias comissoes
 - o shell autenticado do cliente agora possui entrada dedicada para `Afiliados`, e o shell admin e a home admin ja apontam para `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts`
-- `/catalog` e `/catalog/[serviceId]` agora capturam `?aff=` de forma discreta no frontend, preservam o codigo localmente no navegador, reaproveitam `affiliateCode` no `POST /me/orders` quando houver pedido e nao interferem no fluxo separado de `?ref=`/`referralCode`
+- `/catalog` e `/catalog/[serviceId]` agora capturam `?aff=` de forma discreta no frontend, preservam o codigo localmente no navegador, reaproveitam `affiliateCode` no `POST /me/orders` quando houver pedido, substituem o codigo salvo quando um novo `?aff=` valido chega e nao interferem no fluxo separado de `?ref=`/`referralCode`
 - `/admin/affiliates` agora concentra a primeira superficie administrativa de afiliados, com listagem paginada, filtro basico e acoes inline de aprovar e suspender
 - `/admin/affiliate-commissions` agora concentra a leitura operacional das comissoes de afiliados, com filtros aderentes ao contrato e tabela densa
 - `/admin/affiliate-payouts` agora concentra a operacao financeira de payouts, incluindo registro manual minimo com rastreio textual das comissoes dentro de `note`, porque o contrato validado consumido pelo frontend ainda aceita apenas `affiliateProfileId`, `amount` e `note`
@@ -230,9 +231,11 @@ src/
 ## Affiliate Contract Notes
 
 - `docs/contracts/backend-openapi.yaml` continua sendo a fonte contratual validada para a V1 de afiliados no frontend
+- `docs/api/openapi.yaml` serve apenas como copia auxiliar para comparacao; ele nao deve guiar payloads do frontend quando houver divergencia
 - `docs/api/openapi.yaml` ainda diverge na parte financeira de afiliados: ali aparecem `commissionIds`, `notes` e um recurso de retorno mais rico para payout, mas esses campos nao sao usados pelo frontend enquanto a copia validada nao for resincronizada
 - por isso, o payout manual do frontend continua seguindo o contrato validado e envia apenas `affiliateProfileId`, `amount` e `note`
 - quando o operador informa IDs de comissao no payout manual, o frontend os preserva como rastreio textual dentro de `note`, sem inventar um payload fora do contrato
+- o `affiliateCode` segue a regra operacional atual da V1: o ultimo `?aff=` valido capturado no catalogo substitui o codigo salvo no navegador; navegar sem `?aff=` nao limpa esse valor automaticamente
 
 ## Remaining Direction
 
@@ -247,7 +250,7 @@ src/
 - o proximo passo recomendado no cliente continua sendo preparar a edicao de perfil assim que `PATCH /me` receber schema formal
 - a V1 frontend de afiliados pode ser considerada fechada com customer, catalogo publico, checkout, admin e catalog affiliate settings entregues contra o contrato validado
 - o proximo passo recomendado para afiliados agora e ampliar os E2E de `?aff= -> catalogo -> pedido` e do drawer de affiliate settings em `/admin/catalog`
-- depois disso, o foco deve ir para a politica de expiracao/substituicao do `affiliateCode` persistido no navegador e para a resincronizacao entre `docs/api/openapi.yaml` e `docs/contracts/backend-openapi.yaml`
+- depois disso, o foco deve ir para uma eventual politica de expiracao/limpeza do `affiliateCode` persistido no navegador e para a resincronizacao entre `docs/api/openapi.yaml` e `docs/contracts/backend-openapi.yaml`
 - so depois dessa resincronizacao vale revisitar uma eventual formalizacao de `commissionIds` no payout
 - telas de negocio devem continuar usando `src/lib/api` como fronteira com o backend
 

@@ -71,8 +71,8 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
                     type: 'select',
                     defaultValue: filters.status,
                     options: [
-                      { label: 'Pending', value: 'pending' },
-                      { label: 'Paid', value: 'paid' },
+                      { label: 'Pendente', value: 'pending' },
+                      { label: 'Pago', value: 'paid' },
                     ],
                   },
                   {
@@ -92,7 +92,7 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
                   },
                   {
                     name: 'pageSize',
-                    label: 'Pagina',
+                    label: 'Por pagina',
                     type: 'select',
                     defaultValue: filters.pageSize ?? 10,
                     options: [

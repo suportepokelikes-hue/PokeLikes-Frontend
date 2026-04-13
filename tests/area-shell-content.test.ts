@@ -32,7 +32,7 @@ test('getAreaShellView marks the current admin link and exposes user meta', () =
   assert.equal(view.eyebrow, 'Area admin');
   assert.equal(view.title, 'Pedidos');
   assert.equal(view.userName, 'Operador');
-  assert.equal(view.userMeta, 'ops@likesuai.com / active');
+  assert.equal(view.userMeta, 'ops@likesuai.com - active');
   assert.equal(view.navigationLabel, 'Area admin navigation');
   assert.equal(view.children, 'conteudo');
   assert.equal(view.links.find((link) => link.href === '/admin/orders')?.isCurrent, true);

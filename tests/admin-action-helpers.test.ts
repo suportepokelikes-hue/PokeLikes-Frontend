@@ -184,7 +184,7 @@ test('affiliate payout parser keeps commission references only inside note for t
   assert.deepEqual(parseAffiliatePayoutPayload(missingIds), {
     error: {
       status: 'error',
-      message: 'Informe ao menos um ID de comissao approved para rastreio operacional.',
+      message: 'Informe ao menos um ID de comissao aprovada para rastreio operacional.',
     },
   });
 });

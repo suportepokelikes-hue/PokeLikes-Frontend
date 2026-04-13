@@ -12,6 +12,7 @@
 Notas:
 
 - o fluxo publico de afiliados usa `?aff=` e permanece separado do `?ref=`/`referralCode` do cadastro
+- o ultimo `?aff=` valido capturado no catalogo substitui o codigo salvo no navegador; navegar sem `?aff=` nao limpa automaticamente na V1
 
 ## Customer
 

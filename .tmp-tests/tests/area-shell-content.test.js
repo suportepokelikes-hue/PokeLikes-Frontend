@@ -31,7 +31,7 @@ const user = {
     strict_1.default.equal(view.eyebrow, 'Area admin');
     strict_1.default.equal(view.title, 'Pedidos');
     strict_1.default.equal(view.userName, 'Operador');
-    strict_1.default.equal(view.userMeta, 'ops@likesuai.com / active');
+    strict_1.default.equal(view.userMeta, 'ops@likesuai.com - active');
     strict_1.default.equal(view.navigationLabel, 'Area admin navigation');
     strict_1.default.equal(view.children, 'conteudo');
     strict_1.default.equal(view.links.find((link) => link.href === '/admin/orders')?.isCurrent, true);

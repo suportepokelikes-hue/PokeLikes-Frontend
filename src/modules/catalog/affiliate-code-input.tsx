@@ -20,6 +20,7 @@ export function AffiliateCodeInput({ initialAffiliateCode }: AffiliateCodeInputP
 
   useEffect(() => {
     const codeFromUrl = readAffiliateCodeFromSearchParams(searchParams);
+    const normalizedInitialCode = normalizeAffiliateCode(initialAffiliateCode);
 
     if (codeFromUrl) {
       persistAffiliateCode(codeFromUrl);
@@ -27,9 +28,9 @@ export function AffiliateCodeInput({ initialAffiliateCode }: AffiliateCodeInputP
       return;
     }
 
-    if (initialAffiliateCode) {
-      persistAffiliateCode(initialAffiliateCode);
-      setAffiliateCode(initialAffiliateCode);
+    if (normalizedInitialCode) {
+      persistAffiliateCode(normalizedInitialCode);
+      setAffiliateCode(normalizedInitialCode);
       return;
     }
 

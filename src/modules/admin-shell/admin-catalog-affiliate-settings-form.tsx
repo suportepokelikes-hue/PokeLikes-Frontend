@@ -42,14 +42,14 @@ export function AdminCatalogAffiliateSettingsForm({
         </div>
 
         <label className="admin-user-field">
-          <span>Afiliavel</span>
+          <span>Liberar para afiliados</span>
           <select
             name="affiliateEnabled"
             defaultValue={initialEnabled ? 'true' : 'false'}
             onChange={(event) => setAffiliateEnabled(event.currentTarget.value === 'true')}
           >
-            <option value="false">Desligado</option>
-            <option value="true">Ligado</option>
+            <option value="false">Nao</option>
+            <option value="true">Sim</option>
           </select>
         </label>
 
@@ -67,9 +67,9 @@ export function AdminCatalogAffiliateSettingsForm({
         </label>
 
         <div className="admin-user-static admin-user-field-wide">
-          <span>Regra</span>
-          <strong>Percentual humano</strong>
-          <small>30.00 = 30% e 12.50 = 12,5%.</small>
+          <span>Preenchimento</span>
+          <strong>Percentual normal</strong>
+          <small>Informe como porcentagem comum: 30.00 = 30% e 12.50 = 12,5%.</small>
         </div>
 
         {!affiliateEnabled ? (

@@ -40,10 +40,12 @@ Usar como referência primária:
 Complementar com:
 
 - `docs/api-notes.md`
-- `docs/api/openapi.yaml`
+- `docs/api/openapi.yaml` somente para comparação quando estiver consistente com `docs/contracts/backend-openapi.yaml`
 - `docs/api/modules/auth.md`
 - `docs/api/modules/referrals.md`
 - `docs/screen-map.md`
+
+Quando houver divergência, o frontend segue `docs/contracts/backend-openapi.yaml`.
 
 ## Ordem recomendada de implementação
 

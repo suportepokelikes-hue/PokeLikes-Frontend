@@ -26,7 +26,7 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
       <main className="page page-public">
         <ErrorState
           title="Token de verificacao ausente"
-          description="Abra novamente o link do email ou use o token de desenvolvimento gerado no ambiente local."
+          description="Abra novamente o link recebido por email para concluir a verificacao."
           actionHref="/login"
           actionLabel="Ir para login"
         />
@@ -78,7 +78,7 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
           description={
             error instanceof ApiClientError
               ? error.message
-              : 'O token de verificacao nao pode ser confirmado agora.'
+              : 'Esse link de verificacao nao pode ser confirmado agora.'
           }
           actionHref="/login"
           actionLabel="Voltar para login"

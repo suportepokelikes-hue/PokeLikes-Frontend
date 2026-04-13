@@ -149,7 +149,7 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     strict_1.default.deepEqual((0, action_helpers_1.parseAffiliatePayoutPayload)(missingIds), {
         error: {
             status: 'error',
-            message: 'Informe ao menos um ID de comissao approved para rastreio operacional.',
+            message: 'Informe ao menos um ID de comissao aprovada para rastreio operacional.',
         },
     });
 });

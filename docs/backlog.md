@@ -86,6 +86,7 @@ Tasks:
 - [x] meus pedidos
 - [x] detalhe do pedido
 - [x] capturar `?aff=` no catalogo, persistir o codigo localmente e enviar `affiliateCode` opcional no checkout do pedido sem interferir no fluxo existente de `?ref=`
+- [x] consolidar a regra da V1 para `?aff=`: o ultimo codigo valido substitui o armazenado; navegar sem `?aff=` nao limpa automaticamente
 
 ## Phase 5: Admin
 
@@ -145,6 +146,7 @@ Pronto na V1:
 - [x] `/app/affiliate` cobre entrada no programa, apply, status do perfil, summary e comissoes do usuario
 - [x] o shell do cliente expoe `Afiliados`, e o shell admin e a home admin apontam para os modulos administrativos de afiliados
 - [x] `?aff=` e capturado em `/catalog` e `/catalog/[serviceId]`, o codigo fica persistido localmente e `affiliateCode` segue para `POST /me/orders` quando existir
+- [x] a regra atual do `affiliateCode` ficou explicita: um novo `?aff=` valido substitui o codigo salvo; navegar sem `?aff=` nao limpa o valor na V1
 - [x] o fluxo novo de afiliados permanece separado do `?ref=`/`referralCode` ja existente no cadastro
 - [x] `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts` estao entregues contra `docs/contracts/backend-openapi.yaml`
 - [x] o payout manual segue o contrato validado atual, mantendo referencias de comissao apenas dentro de `note`
@@ -152,7 +154,7 @@ Pronto na V1:
 
 Fora de escopo da V1:
 
-- politica de expiracao, substituicao ou limpeza automatica do `affiliateCode` persistido
+- politica de expiracao ou limpeza automatica do `affiliateCode` persistido
 - ampliacao de E2E para toda a jornada publica/admin de afiliados
 - evolucao contratual para `commissionIds` dedicados no payload de payout
 
@@ -193,6 +195,7 @@ Tasks:
 - [x] reorganizar hierarquia, CTA e traducao de labels tecnicos nas jornadas principais
 - [x] compactar `PageHeader`, `EmptyState`, `ErrorState`, `StatCard`, `AdminSlideOver` e o topo do shell autenticado para reduzir ruido textual e densidade sem mexer em fluxo
 - [x] fazer um passe final leve de consistencia textual e visual, removendo descricoes curtas redundantes, labels mistos PT/EN e estados vazios mais verbosos nas areas publica, cliente e admin
+- [x] fechar a rodada final de hardening da V1 reforcando a precedencia de `docs/contracts/backend-openapi.yaml`, limpando residuos de copy em afiliados e fixando a regra operacional do `affiliateCode`
 
 ## Phase 10: Frontend Test Baseline
 
@@ -231,7 +234,7 @@ Na proxima sessao do Codex:
 - revisar se alguns filtros publicos do catalogo merecem uma segunda rodada de simplificacao sem perder descobribilidade
 - cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
 - cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
-- decidir a politica de permanencia, substituicao e limpeza do `affiliateCode` armazenado no navegador
+- decidir se a V2 vai precisar de expiracao ou limpeza automatica do `affiliateCode` armazenado no navegador
 - resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml`, especialmente na parte financeira de afiliados
 - so depois revisitar uma eventual formalizacao de `commissionIds` no payout, mantendo a separacao em relacao ao referral do usuario
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel

@@ -20,3 +20,46 @@ const affiliate_code_1 = require("../src/lib/affiliate-code");
     strict_1.default.equal((0, affiliate_code_1.appendAffiliateCodeToPath)('/catalog?search=likes', 'AFF10'), '/catalog?search=likes&aff=AFF10');
     strict_1.default.equal((0, affiliate_code_1.appendAffiliateCodeToPath)('/catalog?search=likes', '   '), '/catalog?search=likes');
 });
+(0, node_test_1.default)('persistAffiliateCode keeps the latest valid code and ignores blank replacements', () => {
+    const storage = new Map();
+    const target = globalThis;
+    const originalWindow = target.window;
+    const localStorageMock = {
+        get length() {
+            return storage.size;
+        },
+        clear() {
+            storage.clear();
+        },
+        getItem(key) {
+            return storage.has(key) ? storage.get(key) ?? null : null;
+        },
+        key(index) {
+            return Array.from(storage.keys())[index] ?? null;
+        },
+        removeItem(key) {
+            storage.delete(key);
+        },
+        setItem(key, value) {
+            storage.set(key, value);
+        },
+    };
+    target.window = { localStorage: localStorageMock };
+    try {
+        (0, affiliate_code_1.clearStoredAffiliateCode)();
+        (0, affiliate_code_1.persistAffiliateCode)(' AFF01 ');
+        strict_1.default.equal((0, affiliate_code_1.getStoredAffiliateCode)(), 'AFF01');
+        (0, affiliate_code_1.persistAffiliateCode)(' AFF02 ');
+        strict_1.default.equal((0, affiliate_code_1.getStoredAffiliateCode)(), 'AFF02');
+        (0, affiliate_code_1.persistAffiliateCode)('   ');
+        strict_1.default.equal((0, affiliate_code_1.getStoredAffiliateCode)(), 'AFF02');
+    }
+    finally {
+        if (originalWindow) {
+            target.window = originalWindow;
+        }
+        else {
+            delete target.window;
+        }
+    }
+});

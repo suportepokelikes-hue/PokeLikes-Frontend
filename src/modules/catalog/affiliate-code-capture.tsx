@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import { persistAffiliateCode, readAffiliateCodeFromSearchParams } from '@/lib/affiliate-code';
+import { normalizeAffiliateCode, persistAffiliateCode, readAffiliateCodeFromSearchParams } from '@/lib/affiliate-code';
 
 type AffiliateCodeCaptureProps = {
   initialAffiliateCode?: string;
@@ -13,7 +13,7 @@ export function AffiliateCodeCapture({ initialAffiliateCode }: AffiliateCodeCapt
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const affiliateCode = initialAffiliateCode ?? readAffiliateCodeFromSearchParams(searchParams);
+    const affiliateCode = normalizeAffiliateCode(initialAffiliateCode) ?? readAffiliateCodeFromSearchParams(searchParams);
 
     if (affiliateCode) {
       persistAffiliateCode(affiliateCode);

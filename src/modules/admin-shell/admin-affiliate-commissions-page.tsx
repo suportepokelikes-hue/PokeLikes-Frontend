@@ -48,9 +48,9 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
                   type: 'select',
                   defaultValue: filters.status,
                   options: [
-                    { label: 'Pending', value: 'pending' },
-                    { label: 'Approved', value: 'approved' },
-                    { label: 'Paid', value: 'paid' },
+                    { label: 'Pendente', value: 'pending' },
+                    { label: 'Aprovada', value: 'approved' },
+                    { label: 'Paga', value: 'paid' },
                   ],
                 },
                 {
@@ -70,7 +70,7 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
                 },
                 {
                   name: 'pageSize',
-                  label: 'Pagina',
+                  label: 'Por pagina',
                   type: 'select',
                   defaultValue: filters.pageSize ?? 10,
                   options: [

@@ -48,7 +48,7 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
         </label>
 
         <p className="panel-meta">
-          Use comissoes aprovadas do mesmo afiliado. Os IDs entram em `note`.
+          Use comissoes aprovadas do mesmo afiliado. Os IDs ficam registrados na observacao deste payout.
         </p>
       </div>
     </AdminActionForm>

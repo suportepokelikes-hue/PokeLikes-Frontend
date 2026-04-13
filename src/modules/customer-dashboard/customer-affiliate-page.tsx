@@ -340,9 +340,9 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
   return {
     label: status,
     tone: 'neutral' as const,
-    description: 'Status carregado pelo backend.',
-    noteTitle: 'Status carregado',
-    noteDescription: 'Use o badge como referencia principal.',
+    description: 'Status informado pela plataforma.',
+    noteTitle: 'Status atualizado',
+    noteDescription: 'Use o badge como referencia principal enquanto este status estiver ativo.',
   };
 }
 

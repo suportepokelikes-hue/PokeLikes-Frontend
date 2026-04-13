@@ -65,7 +65,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - a iconografia real agora tambem comeca a aparecer em estados compartilhados (`empty/error`) e nas jornadas principais de home publica, dashboard do cliente e entrada do admin
 - a copy das telas principais acabou de passar por uma limpeza editorial para remover linguagem tecnica, rotulos internos como "workspace" e blocos repetitivos de contexto
 - logo depois dessa limpeza, as jornadas principais tambem passaram por uma rodada estrutural de UX com CTA mais fortes, blocos reordenados e traducao adicional de labels tecnicos expostos na UI
-- existe uma copia adicional em `docs/api/openapi.yaml`, mas para trabalho de frontend o contrato operacional validado continua sendo `docs/contracts/backend-openapi.yaml`; hoje ha divergencia conhecida na area financeira de afiliados e ela nao deve guiar payloads ate ser resincronizada
+- existe uma copia adicional em `docs/api/openapi.yaml`, mas ela fica apenas como referencia auxiliar; para trabalho de frontend o contrato operacional validado continua sendo `docs/contracts/backend-openapi.yaml` e a copia divergente nao deve guiar payloads ate ser resincronizada
 - na pratica, essa divergencia aparece especialmente no payout manual: `docs/api/openapi.yaml` descreve `commissionIds`/`notes`, enquanto o frontend continua seguindo a copia validada com `affiliateProfileId`, `amount` e `note`
 - `/register` agora entende `?ref=CODIGO`, preenche o codigo de indicacao no formulario e envia `referralCode` ao backend no `POST /auth/register`
 - `src/lib/api/auth.ts` agora cobre `POST /auth/email-verification/request` e `POST /auth/email-verification/confirm`
@@ -81,6 +81,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/admin/affiliate-payouts` agora existe como modulo administrativo de payout, consumindo `GET /admin/affiliate-payouts` e `POST /admin/affiliate-payouts`
 - o payout manual pede `affiliateProfileId`, valor total e IDs de comissao em texto livre; como `docs/contracts/backend-openapi.yaml` ainda aceita apenas `affiliateProfileId`, `amount` e `note`, os IDs informados sao consolidados dentro de `note` para manter rastreio operacional sem inventar payload
 - o catalogo publico agora captura `?aff=` em `/catalog` e `/catalog/[serviceId]`, preserva esse codigo em storage local simples e o reaproveita no checkout de `POST /me/orders` como `affiliateCode` opcional
+- a regra operacional atual do `affiliateCode` esta fixada: o ultimo `?aff=` valido substitui o codigo salvo; navegar sem `?aff=` nao limpa o valor automaticamente na V1
 - o fluxo de `?ref=` do cadastro continua separado; a logica nova de afiliados nao toca registro nem substitui o referral existente
 - o shell admin e a home admin agora apontam explicitamente para `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts`
 - `/admin/catalog` continua sendo o unico modulo administrativo para servicos; a leitura e a edicao de affiliate settings vivem na mesma listagem via drawer lateral, sem modulo separado
@@ -122,7 +123,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - tratar a V1 frontend de afiliados como concluida no escopo atual; nao reabrir implementacao sem necessidade contratual ou de qualidade
 - ampliar a cobertura Playwright para a jornada `?aff= -> catalogo -> pedido`
 - ampliar a cobertura Playwright para o drawer de affiliate settings em `/admin/catalog`
-- decidir a politica de expiracao, substituicao ou limpeza do `affiliateCode` persistido
+- decidir apenas se a V2 vai exigir expiracao ou limpeza automatica do `affiliateCode` persistido
 - resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml` antes de qualquer evolucao de payloads de payout
 - so depois avaliar se faz sentido formalizar `commissionIds` no contrato futuro
 
@@ -134,8 +135,8 @@ When sources conflict, use this precedence:
 1. current code and validated contracts
 2. `docs/contracts/backend-openapi.yaml` for REST behavior
 3. `docs/api/openapi.yaml` only when it is consistent with the validated contract copy above
-4. `docs/architecture-v1.md` for intended architecture
-5. `docs/backlog-v1.md` for execution order and next step
+4. `docs/architecture.md` for intended architecture
+5. `docs/backlog.md` for execution order and next step
 6. design references (e.g. Stitch exports) for visual direction
 7. prior thread summaries or assumptions
 

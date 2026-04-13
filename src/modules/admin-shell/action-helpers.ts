@@ -150,7 +150,7 @@ export function parseAffiliatePayoutPayload(formData: FormData):
     return {
       error: {
         status: 'error',
-        message: 'Informe ao menos um ID de comissao approved para rastreio operacional.',
+        message: 'Informe ao menos um ID de comissao aprovada para rastreio operacional.',
       },
     };
   }
