@@ -53,7 +53,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         <PageHeader
           eyebrow="Pagamentos"
           title="Adicionar saldo com PIX"
-          description="Crie um PIX, abra o codigo e acompanhe o pagamento sem sair da lista."
           actions={
             <Link href="/app/wallet" className="secondary-action">
               Ver carteira
@@ -63,8 +62,8 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
 
         <section className="dashboard-grid">
           <TransactionForm
-            title="Novo PIX"
-            description={`Saldo atual: ${formatMoney(wallet.availableBalance)}.`}
+            title="Gerar PIX"
+            description={`Saldo atual: ${formatMoney(wallet.availableBalance)}`}
             action={createPixPaymentAction}
             initialState={initialTransactionFormState}
             submitLabel="Gerar PIX"
@@ -85,14 +84,14 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                   tone={getPaymentStatusView(latestPendingPayment.status).tone}
                 />
               </div>
-              <p>Se este for o PIX atual, basta abrir o painel e pagar pelo QR code ou pelo copia-e-cola.</p>
+              <p>Abra o painel para pagar.</p>
               <dl className="detail-list">
                 <div>
                   <dt>ID</dt>
                   <dd className="code-block">{getPaymentShortId(latestPendingPayment.id)}</dd>
                 </div>
                 <div>
-                  <dt>Expira em</dt>
+                  <dt>Expira</dt>
                   <dd>{formatDateTime(latestPendingPayment.expiresAt)}</dd>
                 </div>
               </dl>
@@ -103,24 +102,24 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           ) : (
             <article className="customer-note-card customer-payment-focus-card">
               <strong>Sem PIX em aberto</strong>
-              <p>Quando voce gerar um pagamento, o QR code e o codigo de copia vao aparecer aqui e na lista abaixo.</p>
+              <p>Gere um PIX para ver o QR code.</p>
             </article>
           )}
         </section>
 
         <section className="metric-list">
-          <StatCard label="Saldo atual" value={formatMoney(wallet.availableBalance)} meta="Disponivel na carteira" tone="accent" />
-          <StatCard label="Em aberto" value={String(pendingPayments.length)} meta="Aguardando pagamento" tone="warning" />
-          <StatCard label="Confirmados" value={String(confirmedCount)} meta="Pagamentos concluidos" />
+          <StatCard label="Saldo atual" value={formatMoney(wallet.availableBalance)} tone="accent" />
+          <StatCard label="Em aberto" value={String(pendingPayments.length)} tone="warning" />
+          <StatCard label="Confirmados" value={String(confirmedCount)} />
         </section>
 
         {payments.items.length === 0 ? (
-          <EmptyState title="Nenhum pagamento encontrado" description="Gere seu primeiro PIX para acompanhar os pagamentos por aqui." />
+          <EmptyState title="Nenhum pagamento encontrado" description="Gere um PIX." />
         ) : (
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
-              <h2>Historico de pagamentos</h2>
-              <span className="panel-meta">Pagamentos mais recentes</span>
+              <h2>Historico</h2>
+              <span className="panel-meta">{payments.totalItems} registro(s)</span>
             </div>
             <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']}>
               {payments.items.map((payment) => (
@@ -142,12 +141,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         )}
 
         {activePayment ? (
-          <AdminSlideOver
-            eyebrow="Pagamento PIX"
-            title={formatMoney(activePayment.amount)}
-            description={activePaymentStatus?.description}
-            closeHref={returnTo}
-          >
+          <AdminSlideOver eyebrow="Pagamento PIX" title={formatMoney(activePayment.amount)} closeHref={returnTo}>
             <section className="admin-drawer-stack">
               <article className="admin-inline-panel">
                 <div className="panel-heading">
@@ -181,7 +175,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">QR code</p>
-                    <h3>Escaneie para pagar</h3>
+                    <h3>Escaneie</h3>
                   </div>
                 </div>
                 {activePaymentQrImageSrc ? (
@@ -189,7 +183,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                     <img src={activePaymentQrImageSrc} alt="QR code PIX do pagamento" className="payment-qr-image" />
                   </div>
                 ) : (
-                  <p className="section-copy">O QR code ainda nao esta disponivel. Use o codigo copia e cola abaixo.</p>
+                  <p className="section-copy">QR indisponivel. Use o codigo abaixo.</p>
                 )}
               </article>
 
@@ -197,7 +191,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Codigo PIX</p>
-                    <h3>Copiar e pagar</h3>
+                    <h3>Copia e cola</h3>
                   </div>
                 </div>
                 <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>

@@ -27,6 +27,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
       getCustomerReferralSummary({ accessToken: session.accessToken }),
     ]);
     const confirmedPayments = payments.items.filter((payment) => payment.status === 'confirmed').length;
+    const pendingPayments = payments.items.filter((payment) => payment.status === 'pending').length;
     const openOrders = orders.items.filter((order) =>
       ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
     ).length;
@@ -37,7 +38,6 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
         <PageHeader
           eyebrow="Area do cliente"
           title={`Bem-vindo, ${session.user.name}`}
-          description="Veja seu saldo, gere um PIX ou acompanhe seus pedidos."
           actions={
             <>
               <Link href="/catalog" prefetch={false} className="primary-action">
@@ -59,7 +59,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
               <StatusBadge label={session.user.status} tone={session.user.status === 'active' ? 'success' : 'warning'} />
             </div>
             <h2>{formatMoney(wallet.availableBalance)}</h2>
-            <p>Use seu saldo para pagar pedidos e acompanhe o que ainda esta em andamento.</p>
+            <p>Saldo pronto para comprar.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Pagamentos confirmados</span>
@@ -70,8 +70,8 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 <strong>{openOrders}</strong>
               </div>
               <div>
-                <span>Perfil</span>
-                <strong>{session.user.role}</strong>
+                <span>Email</span>
+                <strong>{session.user.emailVerified ? 'Verificado' : 'Pendente'}</strong>
               </div>
             </div>
           </article>
@@ -82,36 +82,36 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 <Wallet size={18} strokeWidth={2.1} />
               </span>
               <strong>Carteira</strong>
-              <p>Ver saldo e movimentacoes.</p>
+              <p>Saldo e extrato.</p>
             </Link>
             <Link href="/app/payments" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CreditCard size={18} strokeWidth={2.1} />
               </span>
               <strong>Pagamentos</strong>
-              <p>Gerar PIX e acompanhar status.</p>
+              <p>PIX e status.</p>
             </Link>
             <Link href="/app/orders" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <ShoppingBag size={18} strokeWidth={2.1} />
               </span>
               <strong>Pedidos</strong>
-              <p>Ver andamento e historico.</p>
+              <p>Lista e andamento.</p>
             </Link>
             <Link href="/app/profile" prefetch={false} className="customer-action-card">
               <span className="surface-icon" aria-hidden="true">
                 <CircleUserRound size={18} strokeWidth={2.1} />
               </span>
               <strong>Perfil e indicacoes</strong>
-              <p>{session.user.emailVerified ? 'Consultar seus dados e seu codigo.' : 'Verificar email e acompanhar seu codigo.'}</p>
+              <p>{session.user.emailVerified ? 'Conta e codigo.' : 'Conta e email.'}</p>
             </Link>
           </div>
         </section>
 
         <section className="metric-list">
-          <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} meta="Carteira atual" tone="accent" />
-          <StatCard label="Pagamentos recentes" value={`${payments.totalItems}`} meta="Ultimos registros" />
-          <StatCard label="Pedidos recentes" value={`${orders.totalItems}`} meta="Ultimos registros" />
+          <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} tone="accent" />
+          <StatCard label="PIX em aberto" value={`${pendingPayments}`} tone="warning" />
+          <StatCard label="Pedidos em aberto" value={`${openOrders}`} />
         </section>
 
         <section className="customer-referral-banner">
@@ -150,12 +150,12 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           <div className="customer-referral-actions">
             <Link href="/app/profile#indicacoes" prefetch={false} className="secondary-action">
               <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
-              Abrir indicacoes
+              Ver indicacoes
             </Link>
             {referral.rewardStatus === 'pending_first_qualifying_topup' ? (
               <Link href="/app/payments" prefetch={false} className="primary-action">
                 <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
-                Fazer deposito qualificado
+                Depositar agora
               </Link>
             ) : null}
           </div>
@@ -171,7 +171,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             </div>
 
             {payments.items.length === 0 ? (
-              <EmptyState title="Nenhum pagamento encontrado" description="Crie um PIX para comecar a acompanhar seus pagamentos." />
+              <EmptyState title="Nenhum pagamento encontrado" description="Gere um PIX." />
             ) : (
               <DataTable columns={['ID', 'Valor', 'Status', 'Criado em']}>
                 {payments.items.map((payment) => (
@@ -197,7 +197,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             </div>
 
             {orders.items.length === 0 ? (
-              <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo para fazer seu primeiro pedido." />
+              <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo." />
             ) : (
               <DataTable columns={['ID', 'Servico', 'Status', 'Atualizado em']}>
                 {orders.items.map((order) => {
@@ -236,24 +236,24 @@ function getReferralDashboardView(status: ReferralRewardStatus, minimumTopupAmou
   switch (status) {
     case 'pending_email_verification':
       return {
-        title: 'Verifique seu email para liberar o bonus',
-        description: 'Seu cadastro entrou por indicacao. Confirme o email para seguir para a etapa do primeiro deposito qualificado.',
+        title: 'Verifique seu email',
+        description: 'Depois disso, falta apenas o primeiro deposito qualificado.',
       };
     case 'pending_first_qualifying_topup':
       return {
-        title: 'Seu bonus depende do primeiro deposito',
-        description: `Email verificado. Agora falta um deposito confirmado de pelo menos ${formatMoney(minimumTopupAmount)} para liberar o bonus da indicacao.`,
+        title: 'Falta o primeiro deposito',
+        description: `Confirme um PIX de pelo menos ${formatMoney(minimumTopupAmount)} para liberar o bonus.`,
       };
     case 'rewarded':
       return {
-        title: 'Seu bonus de indicacao ja foi aplicado',
-        description: 'Seu codigo continua ativo para novos convites, e o historico completo esta disponivel na area de perfil.',
+        title: 'Bonus aplicado',
+        description: 'Seu codigo segue ativo para novos convites.',
       };
     case 'not_referred':
     default:
       return {
-        title: 'Seu codigo ja esta pronto para convidar',
-        description: 'Compartilhe seu link de indicacao e acompanhe convidados, recompensas e status do programa no seu perfil.',
+        title: 'Seu codigo ja esta ativo',
+        description: 'Compartilhe o link e acompanhe tudo no perfil.',
       };
   }
 }

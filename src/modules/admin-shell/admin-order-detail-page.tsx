@@ -29,7 +29,6 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         <PageHeader
           eyebrow="Admin / pedidos / detalhe"
           title={`Pedido ${order.id}`}
-          description="Veja status, cliente e atualizacoes deste pedido."
           actions={
             <>
               <Link href="/admin/orders" className="secondary-action">
@@ -66,7 +65,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         {hadSupplierBalanceQueue ? (
           <section className="detail-card detail-card-wide detail-note detail-note-warning">
             <strong>Saldo do cliente reservado</strong>
-            <p>Este pedido passou por espera operacional de saldo do fornecedor. O valor do cliente permaneceu reservado durante essa etapa.</p>
+            <p>O pedido passou por espera de saldo do fornecedor. O valor do cliente ficou reservado nesse periodo.</p>
           </section>
         ) : null}
 
@@ -139,7 +138,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
             </dl>
             {order.supplier.errorCode || order.supplier.errorMessage ? (
               <div className="detail-note detail-note-neutral">
-                <strong>Ultimo retorno do fornecedor</strong>
+                <strong>Ultimo retorno</strong>
                 <p>
                   {order.supplier.errorCode ? `Codigo: ${order.supplier.errorCode}. ` : ''}
                   {order.supplier.errorMessage || 'Sem mensagem adicional.'}
@@ -172,7 +171,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 })}
               </div>
             ) : (
-              <p className="section-copy">Ainda nao ha atualizacoes para este pedido.</p>
+              <p className="section-copy">Sem atualizacoes.</p>
             )}
           </article>
         </section>

@@ -68,7 +68,7 @@ export function AdminCatalogAffiliateSettingsForm({
 
         <div className="admin-user-static admin-user-field-wide">
           <span>Regra</span>
-          <strong>Use percentual humano</strong>
+          <strong>Percentual humano</strong>
           <small>30.00 = 30% e 12.50 = 12,5%.</small>
         </div>
 
@@ -76,7 +76,7 @@ export function AdminCatalogAffiliateSettingsForm({
           <div className="admin-user-static admin-user-field-wide">
             <span>Percentual atual</span>
             <strong>{formatPercentLabel(currentPercent)}</strong>
-            <small>Com a afiliacao desligada, o percentual fica somente como referencia visual.</small>
+            <small>Referencia visual.</small>
           </div>
         ) : null}
       </div>

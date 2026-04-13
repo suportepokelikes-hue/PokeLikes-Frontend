@@ -36,7 +36,6 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
         <PageHeader
           eyebrow="Admin / afiliados"
           title="Perfis afiliados"
-          description="Acompanhe aprovacao, suspensao e identificacao segura dos perfis afiliados."
           actions={
             <AdminFilterBar
               pathname="/admin/affiliates"
@@ -86,13 +85,13 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Na pagina" value={String(affiliates.items.length)} meta={`${affiliates.totalItems} perfis no total`} />
-          <AdminSummaryCard label="Pendentes" value={String(pendingCount)} meta="Aguardando decisao nesta pagina" tone="warning" />
-          <AdminSummaryCard label="Ativos / suspensos" value={`${activeCount} / ${suspendedCount}`} meta="Leitura rapida do estado atual" />
+          <AdminSummaryCard label="Na pagina" value={String(affiliates.items.length)} meta={`${affiliates.totalItems} no total`} />
+          <AdminSummaryCard label="Pendentes" value={String(pendingCount)} tone="warning" />
+          <AdminSummaryCard label="Ativos / suspensos" value={`${activeCount} / ${suspendedCount}`} meta="Estado atual" />
         </section>
 
         {affiliates.items.length === 0 ? (
-          <EmptyState title="Nenhum perfil afiliado encontrado" description="Nenhum perfil foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum perfil afiliado encontrado" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['ID', 'Codigo publico', 'Usuario', 'Status', 'Aprovado em', 'Suspenso em', 'Criado em', 'Acao']}>
@@ -102,7 +101,7 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
                   <td>
                     <div className="stack-list">
                       <strong>{profile.affiliateCode}</strong>
-                      <span className="panel-meta">{profile.affiliateCommissionPercent}% de comissao</span>
+                      <span className="panel-meta">{profile.affiliateCommissionPercent}%</span>
                     </div>
                   </td>
                   <td>
@@ -184,5 +183,5 @@ function renderAffiliateActions(affiliateProfileId: string, status: string, retu
     );
   }
 
-  return <span className="panel-meta">Sem acao disponivel</span>;
+  return <span className="panel-meta">Sem acao</span>;
 }

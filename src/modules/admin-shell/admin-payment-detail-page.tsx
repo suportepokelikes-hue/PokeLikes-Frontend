@@ -25,7 +25,6 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
         <PageHeader
           eyebrow="Admin / pagamentos / detalhe"
           title={`Pagamento ${payment.id}`}
-          description="Veja status, cliente e atualizacoes deste pagamento."
           actions={
             <>
               <Link href="/admin/payments" className="secondary-action">
@@ -94,19 +93,19 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
             <h2>Detalhes do PIX</h2>
             <dl className="detail-list">
               <div>
-                <dt>ID do pagamento no fornecedor</dt>
+                <dt>ID no fornecedor</dt>
                 <dd className="code-block">{payment.providerPaymentId}</dd>
               </div>
               <div>
-                <dt>Creditado na carteira</dt>
+                <dt>Creditado</dt>
                 <dd>{formatDateTime(payment.walletCreditedAt)}</dd>
               </div>
               <div>
-                <dt>Expira em</dt>
+                <dt>Expira</dt>
                 <dd>{formatDateTime(payment.expiresAt)}</dd>
               </div>
               <div>
-                <dt>Confirmado em</dt>
+                <dt>Confirmado</dt>
                 <dd>{formatDateTime(payment.confirmedAt)}</dd>
               </div>
               <div>
@@ -117,7 +116,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
           </article>
 
           <article className="detail-card detail-card-wide">
-            <h2>Timeline de eventos</h2>
+            <h2>Eventos</h2>
             {payment.events.length > 0 ? (
               <div className="stack-list">
                 {payment.events.map((event) => (
@@ -127,17 +126,17 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                       <span>{formatDateTime(event.createdAt)}</span>
                     </div>
                     <p>
-                      Processamento: {event.processingStatus}
+                      Status: {event.processingStatus}
                       {event.processedAt ? ` / processado em ${formatDateTime(event.processedAt)}` : ''}
                     </p>
                     <span>
-                      Evento no fornecedor: {event.providerEventId || '-'} / pagamento no fornecedor: {event.providerPaymentId || '-'}
+                      Evento fornecedor: {event.providerEventId || '-'} / pagamento: {event.providerPaymentId || '-'}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="section-copy">Ainda nao ha atualizacoes para este pagamento.</p>
+              <p className="section-copy">Sem atualizacoes.</p>
             )}
           </article>
         </section>

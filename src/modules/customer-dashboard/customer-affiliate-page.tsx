@@ -33,7 +33,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
           <PageHeader
             eyebrow="Afiliados"
             title="Programa de afiliados"
-            description="Solicite sua entrada, acompanhe a aprovacao e concentre suas comissoes em uma area propria."
             actions={
               <>
                 <Link href="/app/profile" className="secondary-action">
@@ -52,27 +51,27 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
                 <span className="eyebrow">Afiliados</span>
                 <StatusBadge label="Nao participante" tone="neutral" />
               </div>
-              <h2>Ative sua area de afiliado</h2>
-              <p>Quando o perfil ainda nao existe, a entrada no programa comeca por aqui e a aprovacao segue pelo status do backend.</p>
+              <h2>Solicite seu perfil</h2>
+              <p>Depois do envio, o status aparece aqui.</p>
               <div className="customer-highlight-list">
                 <div>
                   <span>Status</span>
-                  <strong>Aguardando solicitacao</strong>
+                  <strong>Sem perfil</strong>
                 </div>
                 <div>
-                  <span>Visibilidade</span>
-                  <strong>Codigo publico proprio</strong>
+                  <span>Codigo</span>
+                  <strong>Liberado no perfil</strong>
                 </div>
                 <div>
-                  <span>Acompanhamento</span>
+                  <span>Painel</span>
                   <strong>Resumo e comissoes</strong>
                 </div>
               </div>
             </article>
 
             <article className="customer-note-card">
-              <strong>Fluxo desta tela</strong>
-              <p>Depois do apply, o frontend recarrega a propria rota e passa a refletir o perfil retornado como `pending`.</p>
+              <strong>Aguardando aprovacao</strong>
+              <p>Depois do apply, o perfil entra como pendente.</p>
             </article>
           </section>
 
@@ -95,7 +94,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
         <PageHeader
           eyebrow="Afiliados"
           title="Minha area de afiliado"
-          description="Acompanhe o status do programa, seu codigo publico e as comissoes geradas na sua conta."
           actions={
             <>
               <Link href="/app/orders" className="secondary-action">
@@ -150,13 +148,13 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">Perfil</p>
-                <h2>Dados do afiliado</h2>
+                <h2>Painel do afiliado</h2>
               </div>
             </div>
 
             <dl className="detail-list">
               <div>
-                <dt>ID do perfil</dt>
+                <dt>Perfil</dt>
                 <dd>{effectiveProfile.id}</dd>
               </div>
               <div>
@@ -166,44 +164,43 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
                 </dd>
               </div>
               <div>
-                <dt>Codigo publico</dt>
+                <dt>Codigo</dt>
                 <dd className="code-block">{effectiveProfile.affiliateCode}</dd>
               </div>
               <div>
-                <dt>Percentual</dt>
+                <dt>Comissao</dt>
                 <dd>{effectiveProfile.affiliateCommissionPercent}%</dd>
               </div>
               <div>
-                <dt>Aprovado em</dt>
+                <dt>Aprovado</dt>
                 <dd>{formatDateTime(effectiveProfile.approvedAt)}</dd>
               </div>
               <div>
-                <dt>Suspenso em</dt>
+                <dt>Suspenso</dt>
                 <dd>{formatDateTime(effectiveProfile.suspendedAt)}</dd>
               </div>
             </dl>
           </article>
 
           <article className="customer-note-card">
-            <strong>Leitura operacional</strong>
-            <p>{statusView.description}</p>
-            <p>Se houver pausa ou bloqueio, o proprio status continua sendo a referencia principal desta area.</p>
+            <strong>{statusView.noteTitle}</strong>
+            <p>{statusView.noteDescription}</p>
           </article>
         </section>
 
         <section className="detail-card detail-card-wide">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Comissoes</p>
-              <h2>Minhas comissoes</h2>
-            </div>
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Comissoes</p>
+                <h2>Historico</h2>
+              </div>
             <span className="panel-meta">{formatNumber(commissions.totalItems)} registro(s)</span>
           </div>
 
           {commissions.items.length === 0 ? (
             <EmptyState
               title="Nenhuma comissao encontrada"
-              description="Quando seus pedidos atribuidos ao programa gerarem comissao, eles vao aparecer aqui."
+              description="As comissoes aparecem quando houver pedidos atribuidos."
             />
           ) : (
             <DataTable columns={['ID', 'Pedido', 'Perfil', 'Comissao', 'Status', 'Criada em', 'Paga em']}>
@@ -246,21 +243,21 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
 function buildAffiliateSummaryCards(totals: Record<string, number | Money>) {
   return [
     {
-      label: 'Comissoes pendentes',
+      label: 'Pendentes',
       value: formatSummaryMetric(findSummaryMetric(totals, ['pendingCommissionAmount', 'pendingAmount'], ['pending', 'commission'])),
-      meta: 'Resumo atual',
+      meta: undefined,
       tone: 'warning' as const,
     },
     {
-      label: 'Comissoes aprovadas',
+      label: 'Aprovadas',
       value: formatSummaryMetric(findSummaryMetric(totals, ['approvedCommissionAmount', 'approvedAmount'], ['approved', 'commission'])),
-      meta: 'Resumo atual',
+      meta: undefined,
       tone: 'accent' as const,
     },
     {
-      label: 'Comissoes pagas',
+      label: 'Pagas',
       value: formatSummaryMetric(findSummaryMetric(totals, ['paidCommissionAmount', 'paidAmount'], ['paid', 'commission'])),
-      meta: 'Resumo atual',
+      meta: undefined,
       tone: 'success' as const,
     },
     {
@@ -268,7 +265,7 @@ function buildAffiliateSummaryCards(totals: Record<string, number | Money>) {
       value: formatSummaryMetric(
         findSummaryMetric(totals, ['attributedRevenue', 'attributedRevenueAmount', 'totalAttributedRevenue'], ['revenue']),
       ),
-      meta: 'Se disponivel no summary',
+      meta: undefined,
       tone: 'default' as const,
     },
   ];
@@ -314,9 +311,9 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     return {
       label: 'Aguardando aprovacao',
       tone: 'warning' as const,
-      description: 'Seu cadastro ja entrou no programa. Agora falta a aprovacao administrativa para liberar a divulgacao.',
+      description: 'Seu cadastro entrou no programa e aguarda aprovacao.',
       noteTitle: 'Aguardando aprovacao',
-      noteDescription: 'Enquanto o status estiver como pending, esta area continua sendo o ponto central para acompanhar a entrada no programa.',
+      noteDescription: 'O painel libera divulgacao e comissoes depois da aprovacao.',
     };
   }
 
@@ -324,9 +321,9 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     return {
       label: 'Ativo',
       tone: 'success' as const,
-      description: 'Seu perfil esta pronto para divulgacao e acompanhamento das comissoes geradas.',
+      description: 'Perfil liberado para divulgacao e acompanhamento.',
       noteTitle: 'Pronto para divulgar',
-      noteDescription: 'Use o codigo publico abaixo nas suas divulgacoes e acompanhe as comissoes conforme elas forem sendo registradas.',
+      noteDescription: 'Use o codigo publico e acompanhe as comissoes por aqui.',
     };
   }
 
@@ -334,18 +331,18 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     return {
       label: 'Suspenso',
       tone: 'danger' as const,
-      description: 'Seu acesso ao programa foi pausado. Se precisar retomar a operacao, entre em contato com o suporte ou com o admin.',
+      description: 'Seu acesso ao programa esta pausado.',
       noteTitle: 'Acesso pausado',
-      noteDescription: 'As novas divulgacoes devem ficar suspensas enquanto o backend mantiver este status.',
+      noteDescription: 'Mantenha as novas divulgacoes pausadas enquanto esse status estiver ativo.',
     };
   }
 
   return {
     label: status,
     tone: 'neutral' as const,
-    description: 'O perfil de afiliado foi carregado, mas este status ainda nao possui uma leitura contextual dedicada no frontend.',
+    description: 'Status carregado pelo backend.',
     noteTitle: 'Status carregado',
-    noteDescription: 'Use o proprio badge acima como referencia principal ate o contrato estabilizar todos os estados.',
+    noteDescription: 'Use o badge como referencia principal.',
   };
 }
 

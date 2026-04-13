@@ -127,6 +127,7 @@ Tasks:
 - [x] devolver no drawer do catalogo a visibilidade dos dados herdados do servico sincronizado em modo somente leitura
 - [x] mover o ajuste manual de carteira em `/admin/transactions` para drawer lateral e limpar a copy da tela
 - [x] corrigir o payload do sync de servicos do fornecedor para usar apenas as chaves exatas suportadas pelo backend
+- [x] compactar o admin para reduzir descricoes longas, panel-meta redundante e drawers excessivamente explicativos, mantendo filtros, estado e acoes intactos
 
 ## Phase 6: Customer Profile
 
@@ -164,6 +165,7 @@ Tasks:
 - [x] refinar carteira, pagamentos, pedidos e perfil com cards de contexto e hierarquia mais forte
 - [x] aprofundar polish dos detalhes de pedido e pagamento do cliente
 - [x] mover os detalhes de pagamentos e pedidos do cliente para drawers laterais nas proprias listagens
+- [x] compactar dashboard, perfil, afiliados, pagamentos, pedidos e carteira para reduzir copy redundante e deixar saldo, status e CTA mais escaneaveis
 
 ## Phase 8: Public Visual Polish
 
@@ -174,6 +176,7 @@ Tasks:
 - [x] refinar detalhe de servico com destaque de preco, disponibilidade e checkout
 - [x] realinhar a linguagem visual publica com a referencia dominante do Stitch
 - [x] transformar a home publica em landing page comercial da plataforma
+- [x] reduzir a copy e aproximar home, catalogo e detalhe do servico dos pontos de decisao, com menos narrativa e menos exposicao operacional do fornecedor na superficie principal
 
 ## Phase 9: Shared State Polish
 
@@ -188,6 +191,8 @@ Tasks:
 - [x] expandir a iconografia real para estados compartilhados e cards/jornadas principais
 - [x] simplificar a copy das telas principais para remover linguagem tecnica, redundancia e rotulos internos de sistema
 - [x] reorganizar hierarquia, CTA e traducao de labels tecnicos nas jornadas principais
+- [x] compactar `PageHeader`, `EmptyState`, `ErrorState`, `StatCard`, `AdminSlideOver` e o topo do shell autenticado para reduzir ruido textual e densidade sem mexer em fluxo
+- [x] fazer um passe final leve de consistencia textual e visual, removendo descricoes curtas redundantes, labels mistos PT/EN e estados vazios mais verbosos nas areas publica, cliente e admin
 
 ## Phase 10: Frontend Test Baseline
 
@@ -222,6 +227,8 @@ Tasks:
 Na proxima sessao do Codex:
 
 - tratar a V1 frontend de afiliados como encerrada e focar a proxima iteracao em qualidade e governanca
+- revisar tela a tela onde ainda vale remover descricoes longas agora que os componentes compartilhados aceitam cabecalhos mais compactos
+- revisar se alguns filtros publicos do catalogo merecem uma segunda rodada de simplificacao sem perder descobribilidade
 - cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
 - cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
 - decidir a politica de permanencia, substituicao e limpeza do `affiliateCode` armazenado no navegador

@@ -60,7 +60,6 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
         <PageHeader
           eyebrow="Admin / usuarios"
           title="Usuarios"
-          description="Acompanhe papel, status e acesso dos usuarios."
           actions={
             <>
               <Link href={createPath} className="primary-action">
@@ -115,7 +114,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
         />
 
         {users.items.length === 0 ? (
-          <EmptyState title="Nenhum usuario encontrado" description="Nenhum usuario foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum usuario encontrado" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['Nome', 'Email', 'Papel', 'Status', 'Acoes']}>
@@ -136,7 +135,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
                   </td>
                   <td>
                     <Link href={editPath(user.id)} className="table-link">
-                      Editar usuario
+                      Editar
                     </Link>
                   </td>
                 </tr>
@@ -155,7 +154,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
         )}
 
         {isCreateOpen ? (
-          <AdminSlideOver eyebrow="Novo usuario" title="Criar usuario" description="Preencha os dados basicos e defina papel e status." closeHref={returnTo}>
+          <AdminSlideOver eyebrow="Novo usuario" title="Criar usuario" closeHref={returnTo}>
             <AdminUserMutationForm mode="create" action={createUserAction} returnTo={returnTo} />
           </AdminSlideOver>
         ) : null}
@@ -164,7 +163,6 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
           <AdminSlideOver
             eyebrow="Usuarios"
             title={activeUser.name}
-            description="Edite o cadastro e ajuste a carteira sem sair da listagem."
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
@@ -172,7 +170,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Editar usuario</p>
-                    <h3>Informacoes principais</h3>
+                    <h3>Cadastro</h3>
                   </div>
                   <div className="feedback-actions">
                     <StatusBadge label={activeUser.role} tone={activeUser.role === 'admin' ? 'info' : 'neutral'} />
@@ -186,7 +184,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Carteira</p>
-                    <h3>Ajuste manual</h3>
+                    <h3>Ajuste</h3>
                   </div>
                 </div>
                 <AdminWalletAdjustmentForm action={createWalletAdjustmentAction} returnTo={returnTo} defaultUserId={activeUser.id} />

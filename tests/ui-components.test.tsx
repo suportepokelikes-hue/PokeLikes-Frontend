@@ -18,11 +18,11 @@ test('EmptyState renders feedback copy and optional CTA', () => {
     />,
   );
 
-  assert.match(html, /Sem resultados/);
   assert.match(html, /Nada por aqui/);
   assert.match(html, /A consulta nao retornou itens\./);
   assert.match(html, /href="\/catalog"/);
   assert.match(html, /Voltar ao catalogo/);
+  assert.doesNotMatch(html, /Estado vazio/);
 });
 
 test('ErrorState renders error shell and CTA only when provided', () => {
@@ -30,9 +30,10 @@ test('ErrorState renders error shell and CTA only when provided', () => {
     <ErrorState title="Falha" description="Nao foi possivel carregar." actionHref="/app" actionLabel="Tentar de novo" />,
   );
 
-  assert.match(html, /Erro de integracao/);
-  assert.match(html, /Estado de erro/);
+  assert.match(html, /Falha/);
   assert.match(html, /href="\/app"/);
+  assert.doesNotMatch(html, /Erro de integracao/);
+  assert.doesNotMatch(html, /Estado de erro/);
 
   const withoutAction = renderToStaticMarkup(<ErrorState title="Falha" description="Sem acao." />);
   assert.doesNotMatch(withoutAction, /feedback-actions/);
@@ -44,6 +45,14 @@ test('StatusBadge and PageHeader expose the expected semantic content', () => {
   assert.match(badgeHtml, />active</);
 
   const headerHtml = renderToStaticMarkup(
+    <PageHeader title="Cabecalho" />,
+  );
+
+  assert.match(headerHtml, /<h1>Cabecalho<\/h1>/);
+  assert.doesNotMatch(headerHtml, /section-copy/);
+  assert.doesNotMatch(headerHtml, /eyebrow/);
+
+  const fullHeaderHtml = renderToStaticMarkup(
     <PageHeader
       eyebrow="Admin / testes"
       title="Cabecalho"
@@ -52,8 +61,7 @@ test('StatusBadge and PageHeader expose the expected semantic content', () => {
     />,
   );
 
-  assert.match(headerHtml, /Admin \/ testes/);
-  assert.match(headerHtml, /<h1>Cabecalho<\/h1>/);
-  assert.match(headerHtml, /Descricao do cabecalho\./);
-  assert.match(headerHtml, /href="\/admin"/);
+  assert.match(fullHeaderHtml, /Admin \/ testes/);
+  assert.match(fullHeaderHtml, /Descricao do cabecalho\./);
+  assert.match(fullHeaderHtml, /href="\/admin"/);
 });

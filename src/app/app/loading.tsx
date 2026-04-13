@@ -4,8 +4,8 @@ export default function CustomerLoading() {
       <section className="section-header">
         <div>
           <p className="eyebrow">Cliente / carregando</p>
-          <h1>Carregando area autenticada.</h1>
-          <p className="section-copy">Aguarde enquanto consultamos wallet, pagamentos, pedidos e perfil no backend.</p>
+          <h1>Carregando area do cliente.</h1>
+          <p className="section-copy">Buscando saldo, pagamentos e pedidos.</p>
         </div>
       </section>
 

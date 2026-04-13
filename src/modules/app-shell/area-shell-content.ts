@@ -27,7 +27,7 @@ type AreaShellView = {
 const areaConfig = {
   customer: {
     label: 'Area cliente',
-    brandMeta: 'Likes Uai Client',
+    brandMeta: 'Area do cliente',
     links: [
       { href: '/', label: 'Publico', icon: 'public' },
       { href: '/app', label: 'Dashboard', icon: 'dashboard' },
@@ -41,7 +41,7 @@ const areaConfig = {
   },
   admin: {
     label: 'Area admin',
-    brandMeta: 'Likes Uai Console',
+    brandMeta: 'Console admin',
     links: [
       { href: '/admin', label: 'Dashboard', icon: 'dashboard' },
       { href: '/admin/users', label: 'Usuarios', icon: 'users' },
@@ -76,7 +76,7 @@ export function getAreaShellView(options: {
     eyebrow: config.label,
     title,
     userName: user.name,
-    userMeta: `${user.email} / ${user.status}`,
+    userMeta: `${user.email} - ${user.status}`,
     navigationLabel: `${config.label} navigation`,
     links: config.links.map((link) => ({
       ...link,

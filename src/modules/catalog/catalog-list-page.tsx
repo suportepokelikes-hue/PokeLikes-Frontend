@@ -30,30 +30,29 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
       <main className="page page-public">
         <AffiliateCodeCapture initialAffiliateCode={affiliateCodeFromUrl} />
         <PageHeader
-          eyebrow="Catalogo publico"
-          title="Servicos disponiveis"
-          description="Explore os servicos disponiveis e filtre o que voce precisa."
+          eyebrow="Catalogo"
+          title="Catalogo"
           actions={<CatalogFilterBar initialValues={catalogFilters} affiliateCodeFromUrl={affiliateCodeFromUrl} />}
         />
 
         <section className="catalog-overview-grid">
           <article className="catalog-spotlight">
             <div className="catalog-spotlight-head">
-              <span className="eyebrow">Catalogo</span>
-              <strong>{response.totalItems} servicos publicados</strong>
+              <span className="eyebrow">Resumo</span>
+              <strong>{response.totalItems} servicos</strong>
             </div>
-            <p>Veja o que esta disponivel, o que precisa de atencao e em qual pagina voce esta.</p>
+            <p>Preco, faixa e status na lista.</p>
             <div className="catalog-summary-strip">
               <div>
-                <span>Compraveis agora</span>
+                <span>Compraveis</span>
                 <strong>{purchasableCount}</strong>
               </div>
               <div>
-                <span>Com atencao</span>
+                <span>Atencao</span>
                 <strong>{degradedCount}</strong>
               </div>
               <div>
-                <span>Pagina atual</span>
+                <span>Pagina</span>
                 <strong>
                   {response.page} / {response.totalPages}
                 </strong>
@@ -62,31 +61,13 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
           </article>
 
           <article className="public-note-card catalog-note-card">
-            <strong>Antes de comprar</strong>
-            <p>Confira disponibilidade, faixa minima e maxima e status do servico.</p>
-          </article>
-        </section>
-
-        <section className="public-bento">
-          <article className="public-bento-card">
-            <span>Itens na pagina</span>
-            <strong>{response.items.length}</strong>
-            <p>{response.totalItems} servicos no total.</p>
-          </article>
-          <article className="public-bento-card">
-            <span>Compraveis</span>
-            <strong>{purchasableCount}</strong>
-            <p>Servicos prontos para checkout.</p>
-          </article>
-          <article className="public-bento-card">
-            <span>Com atencao</span>
-            <strong>{degradedCount}</strong>
-            <p>Itens degradados ou indisponiveis nesta pagina.</p>
+            <strong>Escolha pelo essencial</strong>
+            <p>Abra o servico e siga para compra.</p>
           </article>
         </section>
 
         {response.items.length === 0 ? (
-          <EmptyState title="Nenhum servico encontrado" description="Ajuste a busca ou os filtros para explorar outros servicos." />
+          <EmptyState title="Nenhum servico encontrado" description="Tente outra busca ou ajuste os filtros." />
         ) : (
           <>
             <section className="catalog-grid">
@@ -96,9 +77,7 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
             </section>
 
             <section className="pagination-panel">
-              <span>
-                Pagina {response.page} de {response.totalPages} · {response.totalItems} servicos
-              </span>
+              <span>{`Pagina ${response.page} de ${response.totalPages} · ${response.totalItems} servicos`}</span>
             </section>
           </>
         )}
@@ -107,7 +86,7 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
   } catch (error) {
     return (
       <main className="page page-public">
-        <PageHeader eyebrow="Catalogo publico" title="Servicos disponiveis" description="Veja preco, disponibilidade e filtros do catalogo." />
+        <PageHeader eyebrow="Catalogo" title="Catalogo" />
         <ErrorState title="Nao foi possivel carregar o catalogo" description={getErrorMessage(error, 'Tente novamente em instantes.')} />
       </main>
     );
@@ -119,43 +98,38 @@ function CatalogCard({ service, affiliateCodeFromUrl }: { service: CatalogServic
     <Link href={appendAffiliateCodeToPath(`/catalog/${service.id}`, affiliateCodeFromUrl)} className="catalog-card">
       <div className="catalog-card-head">
         <div className="stack-list">
-          <StatusBadge
-            label={service.availability.isPurchasable ? 'Compravel' : 'Indisponivel'}
-            tone={mapAvailabilityTone(service)}
-          />
-          <span className="catalog-meta">
-            {service.socialNetwork} / {service.category} / {service.type}
-          </span>
+          <StatusBadge label={getAvailabilityLabel(service)} tone={mapAvailabilityTone(service)} />
+          <span className="catalog-meta">{service.socialNetwork} / {service.category}</span>
         </div>
-        <span className="catalog-meta">{service.supplierService.supplierName}</span>
+        <span className="catalog-meta">{service.type}</span>
       </div>
 
       <div className="catalog-card-body">
         <h2>{service.name}</h2>
-        <p>{service.description || 'Servico sem descricao publicada.'}</p>
-      </div>
-
-      <div className="catalog-card-foot">
-        <StatusBadge label={service.availability.providerStatus} tone={mapAvailabilityTone(service)} />
-        <span className="panel-link">Abrir detalhe</span>
+        <p className="catalog-card-summary">{summarizeCopy(service.description || service.availability.reason, 112)}</p>
       </div>
 
       <dl className="catalog-stats">
         <div>
-          <dt>Preco</dt>
-          <dd>{formatMoney(service.publicPrice)}</dd>
-        </div>
-        <div>
-          <dt>Min / Max</dt>
+          <dt>Faixa</dt>
           <dd>
-            {service.minQuantity} / {service.maxQuantity}
+            {service.minQuantity} - {service.maxQuantity}
           </dd>
         </div>
         <div>
-          <dt>Motivo</dt>
-          <dd>{service.availability.reason}</dd>
+          <dt>Status</dt>
+          <dd>{getAvailabilityLabel(service)}</dd>
+        </div>
+        <div>
+          <dt>Compra</dt>
+          <dd>{service.availability.isPurchasable ? 'Liberada' : 'Em espera'}</dd>
         </div>
       </dl>
+
+      <div className="catalog-card-foot">
+        <strong className="catalog-card-price">{formatMoney(service.publicPrice)}</strong>
+        <span className="panel-link">Ver servico</span>
+      </div>
     </Link>
   );
 }
@@ -203,6 +177,28 @@ function mapAvailabilityTone(service: CatalogServiceResource) {
   }
 
   return 'success';
+}
+
+function getAvailabilityLabel(service: CatalogServiceResource) {
+  if (!service.availability.isPurchasable) {
+    return 'Indisponivel';
+  }
+
+  if (service.availability.providerStatus === 'degraded_low_balance') {
+    return 'Com atencao';
+  }
+
+  return 'Disponivel';
+}
+
+function summarizeCopy(value: string, maxLength: number) {
+  const compact = value.replace(/\s+/g, ' ').trim();
+
+  if (compact.length <= maxLength) {
+    return compact;
+  }
+
+  return `${compact.slice(0, Math.max(maxLength - 1, 1)).trimEnd()}...`;
 }
 
 function getErrorMessage(error: unknown, fallback: string) {

@@ -60,13 +60,12 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / fornecedores"
-          title="Fornecedores, servicos sincronizados e trilha tecnica."
-          description="A area unifica status dos providers, catalogo espelhado do fornecedor e os logs mais recentes de sincronizacao."
+          title="Fornecedores"
           actions={
             <>
               <AdminActionForm
                 action={refreshSupplierProvidersAction}
-                submitLabel="Atualizar providers"
+                submitLabel="Atualizar fornecedores"
                 pendingLabel="Atualizando..."
                 tone="secondary"
                 returnTo={serviceReturnTo}
@@ -95,19 +94,19 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
 
         <section className="metric-list">
           <AdminSummaryCard label="Provedores" value={String(providers.items.length)} meta={`${unavailableCount} indisponiveis`} />
-          <AdminSummaryCard label="Baixo saldo" value={String(lowBalanceCount)} meta="Degradacao operacional em aberto" tone="warning" />
-          <AdminSummaryCard label="Falhas recentes" value={String(failedLogs)} meta={`${services.totalItems} servicos sincronizados`} tone="danger" />
+          <AdminSummaryCard label="Baixo saldo" value={String(lowBalanceCount)} tone="warning" />
+          <AdminSummaryCard label="Falhas recentes" value={String(failedLogs)} meta={`${services.totalItems} servicos`} tone="danger" />
         </section>
 
         <section className="dashboard-grid">
           <article className="detail-card">
             <div className="panel-heading">
-              <h2>Status dos providers</h2>
-              <span className="panel-meta">Baseado em /admin/supplier/providers</span>
+              <h2>Status dos fornecedores</h2>
+              <span className="panel-meta">{providers.items.length} itens</span>
             </div>
 
             {providers.items.length === 0 ? (
-              <EmptyState title="Nenhum fornecedor encontrado" description="Nenhum fornecedor foi encontrado com os filtros atuais." />
+              <EmptyState title="Nenhum fornecedor encontrado" description="Ajuste os filtros." />
             ) : (
               <DataTable columns={['Fornecedor', 'Status', 'Saldo', 'Ultima checagem']}>
                 {providers.items.map((provider) => (
@@ -132,7 +131,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
           <article className="detail-card">
             <div className="panel-heading">
               <h2>Logs de sincronizacao</h2>
-              <span className="panel-meta">Ultimos eventos tecnicos</span>
+              <span className="panel-meta">{logs.totalItems} registros</span>
             </div>
             <AdminFilterBar
               pathname="/admin/supplier"
@@ -147,18 +146,18 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
               ]}
               fields={[
                 { name: 'logSupplierName', label: 'Fornecedor', defaultValue: logFilters.supplierName },
-                { name: 'syncType', label: 'Sync type', defaultValue: logFilters.syncType },
+                { name: 'syncType', label: 'Tipo sync', defaultValue: logFilters.syncType },
                 {
                   name: 'logStatus',
                   label: 'Status',
                   type: 'select',
                   defaultValue: logFilters.status,
                   options: [
-                    { label: 'Success', value: 'success' },
-                    { label: 'Failed', value: 'failed' },
+                    { label: 'Sucesso', value: 'success' },
+                    { label: 'Falha', value: 'failed' },
                   ],
                 },
-                { name: 'targetType', label: 'Target', defaultValue: logFilters.targetType },
+                { name: 'targetType', label: 'Alvo', defaultValue: logFilters.targetType },
                 {
                   name: 'logsPageSize',
                   label: 'Pagina',
@@ -174,7 +173,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
             />
 
             {logs.items.length === 0 ? (
-              <EmptyState title="Nenhum log encontrado" description="Ainda nao existem eventos de sincronizacao para exibir." />
+              <EmptyState title="Nenhum log encontrado" description="Sem eventos." />
             ) : (
               <>
                 <DataTable columns={['Fornecedor', 'Tipo', 'Alvo', 'Status', 'Janela']}>
@@ -224,8 +223,8 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
 
         <section className="detail-card detail-card-wide">
           <div className="panel-heading">
-            <h2>Servicos do fornecedor</h2>
-            <span className="panel-meta">Primeira pagina de /admin/supplier/services</span>
+              <h2>Servicos do fornecedor</h2>
+            <span className="panel-meta">{services.totalItems} itens</span>
           </div>
           <AdminFilterBar
             pathname="/admin/supplier"
@@ -267,7 +266,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
           />
 
           {services.items.length === 0 ? (
-            <EmptyState title="Nenhum servico sincronizado" description="Nenhum servico foi encontrado com os filtros atuais." />
+            <EmptyState title="Nenhum servico sincronizado" description="Ajuste os filtros." />
           ) : (
             <>
               <DataTable columns={['Fornecedor / SID', 'Servico', 'Categoria / tipo', 'Rate', 'Faixa', 'Flags', 'Sync']} >
@@ -296,7 +295,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                         <span className="panel-meta">{formatDateTime(service.syncedAt)}</span>
                         <AdminActionForm
                           action={syncSupplierServicesAction}
-                          submitLabel="Sync fornecedor"
+                          submitLabel="Sincronizar"
                           pendingLabel="Sincronizando..."
                           returnTo={serviceReturnTo}
                           hiddenFields={[{ name: 'supplierName', value: service.supplierName }]}

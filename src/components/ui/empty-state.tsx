@@ -3,25 +3,23 @@ import { ArrowRight, Inbox } from 'lucide-react';
 
 type EmptyStateProps = {
   title: string;
-  description: string;
+  description?: string;
   actionHref?: string;
   actionLabel?: string;
 };
 
 export function EmptyState({ title, description, actionHref, actionLabel }: EmptyStateProps) {
   return (
-    <section className="feedback-panel">
+    <section className="feedback-panel feedback-panel-compact">
       <div className="feedback-header">
         <div className="feedback-title-group">
           <span className="feedback-icon" aria-hidden="true">
             <Inbox size={18} strokeWidth={2.1} />
           </span>
-          <p className="eyebrow">Sem resultados</p>
+          <h2>{title}</h2>
         </div>
-        <span className="feedback-kicker">Estado vazio</span>
       </div>
-      <h2>{title}</h2>
-      <p className="section-copy">{description}</p>
+      {description ? <p className="section-copy feedback-copy">{description}</p> : null}
       {actionHref && actionLabel ? (
         <div className="feedback-actions">
           <Link href={actionHref} className="secondary-action">

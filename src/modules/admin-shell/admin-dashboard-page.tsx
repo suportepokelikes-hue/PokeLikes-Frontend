@@ -21,24 +21,23 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
         <PageHeader
           eyebrow="Admin / resumo"
           title="Resumo"
-          description="Acompanhe alertas, pagamentos e fornecedores."
         />
 
         <section className="metric-list">
           <StatCard label="Usuarios" value={formatCompactNumber(summary.users.total)} meta={`${summary.users.active} ativos`} />
-          <StatCard label="Volume confirmado" value={formatMoney(summary.payments.confirmedVolume)} meta="Pagamentos confirmados" tone="accent" />
-          <StatCard label="Alertas abertos" value={formatCompactNumber(summary.alerts.counts.open)} meta="Observabilidade operacional" tone="warning" />
+          <StatCard label="Volume confirmado" value={formatMoney(summary.payments.confirmedVolume)} tone="accent" />
+          <StatCard label="Alertas abertos" value={formatCompactNumber(summary.alerts.counts.open)} tone="warning" />
         </section>
 
         <section className="dashboard-grid">
           <article className="detail-card">
             <div className="panel-heading">
               <h2>Alertas mais recentes</h2>
-              <span className="panel-meta">Gerado em {formatDateTime(summary.generatedAt)}</span>
+              <span className="panel-meta">{formatDateTime(summary.generatedAt)}</span>
             </div>
 
             {summary.alerts.latestOpen.length === 0 ? (
-              <p className="section-copy">Nenhum alerta aberto no momento.</p>
+              <p className="section-copy">Sem alertas abertos.</p>
             ) : (
               <div className="stack-list">
                 {summary.alerts.latestOpen.map((alert) => (
@@ -48,9 +47,7 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
                       <StatusBadge label={alert.severity} tone={mapSeverityTone(alert.severity)} />
                     </div>
                     <p>{alert.message}</p>
-                    <span>
-                      ocorrencias: {alert.occurrenceCount} · ultimo evento {formatDateTime(alert.lastOccurredAt)}
-                    </span>
+                    <span>{alert.occurrenceCount} ocorrencias · {formatDateTime(alert.lastOccurredAt)}</span>
                   </div>
                 ))}
               </div>
@@ -60,7 +57,7 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
           <article className="detail-card">
             <div className="panel-heading">
               <h2>Fornecedores</h2>
-              <span className="panel-meta">{summary.suppliers.counts.total} provedores monitorados</span>
+              <span className="panel-meta">{summary.suppliers.counts.total} monitorados</span>
             </div>
 
             <DataTable columns={['Fornecedor', 'Status', 'Saldo', 'Ultima checagem']}>

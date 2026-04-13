@@ -26,7 +26,6 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
         <PageHeader
           eyebrow="Perfil"
           title="Minha conta"
-          description="Veja seus dados principais e o saldo atual."
           actions={
             <>
               <Link href="/app/wallet" className="secondary-action">
@@ -46,7 +45,7 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
               <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
             </div>
             <h2>{profile.name}</h2>
-            <p>Confira seus dados principais e acompanhe o saldo da carteira.</p>
+            <p>Dados principais da conta.</p>
             <div className="customer-highlight-list">
               <div>
                 <span>Email</span>
@@ -65,18 +64,14 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
 
           <article className="customer-note-card">
             <strong>{profile.emailVerified ? 'Email verificado' : 'Verificacao pendente'}</strong>
-            <p>
-              {profile.emailVerified
-                ? 'Seu email ja esta confirmado.'
-                : 'Confirme seu email para liberar etapas pendentes do programa de indicacao.'}
-            </p>
-            <p>Seu codigo atual: {referral.referralCode}</p>
+            <p>Codigo atual: {referral.referralCode}</p>
+            <p>{profile.emailVerified ? 'Conta pronta para indicar.' : 'Verifique o email para liberar o bonus.'}</p>
           </article>
         </section>
 
         <section className="detail-grid">
           <article className="detail-card">
-            <h2>Dados da conta</h2>
+            <h2>Conta</h2>
             <dl className="detail-list">
               <div>
                 <dt>Nome</dt>
@@ -103,7 +98,7 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
                 </dd>
               </div>
               <div>
-                <dt>Email</dt>
+                <dt>Verificacao</dt>
                 <dd>
                   <StatusBadge
                     label={profile.emailVerified ? 'verificado' : 'pendente'}

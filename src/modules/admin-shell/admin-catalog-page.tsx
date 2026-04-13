@@ -155,7 +155,6 @@ export async function AdminCatalogPage({
         <PageHeader
           eyebrow="Admin / catalogo"
           title="Catalogo"
-          description="Selecione um servico sincronizado, publique a versao publica e ajuste a afiliabilidade sem sair da mesma tela."
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
@@ -178,28 +177,24 @@ export async function AdminCatalogPage({
           <AdminSummaryCard
             label="Servicos publicos"
             value={String(visibleCatalogItems.length)}
-            meta={selectedSupplierName ? `Mostrando o lote atual de ${selectedSupplierName}` : `${catalog.totalItems} cadastrados no total`}
+            meta={selectedSupplierName ? selectedSupplierName : `${catalog.totalItems} no total`}
           />
-          <AdminSummaryCard label="Ativos" value={String(activeCount)} meta="Disponiveis para venda" tone="accent" />
-          <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco operacional`} tone="warning" />
-          <AdminSummaryCard label="Afiliaveis" value={String(affiliateEnabledCount)} meta="Com comissao ativa na pagina atual" />
+          <AdminSummaryCard label="Ativos" value={String(activeCount)} tone="accent" />
+          <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco`} tone="warning" />
+          <AdminSummaryCard label="Afiliaveis" value={String(affiliateEnabledCount)} meta="Na pagina" />
         </section>
 
         <section className="detail-card detail-card-wide">
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Catalogo sincronizado do fornecedor</p>
-              <h2>Selecionar e publicar</h2>
+              <h2>Sincronizados</h2>
             </div>
-            <span className="panel-meta">{supplierServices.totalItems} servicos sincronizados</span>
+            <span className="panel-meta">{supplierServices.totalItems} itens</span>
           </div>
-          <p className="section-copy">
-            Escolha um servico sincronizado para publicar no catalogo publico. O formulario abaixo preenche automaticamente
-            IDs, categoria, tipo e limites tecnicos.
-          </p>
 
           {supplierServices.items.length === 0 ? (
-            <EmptyState title="Nenhum servico sincronizado encontrado" description="Ajuste os filtros para encontrar um servico do fornecedor." />
+            <EmptyState title="Nenhum servico sincronizado encontrado" description="Ajuste os filtros." />
           ) : (
             <>
               <DataTable columns={['Fornecedor / SID', 'Servico', 'Categoria / tipo', 'Rate', 'Faixa', 'Flags', 'Acao']}>
@@ -265,22 +260,12 @@ export async function AdminCatalogPage({
           )}
         </section>
 
-        <section className="feedback-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Publicar no catalogo</p>
-              <h2>Selecione um servico sincronizado</h2>
-            </div>
-          </div>
-          <p>Escolha um item na lista acima para abrir o drawer de publicacao com os dados tecnicos ja preenchidos.</p>
-        </section>
-
         {affiliateSettingsError ? (
           <section className="feedback-panel">
             <div className="panel-heading">
               <div>
                 <p className="eyebrow">Afiliados no catalogo</p>
-                <h2>Leitura operacional indisponivel</h2>
+                <h2>Leitura indisponivel</h2>
               </div>
             </div>
             <p>{affiliateSettingsError}</p>
@@ -288,7 +273,7 @@ export async function AdminCatalogPage({
         ) : null}
 
         {visibleCatalogItems.length === 0 ? (
-          <EmptyState title="Nenhum servico publicado" description="Publique um servico sincronizado para ele aparecer no catalogo da plataforma." />
+          <EmptyState title="Nenhum servico publicado" description="Publique um servico sincronizado." />
         ) : (
           <>
             <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Afiliados', 'Fornecedor', 'Faixa', 'Acoes']}>
@@ -373,7 +358,6 @@ export async function AdminCatalogPage({
           <AdminSlideOver
             eyebrow="Publicar no catalogo"
             title="Novo servico publico"
-            description="Revise os dados publicos, ajuste preco e status e publique o servico."
             closeHref={returnTo}
           >
             <AdminCatalogMutationForm
@@ -393,7 +377,6 @@ export async function AdminCatalogPage({
           <AdminSlideOver
             eyebrow="Catalogo publicado"
             title={activeService.name}
-            description="Ajuste os dados publicos principais sem sair da listagem."
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
@@ -425,7 +408,6 @@ export async function AdminCatalogPage({
           <AdminSlideOver
             eyebrow="Catalogo / afiliados"
             title={activeAffiliateService.name}
-            description="Ative ou desligue a afiliabilidade e ajuste a comissao humana do servico publicado."
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
@@ -452,10 +434,10 @@ export async function AdminCatalogPage({
                 </div>
                 <p className="section-copy">
                   {activeAffiliateSettings
-                    ? `Ultima atualizacao em ${formatDateTime(activeAffiliateSettings.updatedAt)}.`
+                    ? `Atualizado em ${formatDateTime(activeAffiliateSettings.updatedAt)}.`
                     : affiliateSettingsError
                       ? affiliateSettingsError
-                      : 'Sem leitura previa de afiliacao para este servico. Ao salvar, o contrato atual do backend sera respeitado.'}
+                      : 'Sem leitura previa.'}
                 </p>
                 <AdminCatalogAffiliateSettingsForm
                   action={updateCatalogAffiliateSettingsAction}
@@ -476,10 +458,7 @@ export async function AdminCatalogPage({
   } catch (error) {
     return (
       <main className="page page-admin">
-        <ErrorState
-          title="Nao foi possivel carregar o catalogo admin"
-          description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista do catalogo.'}
-        />
+        <ErrorState title="Nao foi possivel carregar o catalogo admin" description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista do catalogo.'} />
       </main>
     );
   }
@@ -556,7 +535,7 @@ function renderCatalogAffiliateState(settings: AdminCatalogAffiliateSettingsReso
     return (
       <div className="stack-list">
         <StatusBadge label="sem leitura" tone="warning" />
-        <span className="panel-meta">Falha ao carregar afiliacao</span>
+        <span className="panel-meta">Falha na leitura</span>
       </div>
     );
   }
@@ -565,7 +544,7 @@ function renderCatalogAffiliateState(settings: AdminCatalogAffiliateSettingsReso
     return (
       <div className="stack-list">
         <StatusBadge label="nao configurado" tone="neutral" />
-        <span className="panel-meta">Abra o drawer para definir a regra</span>
+        <span className="panel-meta">Definir no drawer</span>
       </div>
     );
   }
@@ -578,7 +557,7 @@ function renderCatalogAffiliateState(settings: AdminCatalogAffiliateSettingsReso
           ? `${formatAffiliateCommissionPercent(settings.affiliateCommissionPercent)}${settings.affiliateEnabled ? '' : ' em referencia'}`
           : 'Sem percentual ativo'}
       </span>
-      <span className="panel-meta">Atualizado em {formatDateTime(settings.updatedAt)}</span>
+      <span className="panel-meta">{formatDateTime(settings.updatedAt)}</span>
     </div>
   );
 }

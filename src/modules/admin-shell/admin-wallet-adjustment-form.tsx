@@ -49,7 +49,7 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
 
         <label className="admin-user-field admin-user-field-wide">
           <span>Motivo</span>
-          <input type="text" name="reason" placeholder="Ex.: bonus promocional, correcao manual ou estorno" />
+          <input type="text" name="reason" placeholder="Ex.: bonus, correcao manual ou estorno" />
         </label>
       </div>
     </AdminActionForm>

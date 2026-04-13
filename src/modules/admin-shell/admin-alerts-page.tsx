@@ -56,8 +56,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / alertas"
-          title="Central de alertas operacionais."
-          description="A listagem mostra severidade, recorrencia e contexto retornados pelo backend sem esconder indisponibilidade ou degradacao."
+          title="Alertas"
           actions={
             <AdminFilterBar
               pathname="/admin/alerts"
@@ -80,8 +79,8 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
                   defaultValue: filters.severity,
                   options: [
                     { label: 'Info', value: 'info' },
-                    { label: 'Warning', value: 'warning' },
-                    { label: 'Critical', value: 'critical' },
+                    { label: 'Atencao', value: 'warning' },
+                    { label: 'Critico', value: 'critical' },
                   ],
                 },
                 { name: 'type', label: 'Tipo', defaultValue: filters.type },
@@ -112,13 +111,13 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Alertas na pagina" value={String(alerts.items.length)} meta={`${alerts.totalItems} registros no total`} />
-          <AdminSummaryCard label="Criticos abertos" value={String(criticalCount)} meta={`${openCount} abertos nesta pagina`} tone="danger" />
-          <AdminSummaryCard label="Resolvidos" value={String(resolvedCount)} meta="Historial recente de resolucao" tone="accent" />
+          <AdminSummaryCard label="Na pagina" value={String(alerts.items.length)} meta={`${alerts.totalItems} no total`} />
+          <AdminSummaryCard label="Criticos abertos" value={String(criticalCount)} meta={`${openCount} abertos`} tone="danger" />
+          <AdminSummaryCard label="Resolvidos" value={String(resolvedCount)} tone="accent" />
         </section>
 
         {alerts.items.length === 0 ? (
-          <EmptyState title="Nenhum alerta encontrado" description="Nenhum alerta foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum alerta encontrado" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['Severidade', 'Status', 'Detalhe', 'Ocorrencias', 'Timeline', 'Contexto', 'Acao']}>
@@ -134,13 +133,13 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
                     <div className="stack-list">
                       <strong>{alert.title}</strong>
                       <span className="panel-meta">{alert.message}</span>
-                      <span className="panel-meta">{alert.type} / {alert.fingerprint}</span>
+                      <span className="panel-meta">{alert.type} · {alert.fingerprint}</span>
                     </div>
                   </td>
                   <td>{alert.occurrenceCount}</td>
                   <td>
                     <div className="stack-list">
-                      <span className="panel-meta">Primeiro evento em {formatDateTime(alert.firstOccurredAt)}</span>
+                      <span className="panel-meta">{formatDateTime(alert.firstOccurredAt)}</span>
                       <span className="panel-meta">{renderAlertTimeline(alert)}</span>
                     </div>
                   </td>
@@ -156,7 +155,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
                         hiddenFields={[{ name: 'alertId', value: alert.id }]}
                       />
                     ) : (
-                      <span className="panel-meta">Ja resolvido</span>
+                      <span className="panel-meta">Resolvido</span>
                     )}
                   </td>
                 </tr>

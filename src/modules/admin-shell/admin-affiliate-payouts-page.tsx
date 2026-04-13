@@ -50,7 +50,6 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
         <PageHeader
           eyebrow="Admin / payouts afiliados"
           title="Payouts afiliados"
-          description="Registre payouts manuais e acompanhe o historico financeiro do programa de afiliados."
           actions={
             <>
               <Link href={createPath} className="primary-action">
@@ -78,7 +77,7 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
                   },
                   {
                     name: 'affiliateProfileId',
-                    label: 'Affiliate profile ID',
+                    label: 'Perfil',
                     defaultValue: filters.affiliateProfileId,
                   },
                   {
@@ -109,13 +108,13 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Na pagina" value={String(payouts.items.length)} meta={`${payouts.totalItems} payouts no total`} />
-          <AdminSummaryCard label="Paid" value={String(paidCount)} meta="Ja liquidados nesta pagina" tone="accent" />
-          <AdminSummaryCard label="Pending" value={String(pendingCount)} meta="Aguardando baixa definitiva" tone="warning" />
+          <AdminSummaryCard label="Na pagina" value={String(payouts.items.length)} meta={`${payouts.totalItems} no total`} />
+          <AdminSummaryCard label="Pagos" value={String(paidCount)} tone="accent" />
+          <AdminSummaryCard label="Pendentes" value={String(pendingCount)} tone="warning" />
         </section>
 
         {payouts.items.length === 0 ? (
-          <EmptyState title="Nenhum payout encontrado" description="Nenhum payout foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum payout encontrado" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['ID', 'Afiliado', 'Valor', 'Status', 'Pago em', 'Criado em', 'Observacao']}>
@@ -150,7 +149,6 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
           <AdminSlideOver
             eyebrow="Payout manual"
             title="Registrar payout afiliado"
-            description="Informe o perfil, o valor total e as referencias das comissoes approved do mesmo afiliado para registrar o payout com rastreio textual."
             closeHref={returnTo}
           >
             <AdminAffiliatePayoutForm action={createAffiliatePayoutAction} returnTo={returnTo} defaultAffiliateProfileId={filters.affiliateProfileId} />

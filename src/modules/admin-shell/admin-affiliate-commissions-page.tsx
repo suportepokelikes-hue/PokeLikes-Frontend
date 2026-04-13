@@ -31,7 +31,6 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
         <PageHeader
           eyebrow="Admin / comissoes afiliados"
           title="Comissoes afiliados"
-          description="Acompanhe valores, payout vinculado e estado operacional das comissoes de afiliados."
           actions={
             <AdminFilterBar
               pathname="/admin/affiliate-commissions"
@@ -56,7 +55,7 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
                 },
                 {
                   name: 'affiliateProfileId',
-                  label: 'Affiliate profile ID',
+                  label: 'Perfil',
                   defaultValue: filters.affiliateProfileId,
                 },
                 {
@@ -86,13 +85,13 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Na pagina" value={String(commissions.items.length)} meta={`${commissions.totalItems} comissoes no total`} />
-          <AdminSummaryCard label="Approved" value={String(approvedCount)} meta="Prontas para consolidacao manual" tone="warning" />
-          <AdminSummaryCard label="Paid" value={String(paidCount)} meta="Ja vinculadas a payout" tone="accent" />
+          <AdminSummaryCard label="Na pagina" value={String(commissions.items.length)} meta={`${commissions.totalItems} no total`} />
+          <AdminSummaryCard label="Aprovadas" value={String(approvedCount)} tone="warning" />
+          <AdminSummaryCard label="Pagas" value={String(paidCount)} tone="accent" />
         </section>
 
         {commissions.items.length === 0 ? (
-          <EmptyState title="Nenhuma comissao encontrada" description="Nenhuma comissao foi encontrada com os filtros atuais." />
+          <EmptyState title="Nenhuma comissao encontrada" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['ID', 'Afiliado', 'Pedido', 'Percentual', 'Valor', 'Status', 'Payout', 'Pago em', 'Criado em']}>

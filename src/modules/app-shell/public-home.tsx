@@ -12,23 +12,23 @@ type PublicHomeProps = {
 
 const platformHighlights = [
   {
-    title: 'Catalogo pronto para compra',
-    description: 'Explore servicos organizados por rede, faixa de quantidade e disponibilidade real antes de pagar.',
+    title: 'Escolha rapido',
+    description: 'Preco, faixa e status antes do clique.',
     icon: Sparkles,
   },
   {
-    title: 'Pagamento simples por PIX',
-    description: 'Gere o PIX, copie o codigo ou escaneie o QR code e acompanhe a confirmacao na propria conta.',
+    title: 'PIX direto',
+    description: 'Gere, pague e acompanhe na conta.',
     icon: CreditCard,
   },
   {
-    title: 'Acompanhamento de ponta a ponta',
-    description: 'Veja pedidos, pagamentos e carteira no mesmo fluxo, sem depender de telas tecnicas.',
+    title: 'Tudo na mesma area',
+    description: 'Saldo, pagamentos e pedidos no mesmo fluxo.',
     icon: Wallet,
   },
   {
-    title: 'Operacao com monitoramento',
-    description: 'A plataforma tambem possui area administrativa para controle de pagamentos, pedidos e fornecedores.',
+    title: 'Operacao no controle',
+    description: 'Pedidos, pagamentos e fornecedores no admin.',
     icon: ShieldCheck,
   },
 ] as const;
@@ -37,25 +37,25 @@ const howItWorks = [
   {
     step: '01',
     title: 'Escolha o servico',
-    description: 'Entre no catalogo, compare precos e confira a faixa de compra antes de seguir.',
+    description: 'Compare preco, faixa e disponibilidade.',
   },
   {
     step: '02',
     title: 'Adicione saldo por PIX',
-    description: 'Crie um pagamento, abra o QR code e aguarde a confirmacao para liberar a carteira.',
+    description: 'Pague por QR code ou copia e cola.',
   },
   {
     step: '03',
     title: 'Acompanhe seus pedidos',
-    description: 'Depois da compra, acompanhe tudo pela area do cliente com status claros e historico.',
+    description: 'Veja status e historico na sua conta.',
   },
 ] as const;
 
 const trustPoints = [
-  'Pagamento via PIX com codigo e QR code',
-  'Catalogo publico com disponibilidade',
-  'Carteira, pagamentos e pedidos em uma so area',
-  'Painel operacional para controle administrativo',
+  'PIX com QR code',
+  'Status visivel no catalogo',
+  'Pedidos e saldo na mesma conta',
+  'Painel admin separado',
 ] as const;
 
 export function PublicHome({ session }: PublicHomeProps) {
@@ -65,7 +65,7 @@ export function PublicHome({ session }: PublicHomeProps) {
   const sessionMessage =
     session.status === 'authenticated'
       ? `Sessao ativa como ${session.user.role === 'admin' ? 'admin' : 'cliente'}.`
-      : 'Cadastro rapido para comprar e acompanhar seus pedidos.';
+      : 'Conta pronta para comprar.';
 
   return (
     <main className="page page-public landing-page">
@@ -77,14 +77,12 @@ export function PublicHome({ session }: PublicHomeProps) {
             </div>
             <div>
               <p className="eyebrow">Likes Uai</p>
-              <strong className="landing-kicker">Plataforma para compra, recarga e acompanhamento de servicos digitais.</strong>
+              <strong className="landing-kicker">Catalogo, PIX e pedidos no mesmo fluxo.</strong>
             </div>
           </div>
 
-          <h1>Venda ativa, pagamento rapido e operacao organizada em um unico lugar.</h1>
-          <p className="lede">
-            {appName} reune catalogo publico, recarga via PIX, carteira, pedidos e painel operacional em uma experiencia unica e direta.
-          </p>
+          <h1>Compre servicos digitais sem perder tempo.</h1>
+          <p className="lede">{appName} junta catalogo, saldo e pedidos com status claro.</p>
 
           <div className="landing-actions">
             <Link href="/catalog" className="primary-action">
@@ -106,15 +104,15 @@ export function PublicHome({ session }: PublicHomeProps) {
 
         <aside className="landing-hero-panel">
           <div className="landing-panel-card landing-panel-primary">
-            <span className="eyebrow">Por que usar</span>
-            <h2>Fluxo enxuto para cliente, operacao forte para admin.</h2>
-            <p>Da vitrine publica ao acompanhamento do pedido, a plataforma reduz etapas e deixa o status sempre visivel.</p>
+            <span className="eyebrow">Decisao rapida</span>
+            <h2>Preco, faixa e disponibilidade sem rodeio.</h2>
+            <p>Voce chega ao essencial antes do checkout.</p>
           </div>
 
           <div className="landing-panel-card landing-panel-secondary">
-            <span className="eyebrow">Pronto para entrar</span>
+            <span className="eyebrow">Sua entrada</span>
             <strong>{sessionMessage}</strong>
-            <p>Voce pode abrir o catalogo agora, gerar um PIX quando precisar de saldo e acompanhar tudo na sua area.</p>
+            <p>Abra o catalogo ou siga para a sua area.</p>
           </div>
         </aside>
       </section>
@@ -122,7 +120,7 @@ export function PublicHome({ session }: PublicHomeProps) {
       <section className="landing-section">
         <div className="landing-section-head">
           <p className="eyebrow">Beneficios</p>
-          <h2>Uma jornada simples para quem compra e uma operacao confiavel para quem administra.</h2>
+          <h2>O que importa para decidir.</h2>
         </div>
 
         <div className="landing-grid landing-grid-four">
@@ -144,10 +142,8 @@ export function PublicHome({ session }: PublicHomeProps) {
       <section className="landing-showcase">
         <article className="landing-spotlight">
           <p className="eyebrow">Como funciona</p>
-          <h2>Voce entra, adiciona saldo e acompanha tudo sem trocar de contexto.</h2>
-          <p>
-            A area publica apresenta o catalogo, a area do cliente concentra pagamento e pedidos, e o admin fica reservado para a operacao.
-          </p>
+          <h2>Do catalogo ao pedido em tres passos.</h2>
+          <p>Escolha, pague e acompanhe.</p>
         </article>
 
         <div className="landing-steps">
@@ -164,8 +160,8 @@ export function PublicHome({ session }: PublicHomeProps) {
       <section className="landing-cta-banner">
         <div>
           <p className="eyebrow">Comece agora</p>
-          <h2>Abra o catalogo, crie sua conta e use a plataforma no seu proprio ritmo.</h2>
-          <p>Nao precisa navegar por paginas tecnicas. O fluxo principal ja esta pronto para compra, PIX e acompanhamento.</p>
+          <h2>Abra o catalogo e va direto ao que interessa.</h2>
+          <p>Quando quiser comprar, a conta e o PIX entram no fluxo.</p>
         </div>
         <div className="landing-actions">
           <Link href="/catalog" className="primary-action">

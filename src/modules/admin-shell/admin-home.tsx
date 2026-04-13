@@ -16,20 +16,20 @@ const adminMetrics = (user: UserSummary): ShellMetric[] => [
 ];
 
 const priorityLinks = [
-  { href: '/admin/alerts', label: 'Alertas', description: 'Ver o que exige acao agora.', icon: Bell },
-  { href: '/admin/orders', label: 'Pedidos', description: 'Acompanhar e sincronizar pedidos.', icon: ReceiptText },
-  { href: '/admin/payments', label: 'Pagamentos', description: 'Conferir e conciliar pagamentos.', icon: Wallet },
-  { href: '/admin/users', label: 'Usuarios', description: 'Criar e atualizar acessos.', icon: Users },
+  { href: '/admin/alerts', label: 'Alertas', description: 'Pendencias agora.', icon: Bell },
+  { href: '/admin/orders', label: 'Pedidos', description: 'Fila e sync.', icon: ReceiptText },
+  { href: '/admin/payments', label: 'Pagamentos', description: 'Conciliacao.', icon: Wallet },
+  { href: '/admin/users', label: 'Usuarios', description: 'Acesso e status.', icon: Users },
 ];
 
 const adminLinks = [
-  { href: '/admin/affiliates', label: 'Afiliados', description: 'Perfis, aprovacoes e suspensoes.', icon: Gift },
-  { href: '/admin/affiliate-commissions', label: 'Comissoes afiliados', description: 'Valores e status das comissoes.', icon: ReceiptText },
-  { href: '/admin/affiliate-payouts', label: 'Payouts afiliados', description: 'Registro manual e historico de payouts.', icon: Wallet },
-  { href: '/admin/catalog', label: 'Catalogo', description: 'Servicos, precos e disponibilidade.', icon: FolderKanban },
-  { href: '/admin/supplier', label: 'Fornecedores', description: 'Status e sincronizacao de fornecedores.', icon: ShieldCheck },
-  { href: '/admin/audits', label: 'Auditoria', description: 'Historico de acoes administrativas.', icon: ShieldCheck },
-  { href: '/admin/transactions', label: 'Transacoes', description: 'Lancamentos e movimentacoes.', icon: Wallet },
+  { href: '/admin/affiliates', label: 'Afiliados', description: 'Perfis e status.', icon: Gift },
+  { href: '/admin/affiliate-commissions', label: 'Comissoes afiliados', description: 'Valores e payout.', icon: ReceiptText },
+  { href: '/admin/affiliate-payouts', label: 'Payouts afiliados', description: 'Registro e historico.', icon: Wallet },
+  { href: '/admin/catalog', label: 'Catalogo', description: 'Publicacao e afiliacao.', icon: FolderKanban },
+  { href: '/admin/supplier', label: 'Fornecedores', description: 'Status e sync.', icon: ShieldCheck },
+  { href: '/admin/audits', label: 'Auditoria', description: 'Rastro admin.', icon: ShieldCheck },
+  { href: '/admin/transactions', label: 'Transacoes', description: 'Ledger e ajustes.', icon: Wallet },
 ];
 
 export function AdminHome({ user }: AdminHomeProps) {
@@ -39,8 +39,7 @@ export function AdminHome({ user }: AdminHomeProps) {
     <main className="page page-admin">
       <PageHeader
         eyebrow="Admin"
-        title="Visao geral"
-        description={`Ola, ${user.name}. Comece pelo que precisa de acao agora.`}
+        title="Painel admin"
         actions={
           <>
             <Link href="/admin/alerts" className="primary-action">
@@ -75,7 +74,7 @@ export function AdminHome({ user }: AdminHomeProps) {
               <strong>{item.label}</strong>
               <p>{item.description}</p>
               <span className="panel-link">
-                Abrir modulo <ArrowRight size={14} strokeWidth={2.15} aria-hidden="true" />
+                Abrir <ArrowRight size={14} strokeWidth={2.15} aria-hidden="true" />
               </span>
             </Link>
           );
@@ -95,7 +94,7 @@ export function AdminHome({ user }: AdminHomeProps) {
               <strong>{item.label}</strong>
               <p>{item.description}</p>
               <span className="panel-link">
-                Abrir modulo <ArrowRight size={14} strokeWidth={2.15} aria-hidden="true" />
+                Abrir <ArrowRight size={14} strokeWidth={2.15} aria-hidden="true" />
               </span>
             </Link>
           );

@@ -43,7 +43,6 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
         <PageHeader
           eyebrow="Admin / transacoes"
           title="Transacoes"
-          description="Acompanhe creditos, debitos e ajustes de carteira."
           actions={
             <>
               <Link href={adjustPath} className="primary-action">
@@ -84,13 +83,13 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Transacoes na pagina" value={String(transactions.items.length)} meta={`${transactions.totalItems} no total`} />
-          <AdminSummaryCard label="Creditos" value={String(credits)} meta={`${debits} debitos na mesma pagina`} tone="accent" />
-          <AdminSummaryCard label="Ultimo movimento" value={latestTransaction ? formatDateTime(latestTransaction) : '-'} meta="Movimento mais recente" />
+          <AdminSummaryCard label="Na pagina" value={String(transactions.items.length)} meta={`${transactions.totalItems} no total`} />
+          <AdminSummaryCard label="Creditos" value={String(credits)} meta={`${debits} debitos`} tone="accent" />
+          <AdminSummaryCard label="Ultimo movimento" value={latestTransaction ? formatDateTime(latestTransaction) : '-'} />
         </section>
 
         {transactions.items.length === 0 ? (
-          <EmptyState title="Nenhuma transacao encontrada" description="Nenhuma transacao foi encontrada com os filtros atuais." />
+          <EmptyState title="Nenhuma transacao encontrada" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['Usuario', 'Tipo', 'Direcao', 'Valor', 'Saldo antes / depois', 'Referencia', 'Criado em']}>
@@ -143,7 +142,6 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
           <AdminSlideOver
             eyebrow="Operacao manual"
             title="Ajustar carteira"
-            description="Credite ou debite saldo sem sair da listagem de transacoes."
             closeHref={returnTo}
           >
             <AdminWalletAdjustmentForm action={createWalletAdjustmentAction} returnTo={returnTo} defaultUserId={filters.userId} />
@@ -155,7 +153,7 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
     return (
       <main className="page page-admin">
         <ErrorState
-          title="Nao foi possivel carregar as transacoes admin"
+          title="Nao foi possivel carregar as transacoes"
           description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de transacoes.'}
         />
       </main>

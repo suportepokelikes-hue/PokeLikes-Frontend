@@ -25,14 +25,13 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / auditoria"
-          title="Rastro de acoes administrativas."
-          description="A auditoria expande a observabilidade do admin com entidade afetada, operador, origem da requisicao e payload resumido."
+          title="Auditoria"
           actions={
             <AdminFilterBar
               pathname="/admin/audits"
               fields={[
                 { name: 'search', label: 'Busca', type: 'search', placeholder: 'Acao ou entidade', defaultValue: filters.search },
-                { name: 'adminId', label: 'Admin ID', defaultValue: filters.adminId },
+                { name: 'adminId', label: 'ID do admin', defaultValue: filters.adminId },
                 { name: 'action', label: 'Acao', defaultValue: filters.action },
                 { name: 'entityType', label: 'Entidade', defaultValue: filters.entityType },
                 {
@@ -62,13 +61,13 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Eventos na pagina" value={String(audits.items.length)} meta={`${audits.totalItems} registros no total`} />
-          <AdminSummaryCard label="Admins distintos" value={String(distinctAdmins)} meta={`${distinctEntities} tipos de entidade`} tone="accent" />
-          <AdminSummaryCard label="Ultimo evento" value={latestEvent ? formatDateTime(latestEvent) : '-'} meta="Ordenacao descendente por data" />
+          <AdminSummaryCard label="Na pagina" value={String(audits.items.length)} meta={`${audits.totalItems} no total`} />
+          <AdminSummaryCard label="Admins distintos" value={String(distinctAdmins)} meta={`${distinctEntities} entidades`} tone="accent" />
+          <AdminSummaryCard label="Ultimo evento" value={latestEvent ? formatDateTime(latestEvent) : '-'} />
         </section>
 
         {audits.items.length === 0 ? (
-          <EmptyState title="Nenhum evento de auditoria" description="Nenhum evento foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum evento de auditoria" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['Acao', 'Entidade', 'Admin', 'Origem', 'Criado em', 'Payload']}>
@@ -78,7 +77,7 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
                   <td>
                     <div className="stack-list">
                       <strong>{audit.entityType}</strong>
-                      <span className="panel-meta">{audit.entityId || 'Sem entityId'}</span>
+                      <span className="panel-meta">{audit.entityId || 'Sem ID'}</span>
                     </div>
                   </td>
                   <td>
@@ -90,7 +89,7 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
                   <td>
                     <div className="stack-list">
                       <span className="panel-meta">{audit.ip || 'IP nao informado'}</span>
-                      <span className="panel-meta">{audit.userAgent || 'User-Agent nao informado'}</span>
+                      <span className="panel-meta">{audit.userAgent || 'Agent nao informado'}</span>
                     </div>
                   </td>
                   <td>{formatDateTime(audit.createdAt)}</td>

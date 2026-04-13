@@ -33,8 +33,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / pedidos"
-          title="Pedidos administrativos."
-          description="Acompanhe status, fornecedor e cobranca dos pedidos."
+          title="Pedidos"
           actions={
             <>
               <AdminFilterBar
@@ -94,13 +93,13 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Mutaveis" value={String(mutableCount)} meta="Pedidos ainda operacionais" tone="warning" />
-          <AdminSummaryCard label="Concluidos" value={String(completedCount)} meta="Pedidos fechados na pagina" tone="accent" />
+          <AdminSummaryCard label="Mutaveis" value={String(mutableCount)} meta="Operacionais" tone="warning" />
+          <AdminSummaryCard label="Concluidos" value={String(completedCount)} tone="accent" />
           <AdminSummaryCard label="Com atencao" value={String(failedCount)} meta="Falhos, parciais ou cancelados" tone="danger" />
         </section>
 
         {orders.items.length === 0 ? (
-          <EmptyState title="Nenhum pedido encontrado" description="Nenhum pedido foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum pedido encontrado" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['ID', 'Usuario', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
@@ -118,7 +117,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
                     <td>
                       <div className="stack-list">
                         <strong>{order.supplier.provider}</strong>
-                        <span className="panel-meta">{order.supplier.apiOrderId ?? 'Sem apiOrderId'}</span>
+                        <span className="panel-meta">{order.supplier.apiOrderId ?? 'Sem ID'}</span>
                       </div>
                     </td>
                     <td>{formatMoney(order.customerCharge)}</td>
@@ -156,7 +155,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
     return (
       <main className="page page-admin">
         <ErrorState
-          title="Nao foi possivel carregar os pedidos admin"
+          title="Nao foi possivel carregar os pedidos"
           description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de pedidos.'}
         />
       </main>

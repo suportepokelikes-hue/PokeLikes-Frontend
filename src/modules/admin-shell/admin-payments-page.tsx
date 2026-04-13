@@ -30,8 +30,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
       <main className="page page-admin">
         <PageHeader
           eyebrow="Admin / pagamentos"
-          title="Pagamentos administrativos."
-          description="Acompanhe status, valor e conciliacao dos pagamentos."
+          title="Pagamentos"
           actions={
             <>
               <AdminFilterBar
@@ -91,13 +90,13 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Pendentes" value={String(summary.counts.pending)} meta="Aguardando confirmacao ou conciliacao" tone="warning" />
-          <AdminSummaryCard label="Confirmados" value={String(summary.counts.confirmed)} meta="Pagamentos confirmados" tone="accent" />
-          <AdminSummaryCard label="Volume confirmado" value={formatMoney(summary.confirmedVolume)} meta="Total confirmado" />
+          <AdminSummaryCard label="Pendentes" value={String(summary.counts.pending)} tone="warning" />
+          <AdminSummaryCard label="Confirmados" value={String(summary.counts.confirmed)} tone="accent" />
+          <AdminSummaryCard label="Volume confirmado" value={formatMoney(summary.confirmedVolume)} />
         </section>
 
         {payments.items.length === 0 ? (
-          <EmptyState title="Nenhum pagamento encontrado" description="Nenhum pagamento foi encontrado com os filtros atuais." />
+          <EmptyState title="Nenhum pagamento encontrado" description="Ajuste os filtros." />
         ) : (
           <>
             <DataTable columns={['ID', 'Usuario', 'Metodo', 'Valor', 'Status', 'Criado em', 'Acao']}>
@@ -149,7 +148,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
     return (
       <main className="page page-admin">
         <ErrorState
-          title="Nao foi possivel carregar os pagamentos admin"
+          title="Nao foi possivel carregar os pagamentos"
           description={error instanceof ApiClientError ? error.message : 'Nao foi possivel buscar a lista de pagamentos.'}
         />
       </main>

@@ -20,7 +20,7 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
     >
       <div className="admin-user-form">
         <label className="admin-user-field">
-          <span>Affiliate profile ID</span>
+          <span>ID do perfil</span>
           <input type="text" name="affiliateProfileId" defaultValue={defaultAffiliateProfileId ?? ''} placeholder="Cole o ID do perfil" />
         </label>
 
@@ -30,7 +30,7 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
         </label>
 
         <label className="admin-user-field admin-user-field-wide">
-          <span>IDs de comissoes approved</span>
+          <span>IDs de comissoes aprovadas</span>
           <textarea
             name="commissionIds"
             rows={4}
@@ -48,7 +48,7 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
         </label>
 
         <p className="panel-meta">
-          Informe apenas comissoes approved do mesmo afiliado. Os IDs informados entram na observacao enviada ao backend para manter o rastreio operacional deste payout.
+          Use comissoes aprovadas do mesmo afiliado. Os IDs entram em `note`.
         </p>
       </div>
     </AdminActionForm>

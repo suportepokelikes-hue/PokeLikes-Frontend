@@ -11,11 +11,11 @@ import { ApiClientError } from '@/lib/api/http';
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath, getRegisterPath } from '@/lib/auth/navigation';
 import { formatDateTime, formatMoney } from '@/lib/format';
-import { AffiliateCodeCapture } from './affiliate-code-capture';
-import { AffiliateCodeInput } from './affiliate-code-input';
 import { createOrderAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm, TransactionTextarea } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
+import { AffiliateCodeCapture } from './affiliate-code-capture';
+import { AffiliateCodeInput } from './affiliate-code-input';
 
 type CatalogDetailPageProps = {
   serviceId: string;
@@ -32,12 +32,11 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
       <main className="page page-public">
         <AffiliateCodeCapture initialAffiliateCode={affiliateCodeFromUrl} />
         <PageHeader
-          eyebrow="Detalhe do servico"
+          eyebrow="Catalogo"
           title={service.name}
-          description={service.description || 'Confira os dados principais deste servico.'}
           actions={
             <div className="page-actions">
-              <StatusBadge label={service.availability.providerStatus} tone={mapAvailabilityTone(service)} />
+              <StatusBadge label={getAvailabilityLabel(service)} tone={mapAvailabilityTone(service)} />
               {session.status === 'authenticated' && session.user.role === 'customer' ? (
                 <Link href="#checkout" className="primary-action">
                   Comprar agora
@@ -53,14 +52,11 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
         <section className="public-hero-grid">
           <article className="public-spotlight">
             <div className="public-spotlight-head">
-              <span className="eyebrow">Disponibilidade</span>
-              <StatusBadge
-                label={service.availability.isPurchasable ? 'Compravel' : 'Indisponivel'}
-                tone={mapAvailabilityTone(service)}
-              />
+              <span className="eyebrow">Servico</span>
+              <StatusBadge label={getAvailabilityLabel(service)} tone={mapAvailabilityTone(service)} />
             </div>
             <h2>{formatMoney(service.publicPrice)}</h2>
-            <p>Confira preco, disponibilidade e faixa antes de comprar.</p>
+            <p>{service.description ? summarizeCopy(service.description, 140) : service.availability.reason}</p>
             <div className="public-highlight-list">
               <div>
                 <span>Rede</span>
@@ -77,25 +73,17 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
                 </strong>
               </div>
               <div>
-                <span>Fornecedor</span>
-                <strong>{service.supplierService.supplierName}</strong>
+                <span>Status</span>
+                <strong>{service.status}</strong>
               </div>
             </div>
           </article>
 
-          <article className="public-note-card">
-            <strong>Antes de comprar</strong>
-            <p>Se o servico estiver indisponivel, o motivo aparece nesta tela.</p>
-            <p>Entre com sua conta para seguir com o pedido.</p>
-          </article>
-        </section>
-
-        <section className="detail-grid">
-          <article id="checkout" className="detail-card detail-card-wide">
-            {session.status === 'authenticated' && session.user.role === 'customer' ? (
+          {session.status === 'authenticated' && session.user.role === 'customer' ? (
+            <div id="checkout" className="detail-checkout-shell">
               <TransactionForm
                 title="Criar pedido"
-                description="Preencha os dados do pedido para continuar."
+                description="Quantidade e link."
                 action={createOrderAction}
                 initialState={initialTransactionFormState}
                 submitLabel="Confirmar pedido"
@@ -134,10 +122,12 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
                   placeholder="Um comentario por linha, se o servico exigir."
                 />
               </TransactionForm>
-            ) : (
+            </div>
+          ) : (
+            <article id="checkout" className="detail-card detail-checkout-card">
               <div className="stack-item">
-                <strong>Quer comprar este servico?</strong>
-                <p>Entre como cliente para criar um pedido a partir deste item.</p>
+                <strong>Entre para comprar</strong>
+                <p>Crie o pedido nesta mesma tela.</p>
                 <div className="page-actions">
                   <Link href={getLoginPath({ reason: 'required', returnTo })} className="primary-action">
                     Entrar
@@ -147,27 +137,29 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
                   </Link>
                 </div>
               </div>
-            )}
-          </article>
+            </article>
+          )}
+        </section>
 
+        <section className="detail-grid">
           <article className="detail-card">
-            <h2>Resumo comercial</h2>
+            <h2>Compra</h2>
             <dl className="detail-list">
               <div>
-                <dt>Preco publico</dt>
+                <dt>Preco</dt>
                 <dd>{formatMoney(service.publicPrice)}</dd>
               </div>
               <div>
-                <dt>Quantidade minima</dt>
+                <dt>Minimo</dt>
                 <dd>{service.minQuantity}</dd>
               </div>
               <div>
-                <dt>Quantidade maxima</dt>
+                <dt>Maximo</dt>
                 <dd>{service.maxQuantity}</dd>
               </div>
               <div>
-                <dt>Status</dt>
-                <dd>{service.status}</dd>
+                <dt>Tipo</dt>
+                <dd>{service.type}</dd>
               </div>
             </dl>
           </article>
@@ -176,12 +168,12 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
             <h2>Disponibilidade</h2>
             <dl className="detail-list">
               <div>
-                <dt>Disponivel para compra</dt>
-                <dd>{service.availability.isPurchasable ? 'Sim' : 'Nao'}</dd>
+                <dt>Compra agora</dt>
+                <dd>{service.availability.isPurchasable ? 'Liberada' : 'Em espera'}</dd>
               </div>
               <div>
-                <dt>Status do fornecedor</dt>
-                <dd>{service.availability.providerStatus}</dd>
+                <dt>Situacao</dt>
+                <dd>{getAvailabilityLabel(service)}</dd>
               </div>
               <div>
                 <dt>Motivo</dt>
@@ -194,28 +186,30 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
             </dl>
           </article>
 
-          <article className="detail-card detail-card-wide">
-            <h2>Fornecedor</h2>
+          {service.description ? (
+            <article className="detail-card detail-card-wide">
+              <h2>Sobre o servico</h2>
+              <p>{service.description}</p>
+            </article>
+          ) : null}
+
+          <article className="detail-card">
+            <h2>Origem</h2>
             <dl className="detail-list">
               <div>
-                <dt>Nome</dt>
+                <dt>Fornecedor</dt>
                 <dd>{service.supplierService.supplierName}</dd>
               </div>
               <div>
-                <dt>ID do servico no fornecedor</dt>
+                <dt>Codigo externo</dt>
                 <dd>{service.supplierService.supplierServiceId}</dd>
               </div>
               <div>
-                <dt>Nome do servico no fornecedor</dt>
+                <dt>Nome de origem</dt>
                 <dd>{service.supplierService.name || '-'}</dd>
-              </div>
-              <div>
-                <dt>Ultimo erro</dt>
-                <dd>{service.supplierService.providerStatus?.lastErrorMessage || '-'}</dd>
               </div>
             </dl>
           </article>
-
         </section>
       </main>
     );
@@ -245,4 +239,26 @@ function mapAvailabilityTone(service: CatalogServiceResource) {
   }
 
   return 'success';
+}
+
+function getAvailabilityLabel(service: CatalogServiceResource) {
+  if (!service.availability.isPurchasable) {
+    return 'Indisponivel';
+  }
+
+  if (service.availability.providerStatus === 'degraded_low_balance') {
+    return 'Com atencao';
+  }
+
+  return 'Disponivel';
+}
+
+function summarizeCopy(value: string, maxLength: number) {
+  const compact = value.replace(/\s+/g, ' ').trim();
+
+  if (compact.length <= maxLength) {
+    return compact;
+  }
+
+  return `${compact.slice(0, Math.max(maxLength - 1, 1)).trimEnd()}...`;
 }

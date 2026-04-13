@@ -73,17 +73,16 @@ export function AdminSlideOver({
     <div className="admin-overlay-shell" data-state={isClosing ? 'closing' : 'open'}>
       <button type="button" className="admin-overlay-backdrop" aria-label={closeLabel} onClick={requestClose} />
       <aside className="admin-overlay-drawer" role="dialog" aria-modal="true" aria-label={title}>
-        <div className="panel-heading">
-          <div>
+        <div className={`panel-heading admin-overlay-heading${description ? '' : ' is-compact'}`}>
+          <div className="admin-overlay-heading-copy">
             {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
             <h2>{title}</h2>
+            {description ? <p className="panel-description">{description}</p> : null}
           </div>
           <button type="button" className="secondary-action admin-overlay-close" onClick={requestClose} aria-label={closeLabel}>
             <X size={16} strokeWidth={2.1} aria-hidden="true" />
-            <span>Fechar</span>
           </button>
         </div>
-        {description ? <p className="section-copy">{description}</p> : null}
         {children}
       </aside>
     </div>,

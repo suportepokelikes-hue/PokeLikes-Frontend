@@ -18,10 +18,7 @@ export function AffiliateApplyForm() {
         </div>
       </div>
 
-      <p className="section-copy">
-        Assim que voce solicitar a entrada, esta tela passa a mostrar o perfil de afiliado, o status atual, o codigo publico
-        e as suas comissoes.
-      </p>
+      <p className="section-copy">A solicitacao cria seu painel de afiliado para acompanhar status, codigo e comissoes.</p>
 
       <form action={formAction} className="feedback-actions">
         <ApplySubmitButton />

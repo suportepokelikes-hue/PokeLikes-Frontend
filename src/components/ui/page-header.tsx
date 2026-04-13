@@ -1,17 +1,20 @@
 type PageHeaderProps = {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
-  description: string;
+  description?: string;
   actions?: React.ReactNode;
+  compact?: boolean;
 };
 
-export function PageHeader({ eyebrow, title, description, actions }: PageHeaderProps) {
+export function PageHeader({ eyebrow, title, description, actions, compact = false }: PageHeaderProps) {
+  const isCompact = compact || !description;
+
   return (
-    <section className="section-header">
+    <section className={`section-header${isCompact ? ' section-header-compact' : ''}`}>
       <div className="section-header-copy">
-        <p className="eyebrow">{eyebrow}</p>
+        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
-        <p className="section-copy">{description}</p>
+        {description ? <p className="section-copy">{description}</p> : null}
       </div>
       {actions ? <div className="page-actions">{actions}</div> : null}
     </section>

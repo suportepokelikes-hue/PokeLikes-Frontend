@@ -27,7 +27,6 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
         <PageHeader
           eyebrow="Carteira"
           title="Carteira"
-          description="Veja seu saldo e as movimentações mais recentes."
         />
 
         <section className="customer-hero-grid">
@@ -37,42 +36,42 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
               <span className="panel-meta">Wallet {wallet.id}</span>
             </div>
             <h2>{formatMoney(wallet.availableBalance)}</h2>
-            <p>Seu saldo disponível para usar nos pedidos.</p>
+            <p>Saldo liberado para pedidos.</p>
             <div className="customer-highlight-list">
               <div>
-                <span>Creditos na pagina</span>
+                <span>Entradas</span>
                 <strong>{credits}</strong>
               </div>
               <div>
-                <span>Debitos na pagina</span>
+                <span>Saidas</span>
                 <strong>{debits}</strong>
               </div>
               <div>
-                <span>Total de eventos</span>
+                <span>Lancamentos</span>
                 <strong>{transactions.totalItems}</strong>
               </div>
             </div>
           </article>
 
           <article className="customer-note-card">
-            <strong>Importante</strong>
-            <p>O saldo só muda quando o pagamento for confirmado.</p>
+            <strong>Saldo liberado</strong>
+            <p>O PIX entra na carteira depois da confirmacao.</p>
           </article>
         </section>
 
         <section className="metric-list">
           <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} tone="accent" />
-          <StatCard label="Movimentacoes" value={`${transactions.totalItems}`} meta="Extrato paginado" />
-          <StatCard label="Wallet ID" value={wallet.id} meta="Identificador da carteira" />
+          <StatCard label="Entradas" value={`${credits}`} />
+          <StatCard label="Saidas" value={`${debits}`} />
         </section>
 
         {transactions.items.length === 0 ? (
-          <EmptyState title="Nenhuma transacao encontrada" description="A carteira ainda nao recebeu creditos ou debitos." />
+          <EmptyState title="Nenhuma transacao encontrada" description="Sem lancamentos." />
         ) : (
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
               <h2>Extrato recente</h2>
-              <span className="panel-meta">Movimentações mais recentes</span>
+              <span className="panel-meta">{transactions.totalItems} registro(s)</span>
             </div>
             <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>
               {transactions.items.map((transaction) => (

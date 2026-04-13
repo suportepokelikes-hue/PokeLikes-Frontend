@@ -13,7 +13,6 @@ import {
   Menu,
   PackageSearch,
   ReceiptText,
-  Search,
   Shield,
   Users,
   Wallet,
@@ -134,17 +133,10 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
               <Menu size={18} strokeWidth={2.1} aria-hidden="true" />
             </button>
 
-            <div>
+            <div className="area-header-copy">
               <p className="eyebrow">{view.eyebrow}</p>
               <h1>{view.title}</h1>
             </div>
-          </div>
-
-          <div className="area-toolbar">
-            <label className="area-search">
-              <Search size={16} strokeWidth={2.1} className="area-search-icon" aria-hidden="true" />
-              <input type="search" placeholder="Buscar nesta area" />
-            </label>
           </div>
         </header>
 

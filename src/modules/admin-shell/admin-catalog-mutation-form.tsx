@@ -42,14 +42,14 @@ export function AdminCatalogMutationForm({
     : creationDraft;
 
   if (isCreate && !creationDraft) {
-    return (
-      <div className="stack-list">
-        <div className="stack-item">
-          <strong>Selecione um servico sincronizado</strong>
-          <p>Escolha um item na lista acima para preencher automaticamente fornecedor, categoria, tipo e limites.</p>
-        </div>
-      </div>
-    );
+        return (
+          <div className="stack-list">
+            <div className="stack-item">
+              <strong>Selecione um servico sincronizado</strong>
+              <p>Abra um item da lista acima.</p>
+            </div>
+          </div>
+        );
   }
 
   const hiddenFields = service
@@ -77,7 +77,7 @@ export function AdminCatalogMutationForm({
       <div className="admin-catalog-form">
         {inheritedService ? (
           <div className="detail-card detail-card-wide">
-            <h2>Dados herdados do servico sincronizado</h2>
+            <h2>Dados herdados</h2>
             <dl className="detail-list">
               <div>
                 <dt>Fornecedor</dt>
@@ -96,11 +96,11 @@ export function AdminCatalogMutationForm({
                 <dd>{inheritedService.type}</dd>
               </div>
               <div>
-                <dt>Faixa minima</dt>
+                <dt>Minimo</dt>
                 <dd>{inheritedService.minQuantity}</dd>
               </div>
               <div>
-                <dt>Faixa maxima</dt>
+                <dt>Maximo</dt>
                 <dd>{inheritedService.maxQuantity}</dd>
               </div>
             </dl>
@@ -123,7 +123,7 @@ export function AdminCatalogMutationForm({
             name="description"
             defaultValue={service?.description ?? ''}
             className="admin-catalog-textarea"
-            placeholder="Descreva o servico para o catalogo publico"
+            placeholder="Descricao publica"
           />
         </label>
 

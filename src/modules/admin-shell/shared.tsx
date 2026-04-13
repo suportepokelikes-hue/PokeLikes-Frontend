@@ -17,7 +17,7 @@ type BadgeTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 type SummaryCardProps = {
   label: string;
   value: string;
-  meta: string;
+  meta?: string;
   tone?: 'default' | 'accent' | 'warning' | 'danger';
 };
 
@@ -61,9 +61,9 @@ type AdminFilterBarProps = {
 export function AdminSummaryCard({ label, value, meta, tone = 'default' }: SummaryCardProps) {
   return (
     <article className={`stat-card stat-${tone}`}>
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <p>{meta}</p>
+      <span className="stat-card-label">{label}</span>
+      <strong className="stat-card-value">{value}</strong>
+      {meta ? <p className="stat-card-meta">{meta}</p> : null}
     </article>
   );
 }
@@ -207,14 +207,14 @@ export function renderAuditPayload(audit: AuditResource) {
 
 export function summarizeSupplierStatus(provider: SupplierProviderStatusResource) {
   if (provider.operationalStatus === 'healthy') {
-    return 'Operacao saudavel';
+    return 'Saudavel';
   }
 
   if (provider.operationalStatus === 'degraded_low_balance') {
-    return provider.lastErrorCode ? `Baixo saldo / ${provider.lastErrorCode}` : 'Baixo saldo';
+    return provider.lastErrorCode ? `Baixo saldo · ${provider.lastErrorCode}` : 'Baixo saldo';
   }
 
-  return provider.lastErrorCode ? `Fornecedor indisponivel / ${provider.lastErrorCode}` : 'Fornecedor indisponivel';
+  return provider.lastErrorCode ? `Indisponivel · ${provider.lastErrorCode}` : 'Indisponivel';
 }
 
 export function summarizeSupplierSync(log: SupplierSyncLogResource) {
@@ -222,7 +222,7 @@ export function summarizeSupplierSync(log: SupplierSyncLogResource) {
     return `${formatDateTime(log.startedAt)} -> ${formatDateTime(log.finishedAt)}`;
   }
 
-  return `Iniciado em ${formatDateTime(log.startedAt)}`;
+  return `${formatDateTime(log.startedAt)}`;
 }
 
 export function mapCatalogStatusTone(status: string): BadgeTone {

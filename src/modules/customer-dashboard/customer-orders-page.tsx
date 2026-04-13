@@ -46,7 +46,6 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
         <PageHeader
           eyebrow="Pedidos"
           title="Pedidos"
-          description="Acompanhe o andamento de cada pedido."
           actions={
             <>
               <Link href="/catalog" className="primary-action">
@@ -60,18 +59,18 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
         />
 
         <section className="metric-list">
-          <StatCard label="Pedidos na pagina" value={String(orders.items.length)} meta={`${orders.totalItems} no total`} />
-          <StatCard label="Em andamento" value={String(openCount)} meta="Ainda precisam de atualizacao" tone="warning" />
-          <StatCard label="Concluidos" value={String(completedCount)} meta="Pedidos fechados" tone="accent" />
+          <StatCard label="Na pagina" value={String(orders.items.length)} meta={`${orders.totalItems} no total`} />
+          <StatCard label="Em andamento" value={String(openCount)} tone="warning" />
+          <StatCard label="Concluidos" value={String(completedCount)} tone="accent" />
         </section>
 
         {orders.items.length === 0 ? (
-          <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo para fazer seu primeiro pedido." />
+          <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo." />
         ) : (
           <section className="detail-card detail-card-wide">
             <div className="panel-heading">
-              <h2>Pedidos recentes</h2>
-              <span className="panel-meta">Status e cobranca atual</span>
+              <h2>Pedidos</h2>
+              <span className="panel-meta">{orders.totalItems} registro(s)</span>
             </div>
             <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
               {orders.items.map((order) => {
@@ -101,7 +100,6 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
           <AdminSlideOver
             eyebrow="Pedido"
             title={activeOrder.catalogService?.name || `Pedido ${activeOrder.id}`}
-            description="Acompanhe o andamento do pedido sem sair da lista."
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
@@ -113,7 +111,6 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                   </div>
                   {activeOrderStatusView ? <StatusBadge label={activeOrderStatusView.label} tone={activeOrderStatusView.tone} /> : null}
                 </div>
-                {activeOrderStatusView ? <p className="section-copy">{activeOrderStatusView.description}</p> : null}
                 {activeOrder.status === 'queued_supplier_balance' ? (
                   <p className="detail-note detail-note-warning">O pedido continua ativo. Seu saldo segue reservado enquanto o fornecedor retoma o processamento.</p>
                 ) : null}
@@ -141,7 +138,7 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Entrega</p>
-                    <h3>Link informado</h3>
+                    <h3>Link</h3>
                   </div>
                 </div>
                 <p className="code-block">{activeOrder.link}</p>
@@ -150,7 +147,7 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
               <article className="admin-inline-panel">
                 <div className="panel-heading">
                   <div>
-                    <p className="eyebrow">Historico</p>
+                    <p className="eyebrow">Timeline</p>
                     <h3>Atualizacoes</h3>
                   </div>
                 </div>
@@ -176,7 +173,7 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                     })}
                   </div>
                 ) : (
-                  <p className="section-copy">Ainda nao houve atualizacao para este pedido.</p>
+                  <p className="section-copy">Sem atualizacoes.</p>
                 )}
               </article>
             </section>

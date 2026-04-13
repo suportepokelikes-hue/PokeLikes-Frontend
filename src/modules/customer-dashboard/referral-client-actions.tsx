@@ -79,11 +79,11 @@ export function ReferralClientActions({
 
           {requestState.status === 'success' && requestState.previewHref ? (
             <div className="referral-dev-card">
-              <strong>Fluxo de desenvolvimento</strong>
-              <p>O backend devolveu um token de preview. Use o link abaixo para concluir a verificacao sem email real.</p>
+              <strong>Preview</strong>
+              <p>Use o link abaixo para concluir a verificacao em desenvolvimento.</p>
               <Link href={requestState.previewHref} className="secondary-action">
                 <ExternalLink size={16} strokeWidth={2.15} aria-hidden="true" />
-                Confirmar com token de preview
+                Abrir token de preview
               </Link>
             </div>
           ) : null}
@@ -99,7 +99,7 @@ function RequestVerificationButton() {
   return (
     <button type="submit" className="primary-action" disabled={pending}>
       <MailCheck size={16} strokeWidth={2.15} aria-hidden="true" />
-      {pending ? 'Solicitando...' : 'Solicitar verificacao de email'}
+      {pending ? 'Solicitando...' : 'Verificar email'}
     </button>
   );
 }

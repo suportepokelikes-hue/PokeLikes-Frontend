@@ -18,7 +18,7 @@ export function ReferralCard({ referral }: ReferralCardProps) {
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Indicacoes</p>
-          <h2>Programa de indicacao</h2>
+          <h2>Codigo e recompensas</h2>
         </div>
         <StatusBadge label={rewardStatus.label} tone={rewardStatus.tone} />
       </div>
@@ -27,29 +27,29 @@ export function ReferralCard({ referral }: ReferralCardProps) {
 
       <div className="referral-summary-grid">
         <div className="stack-item">
-          <span>Seu codigo</span>
+          <span>Codigo</span>
           <strong>{referral.referralCode}</strong>
           <p className="code-block">{referral.referralLink}</p>
         </div>
 
         <div className="stack-item">
           <span>Email</span>
-          <strong>{referral.emailVerified ? 'Verificado' : 'Pendente de verificacao'}</strong>
-          <p>{referral.emailVerified ? 'Seu email ja esta liberado para qualificacao de bonus.' : 'Verifique o email para liberar etapas pendentes do programa.'}</p>
+          <strong>{referral.emailVerified ? 'Verificado' : 'Pendente'}</strong>
+          <p>{referral.emailVerified ? 'Pronto para qualificacao.' : 'Verifique para liberar o bonus.'}</p>
         </div>
       </div>
 
       <div className="referral-rules-grid">
         <div className="stack-item">
-          <span>Deposito qualificado</span>
+          <span>Deposito</span>
           <strong>{formatMoney(referral.rewardRules.minimumTopupAmount)}</strong>
         </div>
         <div className="stack-item">
-          <span>Bonus do indicado</span>
+          <span>Bonus indicado</span>
           <strong>{formatMoney(referral.rewardRules.referredBonusAmount)}</strong>
         </div>
         <div className="stack-item">
-          <span>Bonus de quem indica</span>
+          <span>Seu bonus</span>
           <strong>{formatMoney(referral.rewardRules.referrerBonusAmount)}</strong>
         </div>
       </div>
@@ -71,17 +71,12 @@ export function ReferralCard({ referral }: ReferralCardProps) {
 
       {referral.ownReferralReward ? (
         <div className="stack-item">
-          <span>Sua ultima qualificacao</span>
+          <span>Ultimo bonus</span>
           <strong>{formatMoney(referral.ownReferralReward.referredBonusAmount)}</strong>
           <p>
-            Status {referral.ownReferralReward.status}
-            {referral.ownReferralReward.qualifyingAmount
-              ? `, deposito considerado ${formatMoney(referral.ownReferralReward.qualifyingAmount)}`
-              : ''}
-            {referral.ownReferralReward.processedAt
-              ? `, processado em ${formatDateTime(referral.ownReferralReward.processedAt)}`
-              : ''}
-            .
+            {`Status ${referral.ownReferralReward.status}`}
+            {referral.ownReferralReward.qualifyingAmount ? ` • Deposito ${formatMoney(referral.ownReferralReward.qualifyingAmount)}` : ''}
+            {referral.ownReferralReward.processedAt ? ` • ${formatDateTime(referral.ownReferralReward.processedAt)}` : ''}
           </p>
         </div>
       ) : null}
@@ -98,7 +93,7 @@ export function ReferralCard({ referral }: ReferralCardProps) {
         <div className="feedback-actions">
           <Link href="/app/payments" className="secondary-action">
             <Gift size={16} strokeWidth={2.15} aria-hidden="true" />
-            Fazer deposito qualificado
+            Fazer deposito
           </Link>
         </div>
       ) : null}
@@ -112,26 +107,26 @@ function getRewardStatusView(status: ReferralRewardStatus, minimumTopupAmount: {
       return {
         label: 'Aguardando email',
         tone: 'warning' as const,
-        description: 'Seu cadastro entrou no programa por indicacao. Verifique o email para liberar o bonus.',
+        description: 'Verifique o email para liberar o bonus.',
       };
     case 'pending_first_qualifying_topup':
       return {
         label: 'Aguardando deposito',
         tone: 'info' as const,
-        description: `Email verificado. Faca um primeiro deposito confirmado de pelo menos ${formatMoney(minimumTopupAmount)} para liberar o bonus.`,
+        description: `Faca um deposito confirmado de pelo menos ${formatMoney(minimumTopupAmount)}.`,
       };
     case 'rewarded':
       return {
         label: 'Bonus aplicado',
         tone: 'success' as const,
-        description: 'O bonus de indicacao ja foi aplicado no seu saldo.',
+        description: 'O bonus ja entrou no saldo.',
       };
     case 'not_referred':
     default:
       return {
         label: 'Pronto para indicar',
         tone: 'info' as const,
-        description: 'Seu codigo ja esta ativo para convidar outras pessoas e acompanhar o programa.',
+        description: 'Seu codigo ja esta ativo.',
       };
   }
 }
