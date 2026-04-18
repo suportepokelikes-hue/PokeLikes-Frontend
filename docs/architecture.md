@@ -244,10 +244,11 @@ src/
 - a proxima etapa de UX deve revisar o comportamento desses novos arranjos em telas menores e ajustar os modulos densos que ainda pedirem refinamento proprio
 - a proxima etapa deve consolidar a camada E2E com massa de teste estavel e ampliar os cenarios administrativos mais sensiveis ja sobre a nova base visual
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
-- a edicao de perfil do cliente continua bloqueada ate o contrato local especificar o request body de `PATCH /me`
+- `/app/profile` agora abre um drawer de edicao na propria tela, com formulario preparado para nome e telefone e email tratado como somente leitura nesta etapa
+- esse drawer ainda nao envia mutacao real porque o contrato operacional validado continua sem `requestBody` formal para `PATCH /me`; a integracao ficou isolada em helper/server action pendente
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
 - o proximo passo recomendado em qualidade e aumentar a cobertura de testes em torno de auth, query params e camada de API
-- o proximo passo recomendado no cliente continua sendo preparar a edicao de perfil assim que `PATCH /me` receber schema formal
+- o proximo passo recomendado no cliente e trocar o bloqueio atual do drawer de perfil pela mutacao real assim que `PATCH /me` receber schema formal para nome, telefone e eventual politica de email
 - a V1 frontend de afiliados pode ser considerada fechada com customer, catalogo publico, checkout, admin e catalog affiliate settings entregues contra o contrato validado
 - o proximo passo recomendado para afiliados agora e ampliar os E2E de `?aff= -> catalogo -> pedido` e do drawer de affiliate settings em `/admin/catalog`
 - depois disso, o foco deve ir para uma eventual politica de expiracao/limpeza do `affiliateCode` persistido no navegador e para a resincronizacao entre `docs/api/openapi.yaml` e `docs/contracts/backend-openapi.yaml`

@@ -2075,6 +2075,52 @@ button {
   gap: 0.9rem;
 }
 
+.customer-profile-inline-copy {
+  margin: 0 0 1rem;
+}
+
+.customer-profile-edit-form {
+  gap: 0.9rem;
+}
+
+.customer-profile-edit-note {
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background: rgba(0, 74, 198, 0.08);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.customer-profile-edit-note strong {
+  font-size: 0.9rem;
+}
+
+.customer-profile-edit-note p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.customer-profile-edit-submit {
+  width: fit-content;
+}
+
+.customer-profile-edit-message {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  font-size: 0.92rem;
+}
+
+.customer-profile-edit-message-blocked {
+  background: rgba(255, 215, 130, 0.22);
+  color: #8a5200;
+}
+
+.customer-profile-edit-message-error {
+  background: rgba(255, 218, 214, 0.82);
+  color: var(--danger);
+}
+
 .data-table-subrow td {
   padding-top: 0;
   background: rgba(242, 244, 246, 0.65);

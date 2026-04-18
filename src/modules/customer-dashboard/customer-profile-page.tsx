@@ -7,19 +7,25 @@ import { getCustomerProfile, getCustomerReferralSummary, getWalletSummary } from
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
+import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
+import { customerProfileEditContract } from './customer-profile-edit';
+import { CustomerProfileEditForm } from './customer-profile-edit-form';
 import { ReferralCard } from './referral-card';
 
 type CustomerProfilePageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
+  isEditOpen?: boolean;
 };
 
-export async function CustomerProfilePage({ session }: CustomerProfilePageProps) {
+export async function CustomerProfilePage({ session, isEditOpen = false }: CustomerProfilePageProps) {
   try {
     const [profile, wallet, referral] = await Promise.all([
       getCustomerProfile({ accessToken: session.accessToken }),
       getWalletSummary({ accessToken: session.accessToken }),
       getCustomerReferralSummary({ accessToken: session.accessToken }),
     ]);
+    const returnTo = '/app/profile';
+    const editPath = '/app/profile?edit=1';
 
     return (
       <main className="page page-customer">
@@ -28,6 +34,9 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
           title="Minha conta"
           actions={
             <>
+              <Link href={editPath} className="primary-action">
+                Editar dados
+              </Link>
               <Link href="/app/wallet" className="secondary-action">
                 Ver carteira
               </Link>
@@ -72,6 +81,9 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
         <section className="detail-grid">
           <article className="detail-card">
             <h2>Conta</h2>
+            <p className="customer-profile-inline-copy">
+              Nome e telefone ja possuem um fluxo de edicao preparado aqui na conta. O email continua protegido nesta etapa.
+            </p>
             <dl className="detail-list">
               <div>
                 <dt>Nome</dt>
@@ -115,6 +127,38 @@ export async function CustomerProfilePage({ session }: CustomerProfilePageProps)
 
           <ReferralCard referral={referral} />
         </section>
+
+        {isEditOpen ? (
+          <AdminSlideOver
+            eyebrow="Perfil"
+            title="Editar dados"
+            description={
+              customerProfileEditContract.isAvailable
+                ? 'Atualize seu cadastro sem sair desta tela.'
+                : 'Voce ja pode revisar os campos aqui. O salvamento continua aguardando a liberacao final dessa etapa.'
+            }
+            closeHref={returnTo}
+          >
+            <section className="admin-drawer-stack">
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Cadastro</p>
+                    <h3>Nome e telefone</h3>
+                  </div>
+                  <div className="feedback-actions">
+                    <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
+                    <StatusBadge
+                      label={profile.emailVerified ? 'email verificado' : 'email pendente'}
+                      tone={profile.emailVerified ? 'success' : 'warning'}
+                    />
+                  </div>
+                </div>
+                <CustomerProfileEditForm profile={profile} />
+              </article>
+            </section>
+          </AdminSlideOver>
+        ) : null}
       </main>
     );
   } catch (error) {
