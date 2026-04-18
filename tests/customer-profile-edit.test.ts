@@ -12,6 +12,7 @@ test('customer profile edit parser keeps only supported editable fields', () => 
   const formData = new FormData();
   formData.set('name', '  Maria Souza  ');
   formData.set('phone', '  (31) 99999-0000  ');
+  formData.set('taxId', ' 123.456.789-09 ');
   formData.set('email', 'maria@example.com');
 
   const parsed = parseCustomerProfileEditDraft(formData);
@@ -20,6 +21,7 @@ test('customer profile edit parser keeps only supported editable fields', () => 
   assert.deepEqual(parsed.value, {
     name: 'Maria Souza',
     phone: '(31) 99999-0000',
+    taxId: '123.456.789-09',
   });
 });
 
@@ -38,8 +40,21 @@ test('customer profile edit parser requires a visible account name', () => {
 test('customer profile edit contract exposes the supported editable fields', () => {
   assert.equal(customerProfileEditContract.endpoint, 'PATCH /me');
   assert.equal(customerProfileEditContract.isAvailable, true);
-  assert.deepEqual(customerProfileEditContract.editableFields, ['name', 'phone']);
+  assert.deepEqual(customerProfileEditContract.editableFields, ['name', 'phone', 'taxId']);
   assert.deepEqual(customerProfileEditContract.readonlyFields, ['email']);
+});
+
+test('customer profile edit parser rejects invalid tax ids before sending to backend', () => {
+  const formData = new FormData();
+  formData.set('name', 'Maria Souza');
+  formData.set('taxId', '12345');
+
+  assert.deepEqual(parseCustomerProfileEditDraft(formData), {
+    error: {
+      status: 'error',
+      message: 'Informe um CPF ou CNPJ valido para liberar a geracao de PIX.',
+    },
+  });
 });
 
 test('customer profile edit maps backend errors to inline feedback', () => {

@@ -20,7 +20,7 @@ test('getTransactionFormView exposes returnTo and submit labels for happy path',
   assert.equal(view.description, 'Gera uma cobranca real.');
   assert.equal(view.children, child);
   assert.equal(view.hiddenReturnTo, '/app/payments');
-  assert.equal(view.error, null);
+  assert.equal(view.feedback, null);
   assert.equal(view.submitLabel, 'Gerar PIX');
   assert.equal(view.pendingLabel, 'Processando...');
 });
@@ -37,7 +37,12 @@ test('getTransactionFormView builds fallback error when action returns no messag
   );
 
   assert.equal(explicitError.hiddenReturnTo, null);
-  assert.equal(explicitError.error, 'Saldo insuficiente');
+  assert.deepEqual(explicitError.feedback, {
+    tone: 'error',
+    message: 'Saldo insuficiente',
+    actionHref: null,
+    actionLabel: null,
+  });
 
   const fallbackError = getTransactionFormView(
     {
@@ -49,5 +54,34 @@ test('getTransactionFormView builds fallback error when action returns no messag
     { status: 'error' },
   );
 
-  assert.equal(fallbackError.error, 'Nao foi possivel concluir a operacao.');
+  assert.deepEqual(fallbackError.feedback, {
+    tone: 'error',
+    message: 'Nao foi possivel concluir a operacao.',
+    actionHref: null,
+    actionLabel: null,
+  });
+});
+
+test('getTransactionFormView exposes blocked CTA for fiscal identity requirements', () => {
+  const blocked = getTransactionFormView(
+    {
+      title: 'Criar PIX',
+      description: 'Fluxo do cliente.',
+      children: null,
+      submitLabel: 'Gerar PIX',
+    },
+    {
+      status: 'blocked',
+      message: 'Voce precisa completar o perfil.',
+      actionHref: '/app/profile?edit=1',
+      actionLabel: 'Completar CPF/CNPJ',
+    },
+  );
+
+  assert.deepEqual(blocked.feedback, {
+    tone: 'blocked',
+    message: 'Voce precisa completar o perfil.',
+    actionHref: '/app/profile?edit=1',
+    actionLabel: 'Completar CPF/CNPJ',
+  });
 });

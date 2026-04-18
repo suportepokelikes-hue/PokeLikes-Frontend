@@ -273,6 +273,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentResource'
+        '422':
+          description: Missing fiscal identity for PIX
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /me/payments:
     get:
       tags: [Payments]
@@ -1509,7 +1515,18 @@ components:
           type: string
         phone:
           type: string
+        taxId:
+          type: string
       additionalProperties: false
+    FiscalProfileResource:
+      type: object
+      properties:
+        taxId:
+          type: string
+        taxIdType:
+          type: string
+          enum: [cpf, cnpj]
+      required: [taxId, taxIdType]
     UserSummary:
       type: object
       properties:
@@ -1525,6 +1542,12 @@ components:
           format: email
         phone:
           type: string
+        taxId:
+          type: string
+        fiscalProfile:
+          oneOf:
+            - $ref: '#/components/schemas/FiscalProfileResource'
+            - type: 'null'
         status:
           type: string
         referralCode:

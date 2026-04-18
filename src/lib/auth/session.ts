@@ -87,6 +87,19 @@ export function deserializeUser(value: string): UserSummary | null {
       email: parsed.email,
       status: parsed.status,
       phone: typeof parsed.phone === 'string' ? parsed.phone : undefined,
+      taxId: typeof parsed.taxId === 'string' ? parsed.taxId : undefined,
+      fiscalProfile:
+        parsed.fiscalProfile &&
+        typeof parsed.fiscalProfile === 'object' &&
+        typeof parsed.fiscalProfile.taxId === 'string' &&
+        (parsed.fiscalProfile.taxIdType === 'cpf' || parsed.fiscalProfile.taxIdType === 'cnpj')
+          ? {
+              taxId: parsed.fiscalProfile.taxId,
+              taxIdType: parsed.fiscalProfile.taxIdType,
+            }
+          : parsed.fiscalProfile === null
+            ? null
+            : undefined,
       referralCode: typeof parsed.referralCode === 'string' ? parsed.referralCode : undefined,
       emailVerified: typeof parsed.emailVerified === 'boolean' ? parsed.emailVerified : undefined,
     };

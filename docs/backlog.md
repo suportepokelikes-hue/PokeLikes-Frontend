@@ -77,6 +77,7 @@ Tasks:
 - [x] detalhe do pagamento PIX
 - [x] renderizar QR code por `brCodeBase64` com copia de `brCode` e refresh de status
 - [x] reduzir o ruido de UX em `/app/payments`, priorizando o PIX em aberto e removendo um redirecionamento desnecessario
+- [x] adaptar `/app/payments` para a exigencia de identidade fiscal real, com aviso preventivo, CTA para perfil e tratamento explicito de `USER_FISCAL_IDENTITY_REQUIRED`
 
 ## Phase 4: Orders
 
@@ -139,6 +140,7 @@ Tasks:
 - [x] criar `/app/affiliate` com tratamento de `AffiliateProfile = null`, apply, status do perfil, summary, listagem das comissoes do usuario e entrada dedicada no shell do cliente
 - [x] preparar o drawer de edicao em `/app/profile` com campos de nome/telefone, email somente leitura e bloqueio isolado enquanto `PATCH /me` seguir sem schema formal
 - [x] habilitar edicao real de perfil com `PATCH /me`, feedback inline e retorno para a leitura atualizada
+- [x] expor `taxId` e `fiscalProfile` no perfil do cliente, com CTA explicito quando faltar CPF/CNPJ para PIX
 
 ## Affiliate V1 Checkpoint
 
@@ -235,6 +237,7 @@ Na proxima sessao do Codex:
 - revisar se alguns filtros publicos do catalogo merecem uma segunda rodada de simplificacao sem perder descobribilidade
 - cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
 - cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
+- cobrir em E2E o bloqueio de PIX sem CPF/CNPJ e a retomada do fluxo depois do preenchimento do perfil
 - decidir se a V2 vai precisar de expiracao ou limpeza automatica do `affiliateCode` armazenado no navegador
 - resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml`, especialmente na parte financeira de afiliados
 - so depois revisitar uma eventual formalizacao de `commissionIds` no payout, mantendo a separacao em relacao ao referral do usuario

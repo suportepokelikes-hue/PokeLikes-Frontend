@@ -6,13 +6,19 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { getCustomerPaymentDetail, getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
+import { getCustomerPaymentDetail, getCustomerProfile, getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import type { PaymentResource } from '@/lib/api/contracts';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { buildPathWithSearch } from '@/modules/admin-shell/shared';
+import {
+  formatTaxIdForDisplay,
+  getFiscalIdentityLabel,
+  getUserTaxId,
+  hasUserFiscalIdentity,
+} from '@/modules/customer-dashboard/customer-fiscal-profile';
 import { PaymentPixActions } from '@/modules/customer-dashboard/payment-pix-actions';
 import { getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
 import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
@@ -26,7 +32,8 @@ type CustomerPaymentsPageProps = {
 
 export async function CustomerPaymentsPage({ session, activePaymentId }: CustomerPaymentsPageProps) {
   try {
-    const [wallet, payments] = await Promise.all([
+    const [profile, wallet, payments] = await Promise.all([
+      getCustomerProfile({ accessToken: session.accessToken }),
       getWalletSummary({ accessToken: session.accessToken }),
       listCustomerPayments({ accessToken: session.accessToken }),
     ]);
@@ -47,6 +54,9 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
     const latestPendingPayment = pendingPayments[0] ?? null;
     const activePaymentStatus = activePayment ? getPaymentStatusView(activePayment.status) : null;
     const activePaymentQrImageSrc = activePayment ? getPaymentQrImageSrc(activePayment.brCodeBase64) : null;
+    const hasFiscalIdentity = hasUserFiscalIdentity(profile);
+    const taxId = getUserTaxId(profile);
+    const fiscalIdentityLabel = getFiscalIdentityLabel(profile);
 
     return (
       <main className="page page-customer">
@@ -54,23 +64,61 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           eyebrow="Pagamentos"
           title="Adicionar saldo com PIX"
           actions={
-            <Link href="/app/wallet" className="secondary-action">
-              Ver carteira
-            </Link>
+            <>
+              {!hasFiscalIdentity ? (
+                <Link href="/app/profile?edit=1" className="primary-action">
+                  Completar CPF/CNPJ
+                </Link>
+              ) : null}
+              <Link href="/app/wallet" className="secondary-action">
+                Ver carteira
+              </Link>
+            </>
           }
         />
 
+        {!hasFiscalIdentity ? (
+          <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
+            <strong>Antes de gerar PIX, complete seu CPF/CNPJ</strong>
+            <p>
+              O backend agora exige identidade fiscal real para criar novas cobrancas PIX. Atualize o perfil e volte
+              para continuar.
+            </p>
+          </div>
+        ) : null}
+
         <section className="dashboard-grid">
-          <TransactionForm
-            title="Gerar PIX"
-            description={`Saldo atual: ${formatMoney(wallet.availableBalance)}`}
-            action={createPixPaymentAction}
-            initialState={initialTransactionFormState}
-            submitLabel="Gerar PIX"
-            returnTo="/app/payments"
-          >
-            <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
-          </TransactionForm>
+          {hasFiscalIdentity ? (
+            <TransactionForm
+              title="Gerar PIX"
+              description={`Saldo atual: ${formatMoney(wallet.availableBalance)}. ${fiscalIdentityLabel} confirmado: ${formatTaxIdForDisplay(taxId)}.`}
+              action={createPixPaymentAction}
+              initialState={initialTransactionFormState}
+              submitLabel="Gerar PIX"
+              returnTo="/app/payments"
+            >
+              <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
+            </TransactionForm>
+          ) : (
+            <section className="detail-card">
+              <div className="panel-heading">
+                <div className="stack-item">
+                  <strong>CPF/CNPJ necessario para PIX</strong>
+                  <p>Complete esse dado no perfil antes de gerar uma nova cobranca.</p>
+                </div>
+              </div>
+              <div className="customer-profile-edit-note">
+                <strong>O que falta agora</strong>
+                <p>
+                  Seu cadastro ainda nao tem {fiscalIdentityLabel}. Sem isso, o backend retorna bloqueio na criacao do
+                  PIX.
+                </p>
+              </div>
+              <Link href="/app/profile?edit=1" className="primary-action">
+                Completar CPF/CNPJ
+              </Link>
+            </section>
+          )}
 
           {latestPendingPayment ? (
             <article className="customer-note-card customer-payment-focus-card">

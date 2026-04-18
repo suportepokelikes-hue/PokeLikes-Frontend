@@ -91,10 +91,12 @@ Toda nova sessao do Codex neste repositorio deve:
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - `/app/profile` agora tambem abre a edicao em drawer lateral na propria tela, com formulario pronto para nome e telefone, email explicitamente somente leitura e feedback inline para a pendencia atual
 - `/app/profile` agora salva nome e telefone por `PATCH /me`, mantem email como somente leitura, atualiza o cookie de usuario da sessao e fecha o drawer voltando para a leitura atualizada com `?updated=1`
+- `/app/profile` agora tambem trata identidade fiscal do cliente: mostra `taxId`/`fiscalProfile` quando presentes, explicita quando falta CPF/CNPJ para PIX e permite editar `taxId` no mesmo drawer de perfil
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
 - `/app/payments` e `/app/orders` agora tambem abrem seus detalhes em drawer lateral na propria listagem; as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento
 - o drawer de `/app/payments` agora tambem renderiza QR code a partir de `brCodeBase64`, oferece copia do codigo PIX por `brCode`, faz refresh manual/automatico enquanto o pagamento estiver pendente e a propria tela prioriza o PIX em aberto
+- `/app/payments` agora carrega o perfil junto com carteira e pagamentos para decidir antes do submit se o usuario pode gerar PIX; quando falta CPF/CNPJ, a tela mostra notice preventivo, substitui o formulario por CTA de continuidade para o perfil e ainda trata `422 USER_FISCAL_IDENTITY_REQUIRED` com mensagem acionavel
 - a home publica agora foi reescrita como landing page comercial da plataforma, com hero de marca, beneficios, prova de confianca e CTA de conversao
 - a listagem do catalogo e o detalhe do servico tambem receberam polimento visual alinhado ao Stitch dominante
 - `src/components/ui/empty-state.tsx` e `src/components/ui/error-state.tsx` agora sustentam um estado visual compartilhado mais forte, e `src/app/app/loading.tsx` cobre o loading do segmento autenticado do cliente

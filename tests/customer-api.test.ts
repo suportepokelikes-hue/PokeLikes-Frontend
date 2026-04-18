@@ -35,7 +35,10 @@ test('customer api functions target the expected endpoints and methods', async (
   try {
     await getWalletSummary({ accessToken: 'token' });
     await getCustomerProfile({ accessToken: 'token' });
-    await updateCustomerProfile({ accessToken: 'token' }, { name: 'Maria Souza', phone: '(31) 99999-0000' });
+    await updateCustomerProfile(
+      { accessToken: 'token' },
+      { name: 'Maria Souza', phone: '(31) 99999-0000', taxId: '123.456.789-09' },
+    );
     await getCustomerReferralSummary({ accessToken: 'token' });
     await getCustomerAffiliateProfile({ accessToken: 'token' });
     await applyToAffiliateProgram({ accessToken: 'token' });
@@ -83,7 +86,10 @@ test('customer api functions target the expected endpoints and methods', async (
   const pixRequest = requests[11];
   const orderRequest = requests[13];
 
-  assert.equal(updateProfileRequest.init?.body, JSON.stringify({ name: 'Maria Souza', phone: '(31) 99999-0000' }));
+  assert.equal(
+    updateProfileRequest.init?.body,
+    JSON.stringify({ name: 'Maria Souza', phone: '(31) 99999-0000', taxId: '123.456.789-09' }),
+  );
   assert.equal(new Headers(pixRequest.init?.headers).get('Authorization'), 'Bearer token');
   assert.equal(pixRequest.init?.body, JSON.stringify({ amount: '20' }));
   assert.equal(

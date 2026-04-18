@@ -8,6 +8,13 @@ import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
+import {
+  formatTaxIdForDisplay,
+  getFiscalIdentityLabel,
+  getUserTaxId,
+  getUserTaxIdType,
+  hasUserFiscalIdentity,
+} from './customer-fiscal-profile';
 import { CustomerProfileEditForm } from './customer-profile-edit-form';
 import { ReferralCard } from './referral-card';
 
@@ -30,6 +37,10 @@ export async function CustomerProfilePage({
     ]);
     const returnTo = '/app/profile';
     const editPath = '/app/profile?edit=1';
+    const hasFiscalIdentity = hasUserFiscalIdentity(profile);
+    const taxId = getUserTaxId(profile);
+    const taxIdType = getUserTaxIdType(profile);
+    const fiscalIdentityLabel = getFiscalIdentityLabel(profile);
 
     return (
       <main className="page page-customer">
@@ -58,6 +69,13 @@ export async function CustomerProfilePage({
           </div>
         ) : null}
 
+        {!hasFiscalIdentity ? (
+          <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
+            <strong>Complete seu CPF/CNPJ para gerar PIX</strong>
+            <p>Sem esse dado, novas recargas PIX ficam bloqueadas. Atualize o perfil para continuar.</p>
+          </div>
+        ) : null}
+
         <section className="customer-hero-grid">
           <article className="customer-spotlight">
             <div className="customer-spotlight-head">
@@ -76,6 +94,10 @@ export async function CustomerProfilePage({
                 <strong>{profile.phone || 'Sem telefone'}</strong>
               </div>
               <div>
+                <span>{fiscalIdentityLabel}</span>
+                <strong>{formatTaxIdForDisplay(taxId)}</strong>
+              </div>
+              <div>
                 <span>Saldo atual</span>
                 <strong>{formatMoney(wallet.availableBalance)}</strong>
               </div>
@@ -83,9 +105,13 @@ export async function CustomerProfilePage({
           </article>
 
           <article className="customer-note-card">
-            <strong>{profile.emailVerified ? 'Email verificado' : 'Verificacao pendente'}</strong>
-            <p>Codigo atual: {referral.referralCode}</p>
-            <p>{profile.emailVerified ? 'Conta pronta para indicar.' : 'Verifique o email para liberar o bonus.'}</p>
+            <strong>{hasFiscalIdentity ? 'Identidade fiscal pronta' : 'CPF/CNPJ pendente'}</strong>
+            <p>
+              {hasFiscalIdentity
+                ? `${taxIdType === 'cnpj' ? 'CNPJ' : 'CPF'} salvo para gerar PIX.`
+                : 'Voce precisa informar CPF ou CNPJ antes de criar novas cobrancas PIX.'}
+            </p>
+            <p>{hasFiscalIdentity ? formatTaxIdForDisplay(taxId) : 'Abra a edicao do perfil para completar esse dado.'}</p>
           </article>
         </section>
 
@@ -93,7 +119,7 @@ export async function CustomerProfilePage({
           <article className="detail-card">
             <h2>Conta</h2>
             <p className="customer-profile-inline-copy">
-              Atualize nome e telefone por aqui. O email continua protegido nesta etapa.
+              Atualize nome, telefone e CPF/CNPJ por aqui. O email continua protegido nesta etapa.
             </p>
             <dl className="detail-list">
               <div>
@@ -107,6 +133,19 @@ export async function CustomerProfilePage({
               <div>
                 <dt>Telefone</dt>
                 <dd>{profile.phone || 'Nao informado'}</dd>
+              </div>
+              <div>
+                <dt>{fiscalIdentityLabel}</dt>
+                <dd>{formatTaxIdForDisplay(taxId)}</dd>
+              </div>
+              <div>
+                <dt>PIX liberado</dt>
+                <dd>
+                  <StatusBadge
+                    label={hasFiscalIdentity ? 'pronto para gerar PIX' : 'complete CPF/CNPJ'}
+                    tone={hasFiscalIdentity ? 'success' : 'warning'}
+                  />
+                </dd>
               </div>
               <div>
                 <dt>Papel</dt>
@@ -151,13 +190,17 @@ export async function CustomerProfilePage({
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Cadastro</p>
-                    <h3>Nome e telefone</h3>
+                    <h3>Nome, telefone e CPF/CNPJ</h3>
                   </div>
                   <div className="feedback-actions">
                     <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
                     <StatusBadge
                       label={profile.emailVerified ? 'email verificado' : 'email pendente'}
                       tone={profile.emailVerified ? 'success' : 'warning'}
+                    />
+                    <StatusBadge
+                      label={hasFiscalIdentity ? 'PIX liberado' : 'CPF/CNPJ pendente'}
+                      tone={hasFiscalIdentity ? 'success' : 'warning'}
                     />
                   </div>
                 </div>

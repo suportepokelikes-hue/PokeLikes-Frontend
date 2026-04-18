@@ -1,11 +1,20 @@
 export type UserRole = 'customer' | 'admin';
 
+export type FiscalTaxIdType = 'cpf' | 'cnpj';
+
+export type FiscalProfileResource = {
+  taxId: string;
+  taxIdType: FiscalTaxIdType;
+};
+
 export type UserSummary = {
   id: string;
   role: UserRole;
   name: string;
   email: string;
   phone?: string;
+  taxId?: string;
+  fiscalProfile?: FiscalProfileResource | null;
   status: string;
   referralCode?: string;
   emailVerified?: boolean;
@@ -16,6 +25,7 @@ export type UserStatus = 'active' | 'disabled';
 export type UpdateCurrentUserProfileRequest = {
   name?: string;
   phone?: string;
+  taxId?: string;
 };
 
 export type AdminCreateUserRequest = {
@@ -46,6 +56,7 @@ export type RegisterRequest = {
   email: string;
   password: string;
   phone: string;
+  taxId?: string;
   referralCode?: string;
 };
 

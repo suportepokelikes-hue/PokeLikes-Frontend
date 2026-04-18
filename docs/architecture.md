@@ -67,6 +67,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o catalogo publico agora existe em `/catalog` e `/catalog/[serviceId]` usando os endpoints reais do dominio de catalogo
 - `/app`, `/app/wallet`, `/app/payments` e `/app/orders` consomem endpoints reais do cliente
 - `/app/profile` agora consome `GET /me` para expor os dados atuais do cliente autenticado
+- `/app/profile` agora tambem trata identidade fiscal do cliente a partir de `taxId` e/ou `fiscalProfile`, deixa explicito quando o dado falta e usa o proprio perfil como ponto de autogestao para liberar PIX
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente agora compartilham um tratamento visual mais editorial, com hero operacional, atalhos de fluxo e cards de contexto inspirados no Stitch dominante
 - os detalhes de pagamento e pedido do cliente agora seguem o mesmo padrao, com hero de status, resumo operacional e leitura mais clara dos dados assincronos do backend
 - `/app/payments` e `/app/orders` agora tambem absorvem os detalhes em drawers laterais na propria listagem, e as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento
@@ -74,6 +75,7 @@ Consolidar a arquitetura inicial do frontend da plataforma Likes Uai.
 - o catalogo e o detalhe de servico seguem um tratamento visual mais forte, com destaque de availability e CTA mais claro para a jornada publica
 - os estados compartilhados de empty/error ficaram mais ricos visualmente e a area do cliente agora tambem possui `loading.tsx` segmentado
 - `/app/payments` agora tambem cria cobranca PIX por `POST /me/payments/pix`
+- `/app/payments` agora tambem faz pre-check de identidade fiscal pelo perfil, bloqueia preventivamente a criacao quando faltar CPF/CNPJ e trata `422 USER_FISCAL_IDENTITY_REQUIRED` com CTA claro para `/app/profile?edit=1`
 - `/app/payments` agora renderiza o QR code via `brCodeBase64`, mantem copia por `brCode`, abre o pagamento atual com menos redirecionamentos e prioriza o PIX em aberto na propria tela
 - `/catalog/[serviceId]` agora permite criar pedido por `POST /me/orders` quando o cliente estiver autenticado
 - `/app/payments/[paymentId]` e `/app/orders/[orderId]` exibem detalhes reais do cliente
@@ -222,6 +224,7 @@ src/
 
 - status de sessao, disponibilidade e estados assincronos continuam sendo parte central da UX
 - a area do cliente deve priorizar clareza de fluxo para wallet, PIX e pedidos
+- no cliente, identidade fiscal passou a ser pre-condicao explicita para PIX: o perfil e a superficie principal de manutencao do CPF/CNPJ, e pagamentos deve orientar antes de falhar
 - a area de afiliados do cliente trata explicitamente o estado sem perfil, o status do programa e a leitura das comissoes como parte da jornada principal
 - a area admin deve priorizar densidade informacional e observabilidade operacional
 - no admin, afiliados e payout manual sao parte do fluxo operacional, nao um detalhe secundario escondido fora do catalogo e das listas financeiras
@@ -245,9 +248,10 @@ src/
 - a proxima etapa de UX deve revisar o comportamento desses novos arranjos em telas menores e ajustar os modulos densos que ainda pedirem refinamento proprio
 - a proxima etapa deve consolidar a camada E2E com massa de teste estavel e ampliar os cenarios administrativos mais sensiveis ja sobre a nova base visual
 - as proximas telas devem reutilizar o design system interno e os mesmos padroes de shell, tabela, toolbar e badges
-- `/app/profile` agora abre um drawer de edicao na propria tela, salva nome e telefone por `PATCH /me`, mantem email como somente leitura e volta para a leitura atualizada sem sair da rota
+- `/app/profile` agora abre um drawer de edicao na propria tela, salva nome, telefone e CPF/CNPJ por `PATCH /me`, mantem email como somente leitura e volta para a leitura atualizada sem sair da rota
 - o proximo passo recomendado no admin e revisar se ajustes de carteira e edicoes inline devem migrar para detalhes ou drawers dedicados
 - o proximo passo recomendado em qualidade e aumentar a cobertura de testes em torno de auth, query params e camada de API
+- o proximo passo recomendado no cliente e cobrir por E2E a jornada de PIX bloqueado por falta de CPF/CNPJ e a retomada apos completar o perfil
 - o proximo passo recomendado no cliente e revisar se a conta vai precisar de politica dedicada para troca de email ou limpeza explicita de telefone numa proxima iteracao
 - a V1 frontend de afiliados pode ser considerada fechada com customer, catalogo publico, checkout, admin e catalog affiliate settings entregues contra o contrato validado
 - o proximo passo recomendado para afiliados agora e ampliar os E2E de `?aff= -> catalogo -> pedido` e do drawer de affiliate settings em `/admin/catalog`

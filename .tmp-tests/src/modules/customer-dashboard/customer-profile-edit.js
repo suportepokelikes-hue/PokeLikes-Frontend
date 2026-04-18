@@ -4,18 +4,20 @@ exports.customerProfileEditContract = exports.initialCustomerProfileEditState = 
 exports.parseCustomerProfileEditDraft = parseCustomerProfileEditDraft;
 exports.mapCustomerProfileEditError = mapCustomerProfileEditError;
 const http_1 = require("../../lib/api/http");
+const customer_fiscal_profile_1 = require("./customer-fiscal-profile");
 exports.initialCustomerProfileEditState = {
     status: 'idle',
 };
 exports.customerProfileEditContract = {
     endpoint: 'PATCH /me',
     isAvailable: true,
-    editableFields: ['name', 'phone'],
+    editableFields: ['name', 'phone', 'taxId'],
     readonlyFields: ['email'],
 };
 function parseCustomerProfileEditDraft(formData) {
     const name = readTrimmedString(formData, 'name');
     const phone = readTrimmedString(formData, 'phone');
+    const taxId = readTrimmedString(formData, 'taxId');
     if (!name) {
         return {
             error: {
@@ -24,10 +26,19 @@ function parseCustomerProfileEditDraft(formData) {
             },
         };
     }
+    if (taxId && !(0, customer_fiscal_profile_1.isValidTaxIdInput)(taxId)) {
+        return {
+            error: {
+                status: 'error',
+                message: 'Informe um CPF ou CNPJ valido para liberar a geracao de PIX.',
+            },
+        };
+    }
     return {
         value: {
             name,
             ...(phone ? { phone } : {}),
+            ...(taxId ? { taxId } : {}),
         },
     };
 }

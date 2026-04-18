@@ -92,6 +92,16 @@ test('mapTransactionFormError preserves backend message and fallback', () => {
     message: 'Saldo insuficiente',
   });
 
+  assert.deepEqual(
+    mapTransactionFormError(new ApiClientError('Fiscal identity missing', 422, 'USER_FISCAL_IDENTITY_REQUIRED'), 'fallback'),
+    {
+      status: 'blocked',
+      message: 'Voce precisa informar um CPF ou CNPJ valido no perfil antes de gerar PIX.',
+      actionHref: '/app/profile?edit=1',
+      actionLabel: 'Completar CPF/CNPJ',
+    },
+  );
+
   assert.deepEqual(mapTransactionFormError(new Error('boom'), 'fallback'), {
     status: 'error',
     message: 'fallback',

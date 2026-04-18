@@ -7,9 +7,14 @@ function getTransactionFormView(content, state) {
         description: content.description,
         children: content.children,
         hiddenReturnTo: content.returnTo ?? null,
-        error: state.status === 'error'
-            ? state.message ?? 'Nao foi possivel concluir a operacao.'
-            : null,
+        feedback: state.status === 'idle'
+            ? null
+            : {
+                tone: state.status,
+                message: state.message ?? 'Nao foi possivel concluir a operacao.',
+                actionHref: state.actionHref ?? null,
+                actionLabel: state.actionLabel ?? null,
+            },
         submitLabel: content.submitLabel,
         pendingLabel: 'Processando...',
     };

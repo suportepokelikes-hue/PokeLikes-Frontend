@@ -12,6 +12,11 @@ const sampleUser = {
     name: 'Alice',
     email: 'alice@likesuai.com',
     phone: '31999999999',
+    taxId: '123.456.789-09',
+    fiscalProfile: {
+        taxId: '123.456.789-09',
+        taxIdType: 'cpf',
+    },
     status: 'active',
     referralCode: 'LIKES42',
     emailVerified: true,

@@ -84,6 +84,14 @@ function parseCreateOrderPayload(formData) {
 }
 function mapTransactionFormError(error, fallbackMessage) {
     if (error instanceof http_1.ApiClientError) {
+        if (error.code === 'USER_FISCAL_IDENTITY_REQUIRED') {
+            return {
+                status: 'blocked',
+                message: 'Voce precisa informar um CPF ou CNPJ valido no perfil antes de gerar PIX.',
+                actionHref: '/app/profile?edit=1',
+                actionLabel: 'Completar CPF/CNPJ',
+            };
+        }
         return {
             status: 'error',
             message: error.message || fallbackMessage,

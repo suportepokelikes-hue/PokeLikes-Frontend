@@ -44,7 +44,23 @@ export function TransactionForm({
       <form action={formAction} className="transaction-form">
         {view.hiddenReturnTo ? <input type="hidden" name="returnTo" value={view.hiddenReturnTo} /> : null}
         {view.children}
-        {view.error ? <p className="auth-error">{view.error}</p> : null}
+        {view.feedback ? (
+          view.feedback.tone === 'blocked' ? (
+            <div className="auth-notice auth-notice-warning" role="alert" aria-live="polite">
+              <strong>CPF/CNPJ necessario para PIX</strong>
+              <p>{view.feedback.message}</p>
+              {view.feedback.actionHref && view.feedback.actionLabel ? (
+                <a href={view.feedback.actionHref} className="secondary-action">
+                  {view.feedback.actionLabel}
+                </a>
+              ) : null}
+            </div>
+          ) : (
+            <p className="auth-error" role="alert" aria-live="polite">
+              {view.feedback.message}
+            </p>
+          )
+        ) : null}
         <SubmitButton label={view.submitLabel} pendingLabel={view.pendingLabel} />
       </form>
     </section>

@@ -18,7 +18,7 @@ Notas:
 
 - `/app`
 - `/app/affiliate` (entrada do programa quando `AffiliateProfile = null`; depois mostra status, summary e comissoes)
-- `/app/profile` (tambem abre drawer de edicao por query string, salva nome/telefone por `PATCH /me` e volta para a leitura atualizada sem sair da area da conta)
+- `/app/profile` (tambem abre drawer de edicao por query string, salva nome/telefone/CPF-CNPJ por `PATCH /me`, mantem email protegido e explicita quando a identidade fiscal ainda bloqueia PIX)
 - `/app/wallet`
 - `/app/payments`
 - `/app/payments/[paymentId]` (redireciona para drawer em `/app/payments`)
@@ -28,6 +28,7 @@ Notas:
 Notas:
 
 - o shell do cliente ja possui entrada dedicada para `Afiliados`
+- `/app/payments` faz pre-check de identidade fiscal carregando o perfil atual; quando faltar CPF/CNPJ, a tela troca o formulario por um bloqueio orientado a acao com CTA para `/app/profile?edit=1`
 
 ## Admin
 
