@@ -18,7 +18,7 @@ Notas:
 
 - `/app`
 - `/app/affiliate` (entrada do programa quando `AffiliateProfile = null`; depois mostra status, summary e comissoes)
-- `/app/profile` (tambem abre drawer de edicao por query string, sem sair da area da conta)
+- `/app/profile` (tambem abre drawer de edicao por query string, salva nome/telefone por `PATCH /me` e volta para a leitura atualizada sem sair da area da conta)
 - `/app/wallet`
 - `/app/payments`
 - `/app/payments/[paymentId]` (redireciona para drawer em `/app/payments`)

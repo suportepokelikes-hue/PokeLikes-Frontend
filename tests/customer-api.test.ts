@@ -16,6 +16,7 @@ import {
   listCustomerOrders,
   listCustomerPayments,
   listWalletTransactions,
+  updateCustomerProfile,
 } from '../src/lib/api/customer';
 
 test('customer api functions target the expected endpoints and methods', async () => {
@@ -34,6 +35,7 @@ test('customer api functions target the expected endpoints and methods', async (
   try {
     await getWalletSummary({ accessToken: 'token' });
     await getCustomerProfile({ accessToken: 'token' });
+    await updateCustomerProfile({ accessToken: 'token' }, { name: 'Maria Souza', phone: '(31) 99999-0000' });
     await getCustomerReferralSummary({ accessToken: 'token' });
     await getCustomerAffiliateProfile({ accessToken: 'token' });
     await applyToAffiliateProgram({ accessToken: 'token' });
@@ -61,6 +63,7 @@ test('customer api functions target the expected endpoints and methods', async (
     [
       { url: 'http://localhost:3001/v1/me/wallet', method: 'GET' },
       { url: 'http://localhost:3001/v1/me', method: 'GET' },
+      { url: 'http://localhost:3001/v1/me', method: 'PATCH' },
       { url: 'http://localhost:3001/v1/me/referral', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/affiliate', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/affiliate/apply', method: 'POST' },
@@ -76,9 +79,11 @@ test('customer api functions target the expected endpoints and methods', async (
     ],
   );
 
-  const pixRequest = requests[10];
-  const orderRequest = requests[12];
+  const updateProfileRequest = requests[2];
+  const pixRequest = requests[11];
+  const orderRequest = requests[13];
 
+  assert.equal(updateProfileRequest.init?.body, JSON.stringify({ name: 'Maria Souza', phone: '(31) 99999-0000' }));
   assert.equal(new Headers(pixRequest.init?.headers).get('Authorization'), 'Bearer token');
   assert.equal(pixRequest.init?.body, JSON.stringify({ amount: '20' }));
   assert.equal(

@@ -8,6 +8,7 @@ import type {
   PaginatedResponse,
   PaymentResource,
   ReferralSummaryResponse,
+  UpdateCurrentUserProfileRequest,
   UserSummary,
   WalletSummary,
   WalletTransactionResource,
@@ -29,6 +30,15 @@ export function getCustomerProfile({ accessToken }: AuthOptions) {
   return apiRequest<UserSummary>({
     path: '/me',
     accessToken,
+  });
+}
+
+export function updateCustomerProfile({ accessToken }: AuthOptions, payload: UpdateCurrentUserProfileRequest) {
+  return apiRequest<UserSummary>({
+    path: '/me',
+    method: 'PATCH',
+    accessToken,
+    body: payload,
   });
 }
 

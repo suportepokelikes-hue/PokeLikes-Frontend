@@ -8,16 +8,20 @@ import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
-import { customerProfileEditContract } from './customer-profile-edit';
 import { CustomerProfileEditForm } from './customer-profile-edit-form';
 import { ReferralCard } from './referral-card';
 
 type CustomerProfilePageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   isEditOpen?: boolean;
+  profileUpdated?: boolean;
 };
 
-export async function CustomerProfilePage({ session, isEditOpen = false }: CustomerProfilePageProps) {
+export async function CustomerProfilePage({
+  session,
+  isEditOpen = false,
+  profileUpdated = false,
+}: CustomerProfilePageProps) {
   try {
     const [profile, wallet, referral] = await Promise.all([
       getCustomerProfile({ accessToken: session.accessToken }),
@@ -46,6 +50,13 @@ export async function CustomerProfilePage({ session, isEditOpen = false }: Custo
             </>
           }
         />
+
+        {profileUpdated ? (
+          <div className="auth-notice auth-notice-success" role="status" aria-live="polite">
+            <strong>Dados atualizados</strong>
+            <p>Seu perfil foi salvo e a leitura abaixo ja mostra as informacoes novas.</p>
+          </div>
+        ) : null}
 
         <section className="customer-hero-grid">
           <article className="customer-spotlight">
@@ -82,7 +93,7 @@ export async function CustomerProfilePage({ session, isEditOpen = false }: Custo
           <article className="detail-card">
             <h2>Conta</h2>
             <p className="customer-profile-inline-copy">
-              Nome e telefone ja possuem um fluxo de edicao preparado aqui na conta. O email continua protegido nesta etapa.
+              Atualize nome e telefone por aqui. O email continua protegido nesta etapa.
             </p>
             <dl className="detail-list">
               <div>
@@ -132,11 +143,7 @@ export async function CustomerProfilePage({ session, isEditOpen = false }: Custo
           <AdminSlideOver
             eyebrow="Perfil"
             title="Editar dados"
-            description={
-              customerProfileEditContract.isAvailable
-                ? 'Atualize seu cadastro sem sair desta tela.'
-                : 'Voce ja pode revisar os campos aqui. O salvamento continua aguardando a liberacao final dessa etapa.'
-            }
+            description="Atualize seu cadastro sem sair desta tela."
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">

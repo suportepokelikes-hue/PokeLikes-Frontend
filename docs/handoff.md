@@ -90,7 +90,7 @@ Toda nova sessao do Codex neste repositorio deve:
 - `/verify-email` agora executa a confirmacao do token e atualiza o cookie de usuario quando a sessao atual pertence ao mesmo usuario confirmado
 - ja existe `/app/profile` consumindo `GET /me` para validar os dados atuais do cliente autenticado
 - `/app/profile` agora tambem abre a edicao em drawer lateral na propria tela, com formulario pronto para nome e telefone, email explicitamente somente leitura e feedback inline para a pendencia atual
-- a mutacao real de perfil ainda nao foi ligada porque `docs/contracts/backend-openapi.yaml` continua listando `PATCH /me` sem `requestBody`; a acao server-side do drawer devolve esse bloqueio de forma isolada, sem inventar payload
+- `/app/profile` agora salva nome e telefone por `PATCH /me`, mantem email como somente leitura, atualiza o cookie de usuario da sessao e fecha o drawer voltando para a leitura atualizada com `?updated=1`
 - dashboard, carteira, pagamentos, pedidos e perfil do cliente receberam um polimento visual alinhado ao Stitch dominante, com hero cards, atalhos e notas operacionais
 - os detalhes do cliente para pagamento e pedido agora seguem o mesmo padrao visual, com hero de status e leitura operacional mais forte
 - `/app/payments` e `/app/orders` agora tambem abrem seus detalhes em drawer lateral na propria listagem; as rotas `/app/payments/[paymentId]` e `/app/orders/[orderId]` ficaram apenas como redirecionamento

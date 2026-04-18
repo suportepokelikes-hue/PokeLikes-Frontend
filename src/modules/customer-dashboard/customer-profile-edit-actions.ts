@@ -1,11 +1,14 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
+import { updateCustomerProfile } from '@/lib/api/customer';
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath } from '@/lib/auth/navigation';
+import { writeServerUserCookie } from '@/lib/auth/server-cookies';
 import {
-  createCustomerProfileEditBlockedState,
+  mapCustomerProfileEditError,
   parseCustomerProfileEditDraft,
   type CustomerProfileEditState,
 } from './customer-profile-edit';
@@ -26,5 +29,14 @@ export async function updateCustomerProfileAction(
     return parsed.error;
   }
 
-  return createCustomerProfileEditBlockedState(parsed.value);
+  try {
+    const updatedProfile = await updateCustomerProfile({ accessToken: session.accessToken }, parsed.value);
+    await writeServerUserCookie(updatedProfile);
+  } catch (error) {
+    return mapCustomerProfileEditError(error);
+  }
+
+  revalidatePath('/app');
+  revalidatePath('/app/profile');
+  redirect('/app/profile?updated=1');
 }

@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  createCustomerProfileEditBlockedState,
   customerProfileEditContract,
+  mapCustomerProfileEditError,
   parseCustomerProfileEditDraft,
 } from '../src/modules/customer-dashboard/customer-profile-edit';
+import { ApiClientError } from '../src/lib/api/http';
 
 test('customer profile edit parser keeps only supported editable fields', () => {
   const formData = new FormData();
@@ -34,19 +35,25 @@ test('customer profile edit parser requires a visible account name', () => {
   });
 });
 
-test('customer profile edit stays blocked while PATCH /me has no validated request body', () => {
+test('customer profile edit contract exposes the supported editable fields', () => {
   assert.equal(customerProfileEditContract.endpoint, 'PATCH /me');
-  assert.equal(customerProfileEditContract.isAvailable, false);
-  assert.match(customerProfileEditContract.reason, /request body/i);
+  assert.equal(customerProfileEditContract.isAvailable, true);
+  assert.deepEqual(customerProfileEditContract.editableFields, ['name', 'phone']);
+  assert.deepEqual(customerProfileEditContract.readonlyFields, ['email']);
+});
 
-  const state = createCustomerProfileEditBlockedState({
-    name: 'Maria Souza',
-    phone: '(31) 99999-0000',
+test('customer profile edit maps backend errors to inline feedback', () => {
+  const error = new ApiClientError('Telefone invalido para este cadastro.', 400, 'validation_error');
+
+  assert.deepEqual(mapCustomerProfileEditError(error), {
+    status: 'error',
+    message: 'Telefone invalido para este cadastro.',
   });
+});
 
-  assert.deepEqual(state, {
-    status: 'blocked',
-    message:
-      'Seu painel de edicao ja esta pronto, mas o salvamento ainda depende da liberacao segura dessa atualizacao no backend. Enquanto isso, seu email, nome e telefone seguem como consulta.',
+test('customer profile edit falls back to a generic inline error when needed', () => {
+  assert.deepEqual(mapCustomerProfileEditError(new Error('boom')), {
+    status: 'error',
+    message: 'Nao foi possivel atualizar seus dados agora.',
   });
 });

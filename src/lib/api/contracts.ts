@@ -13,6 +13,11 @@ export type UserSummary = {
 
 export type UserStatus = 'active' | 'disabled';
 
+export type UpdateCurrentUserProfileRequest = {
+  name?: string;
+  phone?: string;
+};
+
 export type AdminCreateUserRequest = {
   name: string;
   email: string;

@@ -35,8 +35,8 @@ export function CustomerProfileEditForm({ profile }: CustomerProfileEditFormProp
       </div>
 
       <div className="customer-profile-edit-note">
-        <strong>Edicao preparada nesta tela</strong>
-        <p>Assim que a atualizacao for liberada com seguranca, este mesmo painel passa a concluir o salvamento sem tirar voce de /app/profile.</p>
+        <strong>O que voce consegue ajustar aqui</strong>
+        <p>Atualize nome e telefone sem sair da conta. O email continua somente para leitura nesta versao.</p>
       </div>
 
       <SubmitButton />
@@ -44,7 +44,7 @@ export function CustomerProfileEditForm({ profile }: CustomerProfileEditFormProp
       {state.status !== 'idle' ? (
         <p
           className={`customer-profile-edit-message customer-profile-edit-message-${state.status}`}
-          role="status"
+          role="alert"
           aria-live="polite"
         >
           {state.message}

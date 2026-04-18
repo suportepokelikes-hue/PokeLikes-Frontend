@@ -1,16 +1,18 @@
+import type { UpdateCurrentUserProfileRequest } from '../../lib/api/contracts';
+import { ApiClientError } from '../../lib/api/http';
+
 export type CustomerProfileEditState =
   | {
       status: 'idle';
       message?: undefined;
     }
   | {
-      status: 'blocked' | 'error';
+      status: 'error';
       message: string;
     };
 
-export type CustomerProfileEditDraft = {
+export type CustomerProfileEditDraft = UpdateCurrentUserProfileRequest & {
   name: string;
-  phone?: string;
 };
 
 export const initialCustomerProfileEditState: CustomerProfileEditState = {
@@ -19,8 +21,9 @@ export const initialCustomerProfileEditState: CustomerProfileEditState = {
 
 export const customerProfileEditContract = {
   endpoint: 'PATCH /me',
-  isAvailable: false,
-  reason: 'O contrato operacional validado ainda nao descreve o request body aceito para atualizar o proprio perfil.',
+  isAvailable: true,
+  editableFields: ['name', 'phone'],
+  readonlyFields: ['email'],
 } as const;
 
 export function parseCustomerProfileEditDraft(
@@ -46,15 +49,21 @@ export function parseCustomerProfileEditDraft(
   };
 }
 
-export function createCustomerProfileEditBlockedState(_: CustomerProfileEditDraft): CustomerProfileEditState {
-  return {
-    status: 'blocked',
-    message:
-      'Seu painel de edicao ja esta pronto, mas o salvamento ainda depende da liberacao segura dessa atualizacao no backend. Enquanto isso, seu email, nome e telefone seguem como consulta.',
-  };
-}
-
 function readTrimmedString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === 'string' ? value.trim() : '';
+}
+
+export function mapCustomerProfileEditError(error: unknown): CustomerProfileEditState {
+  if (error instanceof ApiClientError) {
+    return {
+      status: 'error',
+      message: error.message || 'Nao foi possivel atualizar seus dados agora.',
+    };
+  }
+
+  return {
+    status: 'error',
+    message: 'Nao foi possivel atualizar seus dados agora.',
+  };
 }

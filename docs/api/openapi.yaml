@@ -193,6 +193,10 @@ paths:
     get:
       tags: [Users]
       summary: Current user profile
+      description: |
+        Returns the authenticated user's own profile.
+        The response is stable for the frontend profile area and includes the same
+        identity flags exposed by the auth session summary.
       security:
         - bearerAuth: []
       responses:
@@ -205,8 +209,32 @@ paths:
     patch:
       tags: [Users]
       summary: Update current user profile
+      description: |
+        V1 self-service profile update for the authenticated user.
+
+        Editable fields in V1:
+        - `name`
+        - `phone`
+
+        Not editable in V1:
+        - `email`
+        - `role`
+        - `status`
+        - password and any other sensitive account fields
+
+        Unsupported or sensitive keys are rejected explicitly with `VALIDATION_ERROR`.
+
+        `email` is intentionally not supported here because the current backend
+        already has email verification and session flows tied to the persisted address,
+        and there is no safe end-to-end email-change flow formalized yet.
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMyProfileRequest'
       responses:
         '200':
           description: Updated user profile
@@ -214,6 +242,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserSummary'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /me/wallet:
     get:
       tags: [Wallet]
@@ -1650,13 +1682,37 @@ components:
           format: email
         phone:
           type: string
+          nullable: true
         status:
           type: string
+          enum: [active, disabled]
         referralCode:
           type: string
         emailVerified:
           type: boolean
-      required: [id, role, name, email, status]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, role, name, email, phone, status, referralCode, emailVerified, createdAt, updatedAt]
+    UpdateMyProfileRequest:
+      type: object
+      additionalProperties: false
+      description: |
+        V1 self-service profile payload for `PATCH /v1/me`.
+        At least one editable field must be provided.
+        `email` is intentionally absent because the route rejects email changes in V1.
+        Additional or sensitive properties are rejected explicitly.
+      properties:
+        name:
+          type: string
+          description: New display name for the authenticated user.
+        phone:
+          type: string
+          description: New phone number for the authenticated user.
+      minProperties: 1
     AdminCreateUserRequest:
       type: object
       properties:

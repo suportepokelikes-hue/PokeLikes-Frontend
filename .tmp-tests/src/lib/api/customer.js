@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWalletSummary = getWalletSummary;
 exports.getCustomerProfile = getCustomerProfile;
+exports.updateCustomerProfile = updateCustomerProfile;
 exports.getCustomerReferralSummary = getCustomerReferralSummary;
 exports.getCustomerAffiliateProfile = getCustomerAffiliateProfile;
 exports.applyToAffiliateProgram = applyToAffiliateProgram;
@@ -25,6 +26,14 @@ function getCustomerProfile({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me',
         accessToken,
+    });
+}
+function updateCustomerProfile({ accessToken }, payload) {
+    return (0, http_1.apiRequest)({
+        path: '/me',
+        method: 'PATCH',
+        accessToken,
+        body: payload,
     });
 }
 function getCustomerReferralSummary({ accessToken }) {

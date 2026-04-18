@@ -206,6 +206,12 @@ paths:
       summary: Update current user profile
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCurrentUserRequest'
       responses:
         '200':
           description: Updated user profile
@@ -1496,6 +1502,14 @@ components:
         user:
           $ref: '#/components/schemas/UserSummary'
       required: [accessToken, refreshToken, user]
+    UpdateCurrentUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+      additionalProperties: false
     UserSummary:
       type: object
       properties:

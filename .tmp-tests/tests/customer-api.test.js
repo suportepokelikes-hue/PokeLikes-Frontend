@@ -19,6 +19,7 @@ const customer_1 = require("../src/lib/api/customer");
     try {
         await (0, customer_1.getWalletSummary)({ accessToken: 'token' });
         await (0, customer_1.getCustomerProfile)({ accessToken: 'token' });
+        await (0, customer_1.updateCustomerProfile)({ accessToken: 'token' }, { name: 'Maria Souza', phone: '(31) 99999-0000' });
         await (0, customer_1.getCustomerReferralSummary)({ accessToken: 'token' });
         await (0, customer_1.getCustomerAffiliateProfile)({ accessToken: 'token' });
         await (0, customer_1.applyToAffiliateProgram)({ accessToken: 'token' });
@@ -41,6 +42,7 @@ const customer_1 = require("../src/lib/api/customer");
     })), [
         { url: 'http://localhost:3001/v1/me/wallet', method: 'GET' },
         { url: 'http://localhost:3001/v1/me', method: 'GET' },
+        { url: 'http://localhost:3001/v1/me', method: 'PATCH' },
         { url: 'http://localhost:3001/v1/me/referral', method: 'GET' },
         { url: 'http://localhost:3001/v1/me/affiliate', method: 'GET' },
         { url: 'http://localhost:3001/v1/me/affiliate/apply', method: 'POST' },
@@ -54,8 +56,10 @@ const customer_1 = require("../src/lib/api/customer");
         { url: 'http://localhost:3001/v1/me/orders', method: 'POST' },
         { url: 'http://localhost:3001/v1/me/orders/ord-1', method: 'GET' },
     ]);
-    const pixRequest = requests[10];
-    const orderRequest = requests[12];
+    const updateProfileRequest = requests[2];
+    const pixRequest = requests[11];
+    const orderRequest = requests[13];
+    strict_1.default.equal(updateProfileRequest.init?.body, JSON.stringify({ name: 'Maria Souza', phone: '(31) 99999-0000' }));
     strict_1.default.equal(new Headers(pixRequest.init?.headers).get('Authorization'), 'Bearer token');
     strict_1.default.equal(pixRequest.init?.body, JSON.stringify({ amount: '20' }));
     strict_1.default.equal(orderRequest.init?.body, JSON.stringify({ catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' }));

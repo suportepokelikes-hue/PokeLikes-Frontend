@@ -138,7 +138,7 @@ Tasks:
 - [x] adicionar card de referral com `GET /me/referral`, botoes de copia e CTA de verificacao de email
 - [x] criar `/app/affiliate` com tratamento de `AffiliateProfile = null`, apply, status do perfil, summary, listagem das comissoes do usuario e entrada dedicada no shell do cliente
 - [x] preparar o drawer de edicao em `/app/profile` com campos de nome/telefone, email somente leitura e bloqueio isolado enquanto `PATCH /me` seguir sem schema formal
-- [ ] habilitar edicao de perfil quando o contrato local descrever o payload de `PATCH /me`
+- [x] habilitar edicao real de perfil com `PATCH /me`, feedback inline e retorno para a leitura atualizada
 
 ## Affiliate V1 Checkpoint
 
@@ -239,6 +239,6 @@ Na proxima sessao do Codex:
 - resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml`, especialmente na parte financeira de afiliados
 - so depois revisitar uma eventual formalizacao de `commissionIds` no payout, mantendo a separacao em relacao ao referral do usuario
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
-- trocar o bloqueio atual do drawer de perfil pela integracao real assim que o contrato local publicar o `requestBody` de `PATCH /me`
+- revisar se a proxima iteracao da conta vai precisar de politica dedicada para troca de email ou remocao explicita de telefone
 
 - [x] ajustar a semantica de pedidos e alertas para o fluxo operacional atual de saldo do fornecedor
