@@ -24,6 +24,11 @@ export function AdminUserMutationForm({ mode, action, returnTo, user }: AdminUse
       hiddenFields={user ? [{ name: 'userId', value: user.id }] : []}
     >
       <div className={`admin-user-form admin-user-form-${mode}`}>
+        <div className="admin-form-note">
+          <strong>{isCreate ? 'Criacao controlada' : 'Atualizacao pontual'}</strong>
+          <p>{isCreate ? 'Preencha os campos essenciais para liberar acesso sem ruido extra.' : 'Ajuste apenas o que mudou para preservar historico e contexto operacional.'}</p>
+        </div>
+
         <label className="admin-user-field admin-user-field-wide">
           <span>Nome</span>
           <input

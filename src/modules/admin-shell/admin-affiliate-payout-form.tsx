@@ -19,6 +19,11 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
       returnTo={returnTo}
     >
       <div className="admin-user-form">
+        <div className="admin-form-note">
+          <strong>Payout manual rastreavel</strong>
+          <p>Registre apenas valores validados e mantenha as comissoes referenciadas na observacao.</p>
+        </div>
+
         <label className="admin-user-field">
           <span>ID do perfil</span>
           <input type="text" name="affiliateProfileId" defaultValue={defaultAffiliateProfileId ?? ''} placeholder="Cole o ID do perfil" />

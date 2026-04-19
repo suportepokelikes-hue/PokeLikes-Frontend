@@ -35,6 +35,11 @@ export function AdminCatalogAffiliateSettingsForm({
       hiddenFields={[{ name: 'serviceId', value: service.id }]}
     >
       <div className="admin-user-form">
+        <div className="admin-form-note">
+          <strong>Afiliacao comercial</strong>
+          <p>Defina se o servico pode ser promovido e qual percentual orienta a comissao.</p>
+        </div>
+
         <div className="admin-user-static admin-user-field-wide">
           <span>Servico publicado</span>
           <strong>{service.name}</strong>

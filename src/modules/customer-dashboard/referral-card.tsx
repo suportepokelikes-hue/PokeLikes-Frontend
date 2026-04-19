@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Gift } from 'lucide-react';
+import { Gift, MailCheck } from 'lucide-react';
 
+import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { StatusBadge } from '@/components/ui/status-badge';
 import type { ReferralRewardStatus, ReferralSummaryResponse } from '@/lib/api/contracts';
 import { formatDateTime, formatMoney, formatNumber } from '@/lib/format';
@@ -14,36 +15,42 @@ export function ReferralCard({ referral }: ReferralCardProps) {
   const rewardStatus = getRewardStatusView(referral.rewardStatus, referral.rewardRules.minimumTopupAmount);
 
   return (
-    <article className="detail-card detail-card-wide" id="indicacoes">
-      <div className="panel-heading">
+    <CustomerSectionCard
+      eyebrow="Indicacoes"
+      title="Codigo e recompensas"
+      description={rewardStatus.description}
+      meta={<StatusBadge label={rewardStatus.label} tone={rewardStatus.tone} />}
+      className="customer-referral-card"
+    >
+      <div className="customer-dashboard-inline-stats">
         <div>
-          <p className="eyebrow">Indicacoes</p>
-          <h2>Codigo e recompensas</h2>
+          <span>Codigo</span>
+          <strong>{referral.referralCode}</strong>
         </div>
-        <StatusBadge label={rewardStatus.label} tone={rewardStatus.tone} />
+        <div>
+          <span>Email</span>
+          <strong>{referral.emailVerified ? 'Verificado' : 'Pendente'}</strong>
+        </div>
+        <div>
+          <span>Total ganho</span>
+          <strong>{formatMoney(referral.summary.earnedAmount)}</strong>
+        </div>
       </div>
-
-      <p className="section-copy">{rewardStatus.description}</p>
 
       <div className="referral-summary-grid">
         <div className="stack-item">
-          <span>Codigo</span>
-          <strong>{referral.referralCode}</strong>
+          <span>Link de convite</span>
           <p className="code-block">{referral.referralLink}</p>
         </div>
 
         <div className="stack-item">
-          <span>Email</span>
-          <strong>{referral.emailVerified ? 'Verificado' : 'Pendente'}</strong>
-          <p>{referral.emailVerified ? 'Pronto para qualificacao.' : 'Verifique para liberar o bonus.'}</p>
+          <span>Bonus por deposito</span>
+          <strong>{formatMoney(referral.rewardRules.minimumTopupAmount)}</strong>
+          <p>Valor minimo para liberar a recompensa.</p>
         </div>
       </div>
 
       <div className="referral-rules-grid">
-        <div className="stack-item">
-          <span>Deposito</span>
-          <strong>{formatMoney(referral.rewardRules.minimumTopupAmount)}</strong>
-        </div>
         <div className="stack-item">
           <span>Bonus indicado</span>
           <strong>{formatMoney(referral.rewardRules.referredBonusAmount)}</strong>
@@ -52,31 +59,24 @@ export function ReferralCard({ referral }: ReferralCardProps) {
           <span>Seu bonus</span>
           <strong>{formatMoney(referral.rewardRules.referrerBonusAmount)}</strong>
         </div>
-      </div>
-
-      <div className="referral-summary-grid">
         <div className="stack-item">
           <span>Convidados</span>
           <strong>{formatNumber(referral.summary.invitedUsers)}</strong>
         </div>
         <div className="stack-item">
-          <span>Convidados recompensados</span>
+          <span>Recompensados</span>
           <strong>{formatNumber(referral.summary.rewardedUsers)}</strong>
-        </div>
-        <div className="stack-item">
-          <span>Total ganho</span>
-          <strong>{formatMoney(referral.summary.earnedAmount)}</strong>
         </div>
       </div>
 
       {referral.ownReferralReward ? (
-        <div className="stack-item">
+        <div className="stack-item customer-referral-reward-card">
           <span>Ultimo bonus</span>
           <strong>{formatMoney(referral.ownReferralReward.referredBonusAmount)}</strong>
           <p>
             {`Status ${referral.ownReferralReward.status}`}
-            {referral.ownReferralReward.qualifyingAmount ? ` • Deposito ${formatMoney(referral.ownReferralReward.qualifyingAmount)}` : ''}
-            {referral.ownReferralReward.processedAt ? ` • ${formatDateTime(referral.ownReferralReward.processedAt)}` : ''}
+            {referral.ownReferralReward.qualifyingAmount ? ` - Deposito ${formatMoney(referral.ownReferralReward.qualifyingAmount)}` : ''}
+            {referral.ownReferralReward.processedAt ? ` - ${formatDateTime(referral.ownReferralReward.processedAt)}` : ''}
           </p>
         </div>
       ) : null}
@@ -87,17 +87,22 @@ export function ReferralCard({ referral }: ReferralCardProps) {
           referralLink={referral.referralLink}
           emailVerified={referral.emailVerified}
         />
-      </div>
 
-      {referral.rewardStatus === 'pending_first_qualifying_topup' ? (
-        <div className="feedback-actions">
+        {!referral.emailVerified ? (
+          <Link href="/app/profile" className="secondary-action">
+            <MailCheck size={16} strokeWidth={2.15} aria-hidden="true" />
+            Verificar email
+          </Link>
+        ) : null}
+
+        {referral.rewardStatus === 'pending_first_qualifying_topup' ? (
           <Link href="/app/payments" className="secondary-action">
             <Gift size={16} strokeWidth={2.15} aria-hidden="true" />
             Fazer deposito
           </Link>
-        </div>
-      ) : null}
-    </article>
+        ) : null}
+      </div>
+    </CustomerSectionCard>
   );
 }
 
@@ -107,26 +112,26 @@ function getRewardStatusView(status: ReferralRewardStatus, minimumTopupAmount: {
       return {
         label: 'Aguardando email',
         tone: 'warning' as const,
-        description: 'Verifique o email para liberar o bonus.',
+        description: 'Verifique o email para liberar o bonus do referral.',
       };
     case 'pending_first_qualifying_topup':
       return {
         label: 'Aguardando deposito',
         tone: 'info' as const,
-        description: `Faca um deposito confirmado de pelo menos ${formatMoney(minimumTopupAmount)}.`,
+        description: `Faca um deposito confirmado de pelo menos ${formatMoney(minimumTopupAmount)} para ativar a recompensa.`,
       };
     case 'rewarded':
       return {
         label: 'Bonus aplicado',
         tone: 'success' as const,
-        description: 'O bonus ja entrou no saldo.',
+        description: 'O bonus ja entrou no saldo e seu codigo continua ativo.',
       };
     case 'not_referred':
     default:
       return {
         label: 'Pronto para indicar',
         tone: 'info' as const,
-        description: 'Seu codigo ja esta ativo.',
+        description: 'Seu codigo ja pode ser compartilhado e acompanhado por aqui.',
       };
   }
 }

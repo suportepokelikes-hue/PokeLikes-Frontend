@@ -5,6 +5,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminAlerts } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { AlertResource, Money } from '@/lib/api/contracts';
@@ -57,6 +58,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
         <PageHeader
           eyebrow="Admin / alertas"
           title="Alertas"
+          description="Severidade, contexto e acao de resolucao com foco no que ainda exige intervencao."
           actions={
             <AdminFilterBar
               pathname="/admin/alerts"
@@ -119,7 +121,12 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
         {alerts.items.length === 0 ? (
           <EmptyState title="Nenhum alerta encontrado" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Incidentes"
+            title="Alertas monitorados"
+            description="Cada linha preserva severidade, timeline, contexto e acao disponivel."
+            meta={<span className="panel-meta">{alerts.totalItems} registros</span>}
+          >
             <DataTable columns={['Severidade', 'Status', 'Detalhe', 'Ocorrencias', 'Timeline', 'Contexto', 'Acao']}>
               {alerts.items.map((alert) => (
                 <tr key={alert.id}>
@@ -171,7 +178,7 @@ export async function AdminAlertsPage({ session, filters }: AdminAlertsPageProps
               params={{ ...filters, pageSize: filters.pageSize ?? alerts.pageSize }}
               label="alertas"
             />
-          </>
+          </AdminSectionCard>
         )}
       </main>
     );

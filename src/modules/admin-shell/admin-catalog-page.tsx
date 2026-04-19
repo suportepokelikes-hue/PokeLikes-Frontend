@@ -7,6 +7,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import {
   listAdminCatalogAffiliateSettings,
   listAdminCatalogServices,
@@ -155,6 +156,7 @@ export async function AdminCatalogPage({
         <PageHeader
           eyebrow="Admin / catalogo"
           title="Catalogo"
+          description="Hierarquia entre sincronizado, publicado e afiliacao com foco em leitura e acao."
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
@@ -184,15 +186,13 @@ export async function AdminCatalogPage({
           <AdminSummaryCard label="Afiliaveis" value={String(affiliateEnabledCount)} meta="Na pagina" />
         </section>
 
-        <section className="detail-card detail-card-wide">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Catalogo sincronizado do fornecedor</p>
-              <h2>Sincronizados</h2>
-            </div>
-            <span className="panel-meta">{supplierServices.totalItems} itens</span>
-          </div>
-
+        <AdminSectionCard
+          eyebrow="Catalogo sincronizado do fornecedor"
+          title="Sincronizados"
+          description="Base herdada do fornecedor para criar novos servicos publicos."
+          meta={<span className="panel-meta">{supplierServices.totalItems} itens</span>}
+          className="detail-card-wide"
+        >
           {supplierServices.items.length === 0 ? (
             <EmptyState title="Nenhum servico sincronizado encontrado" description="Ajuste os filtros." />
           ) : (
@@ -258,7 +258,7 @@ export async function AdminCatalogPage({
               />
             </>
           )}
-        </section>
+        </AdminSectionCard>
 
         {affiliateSettingsError ? (
           <section className="feedback-panel">
@@ -276,81 +276,88 @@ export async function AdminCatalogPage({
           <EmptyState title="Nenhum servico publicado" description="Publique um servico sincronizado." />
         ) : (
           <>
-            <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Afiliados', 'Fornecedor', 'Faixa', 'Acoes']}>
-              {visibleCatalogItems.map((service) => {
-                const affiliateSettings = affiliateSettingsByServiceId.get(service.id);
+            <AdminSectionCard
+              eyebrow="Catalogo publicado"
+              title="Servicos publicos"
+              description="Disponibilidade, afiliacao e origem do fornecedor no mesmo bloco."
+              meta={<span className="panel-meta">{catalog.totalItems} itens</span>}
+            >
+              <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Afiliados', 'Fornecedor', 'Faixa', 'Acoes']}>
+                {visibleCatalogItems.map((service) => {
+                  const affiliateSettings = affiliateSettingsByServiceId.get(service.id);
 
-                return (
-                  <Fragment key={service.id}>
-                    <tr>
-                      <td>
-                        <div className="stack-list">
-                          <strong>{service.name}</strong>
-                          <span className="panel-meta">
-                            {service.socialNetwork} / {service.category} / {service.type}
-                          </span>
-                          <span className="panel-meta">ID {service.id}</span>
-                        </div>
-                      </td>
-                      <td>{formatMoney(service.publicPrice)}</td>
-                      <td>
-                        <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
-                      </td>
-                      <td>{renderCatalogAvailability(service)}</td>
-                      <td>{renderCatalogAffiliateState(affiliateSettings, affiliateSettingsError)}</td>
-                      <td>
-                        <div className="stack-list">
-                          <strong>{service.supplierService.supplierName}</strong>
-                          <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
-                          {service.supplierService.providerStatus ? (
-                            <StatusBadge
-                              label={service.supplierService.providerStatus.providerStatus}
-                              tone={mapProviderTone(service.supplierService.providerStatus.providerStatus)}
-                            />
-                          ) : null}
-                        </div>
-                      </td>
-                      <td>
-                        {service.minQuantity} - {service.maxQuantity}
-                      </td>
-                      <td>
-                        <div className="stack-list">
-                          <Link
-                            href={buildCatalogEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
-                            className="table-link"
-                          >
-                            Editar servico
-                          </Link>
-                          <Link
-                            href={buildCatalogAffiliateEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
-                            className="table-link"
-                          >
-                            Editar afiliacao
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  </Fragment>
-                );
-              })}
-            </DataTable>
+                  return (
+                    <Fragment key={service.id}>
+                      <tr>
+                        <td>
+                          <div className="stack-list">
+                            <strong>{service.name}</strong>
+                            <span className="panel-meta">
+                              {service.socialNetwork} / {service.category} / {service.type}
+                            </span>
+                            <span className="panel-meta">ID {service.id}</span>
+                          </div>
+                        </td>
+                        <td>{formatMoney(service.publicPrice)}</td>
+                        <td>
+                          <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
+                        </td>
+                        <td>{renderCatalogAvailability(service)}</td>
+                        <td>{renderCatalogAffiliateState(affiliateSettings, affiliateSettingsError)}</td>
+                        <td>
+                          <div className="stack-list">
+                            <strong>{service.supplierService.supplierName}</strong>
+                            <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
+                            {service.supplierService.providerStatus ? (
+                              <StatusBadge
+                                label={service.supplierService.providerStatus.providerStatus}
+                                tone={mapProviderTone(service.supplierService.providerStatus.providerStatus)}
+                              />
+                            ) : null}
+                          </div>
+                        </td>
+                        <td>
+                          {service.minQuantity} - {service.maxQuantity}
+                        </td>
+                        <td>
+                          <div className="stack-list">
+                            <Link
+                              href={buildCatalogEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
+                              className="table-link"
+                            >
+                              Editar servico
+                            </Link>
+                            <Link
+                              href={buildCatalogAffiliateEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
+                              className="table-link"
+                            >
+                              Editar afiliacao
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    </Fragment>
+                  );
+                })}
+              </DataTable>
 
-            <PaginationSummary
-              page={catalog.page}
-              pageSize={catalog.pageSize}
-              totalItems={catalog.totalItems}
-              totalPages={catalog.totalPages}
-              pathname="/admin/catalog"
-              params={{
-                search: filters.search,
-                pageSize: currentCatalogPageSize,
-                supplierName: supplierServiceFilters.supplierName,
-                servicesPage: currentServicesPage,
-                servicesPageSize: currentServicesPageSize,
-                ...buildDraftParams(creationDraft),
-              }}
-              label="servicos"
-            />
+              <PaginationSummary
+                page={catalog.page}
+                pageSize={catalog.pageSize}
+                totalItems={catalog.totalItems}
+                totalPages={catalog.totalPages}
+                pathname="/admin/catalog"
+                params={{
+                  search: filters.search,
+                  pageSize: currentCatalogPageSize,
+                  supplierName: supplierServiceFilters.supplierName,
+                  servicesPage: currentServicesPage,
+                  servicesPageSize: currentServicesPageSize,
+                  ...buildDraftParams(creationDraft),
+                }}
+                label="servicos"
+              />
+            </AdminSectionCard>
           </>
         )}
 

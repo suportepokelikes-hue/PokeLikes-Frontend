@@ -293,6 +293,22 @@ export function mapAffiliateFinanceStatusTone(status: string): BadgeTone {
   return 'neutral';
 }
 
+export function mapPaymentTone(status: string): BadgeTone {
+  if (status === 'confirmed') {
+    return 'success';
+  }
+
+  if (status === 'pending') {
+    return 'warning';
+  }
+
+  if (status === 'expired' || status === 'failed' || status === 'cancelled' || status === 'canceled') {
+    return 'danger';
+  }
+
+  return 'neutral';
+}
+
 export function mapSyncStatusTone(status: string): BadgeTone {
   return status === 'success' ? 'success' : 'danger';
 }

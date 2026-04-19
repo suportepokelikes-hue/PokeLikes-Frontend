@@ -26,6 +26,22 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `docs/api/openapi.yaml` continua auxiliar e nao deve guiar payloads divergentes
 - `src/lib/api` e a fronteira unica com o backend
 - `src/modules` concentra a maior parte da logica por dominio
+- a foundation visual compartilhada agora e dark premium e vive principalmente em `src/app/globals.css`
+- CTA principal amarelo, acentos azul/roxo, superficies escuras e drawers/tabelas/cards/botoes unificados ja fazem parte da base oficial do app
+- a area publica agora tambem tem shell compartilhado com header sticky, footer premium e menu mobile em `src/modules/app-shell/public-shell.tsx`
+- a landing `/` agora tambem foi condensada para uma leitura mais comercial e mais curta, mantendo os fluxos reais de `/catalog`, cadastro, Pix e acompanhamento de pedidos
+- a home publica tambem ganhou uma segunda passada estrutural para ficar mais proxima de uma landing premium padrao, com hero mais forte, mockup mais visual e menos cara de pagina explicativa
+- o shell autenticado do cliente em `/app` agora tambem foi redesenhado para a identidade Pokelike, com sidebar/topbar mais fortes e sem mudar links, guards, redirects ou comportamento responsivo
+- o dashboard `/app` agora funciona como painel central do cliente, priorizando saldo, proximo passo, atalhos, referral/afiliados e historico recente
+- `src/components/ui/customer-surfaces.tsx` concentra os novos wrappers visuais reutilizaveis da area interna do cliente
+- `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora tambem foram redesenhados com a mesma base premium, preservando os fluxos reais da V1
+- pagamentos e pedidos continuam usando drawers e redirects atuais; a mudanca foi de hierarquia visual, contexto e clareza
+- profile, referral e afiliados agora mostram status, identidade fiscal e ganhos com leitura mais rapida e mais orientada a acao
+- o shell administrativo e o dashboard `/admin` agora tambem foram redesenhados para a identidade Pokelike, mas com tom mais sobrio e foco operacional
+- `src/components/ui/admin-surfaces.tsx` passa a concentrar os wrappers visuais reutilizaveis do admin
+- o dashboard administrativo agora funciona como central de operacao, priorizando alertas, fila, pagamentos e saude de fornecedores antes da navegacao secundaria
+- os modulos operacionais do admin agora tambem herdaram essa base: listas, filtros, tabelas, drawers e detalhes ficaram mais consistentes sem mudar fluxos reais
+- users, catalog, payments, orders, supplier, alerts, audits, transactions, affiliates, commissions e payouts ja podem ser tratados como superficies visuais estabilizadas do admin
 
 ## Superficies importantes que um novo agente precisa conhecer
 
@@ -76,5 +92,13 @@ Isso nao e drift acidental. Faz parte do desenho atual das jornadas.
 
 ## Proximo passo recomendado
 
+- tratar a area autenticada do cliente como base visual estabilizada e revisar apenas ajustes finos de consistencia ou responsividade
+- tratar shell, dashboard e modulos operacionais do admin como base visual estabilizada e focar a proxima rodada em acabamento fino
+- revisar apenas ajustes pontuais de responsividade, copy curta e consistencia nos drawers restantes do admin
+- usar `customer-surfaces.tsx` e `admin-surfaces.tsx` como bases oficiais antes de abrir novos wrappers ad hoc
+- tratar foundation, shell publico e landing como base concluida antes de mexer nas proximas superficies
+- revisar catalogo, detalhe do servico e auth para garantir que a nova identidade Pokelike esteja consistente em copy e acabamento visual
+- decidir se a superficie publica vai ganhar um CTA real de suporte; hoje a landing nao deve inventar esse canal
+- se a home for revisitada de novo, o proximo passo deve ser calibrar detalhes finos de espacamento e animacao, nao voltar a expandir copy
 - manter a documentacao enxuta e aderente ao codigo daqui para frente, atualizando-a junto com qualquer mudanca de rota, superficie ou fluxo
 - ampliar E2E dos fluxos que ainda carregam mais risco: `?aff= -> catalogo -> pedido`, affiliate settings em `/admin/catalog` e bloqueio de PIX sem CPF/CNPJ

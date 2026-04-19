@@ -2,6 +2,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminAudits } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -26,6 +27,7 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
         <PageHeader
           eyebrow="Admin / auditoria"
           title="Auditoria"
+          description="Rastro administrativo com foco em entidade, operador e resumo do payload."
           actions={
             <AdminFilterBar
               pathname="/admin/audits"
@@ -69,7 +71,12 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
         {audits.items.length === 0 ? (
           <EmptyState title="Nenhum evento de auditoria" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Rastro"
+            title="Eventos de auditoria"
+            description="Leitura densa para investigacao rapida sem perder o filtro por URL."
+            meta={<span className="panel-meta">{audits.totalItems} registros</span>}
+          >
             <DataTable columns={['Acao', 'Entidade', 'Admin', 'Origem', 'Criado em', 'Payload']}>
               {audits.items.map((audit) => (
                 <tr key={audit.id}>
@@ -107,7 +114,7 @@ export async function AdminAuditsPage({ session, filters }: AdminAuditsPageProps
               params={{ ...filters, pageSize: filters.pageSize ?? audits.pageSize }}
               label="eventos"
             />
-          </>
+          </AdminSectionCard>
         )}
       </main>
     );

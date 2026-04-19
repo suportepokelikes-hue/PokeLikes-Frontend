@@ -7,7 +7,7 @@ export function StatusBadge({ label, tone = 'neutral' }: StatusBadgeProps) {
   return (
     <span className={`status-badge status-${tone}`}>
       <span className="status-badge-dot" aria-hidden="true" />
-      {label}
+      <span className="status-badge-label">{label}</span>
     </span>
   );
 }

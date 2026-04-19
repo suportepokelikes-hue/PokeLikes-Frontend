@@ -5,6 +5,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminAffiliatePayouts } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -50,6 +51,7 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
         <PageHeader
           eyebrow="Admin / payouts afiliados"
           title="Payouts afiliados"
+          description="Registro financeiro de saida com foco em valor, status e observacao operacional."
           actions={
             <>
               <Link href={createPath} className="primary-action">
@@ -116,7 +118,12 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
         {payouts.items.length === 0 ? (
           <EmptyState title="Nenhum payout encontrado" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Saida financeira"
+            title="Payouts registrados"
+            description="Leitura compacta para acompanhar o que ja foi pago e o que ainda esta pendente."
+            meta={<span className="panel-meta">{payouts.totalItems} registros</span>}
+          >
             <DataTable columns={['ID', 'Afiliado', 'Valor', 'Status', 'Pago em', 'Criado em', 'Observacao']}>
               {payouts.items.map((payout) => (
                 <tr key={payout.id}>
@@ -142,13 +149,14 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
               params={{ ...filters, pageSize: filters.pageSize ?? payouts.pageSize }}
               label="payouts"
             />
-          </>
+          </AdminSectionCard>
         )}
 
         {isCreateOpen ? (
           <AdminSlideOver
             eyebrow="Payout manual"
             title="Registrar payout afiliado"
+            description="Fluxo manual para registrar saida validada pelo financeiro."
             closeHref={returnTo}
           >
             <AdminAffiliatePayoutForm action={createAffiliatePayoutAction} returnTo={returnTo} defaultAffiliateProfileId={filters.affiliateProfileId} />

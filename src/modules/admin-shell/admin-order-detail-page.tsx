@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { AdminMetricCard, AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { getAdminOrderDetail } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -11,6 +12,7 @@ import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { syncOrderAction } from '@/modules/admin-shell/actions';
 import { getOrderEventView, getOrderStatusView, orderHasQueuedSupplierBalance, sortOrderEvents } from '@/modules/orders/order-view';
+import { CircleDollarSign, PackageSearch, UserRound } from 'lucide-react';
 
 type AdminOrderDetailPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -29,6 +31,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         <PageHeader
           eyebrow="Admin / pedidos / detalhe"
           title={`Pedido ${order.id}`}
+          description="Contexto operacional completo do pedido, do fornecedor e da timeline de sync."
           actions={
             <>
               <Link href="/admin/orders" className="secondary-action">
@@ -48,18 +51,9 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         />
 
         <section className="metric-list">
-          <article className={`metric-card metric-${statusView.tone === 'info' ? 'default' : statusView.tone}`}>
-            <span>Status</span>
-            <strong>{statusView.label}</strong>
-          </article>
-          <article className="metric-card metric-accent">
-            <span>Cobranca do cliente</span>
-            <strong>{formatMoney(order.customerCharge)}</strong>
-          </article>
-          <article className="metric-card metric-default">
-            <span>Cliente</span>
-            <strong>{order.user?.name || 'Nao associado'}</strong>
-          </article>
+          <AdminMetricCard label="Status" value={statusView.label} icon={PackageSearch} tone={resolveMetricTone(statusView.tone)} />
+          <AdminMetricCard label="Cobranca do cliente" value={formatMoney(order.customerCharge)} icon={CircleDollarSign} tone="accent" />
+          <AdminMetricCard label="Cliente" value={order.user?.name || 'Nao associado'} icon={UserRound} tone="info" />
         </section>
 
         {hadSupplierBalanceQueue ? (
@@ -70,8 +64,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
         ) : null}
 
         <section className="detail-grid">
-          <article className="detail-card">
-            <h2>Cliente e pedido</h2>
+          <AdminSectionCard eyebrow="Pedido" title="Cliente e pedido" description="Servico, link, quantidade e cobranca visiveis no mesmo bloco.">
             <dl className="detail-list">
               <div>
                 <dt>Cliente</dt>
@@ -98,10 +91,9 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 <dd>{formatMoney(order.customerCharge)}</dd>
               </div>
             </dl>
-          </article>
+          </AdminSectionCard>
 
-          <article className="detail-card">
-            <h2>Fornecedor</h2>
+          <AdminSectionCard eyebrow="Fornecedor" title="Execucao no fornecedor" description="Servico, custo, retorno mais recente e identificadores externos.">
             <dl className="detail-list">
               <div>
                 <dt>Fornecedor</dt>
@@ -145,10 +137,9 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
                 </p>
               </div>
             ) : null}
-          </article>
+          </AdminSectionCard>
 
-          <article className="detail-card detail-card-wide">
-            <h2>Timeline</h2>
+          <AdminSectionCard eyebrow="Timeline" title="Timeline operacional" description="Mudancas de estado e eventos de sync em ordem de leitura." className="detail-card-wide">
             {timeline.length > 0 ? (
               <div className="order-timeline">
                 {timeline.map((event) => {
@@ -173,7 +164,7 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
             ) : (
               <p className="section-copy">Sem atualizacoes.</p>
             )}
-          </article>
+          </AdminSectionCard>
         </section>
       </main>
     );
@@ -191,4 +182,12 @@ export async function AdminOrderDetailPage({ session, orderId }: AdminOrderDetai
       </main>
     );
   }
+}
+
+function resolveMetricTone(tone: 'neutral' | 'info' | 'success' | 'warning' | 'danger') {
+  if (tone === 'neutral' || tone === 'info') {
+    return 'default';
+  }
+
+  return tone;
 }

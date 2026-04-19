@@ -1,7 +1,10 @@
+import Link from 'next/link';
+import { ArrowDownLeft, ArrowUpRight, CreditCard, Landmark, Wallet } from 'lucide-react';
+
+import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
-import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { getWalletSummary, listWalletTransactions } from '@/lib/api/customer';
@@ -19,60 +22,196 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
       getWalletSummary({ accessToken: session.accessToken }),
       listWalletTransactions({ accessToken: session.accessToken }),
     ]);
-    const credits = transactions.items.filter((transaction) => transaction.direction === 'credit').length;
-    const debits = transactions.items.filter((transaction) => transaction.direction === 'debit').length;
+    const credits = transactions.items.filter((transaction) => transaction.direction === 'credit');
+    const debits = transactions.items.filter((transaction) => transaction.direction === 'debit');
+    const latestTransaction = transactions.items[0] ?? null;
 
     return (
       <main className="page page-customer">
         <PageHeader
           eyebrow="Carteira"
           title="Carteira"
+          description="Saldo, entradas e saidas com leitura mais clara do extrato."
+          compact
+          actions={
+            <>
+              <Link href="/app/payments" className="primary-action">
+                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
+                Adicionar saldo
+              </Link>
+              <Link href="/app/orders" className="secondary-action">
+                Ver pedidos
+              </Link>
+            </>
+          }
         />
 
-        <section className="customer-hero-grid">
-          <article className="customer-spotlight">
-            <div className="customer-spotlight-head">
-              <span className="eyebrow">Saldo</span>
-              <span className="panel-meta">Wallet {wallet.id}</span>
+        <section className="customer-dashboard-hero">
+          <article className="customer-dashboard-command customer-wallet-command">
+            <div className="customer-dashboard-command-head">
+              <div className="customer-dashboard-command-copy">
+                <div className="customer-dashboard-command-pills">
+                  <span className="customer-dashboard-pill">Area financeira</span>
+                  <span className="customer-dashboard-pill">Wallet {wallet.id}</span>
+                </div>
+                <h2>{formatMoney(wallet.availableBalance)}</h2>
+                <p>Saldo liberado para novos pedidos. As recargas confirmadas entram aqui automaticamente.</p>
+              </div>
+              <StatusBadge label="disponivel" tone="success" />
             </div>
-            <h2>{formatMoney(wallet.availableBalance)}</h2>
-            <p>Saldo liberado para pedidos.</p>
-            <div className="customer-highlight-list">
+
+            <div className="customer-dashboard-balance-row">
+              <div className="customer-dashboard-snapshot">
+                <div>
+                  <span>Entradas</span>
+                  <strong>{credits.length}</strong>
+                </div>
+                <div>
+                  <span>Saidas</span>
+                  <strong>{debits.length}</strong>
+                </div>
+                <div>
+                  <span>Lancamentos</span>
+                  <strong>{transactions.totalItems}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="customer-dashboard-command-actions">
+              <Link href="/app/payments" className="primary-action">
+                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
+                Gerar PIX
+              </Link>
+              <Link href="/catalog" className="secondary-action">
+                <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
+                Fazer pedido
+              </Link>
+            </div>
+          </article>
+
+          <div className="customer-dashboard-side">
+            <CustomerSectionCard
+              eyebrow="Resumo"
+              title="Area pronta para controle financeiro"
+              description="Use este painel para conferir saldo real, ultimos movimentos e o caminho da proxima recarga."
+              meta={<StatusBadge label="wallet ativa" tone="info" />}
+            >
+              <div className="customer-dashboard-inline-stats">
+                <div>
+                  <span>Saldo</span>
+                  <strong>{formatMoney(wallet.availableBalance)}</strong>
+                </div>
+                <div>
+                  <span>Ultimo movimento</span>
+                  <strong>{latestTransaction ? formatDateTime(latestTransaction.createdAt) : 'Sem extrato'}</strong>
+                </div>
+                <div>
+                  <span>Origem</span>
+                  <strong>PIX confirmado</strong>
+                </div>
+              </div>
+            </CustomerSectionCard>
+          </div>
+        </section>
+
+        <section className="customer-dashboard-metrics">
+          <CustomerMetricCard
+            label="Saldo disponivel"
+            value={formatMoney(wallet.availableBalance)}
+            meta="Pronto para novos pedidos."
+            icon={Landmark}
+            tone="accent"
+          />
+          <CustomerMetricCard
+            label="Entradas"
+            value={String(credits.length)}
+            meta="Recargas e creditos."
+            icon={ArrowDownLeft}
+            tone="success"
+          />
+          <CustomerMetricCard
+            label="Saidas"
+            value={String(debits.length)}
+            meta="Consumo em pedidos."
+            icon={ArrowUpRight}
+            tone="warning"
+          />
+          <CustomerMetricCard
+            label="Extrato"
+            value={String(transactions.totalItems)}
+            meta="Lancamentos nesta pagina."
+            icon={Wallet}
+            tone="default"
+          />
+        </section>
+
+        <section className="customer-dashboard-lower">
+          <CustomerSectionCard
+            eyebrow="Carteira"
+            title="Leitura rapida"
+            description="O saldo aumenta com PIX confirmado e diminui conforme os pedidos sao cobrados."
+          >
+            <div className="customer-dashboard-inline-stats">
+              <div>
+                <span>Wallet</span>
+                <strong>{wallet.id}</strong>
+              </div>
+              <div>
+                <span>Maior fonte</span>
+                <strong>Recarga PIX</strong>
+              </div>
+              <div>
+                <span>Uso principal</span>
+                <strong>Pedidos do cliente</strong>
+              </div>
+            </div>
+          </CustomerSectionCard>
+
+          <CustomerSectionCard
+            eyebrow="Proximo passo"
+            title={transactions.items.length === 0 ? 'Sua carteira ainda nao tem historico' : 'Continue acompanhando o saldo'}
+            description={
+              transactions.items.length === 0
+                ? 'A primeira recarga ja abre o fluxo financeiro da conta e deixa o extrato visivel.'
+                : 'Quando precisar de mais saldo, gere um novo PIX sem sair da area interna.'
+            }
+            actions={
+              <Link href="/app/payments" className="secondary-action">
+                Abrir pagamentos
+              </Link>
+            }
+          >
+            <div className="customer-dashboard-inline-stats">
               <div>
                 <span>Entradas</span>
-                <strong>{credits}</strong>
+                <strong>{credits.length}</strong>
               </div>
               <div>
                 <span>Saidas</span>
-                <strong>{debits}</strong>
+                <strong>{debits.length}</strong>
               </div>
               <div>
-                <span>Lancamentos</span>
-                <strong>{transactions.totalItems}</strong>
+                <span>Saldo atual</span>
+                <strong>{formatMoney(wallet.availableBalance)}</strong>
               </div>
             </div>
-          </article>
-
-          <article className="customer-note-card">
-            <strong>Saldo liberado</strong>
-            <p>O PIX entra na carteira depois da confirmacao.</p>
-          </article>
-        </section>
-
-        <section className="metric-list">
-          <StatCard label="Saldo disponivel" value={formatMoney(wallet.availableBalance)} tone="accent" />
-          <StatCard label="Entradas" value={`${credits}`} />
-          <StatCard label="Saidas" value={`${debits}`} />
+          </CustomerSectionCard>
         </section>
 
         {transactions.items.length === 0 ? (
-          <EmptyState title="Nenhuma transacao encontrada" description="Sem lancamentos." />
+          <EmptyState
+            title="Sua carteira ainda nao tem movimentacoes"
+            description="A primeira recarga confirmada abre o saldo e o extrato desta area."
+            actionHref="/app/payments"
+            actionLabel="Gerar PIX"
+          />
         ) : (
-          <section className="detail-card detail-card-wide">
-            <div className="panel-heading">
-              <h2>Extrato recente</h2>
-              <span className="panel-meta">{transactions.totalItems} registro(s)</span>
-            </div>
+          <CustomerSectionCard
+            eyebrow="Extrato"
+            title="Movimentacoes recentes"
+            description="Veja entradas, saidas e valores com leitura mais direta."
+            meta={<span className="panel-meta">{transactions.totalItems} registro(s)</span>}
+          >
             <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>
               {transactions.items.map((transaction) => (
                 <tr key={transaction.id}>
@@ -86,7 +225,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
                 </tr>
               ))}
             </DataTable>
-          </section>
+          </CustomerSectionCard>
         )}
       </main>
     );

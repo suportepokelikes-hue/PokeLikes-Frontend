@@ -3,6 +3,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import Link from 'next/link';
 import { listAdminOrders } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
@@ -34,6 +35,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         <PageHeader
           eyebrow="Admin / pedidos"
           title="Pedidos"
+          description="Fila operacional com sync rapido, leitura de status e foco nos estados mutaveis."
           actions={
             <>
               <AdminFilterBar
@@ -101,7 +103,12 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         {orders.items.length === 0 ? (
           <EmptyState title="Nenhum pedido encontrado" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Pedidos"
+            title="Fila operacional"
+            description="Status, fornecedor e acao de sincronizacao lado a lado para reduzir troca de contexto."
+            meta={<span className="panel-meta">{orders.totalItems} registros</span>}
+          >
             <DataTable columns={['ID', 'Usuario', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
               {orders.items.map((order) => {
                 const statusView = getOrderStatusView(order.status);
@@ -147,7 +154,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
               params={{ ...filters, pageSize: filters.pageSize ?? orders.pageSize }}
               label="pedidos"
             />
-          </>
+          </AdminSectionCard>
         )}
       </main>
     );

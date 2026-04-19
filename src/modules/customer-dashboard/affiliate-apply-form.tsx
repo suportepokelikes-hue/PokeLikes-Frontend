@@ -2,7 +2,10 @@
 
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { Rocket, Sparkles } from 'lucide-react';
 
+import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { initialAffiliateApplyFormState } from './affiliate-form-state';
 import { applyToAffiliateProgramAction } from './customer-affiliate-actions';
 
@@ -10,22 +13,34 @@ export function AffiliateApplyForm() {
   const [state, formAction] = useActionState(applyToAffiliateProgramAction, initialAffiliateApplyFormState);
 
   return (
-    <section className="detail-card detail-card-wide">
-      <div className="panel-heading">
+    <CustomerSectionCard
+      eyebrow="Entrada no programa"
+      title="Solicitar participacao"
+      description="A solicitacao cria seu painel de afiliado para acompanhar codigo, status e comissoes."
+      meta={<StatusBadge label="entrada disponivel" tone="info" />}
+      className="customer-affiliate-apply-card"
+    >
+      <div className="customer-dashboard-inline-stats">
         <div>
-          <p className="eyebrow">Entrada no programa</p>
-          <h2>Solicitar participacao</h2>
+          <span>Fluxo</span>
+          <strong>Solicitar agora</strong>
+        </div>
+        <div>
+          <span>Status inicial</span>
+          <strong>Pendente</strong>
+        </div>
+        <div>
+          <span>Painel</span>
+          <strong>Codigo e comissoes</strong>
         </div>
       </div>
-
-      <p className="section-copy">A solicitacao cria seu painel de afiliado para acompanhar status, codigo e comissoes.</p>
 
       <form action={formAction} className="feedback-actions">
         <ApplySubmitButton />
       </form>
 
       {state.status === 'error' && state.message ? <p className="auth-error">{state.message}</p> : null}
-    </section>
+    </CustomerSectionCard>
   );
 }
 
@@ -34,7 +49,17 @@ function ApplySubmitButton() {
 
   return (
     <button type="submit" className="primary-action" disabled={pending}>
-      {pending ? 'Solicitando...' : 'Entrar no programa'}
+      {pending ? (
+        <>
+          <Sparkles size={16} strokeWidth={2.15} aria-hidden="true" />
+          Solicitando...
+        </>
+      ) : (
+        <>
+          <Rocket size={16} strokeWidth={2.15} aria-hidden="true" />
+          Entrar no programa
+        </>
+      )}
     </button>
   );
 }

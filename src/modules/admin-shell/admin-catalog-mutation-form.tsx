@@ -75,6 +75,11 @@ export function AdminCatalogMutationForm({
       hiddenFields={hiddenFields}
     >
       <div className="admin-catalog-form">
+        <div className="admin-form-note">
+          <strong>{isCreate ? 'Publicacao com base sincronizada' : 'Edicao do servico publicado'}</strong>
+          <p>{isCreate ? 'Os dados de fornecedor permanecem herdados; ajuste apenas a superficie publica.' : 'Revise nome, descricao, preco e status sem perder o vinculo com o servico sincronizado.'}</p>
+        </div>
+
         {inheritedService ? (
           <div className="detail-card detail-card-wide">
             <h2>Dados herdados</h2>

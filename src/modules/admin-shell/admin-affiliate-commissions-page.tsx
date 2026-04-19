@@ -3,6 +3,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminAffiliateCommissions } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -31,6 +32,7 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
         <PageHeader
           eyebrow="Admin / comissoes afiliados"
           title="Comissoes afiliados"
+          description="Leitura financeira de aprovacao, pagamento e vinculacao por pedido."
           actions={
             <AdminFilterBar
               pathname="/admin/affiliate-commissions"
@@ -93,7 +95,12 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
         {commissions.items.length === 0 ? (
           <EmptyState title="Nenhuma comissao encontrada" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Financeiro"
+            title="Comissoes registradas"
+            description="Status, valor e payout associado em uma grade unica para conciliacao."
+            meta={<span className="panel-meta">{commissions.totalItems} registros</span>}
+          >
             <DataTable columns={['ID', 'Afiliado', 'Pedido', 'Percentual', 'Valor', 'Status', 'Payout', 'Pago em', 'Criado em']}>
               {commissions.items.map((commission) => (
                 <tr key={commission.id}>
@@ -121,7 +128,7 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
               params={{ ...filters, pageSize: filters.pageSize ?? commissions.pageSize }}
               label="comissoes"
             />
-          </>
+          </AdminSectionCard>
         )}
       </main>
     );

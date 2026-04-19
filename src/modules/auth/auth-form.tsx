@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 
+import { createGuestSession } from '@/lib/auth/session';
+import { PublicShell } from '@/modules/app-shell/public-shell';
 import { getAuthFormView, type AuthFormContent } from './auth-form-content';
 import type { AuthFormState } from '@/modules/auth/types';
 
@@ -57,9 +59,10 @@ export function AuthForm({
   );
 
   return (
-    <main className="page auth-page">
-      <section className="auth-card">
-        <div className="auth-hero">
+    <PublicShell session={createGuestSession()}>
+      <main className="page auth-page">
+        <section className="auth-card">
+          <div className="auth-hero">
           <div className="auth-brand">
             <div className="auth-brand-logo">
               <Image src="/brand/logo.jpeg" alt={brandLabel} width={64} height={64} className="auth-brand-logo-image" priority />
@@ -85,10 +88,10 @@ export function AuthForm({
               ))}
             </ul>
           </section>
-        </div>
+          </div>
 
-        <div className="auth-surface">
-          <form action={formAction} className="auth-form">
+          <div className="auth-surface">
+            <form action={formAction} className="auth-form">
             {view.notice ? (
               <div className={`auth-notice auth-notice-${view.notice.tone}`} role="status" aria-live="polite">
                 <strong>{view.notice.title}</strong>
@@ -122,17 +125,18 @@ export function AuthForm({
             ) : null}
 
             <SubmitButton label={view.submitLabel} pendingLabel={view.pendingLabel} />
-          </form>
+            </form>
 
-          <div className="auth-footer">
-            <p className="auth-footnote">{view.footnote}</p>
-            <p className="auth-alt">
-              {view.alternatePrompt} <Link href={view.alternateHref}>{view.alternateLabel}</Link>
-            </p>
+            <div className="auth-footer">
+              <p className="auth-footnote">{view.footnote}</p>
+              <p className="auth-alt">
+                {view.alternatePrompt} <Link href={view.alternateHref}>{view.alternateLabel}</Link>
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </PublicShell>
   );
 }
 

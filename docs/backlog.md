@@ -2,9 +2,37 @@
 
 ## Latest Update
 
+- [x] Onda 4B do redesign concluida nos modulos operacionais do admin
+- [x] users, catalog, payments, orders, supplier, alerts, audits, transactions, affiliates, commissions e payouts agora herdam a mesma linguagem visual administrativa
+- [x] listas, filtros, tabelas, drawers e detalhes ganharam hierarquia mais clara sem perder densidade nem query string
+- [x] formularios e drawers administrativos receberam contexto curto e mais confianca visual para mutacoes reais
+- [x] Onda 4A do redesign concluida no shell administrativo e no dashboard `/admin`
+- [x] o admin agora herda uma base visual propria da Pokelike, mais sobria e operacional, sem perder densidade
+- [x] sidebar/topbar do admin ganharam branding mais forte, estado ativo mais claro e contexto melhor de navegacao
+- [x] o dashboard `/admin` foi refeito como central de operacao com prioridades, metricas, atalhos, alertas e saude de fornecedores
+- [x] wrappers reutilizaveis do admin foram adicionados em `src/components/ui/admin-surfaces.tsx` para sustentar as proximas ondas dos modulos administrativos
+- [x] Onda 3B do redesign concluida nas paginas internas principais do cliente: `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate`
+- [x] profile, wallet, payments, orders e affiliate agora herdam a base premium da Pokelike com mais foco em status, contexto e proximas acoes
+- [x] os drawers e estados criticos de pagamentos e pedidos foram preservados, mas ganharam hierarquia visual mais forte
+- [x] referral, fluxo de afiliados e identidade fiscal do cliente passaram a ter apresentacao mais clara e mais acionavel
+- [x] Onda 3A do redesign concluida no shell autenticado do cliente e no dashboard `/app`
+- [x] a area interna do cliente ganhou sidebar/topbar mais premium, com branding Pokelike, estado ativo mais forte e melhor leitura de contexto
+- [x] o dashboard `/app` foi refeito como painel central com prioridade atual, atalhos, metricas, referral/afiliados e tabelas recentes
+- [x] wrappers reutilizaveis do cliente foram adicionados em `src/components/ui/customer-surfaces.tsx` para sustentar a proxima rodada das paginas internas
+- [x] landing `/` recebeu uma segunda rodada de redesign focada em estrutura comercial mais padrao, com hero mais forte e composicao visual mais aspiracional
+- [x] a home ficou mais proxima de um template premium moderno, com menos texto e mais peso em mockup, camadas e elementos flutuantes
+- [x] shell publico foi preservado e a reestruturacao ficou concentrada em `public-home.tsx` e nos estilos da landing em `globals.css`
+- [x] home `/` passou por uma rodada focada de simplificacao editorial para reduzir densidade, explicacao e tom de documentacao
+- [x] hero, beneficios, FAQ e CTA final ficaram mais curtos e mais comerciais, preservando a direcao visual ja concluida
+- [x] shell publico teve microajustes de branding para manter a leitura publica mais direta e coerente com Pokelike
 - [x] rodada de saneamento documental concluida em `README.md`, `docs/README.md`, `docs/architecture.md`, `docs/screen-map.md` e `docs/handoff.md`
 - [x] documentacao principal voltou a refletir o frontend real em vez do bootstrap inicial
 - [x] rotas com drawer/redirect, afiliados, verify-email, mutacoes admin e limitacoes reais ficaram explicitadas
+- [x] Onda 1A do redesign visual concluida na foundation compartilhada, com nova base dark premium e CTA amarelo preservando fluxos existentes
+- [x] `globals.css` passou a centralizar a nova linguagem visual compartilhada entre publico, cliente e admin
+- [x] componentes base de header, feedback, badge, drawer, tabela, botoes e inputs foram realinhados para a nova direcao Pokelike
+- [x] Onda 1B do redesign visual concluida no shell publico, com header sticky, footer premium, wrappers publicos e menu mobile compartilhado
+- [x] Onda 2 do redesign concluida na landing `/`, com nova home comercial da Pokelike ligada aos fluxos reais de catalogo, Pix, conta e pedidos
 
 ## Current State
 
@@ -190,6 +218,50 @@ Tasks:
 - [x] transformar a home publica em landing page comercial da plataforma
 - [x] reduzir a copy e aproximar home, catalogo e detalhe do servico dos pontos de decisao, com menos narrativa e menos exposicao operacional do fornecedor na superficie principal
 
+## Phase 8A: Shared Visual Redesign Foundation
+
+Tasks:
+
+- [x] auditar a base visual existente em publico, cliente e admin
+- [x] consolidar tokens base de cor, superficie, borda, sombra, radius e foco em `src/app/globals.css`
+- [x] migrar a foundation para eixo dark premium com CTA amarelo e acentos azul/roxo
+- [x] revisar componentes compartilhados de header, feedback, badge, tabela, drawers, cards, botoes e inputs sem mudar comportamento
+- [x] preparar a base reutilizavel para a proxima onda de redesign da landing e das paginas internas
+
+## Phase 8B: Admin Visual Redesign
+
+Tasks:
+
+- [x] refinar shell administrativo com branding, navegacao e header mais fortes
+- [x] redesenhar `/admin` como central operacional com prioridades, metricas e atalhos
+- [x] introduzir wrappers reutilizaveis para superficies admin em `src/components/ui/admin-surfaces.tsx`
+- [x] ajustar tabelas, toolbar e drawers do admin para um acabamento mais sobrio e denso
+- [x] propagar a nova linguagem do admin para usuarios, catalogo, pagamentos, pedidos, fornecedores, alertas e transacoes
+- [x] levar a mesma base para afiliados, comissoes e payouts
+- [ ] revisar acabamento fino de responsividade, espacamento e pequenos ruídos textuais do admin
+
+## Phase 8B: Public Shell Redesign
+
+Tasks:
+
+- [x] auditar header, footer e wrappers publicos existentes
+- [x] criar shell publico compartilhado para landing, catalogo, detalhe, login, cadastro e verify-email
+- [x] revisar navegacao publica com CTA primario de cadastro, CTA secundario de login e comportamento responsivo
+- [x] consolidar footer publico enxuto e coerente com a nova identidade
+- [x] preparar secoes e grids publicos reutilizaveis para a proxima onda da landing
+
+## Phase 8C: Landing Redesign
+
+Tasks:
+
+- [x] redesenhar profundamente a hero da home com branding Pokelike, CTA primario cedo e composicao visual forte
+- [x] reescrever a copy da home para explicar o que e a plataforma, para quem serve, como comecar e por que confiar
+- [x] adicionar secoes de como funciona, beneficios, vitrine de plataformas, mockup de painel, FAQ e CTA final
+- [x] manter a landing conectada ao shell publico e aos fluxos reais de `/catalog`, `/register` e area autenticada
+- [x] reforcar responsividade mobile e hierarquia visual sem criar uma landing paralela ao app
+- [x] condensar a copy da landing para uma leitura mais comercial, mais curta e mais escaneavel sem reabrir o redesign visual
+- [x] aproximar a home da referencia premium aprovada com hero em duas colunas, mockup forte e mais composicao decorativa no eixo direito
+
 ## Phase 9: Shared State Polish
 
 Tasks:
@@ -240,6 +312,14 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- tratar shell, dashboard e paginas principais do cliente como onda concluida e fazer apenas ajustes finos de consistencia onde necessario
+- decidir se a proxima iteracao visual relevante deve ir para auth/catalogo interno remanescente ou para o shell admin
+- revisar se `customer-surfaces.tsx` precisa crescer com wrappers de tabela/lista especificos ou se a base atual ja cobre a area do cliente
+- tratar shell e dashboard do cliente como base visual concluida para a area autenticada
+- propagar os novos wrappers do cliente para `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` sem reabrir fluxos
+- revisar tela a tela onde ainda vale compactar listas, cabecalhos e cards da area do cliente agora que a nova linguagem-base existe
+- tratar foundation, shell publico e landing como ondas concluidas e focar as proximas iteracoes nas paginas internas publicas e autenticadas
+- revisar tela a tela onde a nova foundation pede pequenos ajustes locais de contraste, densidade ou hierarquia antes da onda das paginas internas
 - tratar a V1 frontend de afiliados como encerrada e focar a proxima iteracao em qualidade e governanca
 - revisar tela a tela onde ainda vale remover descricoes longas agora que os componentes compartilhados aceitam cabecalhos mais compactos
 - revisar se alguns filtros publicos do catalogo merecem uma segunda rodada de simplificacao sem perder descobribilidade

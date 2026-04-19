@@ -22,6 +22,11 @@ export function AdminWalletAdjustmentForm({ action, returnTo, defaultUserId }: A
       hiddenFields={hiddenFields}
     >
       <div className="admin-user-form">
+        <div className="admin-form-note">
+          <strong>Ajuste financeiro manual</strong>
+          <p>Use este fluxo para correcao, bonus ou estorno com motivo claro para auditoria.</p>
+        </div>
+
         {defaultUserId ? (
           <div className="admin-user-static">
             <span>Usuario</span>

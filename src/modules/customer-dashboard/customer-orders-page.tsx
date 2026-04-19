@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { ArrowRight, Clock3, PackageCheck, ShoppingBag, Wallet } from 'lucide-react';
 
+import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
-import { StatCard } from '@/components/ui/stat-card';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { getCustomerOrderDetail, listCustomerOrders } from '@/lib/api/customer';
@@ -12,7 +13,7 @@ import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { buildPathWithSearch } from '@/modules/admin-shell/shared';
-import { getOrderEventView, getOrderStatusView, sortOrderEvents } from '@/modules/orders/order-view';
+import { getOrderEventView, getOrderStatusView, orderHasQueuedSupplierBalance, sortOrderEvents } from '@/modules/orders/order-view';
 
 type CustomerOrdersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -34,10 +35,13 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
     }
 
     const returnTo = buildPathWithSearch('/app/orders', {});
-    const openCount = orders.items.filter((order) =>
+    const openOrders = orders.items.filter((order) =>
       ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
-    ).length;
+    );
     const completedCount = orders.items.filter((order) => order.status === 'completed').length;
+    const queuedCount = orders.items.filter((order) => order.status === 'queued_supplier_balance').length;
+    const latestOrder = orders.items[0] ?? null;
+    const latestOrderStatusView = latestOrder ? getOrderStatusView(latestOrder.status) : null;
     const activeOrderStatusView = activeOrder ? getOrderStatusView(activeOrder.status) : null;
     const activeEvents = activeOrder ? sortOrderEvents(activeOrder.events) : [];
 
@@ -46,32 +50,147 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
         <PageHeader
           eyebrow="Pedidos"
           title="Pedidos"
+          description="Leitura mais direta do andamento, da cobranca e do contexto de cada pedido."
+          compact
           actions={
             <>
               <Link href="/catalog" className="primary-action">
+                <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
                 Novo pedido
               </Link>
               <Link href="/app/payments" className="secondary-action">
+                <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
                 Ver pagamentos
               </Link>
             </>
           }
         />
 
-        <section className="metric-list">
-          <StatCard label="Na pagina" value={String(orders.items.length)} meta={`${orders.totalItems} no total`} />
-          <StatCard label="Em andamento" value={String(openCount)} tone="warning" />
-          <StatCard label="Concluidos" value={String(completedCount)} tone="accent" />
+        <section className="customer-dashboard-hero">
+          <article className="customer-dashboard-command customer-orders-command">
+            <div className="customer-dashboard-command-head">
+              <div className="customer-dashboard-command-copy">
+                <div className="customer-dashboard-command-pills">
+                  <span className="customer-dashboard-pill">Pedidos do cliente</span>
+                  <span className="customer-dashboard-pill">{orders.totalItems} no total</span>
+                </div>
+                <h2>{openOrders.length}</h2>
+                <p>Pedidos ativos agora. Use este painel para identificar rapidamente o que exige acompanhamento.</p>
+              </div>
+              {latestOrderStatusView ? (
+                <StatusBadge label={latestOrderStatusView.label} tone={latestOrderStatusView.tone} />
+              ) : null}
+            </div>
+
+            <div className="customer-dashboard-balance-row">
+              <div className="customer-dashboard-snapshot">
+                <div>
+                  <span>Concluidos</span>
+                  <strong>{completedCount}</strong>
+                </div>
+                <div>
+                  <span>Em espera operacional</span>
+                  <strong>{queuedCount}</strong>
+                </div>
+                <div>
+                  <span>Ultimo update</span>
+                  <strong>{latestOrder ? formatDateTime(latestOrder.updatedAt) : 'Sem pedidos'}</strong>
+                </div>
+              </div>
+            </div>
+
+            {queuedCount > 0 ? (
+              <div className="detail-note detail-note-warning customer-inline-warning">
+                <strong>Existe pedido aguardando saldo do fornecedor</strong>
+                <p>Esse estado continua ativo e nao significa cancelamento. O valor do cliente segue reservado.</p>
+              </div>
+            ) : null}
+          </article>
+
+          <div className="customer-dashboard-side">
+            <CustomerSectionCard
+              eyebrow="Leitura atual"
+              title={latestOrder ? latestOrder.catalogService?.name || `Pedido ${latestOrder.id}` : 'Sem pedidos recentes'}
+              description={latestOrderStatusView?.description || 'Seu proximo pedido aparecera aqui com status e contexto.'}
+              meta={
+                latestOrderStatusView ? (
+                  <StatusBadge label={latestOrderStatusView.label} tone={latestOrderStatusView.tone} />
+                ) : (
+                  <StatusBadge label="sem pedidos" tone="neutral" />
+                )
+              }
+              actions={
+                latestOrder ? (
+                  <Link href={buildPathWithSearch('/app/orders', { orderId: latestOrder.id })} className="secondary-action">
+                    <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
+                    Abrir ultimo pedido
+                  </Link>
+                ) : null
+              }
+            >
+              <div className="customer-dashboard-inline-stats">
+                <div>
+                  <span>Atualizado em</span>
+                  <strong>{latestOrder ? formatDateTime(latestOrder.updatedAt) : '-'}</strong>
+                </div>
+                <div>
+                  <span>Cobranca</span>
+                  <strong>{latestOrder ? formatMoney(latestOrder.customerCharge) : '-'}</strong>
+                </div>
+                <div>
+                  <span>Status</span>
+                  <strong>{latestOrderStatusView?.label || 'Sem pedidos'}</strong>
+                </div>
+              </div>
+            </CustomerSectionCard>
+          </div>
+        </section>
+
+        <section className="customer-dashboard-metrics">
+          <CustomerMetricCard
+            label="Pedidos ativos"
+            value={String(openOrders.length)}
+            meta="Aguardando ou em processamento."
+            icon={Clock3}
+            tone="warning"
+          />
+          <CustomerMetricCard
+            label="Concluidos"
+            value={String(completedCount)}
+            meta="Pedidos finalizados."
+            icon={PackageCheck}
+            tone="success"
+          />
+          <CustomerMetricCard
+            label="Em espera operacional"
+            value={String(queuedCount)}
+            meta="Fornecedor sem saldo suficiente."
+            icon={Wallet}
+            tone={queuedCount > 0 ? 'warning' : 'default'}
+          />
+          <CustomerMetricCard
+            label="Na pagina"
+            value={String(orders.items.length)}
+            meta={`${orders.totalItems} no total`}
+            icon={ShoppingBag}
+            tone="default"
+          />
         </section>
 
         {orders.items.length === 0 ? (
-          <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo." />
+          <EmptyState
+            title="Nenhum pedido encontrado"
+            description="Assim que voce comprar um servico, o acompanhamento aparece aqui."
+            actionHref="/catalog"
+            actionLabel="Explorar catalogo"
+          />
         ) : (
-          <section className="detail-card detail-card-wide">
-            <div className="panel-heading">
-              <h2>Pedidos</h2>
-              <span className="panel-meta">{orders.totalItems} registro(s)</span>
-            </div>
+          <CustomerSectionCard
+            eyebrow="Lista"
+            title="Pedidos recentes"
+            description="Abra qualquer item para ver status, contexto e timeline sem sair da listagem."
+            meta={<span className="panel-meta">{orders.totalItems} registro(s)</span>}
+          >
             <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
               {orders.items.map((order) => {
                 const statusView = getOrderStatusView(order.status);
@@ -93,66 +212,56 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                 );
               })}
             </DataTable>
-          </section>
+          </CustomerSectionCard>
         )}
 
         {activeOrder ? (
           <AdminSlideOver
             eyebrow="Pedido"
             title={activeOrder.catalogService?.name || `Pedido ${activeOrder.id}`}
+            description={activeOrderStatusView?.description}
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
-              <article className="admin-inline-panel">
-                <div className="panel-heading">
-                  <div>
-                    <p className="eyebrow">Status</p>
-                    <h3>Pedido {activeOrder.id}</h3>
-                  </div>
-                  {activeOrderStatusView ? <StatusBadge label={activeOrderStatusView.label} tone={activeOrderStatusView.tone} /> : null}
-                </div>
+              <CustomerSectionCard
+                eyebrow="Status"
+                title={`Pedido ${activeOrder.id}`}
+                description={activeOrderStatusView?.description}
+                meta={activeOrderStatusView ? <StatusBadge label={activeOrderStatusView.label} tone={activeOrderStatusView.tone} /> : null}
+              >
                 {activeOrder.status === 'queued_supplier_balance' ? (
-                  <p className="detail-note detail-note-warning">O pedido continua ativo. Seu saldo segue reservado enquanto o fornecedor retoma o processamento.</p>
+                  <div className="detail-note detail-note-warning">
+                    <strong>Pedido em espera operacional</strong>
+                    <p>O fornecedor precisa retomar o saldo. O pedido continua ativo e o valor permanece reservado.</p>
+                  </div>
                 ) : null}
-                <dl className="detail-list">
+                <div className="customer-dashboard-inline-stats">
                   <div>
-                    <dt>Servico</dt>
-                    <dd>{activeOrder.catalogService?.name || 'Servico nao associado'}</dd>
+                    <span>Servico</span>
+                    <strong>{activeOrder.catalogService?.name || 'Servico nao associado'}</strong>
                   </div>
                   <div>
-                    <dt>Quantidade</dt>
-                    <dd>{activeOrder.quantity}</dd>
+                    <span>Quantidade</span>
+                    <strong>{activeOrder.quantity}</strong>
                   </div>
                   <div>
-                    <dt>Cobranca</dt>
-                    <dd>{formatMoney(activeOrder.customerCharge)}</dd>
-                  </div>
-                  <div>
-                    <dt>Atualizado em</dt>
-                    <dd>{formatDateTime(activeOrder.updatedAt)}</dd>
-                  </div>
-                </dl>
-              </article>
-
-              <article className="admin-inline-panel">
-                <div className="panel-heading">
-                  <div>
-                    <p className="eyebrow">Entrega</p>
-                    <h3>Link</h3>
+                    <span>Cobranca</span>
+                    <strong>{formatMoney(activeOrder.customerCharge)}</strong>
                   </div>
                 </div>
+              </CustomerSectionCard>
+
+              <CustomerSectionCard eyebrow="Entrega" title="Link do pedido" description="Use este destino como referencia principal da entrega.">
                 <p className="code-block">{activeOrder.link}</p>
-              </article>
+              </CustomerSectionCard>
 
-              <article className="admin-inline-panel">
-                <div className="panel-heading">
-                  <div>
-                    <p className="eyebrow">Timeline</p>
-                    <h3>Atualizacoes</h3>
-                  </div>
-                </div>
+              <CustomerSectionCard
+                eyebrow="Timeline"
+                title="Atualizacoes do pedido"
+                description="Acompanhamento de eventos e mudancas de status registradas pelo backend."
+              >
                 {activeEvents.length > 0 ? (
-                  <div className="order-timeline">
+                  <div className="order-timeline order-timeline-strong">
                     {activeEvents.map((event) => {
                       const eventView = getOrderEventView(event, 'customer');
 
@@ -173,9 +282,33 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                     })}
                   </div>
                 ) : (
-                  <p className="section-copy">Sem atualizacoes.</p>
+                  <p className="section-copy">Sem atualizacoes registradas ate agora.</p>
                 )}
-              </article>
+              </CustomerSectionCard>
+
+              {orderHasQueuedSupplierBalance(activeOrder) ? (
+                <CustomerSectionCard
+                  eyebrow="Contexto operacional"
+                  title="Leitura para espera de fornecedor"
+                  description="Esse estado e tratado como fila operacional, nao como erro final do pedido."
+                  meta={<StatusBadge label="saldo do fornecedor" tone="warning" />}
+                >
+                  <div className="customer-dashboard-inline-stats">
+                    <div>
+                      <span>Pedido</span>
+                      <strong>Segue ativo</strong>
+                    </div>
+                    <div>
+                      <span>Saldo do cliente</span>
+                      <strong>Reservado</strong>
+                    </div>
+                    <div>
+                      <span>Acao</span>
+                      <strong>Aguardar retomada</strong>
+                    </div>
+                  </div>
+                </CustomerSectionCard>
+              ) : null}
             </section>
           </AdminSlideOver>
         ) : activeOrderError ? (

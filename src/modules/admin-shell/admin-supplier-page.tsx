@@ -3,6 +3,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listSupplierProviders, listSupplierServices, listSupplierSyncLogs } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -61,6 +62,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         <PageHeader
           eyebrow="Admin / fornecedores"
           title="Fornecedores"
+          description="Disponibilidade, saldo e sincronizacao em blocos compactos para monitoramento continuo."
           actions={
             <>
               <AdminActionForm
@@ -99,12 +101,12 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         </section>
 
         <section className="dashboard-grid">
-          <article className="detail-card">
-            <div className="panel-heading">
-              <h2>Status dos fornecedores</h2>
-              <span className="panel-meta">{providers.items.length} itens</span>
-            </div>
-
+          <AdminSectionCard
+            eyebrow="Providers"
+            title="Status dos fornecedores"
+            description="Disponibilidade e saldo em leitura imediata."
+            meta={<span className="panel-meta">{providers.items.length} itens</span>}
+          >
             {providers.items.length === 0 ? (
               <EmptyState title="Nenhum fornecedor encontrado" description="Ajuste os filtros." />
             ) : (
@@ -126,13 +128,14 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                 ))}
               </DataTable>
             )}
-          </article>
+          </AdminSectionCard>
 
-          <article className="detail-card">
-            <div className="panel-heading">
-              <h2>Logs de sincronizacao</h2>
-              <span className="panel-meta">{logs.totalItems} registros</span>
-            </div>
+          <AdminSectionCard
+            eyebrow="Sync logs"
+            title="Logs de sincronizacao"
+            description="Eventos recentes para leitura de sucesso, falha e janela executada."
+            meta={<span className="panel-meta">{logs.totalItems} registros</span>}
+          >
             <AdminFilterBar
               pathname="/admin/supplier"
               hiddenFields={[
@@ -218,14 +221,16 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                 />
               </>
             )}
-          </article>
+          </AdminSectionCard>
         </section>
 
-        <section className="detail-card detail-card-wide">
-          <div className="panel-heading">
-              <h2>Servicos do fornecedor</h2>
-            <span className="panel-meta">{services.totalItems} itens</span>
-          </div>
+        <AdminSectionCard
+          eyebrow="Catalogo sincronizado"
+          title="Servicos do fornecedor"
+          description="Faixa, flags e ultima sincronizacao com filtros por query string preservados."
+          meta={<span className="panel-meta">{services.totalItems} itens</span>}
+          className="detail-card-wide"
+        >
           <AdminFilterBar
             pathname="/admin/supplier"
             hiddenFields={[
@@ -326,10 +331,10 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                   isActiveAtSupplier: serviceFilters.isActiveAtSupplier,
                 }}
                 label="servicos"
-              />
-            </>
-          )}
-        </section>
+                />
+              </>
+            )}
+        </AdminSectionCard>
       </main>
     );
   } catch (error) {

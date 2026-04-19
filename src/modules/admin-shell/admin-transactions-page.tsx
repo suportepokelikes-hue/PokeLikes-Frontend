@@ -4,6 +4,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminTransactions } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -43,6 +44,7 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
         <PageHeader
           eyebrow="Admin / transacoes"
           title="Transacoes"
+          description="Ledger operacional com ajuste manual preservado e leitura financeira mais clara."
           actions={
             <>
               <Link href={adjustPath} className="primary-action">
@@ -91,7 +93,12 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
         {transactions.items.length === 0 ? (
           <EmptyState title="Nenhuma transacao encontrada" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Ledger"
+            title="Movimentacoes de carteira"
+            description="Credito, debito, saldo antes/depois e referencia em uma tabela unica."
+            meta={<span className="panel-meta">{transactions.totalItems} registros</span>}
+          >
             <DataTable columns={['Usuario', 'Tipo', 'Direcao', 'Valor', 'Saldo antes / depois', 'Referencia', 'Criado em']}>
               {transactions.items.map((transaction) => (
                 <tr key={transaction.id}>
@@ -135,13 +142,14 @@ export async function AdminTransactionsPage({ session, filters, isAdjustOpen = f
               params={{ ...filters, pageSize: filters.pageSize ?? transactions.pageSize }}
               label="transacoes"
             />
-          </>
+          </AdminSectionCard>
         )}
 
         {isAdjustOpen ? (
           <AdminSlideOver
             eyebrow="Operacao manual"
             title="Ajustar carteira"
+            description="Credito ou debito pontual com motivo obrigatorio."
             closeHref={returnTo}
           >
             <AdminWalletAdjustmentForm action={createWalletAdjustmentAction} returnTo={returnTo} defaultUserId={filters.userId} />

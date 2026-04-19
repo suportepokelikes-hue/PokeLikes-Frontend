@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { AdminMetricCard, AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { getAdminPaymentDetail } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { reconcilePaymentAction } from '@/modules/admin-shell/actions';
+import { mapPaymentTone } from '@/modules/admin-shell/shared';
+import { CircleDollarSign, CreditCard, UserRound } from 'lucide-react';
 
 type AdminPaymentDetailPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -25,6 +28,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
         <PageHeader
           eyebrow="Admin / pagamentos / detalhe"
           title={`Pagamento ${payment.id}`}
+          description="Detalhe financeiro com status, dados do PIX e eventos recebidos."
           actions={
             <>
               <Link href="/admin/payments" className="secondary-action">
@@ -44,23 +48,13 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
         />
 
         <section className="metric-list">
-          <article className="metric-card metric-accent">
-            <span>Valor</span>
-            <strong>{formatMoney(payment.amount)}</strong>
-          </article>
-          <article className={`metric-card metric-${mapPaymentTone(payment.status)}`}>
-            <span>Status</span>
-            <strong>{payment.status}</strong>
-          </article>
-          <article className="metric-card metric-default">
-            <span>Cliente</span>
-            <strong>{payment.user?.name || 'Nao associado'}</strong>
-          </article>
+          <AdminMetricCard label="Valor" value={formatMoney(payment.amount)} icon={CircleDollarSign} tone="accent" />
+          <AdminMetricCard label="Status" value={payment.status} icon={CreditCard} tone={resolveMetricTone(mapPaymentTone(payment.status))} />
+          <AdminMetricCard label="Cliente" value={payment.user?.name || 'Nao associado'} icon={UserRound} tone="info" />
         </section>
 
         <section className="detail-grid">
-          <article className="detail-card">
-            <h2>Cliente e pagamento</h2>
+          <AdminSectionCard eyebrow="Financeiro" title="Cliente e pagamento" description="Dados centrais da cobranca e do usuario associado.">
             <dl className="detail-list">
               <div>
                 <dt>Cliente</dt>
@@ -87,10 +81,9 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                 <dd>{formatDateTime(payment.updatedAt)}</dd>
               </div>
             </dl>
-          </article>
+          </AdminSectionCard>
 
-          <article className="detail-card">
-            <h2>Detalhes do PIX</h2>
+          <AdminSectionCard eyebrow="PIX" title="Detalhes do PIX" description="Provedor, expiracao, confirmacao e BR Code.">
             <dl className="detail-list">
               <div>
                 <dt>ID no fornecedor</dt>
@@ -113,10 +106,9 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
                 <dd className="code-block">{payment.brCode || '-'}</dd>
               </div>
             </dl>
-          </article>
+          </AdminSectionCard>
 
-          <article className="detail-card detail-card-wide">
-            <h2>Eventos</h2>
+          <AdminSectionCard eyebrow="Eventos" title="Eventos do pagamento" description="Timeline recebida do provedor e processamento interno." className="detail-card-wide">
             {payment.events.length > 0 ? (
               <div className="stack-list">
                 {payment.events.map((event) => (
@@ -138,7 +130,7 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
             ) : (
               <p className="section-copy">Sem atualizacoes.</p>
             )}
-          </article>
+          </AdminSectionCard>
         </section>
       </main>
     );
@@ -158,14 +150,6 @@ export async function AdminPaymentDetailPage({ session, paymentId }: AdminPaymen
   }
 }
 
-function mapPaymentTone(status: string) {
-  if (status === 'confirmed') {
-    return 'success';
-  }
-
-  if (status === 'pending') {
-    return 'warning';
-  }
-
-  return 'danger';
+function resolveMetricTone(tone: 'neutral' | 'info' | 'success' | 'warning' | 'danger') {
+  return tone === 'neutral' ? 'default' : tone;
 }

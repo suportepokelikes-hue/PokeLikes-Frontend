@@ -3,6 +3,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminAffiliates } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -36,6 +37,7 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
         <PageHeader
           eyebrow="Admin / afiliados"
           title="Perfis afiliados"
+          description="Status do programa, codigo publico e acoes de aprovacao ou suspensao."
           actions={
             <AdminFilterBar
               pathname="/admin/affiliates"
@@ -93,7 +95,12 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
         {affiliates.items.length === 0 ? (
           <EmptyState title="Nenhum perfil afiliado encontrado" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Programa"
+            title="Perfis monitorados"
+            description="Cada linha concentra codigo, percentual, usuario e proxima acao."
+            meta={<span className="panel-meta">{affiliates.totalItems} registros</span>}
+          >
             <DataTable columns={['ID', 'Codigo publico', 'Usuario', 'Status', 'Aprovado em', 'Suspenso em', 'Criado em', 'Acao']}>
               {affiliates.items.map((profile) => (
                 <tr key={profile.id}>
@@ -130,7 +137,7 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
               params={{ ...filters, pageSize: filters.pageSize ?? affiliates.pageSize }}
               label="perfis afiliados"
             />
-          </>
+          </AdminSectionCard>
         )}
       </main>
     );

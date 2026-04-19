@@ -3,6 +3,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import Link from 'next/link';
 import { getAdminPaymentsSummary, listAdminPayments } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
@@ -11,7 +12,7 @@ import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { reconcilePaymentAction, reconcilePaymentsAction } from '@/modules/admin-shell/actions';
 import type { AdminPaymentsListParams } from '@/modules/admin-shell/query';
-import { AdminFilterBar, AdminSummaryCard, PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
+import { AdminFilterBar, AdminSummaryCard, PaginationSummary, buildPathWithSearch, mapPaymentTone } from '@/modules/admin-shell/shared';
 
 type AdminPaymentsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -31,6 +32,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
         <PageHeader
           eyebrow="Admin / pagamentos"
           title="Pagamentos"
+          description="Conciliacao, status e volume financeiro com leitura rapida para agir em pendencias."
           actions={
             <>
               <AdminFilterBar
@@ -98,7 +100,12 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
         {payments.items.length === 0 ? (
           <EmptyState title="Nenhum pagamento encontrado" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Financeiro"
+            title="Fila de pagamentos"
+            description="Status, metodo e atalho de conciliacao por item em uma leitura unica."
+            meta={<span className="panel-meta">{payments.totalItems} registros</span>}
+          >
             <DataTable columns={['ID', 'Usuario', 'Metodo', 'Valor', 'Status', 'Criado em', 'Acao']}>
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
@@ -140,7 +147,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
               params={{ ...filters, pageSize: filters.pageSize ?? payments.pageSize }}
               label="pagamentos"
             />
-          </>
+          </AdminSectionCard>
         )}
       </main>
     );
@@ -154,20 +161,4 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
       </main>
     );
   }
-}
-
-function mapPaymentTone(status: string) {
-  if (status === 'confirmed') {
-    return 'success';
-  }
-
-  if (status === 'pending') {
-    return 'warning';
-  }
-
-  if (status === 'expired' || status === 'failed' || status === 'cancelled') {
-    return 'danger';
-  }
-
-  return 'neutral';
 }

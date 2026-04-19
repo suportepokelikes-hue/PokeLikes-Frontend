@@ -5,6 +5,7 @@ import {
   Bell,
   BookOpenText,
   CircleUserRound,
+  Compass,
   CreditCard,
   FolderKanban,
   Globe,
@@ -13,7 +14,9 @@ import {
   Menu,
   PackageSearch,
   ReceiptText,
+  ShieldAlert,
   Shield,
+  Sparkles,
   Users,
   Wallet,
   X,
@@ -24,6 +27,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import type { UserSummary } from '@/lib/api/contracts';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { LogoutButton } from '@/modules/auth/logout-button';
 import { getAreaShellView, type AreaShellArea } from './area-shell-content';
 
@@ -79,7 +83,7 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
         <div className="area-sidebar-top">
           <div className="area-brand">
             <div className="area-brand-mark area-brand-mark-image">
-              <Image src="/brand/logo.jpeg" alt="Likes Uai" width={56} height={56} className="brand-logo-image" priority />
+              <Image src="/brand/logo.jpeg" alt="Pokelike" width={56} height={56} className="brand-logo-image" priority />
             </div>
             <div>
               <strong>{view.brandTitle}</strong>
@@ -92,6 +96,23 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
           </button>
         </div>
 
+        <div className="area-sidebar-panel area-sidebar-panel-brand">
+          <div className="area-sidebar-panel-head">
+            <span className="area-shell-chip area-shell-chip-brand">
+              {area === 'admin' ? <ShieldAlert size={14} strokeWidth={2.05} aria-hidden="true" /> : <Sparkles size={14} strokeWidth={2.05} aria-hidden="true" />}
+              {area === 'admin' ? 'Central operacional' : 'Nova identidade'}
+            </span>
+            <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
+          </div>
+          <strong>{view.currentSectionLabel}</strong>
+          <p>{view.currentSectionDescription}</p>
+        </div>
+
+        <div className="area-nav-shell">
+          <div className="area-nav-heading">
+            <span>Navegacao</span>
+            <span>{view.links.filter((link) => link.href.startsWith(area === 'customer' ? '/app' : '/admin')).length} areas</span>
+          </div>
         <nav className="area-nav">
           {view.links.map((link) => {
             const Icon = navIcons[link.icon] ?? LayoutDashboard;
@@ -107,15 +128,28 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
                 <span className="area-nav-icon" aria-hidden="true">
                   <Icon size={16} strokeWidth={2.15} />
                 </span>
-                <span>{link.label}</span>
+                <span className="area-nav-copy">
+                  <span>{link.label}</span>
+                  <small>{link.description}</small>
+                </span>
               </Link>
             );
           })}
         </nav>
+        </div>
 
         <div className="account-badge">
-          <strong>{view.userName}</strong>
-          <span>{view.userMeta}</span>
+          <div className="account-badge-head">
+            <div>
+              <strong>{view.userName}</strong>
+              <span>{view.userMeta}</span>
+            </div>
+            <span className="area-shell-chip">{user.role}</span>
+          </div>
+          <div className="account-badge-statuses">
+            <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
+            <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
+          </div>
           <LogoutButton label="Encerrar sessao" />
         </div>
       </aside>
@@ -135,7 +169,22 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
 
             <div className="area-header-copy">
               <p className="eyebrow">{view.eyebrow}</p>
-              <h1>{view.title}</h1>
+              <h1>{view.currentSectionLabel}</h1>
+              <p>{view.currentSectionDescription}</p>
+            </div>
+          </div>
+
+          <div className="area-header-actions">
+            <div className="area-header-pills">
+              <span className="area-shell-chip">
+                <Compass size={14} strokeWidth={2.05} aria-hidden="true" />
+                {view.title}
+              </span>
+              <span className="area-shell-chip">{user.role}</span>
+            </div>
+            <div className="area-header-statuses">
+              <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
+              <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
             </div>
           </div>
         </header>

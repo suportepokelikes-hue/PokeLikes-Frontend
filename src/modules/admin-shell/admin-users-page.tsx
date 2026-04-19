@@ -5,6 +5,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { getAdminUserDetail, listAdminUsers } from '@/lib/api/admin';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -60,6 +61,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
         <PageHeader
           eyebrow="Admin / usuarios"
           title="Usuarios"
+          description="Acesso, papel, status e ajuste financeiro concentrados na mesma operacao."
           actions={
             <>
               <Link href={createPath} className="primary-action">
@@ -116,7 +118,12 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
         {users.items.length === 0 ? (
           <EmptyState title="Nenhum usuario encontrado" description="Ajuste os filtros." />
         ) : (
-          <>
+          <AdminSectionCard
+            eyebrow="Usuarios"
+            title="Lista operacional"
+            description="Leitura direta para abrir edicao ou seguir para ajuste de carteira."
+            meta={<span className="panel-meta">{users.totalItems} no total</span>}
+          >
             <DataTable columns={['Nome', 'Email', 'Papel', 'Status', 'Acoes']}>
               {users.items.map((user) => (
                 <tr key={user.id}>
@@ -150,7 +157,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
               params={{ ...filters, pageSize: filters.pageSize ?? users.pageSize }}
               label="usuarios"
             />
-          </>
+          </AdminSectionCard>
         )}
 
         {isCreateOpen ? (
@@ -171,6 +178,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
                   <div>
                     <p className="eyebrow">Editar usuario</p>
                     <h3>Cadastro</h3>
+                    <p className="panel-description">Atualize acesso e dados principais sem sair da listagem.</p>
                   </div>
                   <div className="feedback-actions">
                     <StatusBadge label={activeUser.role} tone={activeUser.role === 'admin' ? 'info' : 'neutral'} />
@@ -185,6 +193,7 @@ export async function AdminUsersPage({ session, filters, isCreateOpen = false, a
                   <div>
                     <p className="eyebrow">Carteira</p>
                     <h3>Ajuste</h3>
+                    <p className="panel-description">Credito ou debito manual com motivo explicito para rastreio.</p>
                   </div>
                 </div>
                 <AdminWalletAdjustmentForm action={createWalletAdjustmentAction} returnTo={returnTo} defaultUserId={activeUser.id} />

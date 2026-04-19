@@ -18,7 +18,24 @@ export function CustomerProfileEditForm({ profile }: CustomerProfileEditFormProp
   const fiscalIdentityLabel = getFiscalIdentityLabel(profile);
 
   return (
-    <form action={formAction} className="admin-action-form">
+    <form action={formAction} className="admin-action-form customer-profile-edit-shell">
+      <div className="customer-profile-edit-intro">
+        <div className="customer-dashboard-inline-stats">
+          <div>
+            <span>Email atual</span>
+            <strong>{profile.email}</strong>
+          </div>
+          <div>
+            <span>{fiscalIdentityLabel}</span>
+            <strong>{formatTaxIdForDisplay(taxId)}</strong>
+          </div>
+          <div>
+            <span>Status da conta</span>
+            <strong>{profile.status}</strong>
+          </div>
+        </div>
+      </div>
+
       <div className="admin-user-form customer-profile-edit-form">
         <label className="admin-user-field admin-user-field-wide">
           <span>Nome</span>
@@ -51,7 +68,7 @@ export function CustomerProfileEditForm({ profile }: CustomerProfileEditFormProp
       </div>
 
       <div className="customer-profile-edit-note">
-        <strong>O que voce consegue ajustar aqui</strong>
+        <strong>O que voce ajusta neste drawer</strong>
         <p>
           Atualize nome, telefone e CPF/CNPJ sem sair da conta. O email continua somente para leitura nesta versao.
         </p>

@@ -174,6 +174,50 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - o admin prioriza densidade de tabela, filtros por URL e mutacoes inline/drawer
 - o catalogo publico traduz disponibilidade do fornecedor em UX explicita: compravel, degradado compravel ou checkout bloqueado
 
+## Shared Visual Foundation
+
+- a base compartilhada vive principalmente em `src/app/globals.css`, sem criar uma camada paralela de styling
+- a direcao atual da foundation e dark premium: fundo profundo, superficies escuras azuladas/arroxeadas, CTA amarelo forte e acentos azul/roxo
+- `PageHeader`, `EmptyState`, `ErrorState`, `StatusBadge`, tabelas, drawers, shells, cards, botoes e inputs compartilham o mesmo sistema de superficie, borda fria, foco visivel e contraste alto
+- publico, cliente e admin continuam com shells diferentes, mas agora puxam da mesma fundacao visual para evitar drift entre modulos
+- a fundacao foi redesenhada sem mudar contratos, guards, redirects ou o modelo atual de drawers
+
+## Customer Shell And Dashboard
+
+- o shell autenticado do cliente em `/app` agora usa navegacao lateral mais forte, topo com contexto da area atual e branding alinhado a Pokelike
+- a navegacao do cliente preserva as mesmas rotas, links, guards e comportamento mobile/tablet; a mudanca ficou concentrada em apresentacao e hierarquia visual
+- o dashboard `/app` foi reorganizado como painel central: saldo, prioridade atual, atalhos, referral e afiliados aparecem antes das tabelas de historico
+- wrappers reutilizaveis do cliente foram introduzidos em `src/components/ui/customer-surfaces.tsx` para sustentar as proximas paginas internas sem abrir uma camada paralela ao design system
+
+## Admin Shell And Dashboard
+
+- o shell administrativo em `/admin` agora usa o mesmo eixo premium da Pokelike, mas com acabamento mais sobrio e mais denso do que a area publica e a area do cliente
+- a navegacao do admin preserva as rotas e o comportamento atual, mas ganhou metadados por modulo, estado ativo mais forte e branding proprio em `Pokelike Ops`
+- o dashboard `/admin` foi reorganizado como central operacional: prioridades, metricas, atalhos, alertas e saude de fornecedores aparecem em blocos compactos e orientados a acao
+- wrappers reutilizaveis do admin foram introduzidos em `src/components/ui/admin-surfaces.tsx` para apoiar as proximas ondas dos modulos administrativos
+- a base visual do admin agora tambem reforca tabela, toolbar e drawer sem remover filtros, mutacoes, densidade ou o modelo atual de listagem + sideover
+
+## Admin Operational Modules
+
+- `users`, `catalog`, `payments`, `orders`, `supplier`, `alerts`, `audits`, `transactions`, `affiliates`, `affiliate-commissions` e `affiliate-payouts` agora herdam a mesma linguagem visual administrativa
+- as telas de lista passaram a usar seções operacionais mais claras ao redor de tabelas e paginação, sem abandonar os filtros por query string
+- drawers e formulários administrativos ganharam contexto curto, blocos internos mais legíveis e acabamento mais consistente para mutações reais
+- detalhes dedicados de pedidos e pagamentos agora seguem a mesma hierarquia visual do dashboard admin, com métricas, blocos contextuais e timeline/eventos mais claros
+
+## Customer Internal Pages
+
+- `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora herdam a mesma linguagem premium do shell e do dashboard, com foco em leitura rapida, status e proximas acoes
+- pagamentos e pedidos mantiveram o modelo atual de listagem + drawer; o redesign ficou concentrado na hierarquia visual, nos blocos de contexto e na leitura de estados financeiros/transacionais
+- perfil e afiliados agora priorizam status da conta, identidade fiscal, referral e comissoes sem reabrir escopo de email editavel, limpeza explicita de telefone ou mudancas contratuais
+
+## Public Shell
+
+- a area publica agora usa um shell compartilhado dedicado com header sticky, footer e menu mobile
+- landing, catalogo publico, detalhe de servico, login, cadastro e verify-email herdam o mesmo branding e a mesma navegacao publica
+- o shell publico preserva os fluxos existentes de `/login`, `/register`, `/catalog`, `returnTo`, `?ref=` e `?aff=`; a mudanca foi apenas visual e estrutural na camada de apresentacao
+- a landing principal em `/` agora foi redesenhada como vitrine comercial da Pokelike, com hero premium, seções de fluxo real, beneficios, vitrine de plataformas, mockup de painel, FAQ e CTA final
+- a home continua ancorada nos fluxos reais do produto: explorar catalogo, criar conta, recarregar por Pix e acompanhar pedidos na area autenticada
+
 ## Current Limitations
 
 - troca de email do cliente ainda nao foi entregue
