@@ -35,7 +35,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
         <PageHeader
           eyebrow="Admin / pedidos"
           title="Pedidos"
-          description="Fila operacional com sync rapido, leitura de status e foco nos estados mutaveis."
+          description="Fila operacional com sync rapido e foco nos estados mutaveis."
           actions={
             <>
               <AdminFilterBar
@@ -106,18 +106,27 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
           <AdminSectionCard
             eyebrow="Pedidos"
             title="Fila operacional"
-            description="Status, fornecedor e acao de sincronizacao lado a lado para reduzir troca de contexto."
+            description="Status, fornecedor e sync por item."
             meta={<span className="panel-meta">{orders.totalItems} registros</span>}
           >
-            <DataTable columns={['ID', 'Usuario', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
+            <DataTable columns={['Pedido', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
               {orders.items.map((order) => {
                 const statusView = getOrderStatusView(order.status);
 
                 return (
                   <tr key={order.id}>
-                    <td>{order.id}</td>
-                    <td>{order.user?.email || '-'}</td>
-                    <td>{order.catalogService?.name || 'Servico nao associado'}</td>
+                    <td>
+                      <div className="stack-list">
+                        <strong>{order.id}</strong>
+                        <span className="panel-meta">{order.user?.email || '-'}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="stack-list">
+                        <strong>{order.catalogService?.name || 'Servico nao associado'}</strong>
+                        <span className="panel-meta">{order.quantity} item(ns)</span>
+                      </div>
+                    </td>
                     <td>
                       <StatusBadge label={statusView.label} tone={statusView.tone} />
                     </td>
@@ -129,20 +138,22 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
                     </td>
                     <td>{formatMoney(order.customerCharge)}</td>
                     <td>
-                      <AdminActionForm
-                        action={syncOrderAction}
-                        submitLabel="Sincronizar"
-                        pendingLabel="Sincronizando..."
-                        returnTo={returnTo}
-                        hiddenFields={[{ name: 'orderId', value: order.id }]}
-                        tone={['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status) ? 'primary' : 'secondary'}
-                      />
-                      <Link href={`/admin/orders/${order.id}`} className="panel-link">
-                        Ver detalhe
-                      </Link>
+                      <div className="stack-list">
+                        <AdminActionForm
+                          action={syncOrderAction}
+                          submitLabel="Sincronizar"
+                          pendingLabel="Sincronizando..."
+                          returnTo={returnTo}
+                          hiddenFields={[{ name: 'orderId', value: order.id }]}
+                          tone={['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status) ? 'primary' : 'secondary'}
+                        />
+                        <Link href={`/admin/orders/${order.id}`} className="panel-link">
+                          Ver detalhe
+                        </Link>
+                      </div>
                     </td>
-                  </tr>
-                );
+                </tr>
+              );
               })}
             </DataTable>
             <PaginationSummary

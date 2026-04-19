@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { CreditCard, QrCode, ShieldCheck, Wallet } from 'lucide-react';
+import { QrCode, ShieldCheck, Wallet } from 'lucide-react';
 
-import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
+import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -64,7 +64,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         <PageHeader
           eyebrow="Pagamentos"
           title="Adicionar saldo com PIX"
-          description="Fluxo financeiro claro para gerar, pagar e acompanhar recargas."
+          description="Gerar PIX, pagar o que estiver em aberto e consultar o historico."
           compact
           actions={
             <>
@@ -83,63 +83,13 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           }
         />
 
-        {!hasFiscalIdentity ? (
-          <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
-            <strong>Antes de gerar PIX, complete seu CPF/CNPJ</strong>
-            <p>O backend exige identidade fiscal real para novas cobrancas. Atualize o perfil e volte ao fluxo.</p>
-          </div>
-        ) : null}
-
         <section className="customer-dashboard-hero">
           <div className="customer-dashboard-side customer-dashboard-side-wide">
-            {hasFiscalIdentity ? (
-              <TransactionForm
-                title="Gerar PIX"
-                description={`Saldo atual ${formatMoney(wallet.availableBalance)}. ${fiscalIdentityLabel} confirmado: ${formatTaxIdForDisplay(taxId)}.`}
-                action={createPixPaymentAction}
-                initialState={initialTransactionFormState}
-                submitLabel="Gerar PIX"
-                returnTo="/app/payments"
-              >
-                <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
-              </TransactionForm>
-            ) : (
-              <CustomerSectionCard
-                eyebrow="Bloqueio preventivo"
-                title="CPF/CNPJ necessario para recargas PIX"
-                description="Sem esse dado o backend bloqueia a criacao da cobranca. O fluxo permanece travado ate a atualizacao do perfil."
-                meta={<StatusBadge label="pix bloqueado" tone="warning" />}
-                className="customer-payments-blocked-card"
-                actions={
-                  <Link href="/app/profile?edit=1" className="primary-action">
-                    Completar CPF/CNPJ
-                  </Link>
-                }
-              >
-                <div className="customer-dashboard-inline-stats">
-                  <div>
-                    <span>O que falta</span>
-                    <strong>{fiscalIdentityLabel}</strong>
-                  </div>
-                  <div>
-                    <span>Status</span>
-                    <strong>Pendente</strong>
-                  </div>
-                  <div>
-                    <span>Destino</span>
-                    <strong>Perfil do cliente</strong>
-                  </div>
-                </div>
-              </CustomerSectionCard>
-            )}
-          </div>
-
-          <div className="customer-dashboard-side">
             {latestPendingPayment ? (
               <CustomerSectionCard
-                eyebrow="Pagamento em aberto"
+                eyebrow="PIX pendente"
                 title={formatMoney(latestPendingPayment.amount)}
-                description={getPaymentStatusView(latestPendingPayment.status).description}
+                description="Pague ou acompanhe este PIX antes de gerar outro."
                 meta={
                   <StatusBadge
                     label={getPaymentStatusView(latestPendingPayment.status).badgeLabel}
@@ -164,16 +114,103 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                     <strong>{formatDateTime(latestPendingPayment.expiresAt)}</strong>
                   </div>
                   <div>
-                    <span>Wallet</span>
+                    <span>Saldo</span>
                     <strong>{formatMoney(wallet.availableBalance)}</strong>
+                  </div>
+                </div>
+              </CustomerSectionCard>
+            ) : hasFiscalIdentity ? (
+              <TransactionForm
+                title="Gerar PIX"
+                description={`Saldo atual ${formatMoney(wallet.availableBalance)}. ${fiscalIdentityLabel}: ${formatTaxIdForDisplay(taxId)}.`}
+                action={createPixPaymentAction}
+                initialState={initialTransactionFormState}
+                submitLabel="Gerar PIX"
+                returnTo="/app/payments"
+              >
+                <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
+              </TransactionForm>
+            ) : (
+              <CustomerSectionCard
+                eyebrow="PIX bloqueado"
+                title="Complete seu CPF/CNPJ"
+                description="Sem esse dado nao da para gerar a cobranca."
+                meta={<StatusBadge label="pix bloqueado" tone="warning" />}
+                className="customer-payments-blocked-card"
+                actions={
+                  <Link href="/app/profile?edit=1" className="primary-action">
+                    Completar CPF/CNPJ
+                  </Link>
+                }
+              >
+                <div className="customer-dashboard-inline-stats">
+                  <div>
+                    <span>Falta</span>
+                    <strong>{fiscalIdentityLabel}</strong>
+                  </div>
+                  <div>
+                    <span>Status</span>
+                    <strong>Pendente</strong>
+                  </div>
+                  <div>
+                    <span>Resolver</span>
+                    <strong>Perfil</strong>
+                  </div>
+                </div>
+              </CustomerSectionCard>
+            )}
+          </div>
+
+          <div className="customer-dashboard-side">
+            {!hasFiscalIdentity ? (
+              <CustomerSectionCard
+                eyebrow="Status"
+                title="PIX bloqueado"
+                description="Complete o perfil para liberar recargas."
+                meta={<StatusBadge label="pix bloqueado" tone="warning" />}
+              >
+                <div className="customer-dashboard-inline-stats">
+                  <div>
+                    <span>{fiscalIdentityLabel}</span>
+                    <strong>Pendente</strong>
+                  </div>
+                  <div>
+                    <span>Confirmados</span>
+                    <strong>{confirmedCount}</strong>
+                  </div>
+                  <div>
+                    <span>Em aberto</span>
+                    <strong>{pendingPayments.length}</strong>
+                  </div>
+                </div>
+              </CustomerSectionCard>
+            ) : latestPendingPayment ? (
+              <CustomerSectionCard
+                eyebrow="Gerar outro PIX"
+                title="Nova recarga"
+                description="Se precisar, gere outro PIX por aqui."
+                meta={<StatusBadge label="pix liberado" tone="success" />}
+              >
+                <div className="customer-dashboard-inline-stats">
+                  <div>
+                    <span>Saldo</span>
+                    <strong>{formatMoney(wallet.availableBalance)}</strong>
+                  </div>
+                  <div>
+                    <span>Confirmados</span>
+                    <strong>{confirmedCount}</strong>
+                  </div>
+                  <div>
+                    <span>Em aberto</span>
+                    <strong>{pendingPayments.length}</strong>
                   </div>
                 </div>
               </CustomerSectionCard>
             ) : (
               <CustomerSectionCard
-                eyebrow="Pronto para recarregar"
+                eyebrow="Status"
                 title="Sem PIX em aberto"
-                description="Gere uma nova cobranca quando quiser repor saldo. O QR code e o copia e cola aparecem no drawer."
+                description="Gere uma nova cobranca quando quiser repor saldo."
                 meta={<StatusBadge label="sem pendencia" tone="success" />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -195,37 +232,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           </div>
         </section>
 
-        <section className="customer-dashboard-metrics">
-          <CustomerMetricCard
-            label="Saldo atual"
-            value={formatMoney(wallet.availableBalance)}
-            meta="Disponivel na carteira."
-            icon={Wallet}
-            tone="accent"
-          />
-          <CustomerMetricCard
-            label="PIX em aberto"
-            value={String(pendingPayments.length)}
-            meta={latestPendingPayment ? `Ultimo ${formatDateTime(latestPendingPayment.createdAt)}` : 'Sem cobranca pendente.'}
-            icon={QrCode}
-            tone="warning"
-          />
-          <CustomerMetricCard
-            label="Confirmados"
-            value={String(confirmedCount)}
-            meta="Ja convertidos em saldo."
-            icon={CreditCard}
-            tone="success"
-          />
-          <CustomerMetricCard
-            label={fiscalIdentityLabel}
-            value={hasFiscalIdentity ? formatTaxIdForDisplay(taxId) : 'Pendente'}
-            meta={hasFiscalIdentity ? 'Identidade validada.' : 'Necessario para gerar PIX.'}
-            icon={ShieldCheck}
-            tone={hasFiscalIdentity ? 'info' : 'warning'}
-          />
-        </section>
-
         {payments.items.length === 0 ? (
           <EmptyState
             title="Nenhum pagamento encontrado"
@@ -236,8 +242,8 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         ) : (
           <CustomerSectionCard
             eyebrow="Historico"
-            title="Pagamentos recentes"
-            description="Acompanhe status, valor e ultima atualizacao de cada cobranca."
+            title="Historico de pagamentos"
+            description="Status, valor e ultima atualizacao."
             meta={<span className="panel-meta">{payments.totalItems} registro(s)</span>}
           >
             <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']}>
@@ -289,7 +295,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 </div>
               </CustomerSectionCard>
 
-              <CustomerSectionCard eyebrow="QR code" title="Escaneie para pagar" description="Use o aplicativo do banco ou o copia e cola abaixo.">
+              <CustomerSectionCard eyebrow="QR code" title="Escaneie para pagar" description="Use o app do banco ou o copia e cola abaixo.">
                 {activePaymentQrImageSrc ? (
                   <div className="payment-qr-shell">
                     <img src={activePaymentQrImageSrc} alt="QR code PIX do pagamento" className="payment-qr-image" />
@@ -302,7 +308,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               <CustomerSectionCard
                 eyebrow="PIX copia e cola"
                 title="Codigo para pagamento"
-                description="Copie o codigo ou atualize o status enquanto a cobranca estiver pendente."
+                description="Copie o codigo ou atualize o status."
               >
                 <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>
                 <PaymentPixActions brCode={activePayment.brCode} autoRefresh={Boolean(activePaymentStatus?.autoRefresh)} />

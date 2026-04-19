@@ -13,8 +13,8 @@ import { getRegisterPageContent } from '@/modules/auth/page-content';
 import { initialAuthFormState } from '@/modules/auth/types';
 
 export const metadata: Metadata = {
-  title: 'Criar Conta | Likes Uai',
-  description: 'Cadastro de cliente na plataforma Likes Uai.',
+  title: 'Criar Conta | Pokelike',
+  description: 'Cadastro de cliente na plataforma Pokelike.',
 };
 
 type RegisterPageProps = {

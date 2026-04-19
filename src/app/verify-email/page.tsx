@@ -11,8 +11,8 @@ import { createGuestSession } from '@/lib/auth/session';
 import { PublicShell } from '@/modules/app-shell/public-shell';
 
 export const metadata: Metadata = {
-  title: 'Verificar Email | Likes Uai',
-  description: 'Confirmacao de verificacao de email na plataforma Likes Uai.',
+  title: 'Verificar Email | Pokelike',
+  description: 'Confirmacao de verificacao de email na plataforma Pokelike.',
 };
 
 type VerifyEmailPageProps = {

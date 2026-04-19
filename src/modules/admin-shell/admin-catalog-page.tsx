@@ -156,7 +156,7 @@ export async function AdminCatalogPage({
         <PageHeader
           eyebrow="Admin / catalogo"
           title="Catalogo"
-          description="Hierarquia entre sincronizado, publicado e afiliacao com foco em leitura e acao."
+          description="Publicados para operar. Sincronizados para publicar. Afiliacao para ajustar."
           actions={
             <AdminFilterBar
               pathname="/admin/catalog"
@@ -177,19 +177,19 @@ export async function AdminCatalogPage({
 
         <section className="metric-list">
           <AdminSummaryCard
-            label="Servicos publicos"
+            label="Publicados"
             value={String(visibleCatalogItems.length)}
             meta={selectedSupplierName ? selectedSupplierName : `${catalog.totalItems} no total`}
           />
           <AdminSummaryCard label="Ativos" value={String(activeCount)} tone="accent" />
           <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} meta={`${degradedCount} com risco`} tone="warning" />
-          <AdminSummaryCard label="Afiliaveis" value={String(affiliateEnabledCount)} meta="Na pagina" />
+          <AdminSummaryCard label="Afiliados" value={String(affiliateEnabledCount)} meta="Ativos na pagina" />
         </section>
 
         <AdminSectionCard
-          eyebrow="Catalogo sincronizado do fornecedor"
+          eyebrow="Origem"
           title="Sincronizados"
-          description="Base herdada do fornecedor para criar novos servicos publicos."
+          description="Servicos do fornecedor prontos para publicacao."
           meta={<span className="panel-meta">{supplierServices.totalItems} itens</span>}
           className="detail-card-wide"
         >
@@ -197,7 +197,7 @@ export async function AdminCatalogPage({
             <EmptyState title="Nenhum servico sincronizado encontrado" description="Ajuste os filtros." />
           ) : (
             <>
-              <DataTable columns={['Fornecedor / SID', 'Servico', 'Categoria / tipo', 'Rate', 'Faixa', 'Flags', 'Acao']}>
+              <DataTable columns={['Origem', 'Servico', 'Operacao', 'Flags', 'Acao']}>
                 {supplierServices.items.map((service) => {
                   const isSelected = creationDraft?.supplierServiceId === service.supplierServiceId;
                   const isActiveCreateTarget = resolvedCreationDraft?.supplierServiceId === service.supplierServiceId;
@@ -210,16 +210,21 @@ export async function AdminCatalogPage({
                           <span className="panel-meta">SID {service.supplierServiceId}</span>
                         </div>
                       </td>
-                      <td>{service.name}</td>
                       <td>
                         <div className="stack-list">
-                          <strong>{service.category}</strong>
-                          <span className="panel-meta">{service.type}</span>
+                          <strong>{service.name}</strong>
+                          <span className="panel-meta">
+                            {service.category} / {service.type}
+                          </span>
                         </div>
                       </td>
-                      <td>{service.rate}</td>
                       <td>
-                        {service.min} - {service.max}
+                        <div className="stack-list">
+                          <strong>Rate {service.rate}</strong>
+                          <span className="panel-meta">
+                            {service.min} - {service.max}
+                          </span>
+                        </div>
                       </td>
                       <td>
                         <div className="stack-list">
@@ -261,15 +266,9 @@ export async function AdminCatalogPage({
         </AdminSectionCard>
 
         {affiliateSettingsError ? (
-          <section className="feedback-panel">
-            <div className="panel-heading">
-              <div>
-                <p className="eyebrow">Afiliados no catalogo</p>
-                <h2>Leitura indisponivel</h2>
-              </div>
-            </div>
-            <p>{affiliateSettingsError}</p>
-          </section>
+          <AdminSectionCard eyebrow="Afiliados" title="Leitura indisponivel" description={affiliateSettingsError}>
+            <p className="panel-meta">Ajuste a configuracao pelo drawer quando a leitura voltar.</p>
+          </AdminSectionCard>
         ) : null}
 
         {visibleCatalogItems.length === 0 ? (
@@ -277,12 +276,12 @@ export async function AdminCatalogPage({
         ) : (
           <>
             <AdminSectionCard
-              eyebrow="Catalogo publicado"
+              eyebrow="Operacao"
               title="Servicos publicos"
-              description="Disponibilidade, afiliacao e origem do fornecedor no mesmo bloco."
+              description="Disponibilidade, origem e afiliacao do que ja esta no catalogo."
               meta={<span className="panel-meta">{catalog.totalItems} itens</span>}
             >
-              <DataTable columns={['Servico', 'Preco publico', 'Status', 'Disponibilidade', 'Afiliados', 'Fornecedor', 'Faixa', 'Acoes']}>
+              <DataTable columns={['Servico', 'Operacao publica', 'Disponibilidade', 'Afiliados', 'Origem', 'Acoes']}>
                 {visibleCatalogItems.map((service) => {
                   const affiliateSettings = affiliateSettingsByServiceId.get(service.id);
 
@@ -298,9 +297,14 @@ export async function AdminCatalogPage({
                             <span className="panel-meta">ID {service.id}</span>
                           </div>
                         </td>
-                        <td>{formatMoney(service.publicPrice)}</td>
                         <td>
-                          <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
+                          <div className="stack-list">
+                            <strong>{formatMoney(service.publicPrice)}</strong>
+                            <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
+                            <span className="panel-meta">
+                              {service.minQuantity} - {service.maxQuantity}
+                            </span>
+                          </div>
                         </td>
                         <td>{renderCatalogAvailability(service)}</td>
                         <td>{renderCatalogAffiliateState(affiliateSettings, affiliateSettingsError)}</td>
@@ -317,21 +321,18 @@ export async function AdminCatalogPage({
                           </div>
                         </td>
                         <td>
-                          {service.minQuantity} - {service.maxQuantity}
-                        </td>
-                        <td>
                           <div className="stack-list">
                             <Link
                               href={buildCatalogEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
                               className="table-link"
                             >
-                              Editar servico
+                              Servico
                             </Link>
                             <Link
                               href={buildCatalogAffiliateEditPath(filters, supplierServiceFilters, service.id, currentCatalogPage, currentCatalogPageSize)}
                               className="table-link"
                             >
-                              Editar afiliacao
+                              Afiliacao
                             </Link>
                           </div>
                         </td>
@@ -422,7 +423,7 @@ export async function AdminCatalogPage({
                 <div className="panel-heading">
                   <div>
                     <p className="eyebrow">Afiliacao do servico</p>
-                    <h3>Configuracao operacional</h3>
+                    <h3>Configuracao</h3>
                   </div>
                   <div className="feedback-actions">
                     <StatusBadge

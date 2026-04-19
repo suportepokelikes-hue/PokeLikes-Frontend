@@ -32,7 +32,7 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
         <PageHeader
           eyebrow="Admin / pagamentos"
           title="Pagamentos"
-          description="Conciliacao, status e volume financeiro com leitura rapida para agir em pendencias."
+          description="Conciliacao, status e volume financeiro."
           actions={
             <>
               <AdminFilterBar
@@ -103,18 +103,22 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
           <AdminSectionCard
             eyebrow="Financeiro"
             title="Fila de pagamentos"
-            description="Status, metodo e atalho de conciliacao por item em uma leitura unica."
+            description="Status, metodo e conciliacao por item."
             meta={<span className="panel-meta">{payments.totalItems} registros</span>}
           >
-            <DataTable columns={['ID', 'Usuario', 'Metodo', 'Valor', 'Status', 'Criado em', 'Acao']}>
+            <DataTable columns={['Pagamento', 'Metodo', 'Valor', 'Status', 'Criado em', 'Acao']}>
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
-                  <td>{payment.id}</td>
-                  <td>{payment.user?.email || '-'}</td>
+                  <td>
+                    <div className="stack-list">
+                      <strong>{payment.id}</strong>
+                      <span className="panel-meta">{payment.user?.email || '-'}</span>
+                    </div>
+                  </td>
                   <td>
                     <div className="stack-list">
                       <strong>{payment.provider}</strong>
-                      <span className="panel-meta">{payment.providerPaymentId}</span>
+                      <span className="panel-meta">{payment.providerPaymentId || 'Sem ID externo'}</span>
                     </div>
                   </td>
                   <td>{formatMoney(payment.amount)}</td>
@@ -123,17 +127,19 @@ export async function AdminPaymentsPage({ session, filters }: AdminPaymentsPageP
                   </td>
                   <td>{formatDateTime(payment.createdAt)}</td>
                   <td>
-                    <AdminActionForm
-                      action={reconcilePaymentAction}
-                      submitLabel="Conciliar"
-                      pendingLabel="Conciliando..."
-                      returnTo={returnTo}
-                      hiddenFields={[{ name: 'paymentId', value: payment.id }]}
-                      tone={payment.status === 'pending' ? 'primary' : 'secondary'}
-                    />
-                    <Link href={`/admin/payments/${payment.id}`} className="panel-link">
-                      Ver detalhe
-                    </Link>
+                    <div className="stack-list">
+                      <AdminActionForm
+                        action={reconcilePaymentAction}
+                        submitLabel="Conciliar"
+                        pendingLabel="Conciliando..."
+                        returnTo={returnTo}
+                        hiddenFields={[{ name: 'paymentId', value: payment.id }]}
+                        tone={payment.status === 'pending' ? 'primary' : 'secondary'}
+                      />
+                      <Link href={`/admin/payments/${payment.id}`} className="panel-link">
+                        Ver detalhe
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

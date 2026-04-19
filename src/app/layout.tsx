@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Likes Uai',
-  description: 'Frontend web da plataforma Likes Uai com area publica, cliente e admin.',
+  title: 'Pokelike',
+  description: 'Frontend web da plataforma Pokelike com area publica, cliente e admin.',
   icons: {
     icon: '/brand/logo.jpeg',
     shortcut: '/brand/logo.jpeg',

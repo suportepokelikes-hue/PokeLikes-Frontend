@@ -62,7 +62,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         <PageHeader
           eyebrow="Admin / fornecedores"
           title="Fornecedores"
-          description="Disponibilidade, saldo e sincronizacao em blocos compactos para monitoramento continuo."
+          description="Providers para monitorar. Logs para ler. Servicos para sincronizar."
           actions={
             <>
               <AdminActionForm
@@ -95,22 +95,22 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         />
 
         <section className="metric-list">
-          <AdminSummaryCard label="Provedores" value={String(providers.items.length)} meta={`${unavailableCount} indisponiveis`} />
+          <AdminSummaryCard label="Providers" value={String(providers.items.length)} meta={`${unavailableCount} indisponiveis`} />
           <AdminSummaryCard label="Baixo saldo" value={String(lowBalanceCount)} tone="warning" />
-          <AdminSummaryCard label="Falhas recentes" value={String(failedLogs)} meta={`${services.totalItems} servicos`} tone="danger" />
+          <AdminSummaryCard label="Falhas" value={String(failedLogs)} meta={`${services.totalItems} servicos`} tone="danger" />
         </section>
 
         <section className="dashboard-grid">
           <AdminSectionCard
-            eyebrow="Providers"
+            eyebrow="Monitoramento"
             title="Status dos fornecedores"
-            description="Disponibilidade e saldo em leitura imediata."
+            description="Disponibilidade e saldo."
             meta={<span className="panel-meta">{providers.items.length} itens</span>}
           >
             {providers.items.length === 0 ? (
               <EmptyState title="Nenhum fornecedor encontrado" description="Ajuste os filtros." />
             ) : (
-              <DataTable columns={['Fornecedor', 'Status', 'Saldo', 'Ultima checagem']}>
+              <DataTable columns={['Fornecedor', 'Status operacional', 'Ultima checagem']}>
                 {providers.items.map((provider) => (
                   <tr key={provider.supplierName}>
                     <td>
@@ -120,9 +120,11 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                       </div>
                     </td>
                     <td>
-                      <StatusBadge label={provider.operationalStatus} tone={mapProviderTone(provider.operationalStatus)} />
+                      <div className="stack-list">
+                        <StatusBadge label={provider.operationalStatus} tone={mapProviderTone(provider.operationalStatus)} />
+                        <span className="panel-meta">{formatProviderBalance(provider)}</span>
+                      </div>
                     </td>
-                    <td>{formatProviderBalance(provider)}</td>
                     <td>{formatDateTime(provider.lastCheckedAt)}</td>
                   </tr>
                 ))}
@@ -131,9 +133,9 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
           </AdminSectionCard>
 
           <AdminSectionCard
-            eyebrow="Sync logs"
+            eyebrow="Auditoria"
             title="Logs de sincronizacao"
-            description="Eventos recentes para leitura de sucesso, falha e janela executada."
+            description="Eventos recentes."
             meta={<span className="panel-meta">{logs.totalItems} registros</span>}
           >
             <AdminFilterBar
@@ -179,7 +181,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
               <EmptyState title="Nenhum log encontrado" description="Sem eventos." />
             ) : (
               <>
-                <DataTable columns={['Fornecedor', 'Tipo', 'Alvo', 'Status', 'Janela']}>
+              <DataTable columns={['Fornecedor', 'Tipo', 'Alvo', 'Status', 'Janela']}>
                   {logs.items.map((log) => (
                     <tr key={log.id}>
                       <td>{log.supplierName || 'Fornecedor nao informado'}</td>
@@ -225,9 +227,9 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         </section>
 
         <AdminSectionCard
-          eyebrow="Catalogo sincronizado"
+          eyebrow="Base sincronizada"
           title="Servicos do fornecedor"
-          description="Faixa, flags e ultima sincronizacao com filtros por query string preservados."
+          description="Faixa, flags e ultima sync."
           meta={<span className="panel-meta">{services.totalItems} itens</span>}
           className="detail-card-wide"
         >
@@ -274,7 +276,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
             <EmptyState title="Nenhum servico sincronizado" description="Ajuste os filtros." />
           ) : (
             <>
-              <DataTable columns={['Fornecedor / SID', 'Servico', 'Categoria / tipo', 'Rate', 'Faixa', 'Flags', 'Sync']} >
+              <DataTable columns={['Origem', 'Servico', 'Operacao', 'Flags', 'Sync']} >
                 {services.items.map((service) => (
                   <tr key={service.id}>
                     <td>
@@ -283,16 +285,21 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                         <span className="panel-meta">SID {service.supplierServiceId}</span>
                       </div>
                     </td>
-                    <td>{service.name}</td>
                     <td>
                       <div className="stack-list">
-                        <strong>{service.category}</strong>
-                        <span className="panel-meta">{service.type}</span>
+                        <strong>{service.name}</strong>
+                        <span className="panel-meta">
+                          {service.category} / {service.type}
+                        </span>
                       </div>
                     </td>
-                    <td>{service.rate}</td>
                     <td>
-                      {service.min} - {service.max}
+                      <div className="stack-list">
+                        <strong>Rate {service.rate}</strong>
+                        <span className="panel-meta">
+                          {service.min} - {service.max}
+                        </span>
+                      </div>
                     </td>
                     <td>{renderSupplierFlags(service)}</td>
                     <td>

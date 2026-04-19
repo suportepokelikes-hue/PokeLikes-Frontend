@@ -13,8 +13,8 @@ import { getLoginPageContent } from '@/modules/auth/page-content';
 import { initialAuthFormState } from '@/modules/auth/types';
 
 export const metadata: Metadata = {
-  title: 'Entrar | Likes Uai',
-  description: 'Acesso de cliente e admin na plataforma Likes Uai.',
+  title: 'Entrar | Pokelike',
+  description: 'Acesso de cliente e admin na plataforma Pokelike.',
 };
 
 type LoginPageProps = {

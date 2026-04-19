@@ -49,7 +49,7 @@ export async function CustomerProfilePage({
         <PageHeader
           eyebrow="Perfil"
           title="Minha conta"
-          description="Conta, verificacao, identidade fiscal e indicacoes no mesmo painel."
+          description="Conta, verificacao, identidade fiscal e referral."
           compact
           actions={
             <>
@@ -68,14 +68,7 @@ export async function CustomerProfilePage({
         {profileUpdated ? (
           <div className="auth-notice auth-notice-success" role="status" aria-live="polite">
             <strong>Perfil atualizado</strong>
-            <p>Sua leitura ja mostra os dados salvos agora.</p>
-          </div>
-        ) : null}
-
-        {!hasFiscalIdentity ? (
-          <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
-            <strong>Complete seu CPF/CNPJ para gerar PIX</strong>
-            <p>Sem esse dado, novas recargas PIX ficam bloqueadas ate a atualizacao do cadastro.</p>
+            <p>Os dados salvos ja aparecem nesta tela.</p>
           </div>
         ) : null}
 
@@ -88,7 +81,7 @@ export async function CustomerProfilePage({
                   <span className="customer-dashboard-pill">{profile.role}</span>
                 </div>
                 <h2>{profile.name}</h2>
-                <p>Central de acesso, verificacao e preparo da conta para pagamentos e indicacoes.</p>
+                <p>Conta, verificacao e preparo para pagamentos e indicacoes.</p>
               </div>
               <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
             </div>
@@ -102,10 +95,6 @@ export async function CustomerProfilePage({
                 <div>
                   <span>Email</span>
                   <strong>{profile.emailVerified ? 'Verificado' : 'Pendente'}</strong>
-                </div>
-                <div>
-                  <span>{fiscalIdentityLabel}</span>
-                  <strong>{hasFiscalIdentity ? 'Pronto' : 'Pendente'}</strong>
                 </div>
                 <div>
                   <span>Indicacoes</span>
@@ -137,39 +126,6 @@ export async function CustomerProfilePage({
               </Link>
             </div>
           </article>
-
-          <div className="customer-dashboard-side">
-            <CustomerSectionCard
-              eyebrow="Status da conta"
-              title={hasFiscalIdentity ? 'Conta pronta para operar' : 'Falta liberar o PIX'}
-              description={
-                hasFiscalIdentity
-                  ? `${taxIdType === 'cnpj' ? 'CNPJ' : 'CPF'} salvo e pronto para novas recargas.`
-                  : 'Atualize a identidade fiscal para voltar a criar cobrancas PIX com seguranca.'
-              }
-              meta={
-                <StatusBadge
-                  label={hasFiscalIdentity ? 'pix liberado' : 'cpf/cnpj pendente'}
-                  tone={hasFiscalIdentity ? 'success' : 'warning'}
-                />
-              }
-            >
-              <div className="customer-dashboard-inline-stats">
-                <div>
-                  <span>Email</span>
-                  <strong>{profile.email}</strong>
-                </div>
-                <div>
-                  <span>Telefone</span>
-                  <strong>{profile.phone || 'Nao informado'}</strong>
-                </div>
-                <div>
-                  <span>{fiscalIdentityLabel}</span>
-                  <strong>{formatTaxIdForDisplay(taxId)}</strong>
-                </div>
-              </div>
-            </CustomerSectionCard>
-          </div>
         </section>
 
         <section className="customer-dashboard-metrics">
@@ -183,14 +139,14 @@ export async function CustomerProfilePage({
           <CustomerMetricCard
             label="Identidade fiscal"
             value={hasFiscalIdentity ? formatTaxIdForDisplay(taxId) : 'Pendente'}
-            meta={hasFiscalIdentity ? 'Pronta para PIX.' : 'Exigida para novas cobrancas.'}
+            meta={hasFiscalIdentity ? 'PIX liberado.' : 'Libere o PIX.'}
             icon={ShieldCheck}
             tone={hasFiscalIdentity ? 'info' : 'warning'}
           />
           <CustomerMetricCard
             label="Saldo"
             value={formatMoney(wallet.availableBalance)}
-            meta="Disponivel para novos pedidos."
+            meta="Disponivel na carteira."
             icon={Wallet}
             tone="accent"
           />
@@ -206,8 +162,8 @@ export async function CustomerProfilePage({
         <section className="customer-dashboard-lower">
           <CustomerSectionCard
             eyebrow="Conta"
-            title="Dados pessoais"
-            description="Nome, contato e status geral da sua conta."
+            title="Dados da conta"
+            description="Contato, status e verificacao."
             actions={
               <Link href={editPath} className="secondary-action">
                 Editar dados
@@ -252,12 +208,12 @@ export async function CustomerProfilePage({
           </CustomerSectionCard>
 
           <CustomerSectionCard
-            eyebrow="Financeiro"
-            title={hasFiscalIdentity ? 'Identidade fiscal confirmada' : 'Identidade fiscal pendente'}
+            eyebrow="Identidade fiscal"
+            title={hasFiscalIdentity ? 'PIX liberado' : 'CPF/CNPJ pendente'}
             description={
               hasFiscalIdentity
-                ? 'Sua conta ja tem o dado exigido para gerar novas recargas PIX.'
-                : 'Sem CPF/CNPJ o backend bloqueia novas cobrancas PIX.'
+                ? `${taxIdType === 'cnpj' ? 'CNPJ' : 'CPF'} pronto para novas recargas PIX.`
+                : 'Complete o cadastro para liberar o PIX.'
             }
             meta={
               <StatusBadge
@@ -275,10 +231,6 @@ export async function CustomerProfilePage({
               <div>
                 <span>{fiscalIdentityLabel}</span>
                 <strong>{formatTaxIdForDisplay(taxId)}</strong>
-              </div>
-              <div>
-                <span>Wallet</span>
-                <strong>{formatMoney(wallet.availableBalance)}</strong>
               </div>
               <div>
                 <span>Recarga PIX</span>

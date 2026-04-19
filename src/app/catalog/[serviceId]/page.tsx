@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { CatalogDetailPage } from '@/modules/catalog/catalog-detail-page';
 
 export const metadata: Metadata = {
-  title: 'Servico | Likes Uai',
+  title: 'Servico | Pokelike',
 };
 
 type CatalogServicePageProps = {

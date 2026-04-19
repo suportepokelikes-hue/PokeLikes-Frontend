@@ -31,7 +31,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
         <PageHeader
           eyebrow="Carteira"
           title="Carteira"
-          description="Saldo, entradas e saidas com leitura mais clara do extrato."
+          description="Saldo e extrato da conta."
           compact
           actions={
             <>
@@ -51,11 +51,11 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
             <div className="customer-dashboard-command-head">
               <div className="customer-dashboard-command-copy">
                 <div className="customer-dashboard-command-pills">
-                  <span className="customer-dashboard-pill">Area financeira</span>
+                  <span className="customer-dashboard-pill">Saldo disponivel</span>
                   <span className="customer-dashboard-pill">Wallet {wallet.id}</span>
                 </div>
                 <h2>{formatMoney(wallet.availableBalance)}</h2>
-                <p>Saldo liberado para novos pedidos. As recargas confirmadas entram aqui automaticamente.</p>
+                <p>Use este saldo em novos pedidos. Recargas confirmadas entram aqui automaticamente.</p>
               </div>
               <StatusBadge label="disponivel" tone="success" />
             </div>
@@ -88,30 +88,6 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
               </Link>
             </div>
           </article>
-
-          <div className="customer-dashboard-side">
-            <CustomerSectionCard
-              eyebrow="Resumo"
-              title="Area pronta para controle financeiro"
-              description="Use este painel para conferir saldo real, ultimos movimentos e o caminho da proxima recarga."
-              meta={<StatusBadge label="wallet ativa" tone="info" />}
-            >
-              <div className="customer-dashboard-inline-stats">
-                <div>
-                  <span>Saldo</span>
-                  <strong>{formatMoney(wallet.availableBalance)}</strong>
-                </div>
-                <div>
-                  <span>Ultimo movimento</span>
-                  <strong>{latestTransaction ? formatDateTime(latestTransaction.createdAt) : 'Sem extrato'}</strong>
-                </div>
-                <div>
-                  <span>Origem</span>
-                  <strong>PIX confirmado</strong>
-                </div>
-              </div>
-            </CustomerSectionCard>
-          </div>
         </section>
 
         <section className="customer-dashboard-metrics">
@@ -137,65 +113,12 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
             tone="warning"
           />
           <CustomerMetricCard
-            label="Extrato"
-            value={String(transactions.totalItems)}
-            meta="Lancamentos nesta pagina."
+            label="Ultimo movimento"
+            value={latestTransaction ? formatDateTime(latestTransaction.createdAt) : 'Sem extrato'}
+            meta="Registro mais recente."
             icon={Wallet}
             tone="default"
           />
-        </section>
-
-        <section className="customer-dashboard-lower">
-          <CustomerSectionCard
-            eyebrow="Carteira"
-            title="Leitura rapida"
-            description="O saldo aumenta com PIX confirmado e diminui conforme os pedidos sao cobrados."
-          >
-            <div className="customer-dashboard-inline-stats">
-              <div>
-                <span>Wallet</span>
-                <strong>{wallet.id}</strong>
-              </div>
-              <div>
-                <span>Maior fonte</span>
-                <strong>Recarga PIX</strong>
-              </div>
-              <div>
-                <span>Uso principal</span>
-                <strong>Pedidos do cliente</strong>
-              </div>
-            </div>
-          </CustomerSectionCard>
-
-          <CustomerSectionCard
-            eyebrow="Proximo passo"
-            title={transactions.items.length === 0 ? 'Sua carteira ainda nao tem historico' : 'Continue acompanhando o saldo'}
-            description={
-              transactions.items.length === 0
-                ? 'A primeira recarga ja abre o fluxo financeiro da conta e deixa o extrato visivel.'
-                : 'Quando precisar de mais saldo, gere um novo PIX sem sair da area interna.'
-            }
-            actions={
-              <Link href="/app/payments" className="secondary-action">
-                Abrir pagamentos
-              </Link>
-            }
-          >
-            <div className="customer-dashboard-inline-stats">
-              <div>
-                <span>Entradas</span>
-                <strong>{credits.length}</strong>
-              </div>
-              <div>
-                <span>Saidas</span>
-                <strong>{debits.length}</strong>
-              </div>
-              <div>
-                <span>Saldo atual</span>
-                <strong>{formatMoney(wallet.availableBalance)}</strong>
-              </div>
-            </div>
-          </CustomerSectionCard>
         </section>
 
         {transactions.items.length === 0 ? (
@@ -208,8 +131,8 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
         ) : (
           <CustomerSectionCard
             eyebrow="Extrato"
-            title="Movimentacoes recentes"
-            description="Veja entradas, saidas e valores com leitura mais direta."
+            title="Movimentacoes"
+            description="Entradas e saidas recentes."
             meta={<span className="panel-meta">{transactions.totalItems} registro(s)</span>}
           >
             <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>

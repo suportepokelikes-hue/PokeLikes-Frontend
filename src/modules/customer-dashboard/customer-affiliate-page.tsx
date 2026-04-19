@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Gift, LineChart, Rocket, Sparkles, TicketPercent } from 'lucide-react';
+import { Gift, LineChart, Rocket, TicketPercent } from 'lucide-react';
 
 import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -34,7 +34,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
           <PageHeader
             eyebrow="Afiliados"
             title="Programa de afiliados"
-            description="Entre no programa para acompanhar codigo, status e ganhos na mesma area interna."
+            description="Entre no programa para acompanhar codigo, status e ganhos."
             compact
             actions={
               <>
@@ -57,7 +57,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
                     <span className="customer-dashboard-pill">Convite aberto</span>
                   </div>
                   <h2>Abra sua frente de ganhos</h2>
-                  <p>Ative seu perfil para receber codigo publico, acompanhar status e visualizar comissoes em um painel dedicado.</p>
+                  <p>Ative seu perfil para liberar codigo, status e comissoes.</p>
                 </div>
                 <StatusBadge label="nao participante" tone="neutral" />
               </div>
@@ -79,30 +79,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
                 </div>
               </div>
             </article>
-
-            <div className="customer-dashboard-side">
-              <CustomerSectionCard
-                eyebrow="O que voce desbloqueia"
-                title="Visibilidade de codigo e ganhos"
-                description="Depois do apply, o painel mostra status, percentual e historico financeiro."
-                meta={<StatusBadge label="entrada disponivel" tone="info" />}
-              >
-                <div className="customer-dashboard-inline-stats">
-                  <div>
-                    <span>Codigo</span>
-                    <strong>Publico</strong>
-                  </div>
-                  <div>
-                    <span>Resumo</span>
-                    <strong>Comissoes e receita</strong>
-                  </div>
-                  <div>
-                    <span>Status</span>
-                    <strong>Acompanhado no app</strong>
-                  </div>
-                </div>
-              </CustomerSectionCard>
-            </div>
           </section>
 
           <section className="customer-dashboard-metrics">
@@ -116,7 +92,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
             <CustomerMetricCard
               label="Codigo"
               value="Liberado"
-              meta="Aparece apos a criacao do perfil."
+              meta="Aparece no painel."
               icon={Gift}
               tone="info"
             />
@@ -126,13 +102,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
               meta="Status e comissoes."
               icon={LineChart}
               tone="default"
-            />
-            <CustomerMetricCard
-              label="Modelo"
-              value="Aprovacao"
-              meta="Entrada seguida de analise."
-              icon={Sparkles}
-              tone="warning"
             />
           </section>
 
@@ -155,7 +124,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
         <PageHeader
           eyebrow="Afiliados"
           title="Minha area de afiliado"
-          description="Status do perfil, percentuais e comissoes com leitura mais clara."
+          description="Status do perfil, codigo, comissoes e historico."
           compact
           actions={
             <>
@@ -239,51 +208,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
           ))}
         </section>
 
-        <section className="customer-dashboard-lower">
-          <CustomerSectionCard
-            eyebrow="Perfil"
-            title="Painel do afiliado"
-            description="Referencia principal para acompanhar status, codigo e percentual atual."
-          >
-            <div className="customer-dashboard-inline-stats">
-              <div>
-                <span>Status</span>
-                <strong>{statusView.label}</strong>
-              </div>
-              <div>
-                <span>Codigo</span>
-                <strong>{effectiveProfile.affiliateCode}</strong>
-              </div>
-              <div>
-                <span>Comissao</span>
-                <strong>{effectiveProfile.affiliateCommissionPercent}%</strong>
-              </div>
-            </div>
-          </CustomerSectionCard>
-
-          <CustomerSectionCard
-            eyebrow="Leitura rapida"
-            title="Ganhos e operacao"
-            description="Use o status como referencia principal e acompanhe as comissoes logo abaixo."
-            meta={<StatusBadge label={statusView.label} tone={statusView.tone} />}
-          >
-            <div className="customer-dashboard-inline-stats">
-              <div>
-                <span>Aprovado em</span>
-                <strong>{formatDateTime(effectiveProfile.approvedAt)}</strong>
-              </div>
-              <div>
-                <span>Suspenso em</span>
-                <strong>{formatDateTime(effectiveProfile.suspendedAt)}</strong>
-              </div>
-              <div>
-                <span>Status atual</span>
-                <strong>{statusView.label}</strong>
-              </div>
-            </div>
-          </CustomerSectionCard>
-        </section>
-
         <CustomerSectionCard
           eyebrow="Comissoes"
           title="Historico"
@@ -338,13 +262,13 @@ function buildAffiliateSummaryCards(totals: Record<string, number | Money>) {
     {
       label: 'Pendentes',
       value: formatSummaryMetric(findSummaryMetric(totals, ['pendingCommissionAmount', 'pendingAmount'], ['pending', 'commission'])),
-      meta: 'Comissoes aguardando avanco.',
+      meta: 'Aguardando avanco.',
       tone: 'warning' as const,
     },
     {
       label: 'Aprovadas',
       value: formatSummaryMetric(findSummaryMetric(totals, ['approvedCommissionAmount', 'approvedAmount'], ['approved', 'commission'])),
-      meta: 'Ja liberadas no fluxo.',
+      meta: 'Ja liberadas.',
       tone: 'accent' as const,
     },
     {
@@ -358,7 +282,7 @@ function buildAffiliateSummaryCards(totals: Record<string, number | Money>) {
       value: formatSummaryMetric(
         findSummaryMetric(totals, ['attributedRevenue', 'attributedRevenueAmount', 'totalAttributedRevenue'], ['revenue']),
       ),
-      meta: 'Receita ligada ao seu codigo.',
+      meta: 'Ligada ao seu codigo.',
       tone: 'default' as const,
     },
   ];
@@ -406,7 +330,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
       tone: 'warning' as const,
       description: 'Seu cadastro entrou no programa e aguarda aprovacao.',
       noteTitle: 'Aguardando aprovacao',
-      noteDescription: 'O painel libera divulgacao e comissoes depois da aprovacao.',
+      noteDescription: 'Divulgacao e comissoes liberam depois da aprovacao.',
     };
   }
 
@@ -426,7 +350,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
       tone: 'danger' as const,
       description: 'Seu acesso ao programa esta pausado.',
       noteTitle: 'Acesso pausado',
-      noteDescription: 'Mantenha novas divulgacoes em pausa enquanto este status estiver ativo.',
+      noteDescription: 'Mantenha novas divulgacoes em pausa.',
     };
   }
 
@@ -435,7 +359,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     tone: 'neutral' as const,
     description: 'Status informado pela plataforma.',
     noteTitle: 'Status atualizado',
-    noteDescription: 'Use o badge como referencia principal enquanto este status estiver ativo.',
+    noteDescription: 'Use o badge como referencia principal.',
   };
 }
 

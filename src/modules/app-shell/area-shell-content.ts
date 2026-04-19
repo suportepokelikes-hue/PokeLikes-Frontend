@@ -40,7 +40,6 @@ const areaConfig = {
       { href: '/app/wallet', label: 'Carteira', icon: 'wallet', description: 'Saldo e extrato' },
       { href: '/app/payments', label: 'Pagamentos', icon: 'payments', description: 'PIX e status' },
       { href: '/app/orders', label: 'Pedidos', icon: 'orders', description: 'Fila e andamento' },
-      { href: '/admin', label: 'Admin', icon: 'admin', description: 'Operacao interna' },
     ],
   },
   admin: {
