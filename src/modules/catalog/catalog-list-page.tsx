@@ -9,6 +9,7 @@ import { listCatalogServices, type CatalogListParams } from '@/lib/api/catalog';
 import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import { formatMoney } from '@/lib/format';
+import { getCatalogAvailabilityView } from './availability-view';
 import { AffiliateCodeCapture } from './affiliate-code-capture';
 
 type CatalogListPageProps = {
@@ -23,7 +24,10 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
     const response = await listCatalogServices(catalogFilters);
     const purchasableCount = response.items.filter((service) => service.availability.isPurchasable).length;
     const degradedCount = response.items.filter(
-      (service) => service.availability.providerStatus === 'degraded_low_balance' || service.availability.providerStatus === 'unavailable',
+      (service) => service.availability.isPurchasable && service.availability.providerStatus === 'degraded_low_balance',
+    ).length;
+    const blockedCount = response.items.filter(
+      (service) => !service.availability.isPurchasable,
     ).length;
 
     return (
@@ -32,6 +36,7 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
         <PageHeader
           eyebrow="Catalogo"
           title="Catalogo"
+          description="Leia a disponibilidade antes de abrir o checkout: compra liberada, compra com atencao ou compra pausada."
           actions={<CatalogFilterBar initialValues={catalogFilters} affiliateCodeFromUrl={affiliateCodeFromUrl} />}
         />
 
@@ -44,30 +49,43 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
             <p>Preco, faixa e status na lista.</p>
             <div className="catalog-summary-strip">
               <div>
-                <span>Compraveis</span>
+                <span>Compra liberada</span>
                 <strong>{purchasableCount}</strong>
               </div>
               <div>
-                <span>Atencao</span>
+                <span>Com atencao</span>
                 <strong>{degradedCount}</strong>
               </div>
               <div>
-                <span>Pagina</span>
-                <strong>
-                  {response.page} / {response.totalPages}
-                </strong>
+                <span>Pausados agora</span>
+                <strong>{blockedCount}</strong>
               </div>
             </div>
           </article>
 
           <article className="public-note-card catalog-note-card">
-            <strong>Escolha pelo essencial</strong>
-            <p>Abra o servico e siga para compra.</p>
+            <strong>Como ler os status</strong>
+            <div className="catalog-guidance-list">
+              <p>
+                <strong>Disponivel:</strong> compra liberada normalmente.
+              </p>
+              <p>
+                <strong>Com atencao:</strong> o servico segue aberto, mas merece revisao antes do pedido.
+              </p>
+              <p>
+                <strong>Compra pausada:</strong> o checkout foi bloqueado para evitar falha real.
+              </p>
+            </div>
           </article>
         </section>
 
         {response.items.length === 0 ? (
-          <EmptyState title="Nenhum servico encontrado" description="Tente outra busca ou ajuste os filtros." />
+          <EmptyState
+            title="Nenhum servico encontrado"
+            description="Tente outra busca ou limpe os filtros para voltar ao catalogo completo."
+            actionHref="/catalog"
+            actionLabel="Limpar filtros"
+          />
         ) : (
           <>
             <section className="catalog-grid">
@@ -94,11 +112,17 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
 }
 
 function CatalogCard({ service, affiliateCodeFromUrl }: { service: CatalogServiceResource; affiliateCodeFromUrl?: string }) {
+  const availabilityView = getCatalogAvailabilityView(service);
+  const serviceSummary = summarizeCopy(service.description || availabilityView.cardDescription, 112);
+
   return (
-    <Link href={appendAffiliateCodeToPath(`/catalog/${service.id}`, affiliateCodeFromUrl)} className="catalog-card">
+    <Link
+      href={appendAffiliateCodeToPath(`/catalog/${service.id}`, affiliateCodeFromUrl)}
+      className={`catalog-card catalog-card-${availabilityView.state}`}
+    >
       <div className="catalog-card-head">
         <div className="stack-list">
-          <StatusBadge label={getAvailabilityLabel(service)} tone={mapAvailabilityTone(service)} />
+          <StatusBadge label={availabilityView.badgeLabel} tone={availabilityView.badgeTone} />
           <span className="catalog-meta">{service.socialNetwork} / {service.category}</span>
         </div>
         <span className="catalog-meta">{service.type}</span>
@@ -106,7 +130,13 @@ function CatalogCard({ service, affiliateCodeFromUrl }: { service: CatalogServic
 
       <div className="catalog-card-body">
         <h2>{service.name}</h2>
-        <p className="catalog-card-summary">{summarizeCopy(service.description || service.availability.reason, 112)}</p>
+        <p className="catalog-card-summary">{serviceSummary}</p>
+        {availabilityView.hasInlineNotice ? (
+          <div className={`catalog-card-note catalog-card-note-${availabilityView.badgeTone}`}>
+            <strong>{availabilityView.cardHeadline}</strong>
+            <p>{availabilityView.cardDescription}</p>
+          </div>
+        ) : null}
       </div>
 
       <dl className="catalog-stats">
@@ -118,17 +148,17 @@ function CatalogCard({ service, affiliateCodeFromUrl }: { service: CatalogServic
         </div>
         <div>
           <dt>Status</dt>
-          <dd>{getAvailabilityLabel(service)}</dd>
+          <dd>{availabilityView.badgeLabel}</dd>
         </div>
         <div>
           <dt>Compra</dt>
-          <dd>{service.availability.isPurchasable ? 'Liberada' : 'Em espera'}</dd>
+          <dd>{availabilityView.purchaseLabel}</dd>
         </div>
       </dl>
 
       <div className="catalog-card-foot">
         <strong className="catalog-card-price">{formatMoney(service.publicPrice)}</strong>
-        <span className="panel-link">Ver servico</span>
+        <span className="panel-link">{availabilityView.cardCtaLabel}</span>
       </div>
     </Link>
   );
@@ -166,31 +196,6 @@ function CatalogFilterBar({
     </form>
   );
 }
-
-function mapAvailabilityTone(service: CatalogServiceResource) {
-  if (!service.availability.isPurchasable) {
-    return 'danger';
-  }
-
-  if (service.availability.providerStatus === 'degraded_low_balance') {
-    return 'warning';
-  }
-
-  return 'success';
-}
-
-function getAvailabilityLabel(service: CatalogServiceResource) {
-  if (!service.availability.isPurchasable) {
-    return 'Indisponivel';
-  }
-
-  if (service.availability.providerStatus === 'degraded_low_balance') {
-    return 'Com atencao';
-  }
-
-  return 'Disponivel';
-}
-
 function summarizeCopy(value: string, maxLength: number) {
   const compact = value.replace(/\s+/g, ' ').trim();
 

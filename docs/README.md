@@ -1,58 +1,58 @@
-# Likes Uai Frontend
+# Frontend Overview
 
-Frontend web da plataforma Likes Uai.
+## Objetivo
 
-Este repositório existe para entregar a experiência do:
+Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para novos agentes Codex.
 
-- site público
-- área do cliente autenticado
-- painel administrativo
+## O que ja existe no codigo
 
-O backend já existe em um repositório separado e expõe a API V1 consumida por este frontend.
+### Publico
 
-## Objetivo do frontend
+- `/` como landing comercial
+- `/login` e `/register` com server actions, `returnTo` e suporte a `?ref=`
+- `/verify-email` confirmando token por URL
+- `/catalog` e `/catalog/[serviceId]` conectados ao backend real
+- captura de `?aff=` nas superficies publicas do catalogo, com persistencia local e reaproveito no checkout autenticado
 
-Entregar uma interface clara e operacional para:
+### Cliente autenticado
 
-- registro e login
-- wallet e recarga PIX
-- navegação no catálogo
-- criação e acompanhamento de pedidos
-- operação admin de usuários, pagamentos, pedidos, fornecedores, alertas, auditoria e dashboard
+- `/app` com dashboard e destaque de referral
+- `/app/profile` com leitura de `GET /me`, resumo de referral e drawer de edicao por `PATCH /me`
+- `/app/affiliate` cobrindo entrada no programa, status, summary e comissoes
+- `/app/wallet` com saldo e extrato
+- `/app/payments` com criacao de PIX, QR code, copia do codigo e detalhe em drawer
+- `/app/orders` com listagem e detalhe em drawer
 
-## Estado inicial deste bootstrap
+### Admin
 
-Este repositório foi inicializado com:
+- `/admin` com dashboard e atalhos operacionais
+- `/admin/users` com criacao, edicao e ajuste manual de carteira em drawers
+- `/admin/catalog` com publicacao a partir de `SupplierService`, edicao do servico publicado e drawer de affiliate settings
+- `/admin/payments` com conciliacao em lote e por item
+- `/admin/orders` com sync em lote e por item
+- `/admin/supplier` com status de providers, servicos sincronizados e logs de sync
+- `/admin/alerts` com resolve real
+- `/admin/audits` como leitura
+- `/admin/transactions` com ledger e ajuste manual de carteira
+- `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts`
 
-- stack base em Next.js + TypeScript
-- estrutura inicial de `src/`
-- documentação de bootstrap para agentes Codex
-- cópia local do contrato OpenAPI do backend em `docs/contracts/backend-openapi.yaml`
+## Regras de leitura do repositorio
 
-Ainda não foi iniciada a implementação funcional das telas.
+- codigo atual vence texto antigo
+- `docs/contracts/backend-openapi.yaml` continua sendo a fonte contratual operacional
+- `docs/api/openapi.yaml` fica apenas como copia auxiliar quando nao divergir
+- drawers e redirects fazem parte do desenho atual da aplicacao e devem ser documentados como tal, nao como detalhe temporario
 
-## Fonte contratual do backend
+## Limitacoes atuais que devem permanecer explicitas
 
-Usar como referência primária:
+- troca de email do cliente ainda nao existe pela UI
+- limpeza explicita de telefone do cliente ainda nao existe pela UI
+- detalhe de usuario e detalhe de catalogo no admin nao sao paginas independentes; as rotas `[id]` redirecionam para drawers na listagem
+- payout admin de afiliados ainda segue o payload validado com `affiliateProfileId`, `amount` e `note`
+- a area admin de afiliados nao expoe acao de reativacao dedicada; hoje ha aprovar e suspender
 
-- `docs/contracts/backend-openapi.yaml`
+## Onde olhar em seguida
 
-Complementar com:
-
-- `docs/api-notes.md`
-- `docs/api/openapi.yaml` somente para comparação quando estiver consistente com `docs/contracts/backend-openapi.yaml`
-- `docs/api/modules/auth.md`
-- `docs/api/modules/referrals.md`
-- `docs/screen-map.md`
-
-Quando houver divergência, o frontend segue `docs/contracts/backend-openapi.yaml`.
-
-## Ordem recomendada de implementação
-
-1. fundação do app e sessão
-2. auth
-3. catálogo público
-4. wallet e pagamentos PIX
-5. checkout e pedidos do cliente
-6. dashboard admin
-7. telas operacionais admin
+- `docs/architecture.md` para entender fronteiras, shells e jornadas
+- `docs/screen-map.md` para mapa de rotas e comportamento
+- `docs/handoff.md` para resumo operacional da ultima rodada

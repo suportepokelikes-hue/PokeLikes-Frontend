@@ -1,5 +1,11 @@
 # Frontend Backlog
 
+## Latest Update
+
+- [x] rodada de saneamento documental concluida em `README.md`, `docs/README.md`, `docs/architecture.md`, `docs/screen-map.md` e `docs/handoff.md`
+- [x] documentacao principal voltou a refletir o frontend real em vez do bootstrap inicial
+- [x] rotas com drawer/redirect, afiliados, verify-email, mutacoes admin e limitacoes reais ficaram explicitadas
+
 ## Current State
 
 O repositorio agora possui foundation funcional, auth operacional, design system interno e primeiras areas reais conectadas a API.
@@ -64,6 +70,7 @@ Tasks:
 - [x] listagem publica
 - [x] detalhe do servico
 - [x] estados de availability
+- [x] reforcar a UX de indisponibilidade e degradacao no catalogo e no detalhe, com copy orientada a acao e CTA coerentes por estado
 - [ ] refinamento visual das telas publicas com base final do Stitch
 
 ## Phase 3: Wallet and PIX
@@ -199,6 +206,7 @@ Tasks:
 - [x] compactar `PageHeader`, `EmptyState`, `ErrorState`, `StatCard`, `AdminSlideOver` e o topo do shell autenticado para reduzir ruido textual e densidade sem mexer em fluxo
 - [x] fazer um passe final leve de consistencia textual e visual, removendo descricoes curtas redundantes, labels mistos PT/EN e estados vazios mais verbosos nas areas publica, cliente e admin
 - [x] fechar a rodada final de hardening da V1 reforcando a precedencia de `docs/contracts/backend-openapi.yaml`, limpando residuos de copy em afiliados e fixando a regra operacional do `affiliateCode`
+- [x] fortalecer a leitura publica de availability para transformar indisponibilidade/degradacao do fornecedor em orientacao clara de continuidade, sem mascarar bloqueios reais de checkout
 
 ## Phase 10: Frontend Test Baseline
 
@@ -235,6 +243,7 @@ Na proxima sessao do Codex:
 - tratar a V1 frontend de afiliados como encerrada e focar a proxima iteracao em qualidade e governanca
 - revisar tela a tela onde ainda vale remover descricoes longas agora que os componentes compartilhados aceitam cabecalhos mais compactos
 - revisar se alguns filtros publicos do catalogo merecem uma segunda rodada de simplificacao sem perder descobribilidade
+- validar por E2E a diferenca de UX entre servico compravel, servico degradado compravel e servico com checkout bloqueado por availability
 - cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
 - cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
 - cobrir em E2E o bloqueio de PIX sem CPF/CNPJ e a retomada do fluxo depois do preenchimento do perfil

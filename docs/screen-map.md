@@ -3,52 +3,96 @@
 ## Public
 
 - `/`
+  - landing comercial
 - `/login`
+  - login com `returnTo`
 - `/register`
+  - cadastro com `returnTo`
+  - aceita `?ref=` e envia `referralCode`
 - `/verify-email`
-- `/catalog` (captura `?aff=` nas superficies publicas do catalogo e preserva o codigo no navegador)
-- `/catalog/[serviceId]` (mantem `?aff=` na navegacao publica e reaproveita `affiliateCode` no checkout autenticado quando existir)
-
-Notas:
-
-- o fluxo publico de afiliados usa `?aff=` e permanece separado do `?ref=`/`referralCode` do cadastro
-- o ultimo `?aff=` valido capturado no catalogo substitui o codigo salvo no navegador; navegar sem `?aff=` nao limpa automaticamente na V1
+  - confirma token vindo da URL
+- `/catalog`
+  - listagem publica real
+  - captura `?aff=` e persiste o codigo no navegador
+- `/catalog/[serviceId]`
+  - detalhe publico real
+  - mantem `?aff=` na navegacao quando presente
+  - cria pedido autenticado por `POST /me/orders`
 
 ## Customer
 
 - `/app`
-- `/app/affiliate` (entrada do programa quando `AffiliateProfile = null`; depois mostra status, summary e comissoes)
-- `/app/profile` (tambem abre drawer de edicao por query string, salva nome/telefone/CPF-CNPJ por `PATCH /me`, mantem email protegido e explicita quando a identidade fiscal ainda bloqueia PIX)
+  - dashboard do cliente
+  - resume wallet, pagamentos, pedidos e referral
+- `/app/profile`
+  - leitura de perfil
+  - referral e status de email
+  - drawer de edicao por `?edit=1`
+- `/app/affiliate`
+  - entrada do programa quando nao existe perfil
+  - status, summary e comissoes quando ja existe perfil
 - `/app/wallet`
+  - saldo e extrato
 - `/app/payments`
-- `/app/payments/[paymentId]` (redireciona para drawer em `/app/payments`)
+  - listagem
+  - criacao de PIX
+  - bloqueio preventivo quando falta CPF/CNPJ
+  - drawer de detalhe por `?paymentId=`
+- `/app/payments/[paymentId]`
+  - apenas redirect para `/app/payments?paymentId=...`
 - `/app/orders`
-- `/app/orders/[orderId]` (redireciona para drawer em `/app/orders`)
-
-Notas:
-
-- o shell do cliente ja possui entrada dedicada para `Afiliados`
-- `/app/payments` faz pre-check de identidade fiscal carregando o perfil atual; quando faltar CPF/CNPJ, a tela troca o formulario por um bloqueio orientado a acao com CTA para `/app/profile?edit=1`
+  - listagem
+  - drawer de detalhe por `?orderId=`
+- `/app/orders/[orderId]`
+  - apenas redirect para `/app/orders?orderId=...`
 
 ## Admin
 
-- `/admin` (home admin com atalhos para os modulos de afiliados)
+- `/admin`
+  - dashboard e atalhos operacionais
 - `/admin/users`
+  - listagem
+  - drawer de criacao por `?create=1`
+  - drawer de edicao por `?editUserId=...`
+  - drawer de ajuste de carteira dentro da edicao
 - `/admin/users/[userId]`
+  - apenas redirect para `/admin/users?editUserId=...`
 - `/admin/affiliates`
+  - listagem e acoes de aprovar/suspender
 - `/admin/affiliate-commissions`
+  - leitura financeira
 - `/admin/affiliate-payouts`
-- `/admin/catalog` (tambem concentra affiliate settings por leitura complementar e drawer lateral, sem tela separada)
-- `/admin/catalog/[serviceId]` (redireciona para drawer em `/admin/catalog`)
+  - listagem
+  - drawer de criacao por `?create=1`
+- `/admin/catalog`
+  - listagem de servicos sincronizados
+  - publicacao no catalogo por drawer
+  - listagem de servicos publicados
+  - drawer de edicao do servico publicado
+  - drawer de affiliate settings
+- `/admin/catalog/[serviceId]`
+  - apenas redirect para `/admin/catalog?editServiceId=...`
 - `/admin/payments`
+  - listagem e conciliacao
 - `/admin/payments/[paymentId]`
+  - detalhe dedicado
 - `/admin/orders`
+  - listagem e sync
 - `/admin/orders/[orderId]`
+  - detalhe dedicado
 - `/admin/supplier`
+  - providers, servicos sincronizados e logs
 - `/admin/alerts`
+  - listagem e resolve
 - `/admin/audits`
+  - leitura
 - `/admin/transactions`
+  - ledger
+  - drawer de ajuste manual por `?adjust=1`
 
-Notas:
+## Notas operacionais
 
-- o shell admin e a home admin ja apontam para `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts`
+- o fluxo publico de afiliados usa `?aff=` e permanece separado de `?ref=` no cadastro
+- o ultimo `?aff=` valido substitui o codigo salvo; navegar sem `?aff=` nao limpa o valor automaticamente
+- o detalhe de pagamento e pedido do cliente foi absorvido pelas listagens
+- usuarios e catalogo admin seguem o mesmo principio: leitura na lista, mutacao em drawer

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowRight, Clock3, PackageSearch, Wallet } from 'lucide-react';
 
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -14,6 +15,7 @@ import { formatDateTime, formatMoney } from '@/lib/format';
 import { createOrderAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm, TransactionTextarea } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
+import { getCatalogAlternativePath, getCatalogAvailabilityView } from './availability-view';
 import { AffiliateCodeCapture } from './affiliate-code-capture';
 import { AffiliateCodeInput } from './affiliate-code-input';
 
@@ -27,6 +29,13 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
     const session = await getServerSession();
     const service = await getCatalogService(serviceId);
     const returnTo = appendAffiliateCodeToPath(`/catalog/${serviceId}`, affiliateCodeFromUrl);
+    const availabilityView = getCatalogAvailabilityView(service);
+    const alternativeCatalogPath = appendAffiliateCodeToPath(getCatalogAlternativePath(service), affiliateCodeFromUrl);
+    const catalogPath = appendAffiliateCodeToPath('/catalog', affiliateCodeFromUrl);
+    const canPurchase =
+      session.status === 'authenticated' && session.user.role === 'customer' && service.availability.isPurchasable;
+    const shouldShowGuestPrompt = session.status !== 'authenticated' || session.user.role !== 'customer';
+    const shouldShowBlockedCheckout = !service.availability.isPurchasable;
 
     return (
       <main className="page page-public">
@@ -34,15 +43,22 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
         <PageHeader
           eyebrow="Catalogo"
           title={service.name}
+          description={availabilityView.detailDescription}
           actions={
             <div className="page-actions">
-              <StatusBadge label={getAvailabilityLabel(service)} tone={mapAvailabilityTone(service)} />
-              {session.status === 'authenticated' && session.user.role === 'customer' ? (
-                <Link href="#checkout" className="primary-action">
-                  Comprar agora
+              <StatusBadge label={availabilityView.badgeLabel} tone={availabilityView.badgeTone} />
+              {service.availability.isPurchasable ? (
+                session.status === 'authenticated' && session.user.role === 'customer' ? (
+                  <Link href="#checkout" className="primary-action">
+                    Comprar agora
+                  </Link>
+                ) : null
+              ) : (
+                <Link href={alternativeCatalogPath} className="primary-action">
+                  Ver outra opcao
                 </Link>
-              ) : null}
-              <Link href={appendAffiliateCodeToPath('/catalog', affiliateCodeFromUrl)} className="secondary-action">
+              )}
+              <Link href={catalogPath} className="secondary-action">
                 Voltar ao catalogo
               </Link>
             </div>
@@ -53,10 +69,14 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
           <article className="public-spotlight">
             <div className="public-spotlight-head">
               <span className="eyebrow">Servico</span>
-              <StatusBadge label={getAvailabilityLabel(service)} tone={mapAvailabilityTone(service)} />
+              <StatusBadge label={availabilityView.badgeLabel} tone={availabilityView.badgeTone} />
             </div>
             <h2>{formatMoney(service.publicPrice)}</h2>
-            <p>{service.description ? summarizeCopy(service.description, 140) : service.availability.reason}</p>
+            <div className={`availability-callout availability-callout-${availabilityView.badgeTone}`}>
+              <strong>{availabilityView.detailHeadline}</strong>
+              <p>{availabilityView.detailDescription}</p>
+            </div>
+            <p>{service.description ? summarizeCopy(service.description, 140) : availabilityView.cardDescription}</p>
             <div className="public-highlight-list">
               <div>
                 <span>Rede</span>
@@ -73,14 +93,20 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
                 </strong>
               </div>
               <div>
-                <span>Status</span>
-                <strong>{service.status}</strong>
+                <span>Compra</span>
+                <strong>{availabilityView.purchaseLabel}</strong>
               </div>
             </div>
           </article>
 
-          {session.status === 'authenticated' && session.user.role === 'customer' ? (
-            <div id="checkout" className="detail-checkout-shell">
+          {canPurchase ? (
+            <div id="checkout" className="detail-checkout-shell detail-checkout-stack">
+              {availabilityView.state === 'degraded' ? (
+                <section className="detail-card detail-note detail-note-warning">
+                  <strong>Compra aberta, mas com atencao</strong>
+                  <p>{availabilityView.nextStep}</p>
+                </section>
+              ) : null}
               <TransactionForm
                 title="Criar pedido"
                 description="Quantidade e link."
@@ -123,7 +149,42 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
                 />
               </TransactionForm>
             </div>
-          ) : (
+          ) : shouldShowBlockedCheckout ? (
+            <article id="checkout" className="detail-card detail-checkout-card detail-checkout-decision">
+              <div className="stack-item">
+                <strong>{availabilityView.detailHeadline}</strong>
+                <p>{availabilityView.detailDescription}</p>
+              </div>
+
+              <div className={`availability-callout availability-callout-${availabilityView.badgeTone}`}>
+                <strong>O que voce pode fazer agora</strong>
+                <p>{availabilityView.nextStep}</p>
+              </div>
+
+              <div className="detail-follow-up-grid">
+                <Link href={catalogPath} className="secondary-action">
+                  <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
+                  Voltar ao catalogo
+                </Link>
+                <Link href={alternativeCatalogPath} className="primary-action">
+                  <PackageSearch size={16} strokeWidth={2.15} aria-hidden="true" />
+                  Procurar outro servico
+                </Link>
+                {session.status === 'authenticated' && session.user.role === 'customer' ? (
+                  <Link href="/app/orders" className="secondary-action">
+                    <Clock3 size={16} strokeWidth={2.15} aria-hidden="true" />
+                    Ver meus pedidos
+                  </Link>
+                ) : null}
+                {session.status === 'authenticated' && session.user.role === 'customer' ? (
+                  <Link href="/app/wallet" className="secondary-action">
+                    <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
+                    Ver carteira
+                  </Link>
+                ) : null}
+              </div>
+            </article>
+          ) : shouldShowGuestPrompt ? (
             <article id="checkout" className="detail-card detail-checkout-card">
               <div className="stack-item">
                 <strong>Entre para comprar</strong>
@@ -136,6 +197,13 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
                     Criar conta
                   </Link>
                 </div>
+              </div>
+            </article>
+          ) : (
+            <article id="checkout" className="detail-card detail-checkout-card">
+              <div className="stack-item">
+                <strong>Este acesso nao pode finalizar compra</strong>
+                <p>Volte ao catalogo ou entre com uma conta de cliente para continuar.</p>
               </div>
             </article>
           )}
@@ -169,15 +237,19 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
             <dl className="detail-list">
               <div>
                 <dt>Compra agora</dt>
-                <dd>{service.availability.isPurchasable ? 'Liberada' : 'Em espera'}</dd>
+                <dd>{availabilityView.purchaseLabel}</dd>
               </div>
               <div>
                 <dt>Situacao</dt>
-                <dd>{getAvailabilityLabel(service)}</dd>
+                <dd>{availabilityView.badgeLabel}</dd>
               </div>
               <div>
-                <dt>Motivo</dt>
-                <dd>{service.availability.reason}</dd>
+                <dt>Leitura do momento</dt>
+                <dd>{availabilityView.detailDescription}</dd>
+              </div>
+              <div>
+                <dt>O que fazer agora</dt>
+                <dd>{availabilityView.nextStep}</dd>
               </div>
               <div>
                 <dt>Ultima checagem</dt>
@@ -227,30 +299,6 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
       </main>
     );
   }
-}
-
-function mapAvailabilityTone(service: CatalogServiceResource) {
-  if (!service.availability.isPurchasable) {
-    return 'danger';
-  }
-
-  if (service.availability.providerStatus === 'degraded_low_balance') {
-    return 'warning';
-  }
-
-  return 'success';
-}
-
-function getAvailabilityLabel(service: CatalogServiceResource) {
-  if (!service.availability.isPurchasable) {
-    return 'Indisponivel';
-  }
-
-  if (service.availability.providerStatus === 'degraded_low_balance') {
-    return 'Com atencao';
-  }
-
-  return 'Disponivel';
 }
 
 function summarizeCopy(value: string, maxLength: number) {

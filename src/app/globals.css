@@ -865,8 +865,62 @@ button {
   align-content: start;
 }
 
+.catalog-guidance-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.catalog-guidance-list strong {
+  color: var(--ink);
+}
+
+.catalog-card-healthy {
+  background:
+    linear-gradient(180deg, var(--surface-lowest), rgba(242, 244, 246, 0.9));
+}
+
+.catalog-card-degraded {
+  background:
+    linear-gradient(180deg, var(--surface-lowest), rgba(255, 219, 205, 0.34));
+}
+
+.catalog-card-blocked {
+  background:
+    linear-gradient(180deg, var(--surface-lowest), rgba(255, 218, 214, 0.56));
+}
+
 .catalog-card-summary {
   min-height: 3.2rem;
+}
+
+.catalog-card-note,
+.availability-callout {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+}
+
+.catalog-card-note strong,
+.availability-callout strong,
+.catalog-card-note p,
+.availability-callout p {
+  margin: 0;
+}
+
+.catalog-card-note-warning,
+.availability-callout-warning {
+  background: rgba(255, 219, 205, 0.6);
+}
+
+.catalog-card-note-danger,
+.availability-callout-danger {
+  background: rgba(255, 218, 214, 0.74);
+}
+
+.catalog-card-note-info,
+.availability-callout-info {
+  background: rgba(219, 225, 255, 0.42);
 }
 
 .catalog-card-foot {
@@ -916,6 +970,22 @@ button {
 .detail-checkout-shell > .detail-card,
 .detail-checkout-card {
   height: 100%;
+}
+
+.detail-checkout-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-checkout-decision {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.detail-follow-up-grid {
+  display: grid;
+  gap: 0.75rem;
 }
 
 .stat-card {
