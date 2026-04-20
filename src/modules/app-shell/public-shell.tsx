@@ -23,14 +23,34 @@ type PublicLink = {
 
 const publicLinks: PublicLink[] = [
   {
-    href: '/',
+    href: '/#inicio',
     label: 'Inicio',
     match: (pathname) => pathname === '/',
   },
   {
-    href: '/catalog',
-    label: 'Catalogo',
-    match: (pathname) => pathname === '/catalog' || pathname.startsWith('/catalog/'),
+    href: '/#servicos',
+    label: 'Servicos',
+    match: (pathname) => pathname === '/',
+  },
+  {
+    href: '/#como-funciona',
+    label: 'Como Funciona',
+    match: (pathname) => pathname === '/',
+  },
+  {
+    href: '/#beneficios',
+    label: 'Beneficios',
+    match: (pathname) => pathname === '/',
+  },
+  {
+    href: '/#depoimentos',
+    label: 'Depoimentos',
+    match: (pathname) => pathname === '/',
+  },
+  {
+    href: '/#faq',
+    label: 'FAQ',
+    match: (pathname) => pathname === '/',
   },
 ];
 
@@ -49,6 +69,7 @@ export function PublicShell({ session, children }: PublicShellProps) {
   const footerLinks = useMemo(
     () => [
       ...publicLinks.map(({ href, label }) => ({ href, label })),
+      { href: '/catalog', label: 'Catalogo' },
       { href: '/login', label: 'Entrar' },
       { href: accountHref, label: accountLabel },
     ],
@@ -56,34 +77,35 @@ export function PublicShell({ session, children }: PublicShellProps) {
   );
 
   return (
-    <div className="public-shell">
-      <header className="public-header">
-        <div className="public-header-inner">
-          <Link href="/" className="public-brand" aria-label={`Ir para a home da ${appName}`}>
+    <div className="public-shell public-shell-v2">
+      <header className="public-header public-header-v2">
+        <div className="public-header-inner public-header-inner-v2">
+          <Link href="/" className="public-brand public-brand-v2" aria-label={`Ir para a home da ${appName}`}>
             <span className="public-brand-mark">
               <Image src="/brand/logo.jpeg" alt={appName} width={52} height={52} className="brand-logo-image" priority />
             </span>
-            <span className="public-brand-copy">
+            <span className="public-brand-copy public-brand-copy-v2">
               <strong>{appName}</strong>
+              <span>Marketing digital com leitura comercial clara</span>
             </span>
           </Link>
 
-          <nav className="public-nav" aria-label="Navegacao principal">
+          <nav className="public-nav public-nav-v2" aria-label="Navegacao principal">
             {publicLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`public-nav-link${link.match(pathname) ? ' is-current' : ''}`}
+                className={`public-nav-link public-nav-link-v2${link.match(pathname) ? ' is-current' : ''}`}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="public-header-actions">
+          <div className="public-header-actions public-header-actions-v2">
             {session.status === 'authenticated' ? (
               <>
-                <Link href={accountHref} className="primary-action">
+                <Link href={accountHref} className="primary-action public-shell-primary">
                   {accountLabel}
                   <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
                 </Link>
@@ -91,10 +113,10 @@ export function PublicShell({ session, children }: PublicShellProps) {
               </>
             ) : (
               <>
-                <Link href="/login" className="secondary-action">
+                <Link href="/login" className="public-shell-inline-link">
                   Entrar
                 </Link>
-                <Link href="/register" className="primary-action">
+                <Link href="/register" className="primary-action public-shell-primary">
                   Criar conta
                   <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
                 </Link>
@@ -104,7 +126,7 @@ export function PublicShell({ session, children }: PublicShellProps) {
 
           <button
             type="button"
-            className="public-mobile-toggle"
+            className="public-mobile-toggle public-mobile-toggle-v2"
             aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((current) => !current)}
@@ -121,9 +143,10 @@ export function PublicShell({ session, children }: PublicShellProps) {
         onClick={() => setIsMenuOpen(false)}
       />
 
-      <div className={`public-mobile-panel${isMenuOpen ? ' is-open' : ''}`}>
-        <div className="public-mobile-panel-copy">
+      <div className={`public-mobile-panel public-mobile-panel-v2${isMenuOpen ? ' is-open' : ''}`}>
+        <div className="public-mobile-panel-copy public-mobile-panel-copy-v2">
           <strong>{appName}</strong>
+          <span>Navegue pela home e acesse o catalogo quando quiser.</span>
         </div>
 
         <nav className="public-mobile-nav" aria-label="Navegacao mobile">
@@ -131,7 +154,7 @@ export function PublicShell({ session, children }: PublicShellProps) {
             <Link
               key={link.href}
               href={link.href}
-              className={`public-mobile-link${link.match(pathname) ? ' is-current' : ''}`}
+              className={`public-mobile-link public-mobile-link-v2${link.match(pathname) ? ' is-current' : ''}`}
             >
               {link.label}
             </Link>
@@ -141,17 +164,17 @@ export function PublicShell({ session, children }: PublicShellProps) {
         <div className="public-mobile-actions">
           {session.status === 'authenticated' ? (
             <>
-              <Link href={accountHref} className="primary-action">
+              <Link href={accountHref} className="primary-action public-shell-primary">
                 {accountLabel}
               </Link>
               <LogoutButton label="Sair" />
             </>
           ) : (
             <>
-              <Link href="/register" className="primary-action">
+              <Link href="/register" className="primary-action public-shell-primary">
                 Criar conta
               </Link>
-              <Link href="/login" className="secondary-action">
+              <Link href="/login" className="secondary-action public-shell-secondary">
                 Entrar
               </Link>
             </>
@@ -159,22 +182,23 @@ export function PublicShell({ session, children }: PublicShellProps) {
         </div>
       </div>
 
-      <div className="public-shell-main">{children}</div>
+      <div className="public-shell-main public-shell-main-v2">{children}</div>
 
-      <footer className="public-footer">
-        <div className="public-footer-inner">
-          <div className="public-footer-brand">
+      <footer className="public-footer public-footer-v2">
+        <div className="public-footer-inner public-footer-inner-v2">
+          <div className="public-footer-brand public-footer-brand-v2">
             <span className="public-footer-mark">
               <Image src="/brand/logo.jpeg" alt={appName} width={48} height={48} className="brand-logo-image" />
             </span>
-            <div className="public-footer-copy">
+            <div className="public-footer-copy public-footer-copy-v2">
               <strong>{appName}</strong>
+              <p>Painel comercial para explorar servicos, adicionar saldo via Pix e acompanhar pedidos com clareza.</p>
             </div>
           </div>
 
-          <div className="public-footer-links">
+          <div className="public-footer-links public-footer-links-v2">
             {footerLinks.map((link) => (
-              <Link key={`${link.href}-${link.label}`} href={link.href} className="public-footer-link">
+              <Link key={`${link.href}-${link.label}`} href={link.href} className="public-footer-link public-footer-link-v2">
                 {link.label}
               </Link>
             ))}

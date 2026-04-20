@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] landing publica recebeu ajuste fino para ficar mais proxima dos prints de referencia, com hero mais comercial, navbar por ancoras, faixa de stats azul/roxo e fallback visual para o mascote ausente
 - [x] rodada ampla de simplificacao visual concluida em foundation, shells, auth, landing, dashboards e superficies principais
 - [x] headers, section cards e quick links deixaram de puxar descricao por padrao; a leitura agora prioriza titulo, dado e acao
 - [x] shell publico, shell autenticado e auth ficaram mais silenciosos, com menos contexto institucional e menos camadas visuais
@@ -318,6 +319,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar a landing publica com o asset final `public/brand/landing-mascot.png` e fazer ajuste fino de proporcao, contraste e espacamento do hero
 - revisar tela a tela onde ainda vale remover copy residual em catalogo publico, detalhe de servico e modulos admin secundarios
 - consolidar os pontos restantes onde o layout ainda depende demais de `globals.css`
 - decidir se a proxima iteracao deve quebrar parte da fundacao monolitica em arquivos CSS por dominio sem reabrir o visual
