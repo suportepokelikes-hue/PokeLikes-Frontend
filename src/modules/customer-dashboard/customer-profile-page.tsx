@@ -49,7 +49,6 @@ export async function CustomerProfilePage({
         <PageHeader
           eyebrow="Perfil"
           title="Minha conta"
-          description="Conta, verificacao, identidade fiscal e indicacoes."
           compact
           actions={
             <>
@@ -68,7 +67,6 @@ export async function CustomerProfilePage({
         {profileUpdated ? (
           <div className="auth-notice auth-notice-success" role="status" aria-live="polite">
             <strong>Perfil atualizado</strong>
-            <p>Os dados salvos ja aparecem nesta tela.</p>
           </div>
         ) : null}
 
@@ -76,12 +74,8 @@ export async function CustomerProfilePage({
           <article className="customer-dashboard-command customer-profile-command">
             <div className="customer-dashboard-command-head">
               <div className="customer-dashboard-command-copy">
-                <div className="customer-dashboard-command-pills">
-                  <span className="customer-dashboard-pill">Conta do cliente</span>
-                  <span className="customer-dashboard-pill">{profile.role}</span>
-                </div>
                 <h2>{profile.name}</h2>
-                <p>Conta pronta para seguir com pagamentos e indicacoes.</p>
+                <p>Conta, verificacao e PIX.</p>
               </div>
               <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
             </div>
@@ -139,14 +133,13 @@ export async function CustomerProfilePage({
           <CustomerMetricCard
             label="Identidade fiscal"
             value={hasFiscalIdentity ? formatTaxIdForDisplay(taxId) : 'Pendente'}
-            meta={hasFiscalIdentity ? 'PIX liberado.' : 'Libere o PIX.'}
+            meta={hasFiscalIdentity ? 'PIX liberado' : 'Libere o PIX'}
             icon={ShieldCheck}
             tone={hasFiscalIdentity ? 'info' : 'warning'}
           />
           <CustomerMetricCard
             label="Saldo"
             value={formatMoney(wallet.availableBalance)}
-            meta="Disponivel na carteira."
             icon={Wallet}
             tone="accent"
           />
@@ -161,9 +154,7 @@ export async function CustomerProfilePage({
 
         <section className="customer-dashboard-lower">
           <CustomerSectionCard
-            eyebrow="Conta"
             title="Dados da conta"
-            description="Contato, status e verificacao."
             actions={
               <Link href={editPath} className="secondary-action">
                 Editar dados
@@ -208,13 +199,7 @@ export async function CustomerProfilePage({
           </CustomerSectionCard>
 
           <CustomerSectionCard
-            eyebrow="Identidade fiscal"
             title={hasFiscalIdentity ? 'PIX liberado' : 'CPF/CNPJ pendente'}
-            description={
-              hasFiscalIdentity
-                ? `${taxIdType === 'cnpj' ? 'CNPJ' : 'CPF'} pronto para novas recargas PIX.`
-                : 'Complete o cadastro para liberar o PIX.'
-            }
             meta={
               <StatusBadge
                 label={hasFiscalIdentity ? 'pronto para pix' : 'complete cpf/cnpj'}
@@ -246,14 +231,12 @@ export async function CustomerProfilePage({
           <AdminSlideOver
             eyebrow="Perfil"
             title="Editar dados"
-            description="Atualize nome, telefone e identidade fiscal sem sair da conta."
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
               <article className="admin-inline-panel customer-profile-drawer-panel">
                 <div className="panel-heading">
                   <div>
-                    <p className="eyebrow">Cadastro</p>
                     <h3>Dados da conta</h3>
                   </div>
                   <div className="feedback-actions">

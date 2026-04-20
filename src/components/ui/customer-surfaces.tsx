@@ -24,7 +24,7 @@ type CustomerQuickActionCardProps = {
   href: string;
   icon: LucideIcon;
   title: string;
-  description: string;
+  description?: string;
   meta?: string;
   tone?: 'default' | 'accent';
 };
@@ -32,7 +32,6 @@ type CustomerQuickActionCardProps = {
 export function CustomerSectionCard({
   eyebrow,
   title,
-  description,
   meta,
   actions,
   children,
@@ -44,7 +43,6 @@ export function CustomerSectionCard({
         <div className="customer-section-card-copy">
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
           <h2>{title}</h2>
-          {description ? <p>{description}</p> : null}
         </div>
         {meta || actions ? (
           <div className="customer-section-card-meta">
@@ -83,7 +81,6 @@ export function CustomerQuickActionCard({
   href,
   icon: Icon,
   title,
-  description,
   meta,
   tone = 'default',
 }: CustomerQuickActionCardProps) {
@@ -96,7 +93,6 @@ export function CustomerQuickActionCard({
         {meta ? <span className="customer-quick-action-meta">{meta}</span> : null}
       </div>
       <strong>{title}</strong>
-      <p>{description}</p>
     </Link>
   );
 }

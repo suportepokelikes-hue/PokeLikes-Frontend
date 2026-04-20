@@ -31,7 +31,6 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
         <PageHeader
           eyebrow="Carteira"
           title="Carteira"
-          description="Saldo e extrato da conta."
           compact
           actions={
             <>
@@ -50,12 +49,8 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
           <article className="customer-dashboard-command customer-wallet-command">
             <div className="customer-dashboard-command-head">
               <div className="customer-dashboard-command-copy">
-                <div className="customer-dashboard-command-pills">
-                  <span className="customer-dashboard-pill">Saldo disponivel</span>
-                  <span className="customer-dashboard-pill">Wallet {wallet.id}</span>
-                </div>
                 <h2>{formatMoney(wallet.availableBalance)}</h2>
-                <p>Use este saldo em novos pedidos. Recargas confirmadas entram aqui automaticamente.</p>
+                <p>Saldo disponivel.</p>
               </div>
               <StatusBadge label="disponivel" tone="success" />
             </div>
@@ -94,28 +89,26 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
           <CustomerMetricCard
             label="Saldo disponivel"
             value={formatMoney(wallet.availableBalance)}
-            meta="Pronto para novos pedidos."
             icon={Landmark}
             tone="accent"
           />
           <CustomerMetricCard
             label="Entradas"
             value={String(credits.length)}
-            meta="Recargas e creditos."
+            meta="Creditos"
             icon={ArrowDownLeft}
             tone="success"
           />
           <CustomerMetricCard
             label="Saidas"
             value={String(debits.length)}
-            meta="Consumo em pedidos."
+            meta="Debitos"
             icon={ArrowUpRight}
             tone="warning"
           />
           <CustomerMetricCard
             label="Ultimo movimento"
             value={latestTransaction ? formatDateTime(latestTransaction.createdAt) : 'Sem extrato'}
-            meta="Registro mais recente."
             icon={Wallet}
             tone="default"
           />
@@ -124,15 +117,13 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
         {transactions.items.length === 0 ? (
           <EmptyState
             title="Sua carteira ainda nao tem movimentacoes"
-            description="A primeira recarga confirmada abre o saldo e o extrato desta area."
+            description="Gere um PIX para começar."
             actionHref="/app/payments"
             actionLabel="Gerar PIX"
           />
         ) : (
           <CustomerSectionCard
-            eyebrow="Extrato"
             title="Movimentacoes"
-            description="Entradas e saidas recentes."
             meta={<span className="panel-meta">{transactions.totalItems} registro(s)</span>}
           >
             <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>

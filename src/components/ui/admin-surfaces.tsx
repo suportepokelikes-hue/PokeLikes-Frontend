@@ -24,7 +24,7 @@ type AdminQuickLinkCardProps = {
   href: string;
   icon: LucideIcon;
   title: string;
-  description: string;
+  description?: string;
   meta?: string;
   tone?: 'default' | 'warning' | 'danger';
 };
@@ -32,7 +32,6 @@ type AdminQuickLinkCardProps = {
 export function AdminSectionCard({
   eyebrow,
   title,
-  description,
   meta,
   actions,
   children,
@@ -44,7 +43,6 @@ export function AdminSectionCard({
         <div className="admin-section-card-copy">
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
           <h2>{title}</h2>
-          {description ? <p>{description}</p> : null}
         </div>
         {meta || actions ? (
           <div className="admin-section-card-meta">
@@ -83,7 +81,6 @@ export function AdminQuickLinkCard({
   href,
   icon: Icon,
   title,
-  description,
   meta,
   tone = 'default',
 }: AdminQuickLinkCardProps) {
@@ -96,7 +93,6 @@ export function AdminQuickLinkCard({
         {meta ? <span className="admin-quick-link-meta">{meta}</span> : null}
       </div>
       <strong>{title}</strong>
-      <p>{description}</p>
     </Link>
   );
 }

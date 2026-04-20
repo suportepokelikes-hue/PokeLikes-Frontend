@@ -64,7 +64,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         <PageHeader
           eyebrow="Pagamentos"
           title="Adicionar saldo com PIX"
-          description="Gerar PIX, pagar o que estiver em aberto e consultar o historico."
           compact
           actions={
             <>
@@ -89,7 +88,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               <CustomerSectionCard
                 eyebrow="PIX pendente"
                 title={formatMoney(latestPendingPayment.amount)}
-                description="Pague ou acompanhe este PIX antes de gerar outro."
                 meta={
                   <StatusBadge
                     label={getPaymentStatusView(latestPendingPayment.status).badgeLabel}
@@ -122,7 +120,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
             ) : hasFiscalIdentity ? (
               <TransactionForm
                 title="Gerar PIX"
-                description={`Saldo atual ${formatMoney(wallet.availableBalance)}. ${fiscalIdentityLabel}: ${formatTaxIdForDisplay(taxId)}.`}
+                description={`${fiscalIdentityLabel}: ${formatTaxIdForDisplay(taxId)}.`}
                 action={createPixPaymentAction}
                 initialState={initialTransactionFormState}
                 submitLabel="Gerar PIX"
@@ -134,7 +132,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               <CustomerSectionCard
                 eyebrow="PIX bloqueado"
                 title="Complete seu CPF/CNPJ"
-                description="Sem esse dado nao da para gerar a cobranca."
                 meta={<StatusBadge label="pix bloqueado" tone="warning" />}
                 className="customer-payments-blocked-card"
                 actions={
@@ -164,9 +161,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           <div className="customer-dashboard-side">
             {!hasFiscalIdentity ? (
               <CustomerSectionCard
-                eyebrow="Status"
-                title="Resumo da area"
-                description="Saldo e historico atual."
+                title="Resumo"
                 meta={<StatusBadge label="perfil pendente" tone="warning" />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -186,9 +181,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               </CustomerSectionCard>
             ) : latestPendingPayment ? (
               <CustomerSectionCard
-                eyebrow="Gerar outro PIX"
                 title="Nova recarga"
-                description="Se precisar, gere outro por aqui."
                 meta={<StatusBadge label="pix liberado" tone="success" />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -208,9 +201,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               </CustomerSectionCard>
             ) : (
               <CustomerSectionCard
-                eyebrow="Status"
                 title="Sem PIX em aberto"
-                description="Gere uma nova cobranca quando precisar."
                 meta={<StatusBadge label="sem pendencia" tone="success" />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -235,15 +226,13 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
         {payments.items.length === 0 ? (
           <EmptyState
             title="Nenhum pagamento encontrado"
-            description="A primeira recarga PIX aparece aqui com status, valor e historico."
+            description="Gere um PIX para começar."
             actionHref={hasFiscalIdentity ? '/app/payments' : '/app/profile?edit=1'}
             actionLabel={hasFiscalIdentity ? 'Gerar PIX' : 'Completar perfil'}
           />
         ) : (
           <CustomerSectionCard
-            eyebrow="Historico"
             title="Historico de pagamentos"
-            description="Status e ultima atualizacao."
             meta={<span className="panel-meta">{payments.totalItems} registro(s)</span>}
           >
             <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']}>
@@ -269,14 +258,11 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           <AdminSlideOver
             eyebrow="Pagamento PIX"
             title={formatMoney(activePayment.amount)}
-            description={activePaymentStatus?.description}
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
               <CustomerSectionCard
-                eyebrow="Status"
                 title={activePaymentStatus?.title ?? 'Pagamento'}
-                description={activePaymentStatus?.description}
                 meta={<StatusBadge label={activePaymentStatus?.badgeLabel ?? activePayment.status} tone={activePaymentStatus?.tone ?? 'neutral'} />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -295,7 +281,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 </div>
               </CustomerSectionCard>
 
-              <CustomerSectionCard eyebrow="QR code" title="Escaneie para pagar" description="Use o app do banco ou o copia e cola abaixo.">
+              <CustomerSectionCard title="Escaneie para pagar">
                 {activePaymentQrImageSrc ? (
                   <div className="payment-qr-shell">
                     <img src={activePaymentQrImageSrc} alt="QR code PIX do pagamento" className="payment-qr-image" />
@@ -305,11 +291,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 )}
               </CustomerSectionCard>
 
-              <CustomerSectionCard
-                eyebrow="PIX copia e cola"
-                title="Codigo para pagamento"
-                description="Copie o codigo e acompanhe o status."
-              >
+              <CustomerSectionCard title="Codigo PIX">
                 <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>
                 <PaymentPixActions brCode={activePayment.brCode} autoRefresh={Boolean(activePaymentStatus?.autoRefresh)} />
               </CustomerSectionCard>

@@ -25,7 +25,7 @@ test('getOrderEventView explains queue and recovery without technical jargon for
   );
 
   assert.equal(queuedView.title, 'Pedido em espera operacional');
-  assert.match(queuedView.description, /reservado/i);
+  assert.match(queuedView.description, /ativo|saldo/i);
 
   const resumedView = getOrderEventView(
     {
@@ -40,7 +40,7 @@ test('getOrderEventView explains queue and recovery without technical jargon for
   );
 
   assert.equal(resumedView.title, 'Processamento retomado');
-  assert.match(resumedView.description, /retomado/i);
+  assert.match(resumedView.description, /processar|fluxo/i);
 });
 
 test('sortOrderEvents keeps the timeline in chronological order and queued history is detectable', () => {

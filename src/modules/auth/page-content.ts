@@ -1,5 +1,5 @@
 import { getLoginPath, getRegisterPath, type AuthRedirectReason } from '../../lib/auth/navigation';
-import { getPublicEnv } from '@/lib/config/env';
+import { getPublicEnv } from '../../lib/config/env';
 
 type AuthNotice = {
   tone: 'info' | 'warning' | 'success';
@@ -18,19 +18,15 @@ export function getLoginPageContent(options: {
 
   return {
     brandLabel: appName,
-    title: 'Entre na sua conta.',
+    title: 'Entrar',
     eyebrow: 'Acesso',
-    description: 'Use seu email e senha para entrar.',
+    description: 'Entre para continuar.',
     notice,
     returnTo,
-    panelTitle: 'Acesso',
-    panelCopy: 'Entre para seguir na sua area.',
-    panelItems: [
-      'clientes acessam saldo, pagamentos e pedidos',
-      'admins acessam o painel operacional',
-      'avisos de acesso aparecem nesta tela',
-    ],
-    footnote: 'Se voce ja tem cadastro, entre com as credenciais da sua conta.',
+    panelTitle: '',
+    panelCopy: '',
+    panelItems: [],
+    footnote: '',
     fields: [
       {
         name: 'email' as const,
@@ -39,7 +35,6 @@ export function getLoginPageContent(options: {
         placeholder: 'voce@exemplo.com',
         autoComplete: 'email',
         inputMode: 'email' as const,
-        description: 'Informe o email da sua conta.',
       },
       {
         name: 'password' as const,
@@ -47,7 +42,6 @@ export function getLoginPageContent(options: {
         type: 'password' as const,
         placeholder: 'Sua senha',
         autoComplete: 'current-password',
-        description: 'Informe a senha da sua conta.',
       },
     ],
     submitLabel: 'Entrar',
@@ -69,19 +63,15 @@ export function getRegisterPageContent(options: {
 
   return {
     brandLabel: appName,
-    title: 'Crie sua conta.',
+    title: 'Criar conta',
     eyebrow: 'Cadastro',
-    description: 'Preencha seus dados para comecar.',
+    description: 'Crie sua conta.',
     notice,
     returnTo,
-    panelTitle: 'Cadastro',
-    panelCopy: 'Depois do cadastro, sua conta ja fica pronta.',
-    panelItems: [
-      'acesso a saldo, pagamentos e pedidos',
-      'entrada imediata na area do cliente',
-      'mensagens de erro exibidas na propria tela',
-    ],
-    footnote: 'Este cadastro cria conta de cliente.',
+    panelTitle: '',
+    panelCopy: '',
+    panelItems: [],
+    footnote: '',
     fields: [
       {
         name: 'name' as const,
@@ -89,7 +79,6 @@ export function getRegisterPageContent(options: {
         type: 'text' as const,
         placeholder: 'Seu nome completo',
         autoComplete: 'name',
-        description: 'Este nome sera exibido na sua conta.',
       },
       {
         name: 'email' as const,
@@ -98,7 +87,6 @@ export function getRegisterPageContent(options: {
         placeholder: 'voce@exemplo.com',
         autoComplete: 'email',
         inputMode: 'email' as const,
-        description: 'Sera usado para entrar na sua conta.',
       },
       {
         name: 'phone' as const,
@@ -107,7 +95,6 @@ export function getRegisterPageContent(options: {
         placeholder: '(11) 99999-9999',
         autoComplete: 'tel',
         inputMode: 'tel' as const,
-        description: 'Informe um telefone valido.',
       },
       {
         name: 'password' as const,
@@ -115,7 +102,6 @@ export function getRegisterPageContent(options: {
         type: 'password' as const,
         placeholder: 'Crie uma senha',
         autoComplete: 'new-password',
-        description: 'Crie uma senha para acessar sua conta.',
       },
       {
         name: 'referralCode' as const,
@@ -123,7 +109,6 @@ export function getRegisterPageContent(options: {
         type: 'text' as const,
         placeholder: 'Opcional',
         autoComplete: 'off',
-        description: 'Se voce recebeu um codigo, confirme aqui para vincular a indicacao.',
         defaultValue: referralCode ?? undefined,
         required: false,
       },

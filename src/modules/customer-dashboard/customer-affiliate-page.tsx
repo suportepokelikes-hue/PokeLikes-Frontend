@@ -34,7 +34,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
           <PageHeader
             eyebrow="Afiliados"
             title="Programa de afiliados"
-            description="Entre no programa para acompanhar codigo, status e ganhos."
             compact
             actions={
               <>
@@ -52,12 +51,8 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
             <article className="customer-dashboard-command customer-affiliate-command">
               <div className="customer-dashboard-command-head">
                 <div className="customer-dashboard-command-copy">
-                  <div className="customer-dashboard-command-pills">
-                    <span className="customer-dashboard-pill">Programa de afiliados</span>
-                    <span className="customer-dashboard-pill">Convite aberto</span>
-                  </div>
                   <h2>Abra sua frente de ganhos</h2>
-                  <p>Ative seu perfil para liberar codigo, status e comissoes.</p>
+                  <p>Solicite acesso ao programa.</p>
                 </div>
                 <StatusBadge label="nao participante" tone="neutral" />
               </div>
@@ -100,7 +95,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
         <PageHeader
           eyebrow="Afiliados"
           title="Minha area de afiliado"
-          description="Status do perfil, codigo, comissoes e historico."
           compact
           actions={
             <>
@@ -118,12 +112,8 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
           <article className="customer-dashboard-command customer-affiliate-command">
             <div className="customer-dashboard-command-head">
               <div className="customer-dashboard-command-copy">
-                <div className="customer-dashboard-command-pills">
-                  <span className="customer-dashboard-pill">Painel de afiliado</span>
-                  <span className="customer-dashboard-pill">{effectiveProfile.affiliateCommissionPercent}% atual</span>
-                </div>
                 <h2>{effectiveProfile.affiliateCode}</h2>
-                <p>{statusView.description}</p>
+                <p>{statusView.noteDescription}</p>
               </div>
               <StatusBadge label={statusView.label} tone={statusView.tone} />
             </div>
@@ -148,9 +138,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
 
           <div className="customer-dashboard-side">
             <CustomerSectionCard
-              eyebrow="Status"
               title={statusView.noteTitle}
-              description={statusView.noteDescription}
               meta={<StatusBadge label={statusView.label} tone={statusView.tone} />}
             >
               <div className="customer-dashboard-inline-stats">
@@ -185,15 +173,13 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
         </section>
 
         <CustomerSectionCard
-          eyebrow="Comissoes"
           title="Historico"
-          description="Veja pedido, valor, status e pagamento de cada comissao atribuida."
           meta={<span className="panel-meta">{formatNumber(commissions.totalItems)} registro(s)</span>}
         >
           {commissions.items.length === 0 ? (
             <EmptyState
               title="Nenhuma comissao encontrada"
-              description="As comissoes aparecem quando houver pedidos atribuidos ao seu codigo."
+              description="As comissoes aparecem aqui."
             />
           ) : (
             <DataTable columns={['ID', 'Pedido', 'Perfil', 'Comissao', 'Status', 'Criada em', 'Paga em']}>
@@ -304,7 +290,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     return {
       label: 'Aguardando aprovacao',
       tone: 'warning' as const,
-      description: 'Seu cadastro entrou no programa e aguarda aprovacao.',
+      description: 'Aguardando aprovacao.',
       noteTitle: 'Aguardando aprovacao',
       noteDescription: 'Divulgacao e comissoes liberam depois da aprovacao.',
     };
@@ -314,9 +300,9 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     return {
       label: 'Ativo',
       tone: 'success' as const,
-      description: 'Perfil liberado para divulgacao e acompanhamento.',
+      description: 'Perfil ativo.',
       noteTitle: 'Pronto para divulgar',
-      noteDescription: 'Use o codigo publico e acompanhe as comissoes por aqui.',
+      noteDescription: 'Use o codigo e acompanhe os ganhos.',
     };
   }
 
@@ -324,7 +310,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
     return {
       label: 'Suspenso',
       tone: 'danger' as const,
-      description: 'Seu acesso ao programa esta pausado.',
+      description: 'Acesso pausado.',
       noteTitle: 'Acesso pausado',
       noteDescription: 'Mantenha novas divulgacoes em pausa.',
     };

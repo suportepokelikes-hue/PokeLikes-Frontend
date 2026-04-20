@@ -177,8 +177,8 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 ## Shared Visual Foundation
 
 - a base compartilhada vive principalmente em `src/app/globals.css`, sem criar uma camada paralela de styling
-- a direcao atual da foundation e dark premium: fundo profundo, superficies escuras azuladas/arroxeadas, CTA amarelo forte e acentos azul/roxo
-- `PageHeader`, `EmptyState`, `ErrorState`, `StatusBadge`, tabelas, drawers, shells, cards, botoes e inputs compartilham o mesmo sistema de superficie, borda fria, foco visivel e contraste alto
+- a direcao atual da foundation foi simplificada para um dark premium mais silencioso: menos gradiente, menos brilho, menos copy estrutural e menos ornamento
+- `PageHeader`, `EmptyState`, `ErrorState`, `StatusBadge`, tabelas, drawers, shells, cards, botoes e inputs compartilham o mesmo sistema de superficie plana, contraste alto e acao clara
 - publico, cliente e admin continuam com shells diferentes, mas agora puxam da mesma fundacao visual para evitar drift entre modulos
 - a fundacao foi redesenhada sem mudar contratos, guards, redirects ou o modelo atual de drawers
 
@@ -215,7 +215,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - a area publica agora usa um shell compartilhado dedicado com header sticky, footer e menu mobile
 - landing, catalogo publico, detalhe de servico, login, cadastro e verify-email herdam o mesmo branding e a mesma navegacao publica
 - o shell publico preserva os fluxos existentes de `/login`, `/register`, `/catalog`, `returnTo`, `?ref=` e `?aff=`; a mudanca foi apenas visual e estrutural na camada de apresentacao
-- a landing principal em `/` agora foi redesenhada como vitrine comercial da Pokelike, com hero premium, seções de fluxo real, beneficios, vitrine de plataformas, mockup de painel, FAQ e CTA final
+- a landing principal em `/` agora foi reduzida a hero, como funciona, categorias e CTA final
 - a home continua ancorada nos fluxos reais do produto: explorar catalogo, criar conta, recarregar por Pix e acompanhar pedidos na area autenticada
 
 ## Current Limitations

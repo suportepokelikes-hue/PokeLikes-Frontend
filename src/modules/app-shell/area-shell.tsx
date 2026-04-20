@@ -5,7 +5,6 @@ import {
   Bell,
   BookOpenText,
   CircleUserRound,
-  Compass,
   CreditCard,
   FolderKanban,
   Globe,
@@ -14,9 +13,7 @@ import {
   Menu,
   PackageSearch,
   ReceiptText,
-  ShieldAlert,
   Shield,
-  Sparkles,
   Users,
   Wallet,
   X,
@@ -96,55 +93,35 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
           </button>
         </div>
 
-        <div className="area-sidebar-panel area-sidebar-panel-brand">
-          <div className="area-sidebar-panel-head">
-            <span className="area-shell-chip area-shell-chip-brand">
-              {area === 'admin' ? <ShieldAlert size={14} strokeWidth={2.05} aria-hidden="true" /> : <Sparkles size={14} strokeWidth={2.05} aria-hidden="true" />}
-              {area === 'admin' ? 'Central operacional' : 'Nova identidade'}
-            </span>
-            <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
-          </div>
-          <strong>{view.currentSectionLabel}</strong>
-          <p>{view.currentSectionDescription}</p>
-        </div>
-
         <div className="area-nav-shell">
-          <div className="area-nav-heading">
-            <span>Navegacao</span>
-            <span>{view.links.filter((link) => link.href.startsWith(area === 'customer' ? '/app' : '/admin')).length} areas</span>
-          </div>
-        <nav className="area-nav">
-          {view.links.map((link) => {
-            const Icon = navIcons[link.icon] ?? LayoutDashboard;
+          <nav className="area-nav">
+            {view.links.map((link) => {
+              const Icon = navIcons[link.icon] ?? LayoutDashboard;
 
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                prefetch={false}
-                className={link.isCurrent ? 'is-current' : ''}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <span className="area-nav-icon" aria-hidden="true">
-                  <Icon size={16} strokeWidth={2.15} />
-                </span>
-                <span className="area-nav-copy">
-                  <span>{link.label}</span>
-                  <small>{link.description}</small>
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  prefetch={false}
+                  className={link.isCurrent ? 'is-current' : ''}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <span className="area-nav-icon" aria-hidden="true">
+                    <Icon size={16} strokeWidth={2.15} />
+                  </span>
+                  <span className="area-nav-copy">
+                    <span>{link.label}</span>
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
         <div className="account-badge">
-          <div className="account-badge-head">
-            <div>
-              <strong>{view.userName}</strong>
-              <span>{view.userMeta}</span>
-            </div>
-            <span className="area-shell-chip">{user.role}</span>
+          <div>
+            <strong>{view.userName}</strong>
+            <span>{view.userMeta}</span>
           </div>
           <div className="account-badge-statuses">
             <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
@@ -168,23 +145,13 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
             </button>
 
             <div className="area-header-copy">
-              <p className="eyebrow">{view.eyebrow}</p>
               <h1>{view.currentSectionLabel}</h1>
-              <p>{view.currentSectionDescription}</p>
             </div>
           </div>
 
           <div className="area-header-actions">
-            <div className="area-header-pills">
-              <span className="area-shell-chip">
-                <Compass size={14} strokeWidth={2.05} aria-hidden="true" />
-                {view.title}
-              </span>
-              <span className="area-shell-chip">{user.role}</span>
-            </div>
             <div className="area-header-statuses">
-              <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
-              <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
+              <StatusBadge label={view.eyebrow} tone="neutral" />
             </div>
           </div>
         </header>

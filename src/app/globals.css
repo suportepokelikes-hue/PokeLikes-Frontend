@@ -4802,3 +4802,323 @@ textarea:focus-visible {
     padding: 1.25rem 1rem 1.5rem;
   }
 }
+
+/* Minimal pass */
+
+:root {
+  --surface: #0d1015;
+  --surface-lowest: #131821;
+  --surface-low: #171d27;
+  --surface-high: #1d2430;
+  --surface-highest: #242d3b;
+  --surface-dim: #0a0d12;
+  --surface-variant: #161c25;
+  --surface-glass: rgba(19, 24, 33, 0.92);
+  --surface-elevated: rgba(19, 24, 33, 0.96);
+  --muted: #95a0b3;
+  --outline: #5d6778;
+  --outline-ghost: rgba(128, 144, 165, 0.16);
+  --outline-soft: rgba(128, 144, 165, 0.24);
+  --accent: #f0c64d;
+  --accent-strong: #f4d77d;
+  --focus-ring: rgba(240, 198, 77, 0.24);
+  --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.22);
+  --shadow-card: 0 18px 40px rgba(0, 0, 0, 0.26);
+  --radius-card: 1rem;
+  --radius-shell: 1rem;
+}
+
+.site-backdrop {
+  background: linear-gradient(180deg, #10141b, #0d1015);
+}
+
+.public-header-inner,
+.public-footer-inner,
+.public-mobile-panel,
+.section-header,
+.hero,
+.pokelike-hero,
+.pokelike-final-cta,
+.auth-card,
+.auth-surface,
+.feedback-panel,
+.customer-section-card,
+.customer-metric-card,
+.customer-quick-action,
+.admin-section-card,
+.admin-metric-card,
+.admin-quick-link,
+.table-shell,
+.detail-card,
+.catalog-card,
+.stat-card,
+.admin-inline-panel,
+.area-sidebar,
+.area-header,
+.area-sidebar-panel,
+.area-nav-shell,
+.account-badge {
+  background: var(--surface-lowest);
+  box-shadow: var(--shadow-soft);
+  border-color: var(--outline-ghost);
+}
+
+.public-header-inner,
+.public-footer-inner,
+.public-mobile-panel,
+.section-header,
+.hero,
+.pokelike-hero,
+.pokelike-final-cta,
+.auth-card,
+.auth-surface,
+.feedback-panel,
+.customer-section-card,
+.customer-metric-card,
+.customer-quick-action,
+.admin-section-card,
+.admin-metric-card,
+.admin-quick-link,
+.table-shell,
+.detail-card,
+.catalog-card,
+.stat-card,
+.admin-inline-panel {
+  background-image: none;
+}
+
+.section-header {
+  padding: 1.15rem 1.25rem;
+}
+
+.section-header h1,
+.area-header h1,
+.hero h1,
+.auth-intro h1 {
+  letter-spacing: -0.04em;
+}
+
+.page-actions,
+.customer-section-card-meta,
+.admin-section-card-meta {
+  gap: 0.55rem;
+}
+
+.public-brand-copy span,
+.public-footer-copy p,
+.area-header-copy p:last-child,
+.area-sidebar-panel p,
+.auth-field small,
+.customer-quick-action p,
+.admin-quick-link p,
+.pokelike-service-card p,
+.pokelike-step-card p,
+.pokelike-benefit-card p,
+.pokelike-faq-card p {
+  display: none;
+}
+
+.public-header {
+  padding-top: 0.75rem;
+}
+
+.public-header-inner,
+.public-footer-inner {
+  padding: 0.9rem 1rem;
+}
+
+.public-brand-mark,
+.public-footer-mark,
+.auth-brand-logo,
+.area-brand-mark {
+  box-shadow: none;
+}
+
+.area-sidebar {
+  background: var(--surface-low);
+  border-right: 1px solid var(--outline-ghost);
+}
+
+.area-sidebar-panel,
+.area-nav-shell,
+.account-badge {
+  padding: 0.9rem;
+}
+
+.area-nav a {
+  min-height: 2.8rem;
+  padding: 0.7rem 0.8rem;
+}
+
+.area-header {
+  background: rgba(13, 16, 21, 0.94);
+  border-bottom-color: var(--outline-ghost);
+}
+
+.area-header-actions {
+  margin-left: auto;
+}
+
+.auth-card {
+  width: min(100%, 58rem);
+  grid-template-columns: minmax(0, 0.95fr) minmax(20rem, 0.85fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.auth-hero {
+  padding: 0.75rem;
+}
+
+.auth-brand {
+  padding: 0.42rem 0.62rem;
+}
+
+.auth-surface {
+  padding: 1rem;
+}
+
+.auth-context {
+  display: none;
+}
+
+.customer-section-card,
+.admin-section-card {
+  padding: 1rem;
+}
+
+.customer-section-card-head,
+.admin-section-card-head {
+  align-items: center;
+}
+
+.customer-section-card-copy,
+.admin-section-card-copy,
+.customer-section-card-body,
+.admin-section-card-body,
+.customer-metric-card,
+.admin-metric-card,
+.customer-quick-action,
+.admin-quick-link {
+  gap: 0.7rem;
+}
+
+.customer-metric-card,
+.admin-metric-card {
+  min-height: auto;
+  padding: 0.95rem 1rem;
+}
+
+.customer-metric-card-value,
+.admin-metric-card-value {
+  font-size: 1.35rem;
+}
+
+.customer-quick-action,
+.admin-quick-link {
+  min-height: auto;
+  padding: 0.95rem 1rem;
+}
+
+.feedback-panel {
+  padding: 1rem 1.1rem;
+}
+
+.feedback-copy,
+.feedback-actions,
+.feedback-title-group {
+  gap: 0.55rem;
+}
+
+.pokelike-landing {
+  gap: 1.5rem;
+}
+
+.pokelike-hero {
+  grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+  padding: 1.35rem;
+  overflow: visible;
+}
+
+.pokelike-hero::before,
+.pokelike-hero::after,
+.pokelike-hero-stage::before,
+.pokelike-hero-stage::after,
+.pokelike-stage-glow,
+.pokelike-hero-badge,
+.pokelike-hero-trust,
+.pokelike-dashboard-band,
+.pokelike-faq-grid,
+.pokelike-benefit-grid {
+  display: none;
+}
+
+.pokelike-hero-headline {
+  gap: 0.7rem;
+}
+
+.pokelike-hero-headline h1 {
+  max-width: 11ch;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+.pokelike-hero-headline .lede,
+.pokelike-final-cta-copy p {
+  max-width: 26rem;
+  color: var(--muted);
+}
+
+.pokelike-hero-actions,
+.pokelike-final-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pokelike-hero-stage {
+  min-height: auto;
+  padding: 1rem;
+  background: var(--surface-low);
+}
+
+.pokelike-hero-window {
+  position: static;
+  inset: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.pokelike-hero-window-grid,
+.pokelike-step-grid,
+.pokelike-service-grid {
+  gap: 0.8rem;
+}
+
+.pokelike-hero-window-card,
+.pokelike-step-card,
+.pokelike-service-card,
+.pokelike-final-cta {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--surface-low);
+  border: 1px solid var(--outline-ghost);
+  box-shadow: none;
+}
+
+.pokelike-service-link {
+  margin-top: 0.2rem;
+}
+
+.pokelike-section-head {
+  gap: 0.35rem;
+}
+
+.pokelike-section-head h2,
+.pokelike-final-cta h2 {
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+}
+
+.pokelike-final-cta {
+  align-items: center;
+}

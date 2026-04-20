@@ -2,6 +2,12 @@
 
 ## Latest Update
 
+- [x] rodada ampla de simplificacao visual concluida em foundation, shells, auth, landing, dashboards e superficies principais
+- [x] headers, section cards e quick links deixaram de puxar descricao por padrao; a leitura agora prioriza titulo, dado e acao
+- [x] shell publico, shell autenticado e auth ficaram mais silenciosos, com menos contexto institucional e menos camadas visuais
+- [x] landing publica foi reduzida a hero, como funciona, categorias e CTA final
+- [x] dashboard cliente, wallet, payments, orders, profile e affiliate foram compactados para leitura funcional direta
+- [x] dashboard admin, catalogo e fornecedores ficaram mais secos, com menos competencia entre blocos
 - [x] Onda 4B do redesign concluida nos modulos operacionais do admin
 - [x] users, catalog, payments, orders, supplier, alerts, audits, transactions, affiliates, commissions e payouts agora herdam a mesma linguagem visual administrativa
 - [x] listas, filtros, tabelas, drawers e detalhes ganharam hierarquia mais clara sem perder densidade nem query string
@@ -312,6 +318,9 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- revisar tela a tela onde ainda vale remover copy residual em catalogo publico, detalhe de servico e modulos admin secundarios
+- consolidar os pontos restantes onde o layout ainda depende demais de `globals.css`
+- decidir se a proxima iteracao deve quebrar parte da fundacao monolitica em arquivos CSS por dominio sem reabrir o visual
 - tratar shell, dashboard e paginas principais do cliente como onda concluida e fazer apenas ajustes finos de consistencia onde necessario
 - decidir se a proxima iteracao visual relevante deve ir para auth/catalogo interno remanescente ou para o shell admin
 - revisar se `customer-surfaces.tsx` precisa crescer com wrappers de tabela/lista especificos ou se a base atual ja cobre a area do cliente

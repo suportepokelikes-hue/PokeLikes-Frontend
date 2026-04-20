@@ -162,7 +162,7 @@ export async function AdminCatalogPage({
               pathname="/admin/catalog"
               hiddenFields={buildSharedCatalogHiddenFields(filters, supplierServiceFilters, createSupplierServiceId)}
               fields={[
-                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Busque por nome, descricao ou termo relevante', defaultValue: filters.search },
+                { name: 'search', label: 'Busca', type: 'search', placeholder: 'Nome ou termo', defaultValue: filters.search },
                 {
                   name: 'supplierName',
                   label: 'Fornecedor',
@@ -187,9 +187,7 @@ export async function AdminCatalogPage({
         </section>
 
         <AdminSectionCard
-          eyebrow="Origem"
           title="Sincronizados"
-          description="Servicos do fornecedor prontos para publicacao."
           meta={<span className="panel-meta">{supplierServices.totalItems} itens</span>}
           className="detail-card-wide"
         >
@@ -266,7 +264,7 @@ export async function AdminCatalogPage({
         </AdminSectionCard>
 
         {affiliateSettingsError ? (
-          <AdminSectionCard eyebrow="Afiliados" title="Leitura indisponivel" description={affiliateSettingsError}>
+          <AdminSectionCard title="Afiliados indisponivel">
             <p className="panel-meta">Ajuste a configuracao pelo drawer quando a leitura voltar.</p>
           </AdminSectionCard>
         ) : null}
@@ -276,9 +274,7 @@ export async function AdminCatalogPage({
         ) : (
           <>
             <AdminSectionCard
-              eyebrow="Operacao"
-              title="Servicos publicos"
-              description="Disponibilidade, origem e afiliacao do que ja esta no catalogo."
+              title="Publicados"
               meta={<span className="panel-meta">{catalog.totalItems} itens</span>}
             >
               <DataTable columns={['Servico', 'Operacao publica', 'Disponibilidade', 'Afiliados', 'Origem', 'Acoes']}>

@@ -14,7 +14,6 @@ export function PageHeader({ eyebrow, title, description, actions, compact = fal
       <div className="section-header-copy">
         {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
-        {description ? <p className="section-copy">{description}</p> : null}
       </div>
       {actions ? <div className="page-actions">{actions}</div> : null}
     </section>

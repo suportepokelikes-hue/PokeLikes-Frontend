@@ -50,7 +50,6 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
         <PageHeader
           eyebrow="Pedidos"
           title="Pedidos"
-          description="Acompanhe andamento, cobranca e timeline dos pedidos."
           compact
           actions={
             <>
@@ -70,10 +69,6 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
           <article className="customer-dashboard-command customer-orders-command">
             <div className="customer-dashboard-command-head">
               <div className="customer-dashboard-command-copy">
-                <div className="customer-dashboard-command-pills">
-                  <span className="customer-dashboard-pill">Acompanhamento</span>
-                  <span className="customer-dashboard-pill">{orders.totalItems} no total</span>
-                </div>
                 <h2>{openOrders.length}</h2>
                 <p>Pedidos ativos agora.</p>
               </div>
@@ -102,9 +97,7 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
 
           <div className="customer-dashboard-side">
             <CustomerSectionCard
-              eyebrow="Leitura atual"
               title={latestOrder ? latestOrder.catalogService?.name || `Pedido ${latestOrder.id}` : 'Sem pedidos recentes'}
-              description={latestOrderStatusView?.description || 'Seu proximo pedido aparecera aqui.'}
               meta={
                 latestOrderStatusView ? (
                   <StatusBadge label={latestOrderStatusView.label} tone={latestOrderStatusView.tone} />
@@ -143,28 +136,26 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
           <CustomerMetricCard
             label="Pedidos ativos"
             value={String(openOrders.length)}
-            meta="Em andamento."
             icon={Clock3}
             tone="warning"
           />
           <CustomerMetricCard
             label="Concluidos"
             value={String(completedCount)}
-            meta="Finalizados."
             icon={PackageCheck}
             tone="success"
           />
           <CustomerMetricCard
             label="Em espera operacional"
             value={String(queuedCount)}
-            meta="Saldo do fornecedor."
+            meta="Fornecedor"
             icon={Wallet}
             tone={queuedCount > 0 ? 'warning' : 'default'}
           />
           <CustomerMetricCard
             label="Na pagina"
             value={String(orders.items.length)}
-            meta={`${orders.totalItems} no total`}
+            meta={`${orders.totalItems} total`}
             icon={ShoppingBag}
             tone="default"
           />
@@ -173,15 +164,13 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
         {orders.items.length === 0 ? (
           <EmptyState
             title="Nenhum pedido encontrado"
-            description="Assim que voce comprar um servico, o acompanhamento aparece aqui."
+            description="Escolha um servico para começar."
             actionHref="/catalog"
             actionLabel="Explorar catalogo"
           />
         ) : (
           <CustomerSectionCard
-            eyebrow="Lista"
             title="Pedidos recentes"
-            description="Abra um item para ver status e timeline."
             meta={<span className="panel-meta">{orders.totalItems} registro(s)</span>}
           >
             <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
@@ -212,14 +201,11 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
           <AdminSlideOver
             eyebrow="Pedido"
             title={activeOrder.catalogService?.name || `Pedido ${activeOrder.id}`}
-            description={activeOrderStatusView?.description}
             closeHref={returnTo}
           >
             <section className="admin-drawer-stack">
               <CustomerSectionCard
-                eyebrow="Status"
                 title={`Pedido ${activeOrder.id}`}
-                description={activeOrderStatusView?.description}
                 meta={activeOrderStatusView ? <StatusBadge label={activeOrderStatusView.label} tone={activeOrderStatusView.tone} /> : null}
               >
                 {activeOrder.status === 'queued_supplier_balance' ? (
@@ -244,15 +230,11 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                 </div>
               </CustomerSectionCard>
 
-              <CustomerSectionCard eyebrow="Entrega" title="Link do pedido" description="Destino principal da entrega.">
+              <CustomerSectionCard title="Link do pedido">
                 <p className="code-block">{activeOrder.link}</p>
               </CustomerSectionCard>
 
-              <CustomerSectionCard
-                eyebrow="Timeline"
-                title="Atualizacoes do pedido"
-                description="Eventos e mudancas de status."
-              >
+              <CustomerSectionCard title="Timeline">
                 {activeEvents.length > 0 ? (
                   <div className="order-timeline order-timeline-strong">
                     {activeEvents.map((event) => {

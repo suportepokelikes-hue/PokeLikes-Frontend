@@ -62,7 +62,6 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         <PageHeader
           eyebrow="Admin / fornecedores"
           title="Fornecedores"
-          description="Providers para monitorar. Logs para ler. Servicos para sincronizar."
           actions={
             <>
               <AdminActionForm
@@ -102,9 +101,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
 
         <section className="dashboard-grid">
           <AdminSectionCard
-            eyebrow="Monitoramento"
-            title="Status dos fornecedores"
-            description="Disponibilidade e saldo."
+            title="Providers"
             meta={<span className="panel-meta">{providers.items.length} itens</span>}
           >
             {providers.items.length === 0 ? (
@@ -133,9 +130,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
           </AdminSectionCard>
 
           <AdminSectionCard
-            eyebrow="Auditoria"
             title="Logs de sincronizacao"
-            description="Eventos recentes."
             meta={<span className="panel-meta">{logs.totalItems} registros</span>}
           >
             <AdminFilterBar
@@ -165,7 +160,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
                 { name: 'targetType', label: 'Alvo', defaultValue: logFilters.targetType },
                 {
                   name: 'logsPageSize',
-                  label: 'Pagina',
+                  label: 'Tamanho',
                   type: 'select',
                   defaultValue: logFilters.pageSize ?? 10,
                   options: [
@@ -227,9 +222,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
         </section>
 
         <AdminSectionCard
-          eyebrow="Base sincronizada"
-          title="Servicos do fornecedor"
-          description="Faixa, flags e ultima sync."
+          title="Servicos sincronizados"
           meta={<span className="panel-meta">{services.totalItems} itens</span>}
           className="detail-card-wide"
         >
@@ -244,7 +237,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
               ...(logFilters.targetType ? [{ name: 'targetType', value: logFilters.targetType }] : []),
             ]}
             fields={[
-              { name: 'servicesSearch', label: 'Busca', type: 'search', placeholder: 'Servico fornecedor', defaultValue: serviceFilters.search },
+              { name: 'servicesSearch', label: 'Busca', type: 'search', placeholder: 'Servico', defaultValue: serviceFilters.search },
               { name: 'supplierName', label: 'Fornecedor', defaultValue: serviceFilters.supplierName },
               { name: 'category', label: 'Categoria', defaultValue: serviceFilters.category },
               { name: 'type', label: 'Tipo', defaultValue: serviceFilters.type },
@@ -260,7 +253,7 @@ export async function AdminSupplierPage({ session, serviceFilters, logFilters }:
               },
               {
                 name: 'servicesPageSize',
-                label: 'Pagina',
+                label: 'Tamanho',
                 type: 'select',
                 defaultValue: serviceFilters.pageSize ?? 10,
                 options: [

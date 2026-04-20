@@ -17,7 +17,7 @@ const page_content_1 = require("../src/modules/auth/page-content");
             description: 'Entre para continuar.',
         },
     });
-    strict_1.default.equal(content.title, 'Entre na sua conta.');
+    strict_1.default.equal(content.title, 'Entrar');
     strict_1.default.equal(content.notice?.title, 'Acesso necessario');
     strict_1.default.equal(content.returnTo, '/admin/users/42');
     strict_1.default.equal(content.alternateHref, '/register?reason=required&returnTo=%2Fadmin%2Fusers%2F42&ref=INDIQUE42');
@@ -35,7 +35,7 @@ const page_content_1 = require("../src/modules/auth/page-content");
             description: 'Entre novamente.',
         },
     });
-    strict_1.default.equal(content.title, 'Crie sua conta.');
+    strict_1.default.equal(content.title, 'Criar conta');
     strict_1.default.equal(content.notice?.tone, 'warning');
     strict_1.default.equal(content.alternateHref, '/login?reason=expired&returnTo=%2Fcatalog%2F10&ref=GANHE5');
     strict_1.default.equal(content.fields.length, 5);

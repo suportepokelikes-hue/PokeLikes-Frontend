@@ -1,15 +1,4 @@
-import {
-  AlertTriangle,
-  ArrowRight,
-  BellRing,
-  CreditCard,
-  FolderKanban,
-  ReceiptText,
-  ShieldCheck,
-  ShieldX,
-  Users,
-  Wallet,
-} from 'lucide-react';
+import { AlertTriangle, BellRing, CreditCard, FolderKanban, ReceiptText, ShieldCheck, ShieldX, Users, Wallet } from 'lucide-react';
 import Link from 'next/link';
 
 import { AdminMetricCard, AdminQuickLinkCard, AdminSectionCard } from '@/components/ui/admin-surfaces';
@@ -33,39 +22,11 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
     const supplierAttention = summary.suppliers.counts.degraded + summary.suppliers.counts.unavailable;
     const providers = summary.suppliers.providers.slice(0, 5);
 
-    const priorities = [
-      {
-        label: 'Criticos abertos',
-        value: formatCompactNumber(summary.alerts.openBySeverity.critical),
-        meta:
-          summary.alerts.openBySeverity.critical > 0
-            ? 'Revisar alertas com impacto operacional.'
-            : 'Nenhum alerta critico agora.',
-      },
-      {
-        label: 'Pedidos em fila',
-        value: formatCompactNumber(summary.orders.mutableCount),
-        meta:
-          summary.orders.counts.queued_supplier_balance > 0
-            ? `${summary.orders.counts.queued_supplier_balance} aguardando saldo do fornecedor.`
-            : 'Fila sem bloqueio por saldo do fornecedor.',
-      },
-      {
-        label: 'Pendencias financeiras',
-        value: formatCompactNumber(summary.payments.counts.pending),
-        meta:
-          summary.payments.counts.pending > 0
-            ? 'PIX aguardando confirmacao ou acompanhamento.'
-            : 'Sem pagamentos pendentes.',
-      },
-    ];
-
     const quickLinks = [
       {
         href: '/admin/alerts',
         icon: BellRing,
         title: 'Alertas',
-        description: 'Incidentes, severidade e ocorrencias recentes.',
         meta: `${formatCompactNumber(summary.alerts.counts.open)} abertos`,
         tone: summary.alerts.openBySeverity.critical > 0 ? 'danger' : 'default',
       },
@@ -73,7 +34,6 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
         href: '/admin/orders',
         icon: ReceiptText,
         title: 'Pedidos',
-        description: 'Fila, estados mutaveis e sincronizacao.',
         meta: `${formatCompactNumber(summary.orders.mutableCount)} ativos`,
         tone: summary.orders.counts.queued_supplier_balance > 0 ? 'warning' : 'default',
       },
@@ -81,7 +41,6 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
         href: '/admin/payments',
         icon: CreditCard,
         title: 'Pagamentos',
-        description: 'Conciliacao, status e volume confirmado.',
         meta: `${formatCompactNumber(summary.payments.counts.pending)} pendentes`,
         tone: summary.payments.counts.pending > 0 ? 'warning' : 'default',
       },
@@ -89,21 +48,18 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
         href: '/admin/users',
         icon: Users,
         title: 'Usuarios',
-        description: 'Acesso, status de conta e carteira.',
         meta: `${formatCompactNumber(summary.users.active)} ativos`,
       },
       {
         href: '/admin/catalog',
         icon: FolderKanban,
         title: 'Catalogo',
-        description: 'Publicacao, afiliacao e disponibilidade.',
         meta: `${formatCompactNumber(summary.catalog.active)} ativos`,
       },
       {
         href: '/admin/supplier',
         icon: supplierAttention > 0 ? ShieldX : ShieldCheck,
         title: 'Fornecedores',
-        description: 'Saude operacional, sync e saldo.',
         meta: `${formatCompactNumber(supplierAttention)} com atencao`,
         tone: supplierAttention > 0 ? 'warning' : 'default',
       },
@@ -115,9 +71,8 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
           <article className="admin-dashboard-command">
             <div className="admin-dashboard-command-head">
               <div className="admin-dashboard-command-copy">
-                <p className="eyebrow">Admin / central</p>
                 <h2>Centro de operacao</h2>
-                <p>Leitura rapida da fila, dos pagamentos e da saude do ecossistema em um unico ponto.</p>
+                <p>Fila, pagamentos e fornecedores.</p>
               </div>
               <div className="admin-dashboard-command-pills">
                 <span className="admin-dashboard-pill">
@@ -126,11 +81,11 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
                 </span>
                 <span className="admin-dashboard-pill">
                   <ReceiptText size={14} strokeWidth={2.1} aria-hidden="true" />
-                  {formatCompactNumber(summary.orders.mutableCount)} pedidos ativos
+                  {formatCompactNumber(summary.orders.mutableCount)} pedidos
                 </span>
                 <span className="admin-dashboard-pill">
                   <CreditCard size={14} strokeWidth={2.1} aria-hidden="true" />
-                  {formatCompactNumber(summary.payments.counts.pending)} PIX pendentes
+                  {formatCompactNumber(summary.payments.counts.pending)} PIX
                 </span>
               </div>
             </div>
@@ -139,48 +94,24 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
               <div>
                 <span>Volume confirmado</span>
                 <strong>{formatMoney(summary.payments.confirmedVolume)}</strong>
-                <p>Receita conciliada no fluxo financeiro.</p>
               </div>
               <div>
-                <span>Wallet consolidada</span>
+                <span>Wallet</span>
                 <strong>{formatMoney(summary.wallet.totalAvailableBalance)}</strong>
-                <p>Saldo disponivel em carteiras monitoradas.</p>
               </div>
               <div>
-                <span>Catalogo ativo</span>
+                <span>Catalogo</span>
                 <strong>{formatCompactNumber(summary.catalog.active)}</strong>
-                <p>Servicos publicados e prontos para venda.</p>
               </div>
               <div>
-                <span>Gerado em</span>
+                <span>Atualizado</span>
                 <strong>{formatDateTime(summary.generatedAt)}</strong>
-                <p>Snapshot operacional mais recente do admin.</p>
-              </div>
-            </div>
-
-            <div className="admin-dashboard-inline-stats">
-              <div>
-                <span>Info</span>
-                <strong>{formatCompactNumber(summary.alerts.openBySeverity.info)}</strong>
-                <p>Alertas informativos ainda abertos.</p>
-              </div>
-              <div>
-                <span>Warning</span>
-                <strong>{formatCompactNumber(summary.alerts.openBySeverity.warning)}</strong>
-                <p>Sinais que merecem acompanhamento agora.</p>
-              </div>
-              <div>
-                <span>Critico</span>
-                <strong>{formatCompactNumber(summary.alerts.openBySeverity.critical)}</strong>
-                <p>Itens com potencial de impacto operacional.</p>
               </div>
             </div>
           </article>
 
           <AdminSectionCard
-            eyebrow="Prioridades"
-            title="O que exige atencao"
-            description="O painel destaca fila, incidentes e pendencias financeiras antes do resto."
+            title="Prioridades"
             meta={<span className="panel-meta">{formatDateTime(summary.generatedAt)}</span>}
             actions={
               <>
@@ -194,13 +125,22 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
             }
           >
             <div className="admin-dashboard-priority-grid">
-              {priorities.map((item) => (
-                <div key={item.label}>
-                  <span>{item.label}</span>
-                  <strong>{item.value}</strong>
-                  <p>{item.meta}</p>
-                </div>
-              ))}
+              <div>
+                <span>Criticos</span>
+                <strong>{formatCompactNumber(summary.alerts.openBySeverity.critical)}</strong>
+              </div>
+              <div>
+                <span>Fila</span>
+                <strong>{formatCompactNumber(summary.orders.mutableCount)}</strong>
+              </div>
+              <div>
+                <span>Saldo fornecedor</span>
+                <strong>{formatCompactNumber(summary.orders.counts.queued_supplier_balance)}</strong>
+              </div>
+              <div>
+                <span>PIX pendentes</span>
+                <strong>{formatCompactNumber(summary.payments.counts.pending)}</strong>
+              </div>
             </div>
           </AdminSectionCard>
         </section>
@@ -209,14 +149,14 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
           <AdminMetricCard
             label="Usuarios ativos"
             value={formatCompactNumber(summary.users.active)}
-            meta={`${formatCompactNumber(summary.users.total)} contas totais`}
+            meta={`${formatCompactNumber(summary.users.total)} total`}
             icon={Users}
             tone="info"
           />
           <AdminMetricCard
             label="Volume confirmado"
             value={formatMoney(summary.payments.confirmedVolume)}
-            meta={`${formatCompactNumber(summary.payments.counts.confirmed)} pagamentos confirmados`}
+            meta={`${formatCompactNumber(summary.payments.counts.confirmed)} confirmados`}
             icon={Wallet}
             tone="accent"
           />
@@ -228,14 +168,14 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
             tone="warning"
           />
           <AdminMetricCard
-            label="Alertas abertos"
+            label="Alertas"
             value={formatCompactNumber(summary.alerts.counts.open)}
             meta={`${formatCompactNumber(summary.alerts.openBySeverity.critical)} criticos`}
             icon={AlertTriangle}
             tone={summary.alerts.openBySeverity.critical > 0 ? 'danger' : 'warning'}
           />
           <AdminMetricCard
-            label="Fornecedores saudaveis"
+            label="Fornecedores"
             value={formatCompactNumber(summary.suppliers.counts.healthy)}
             meta={`${formatCompactNumber(summary.suppliers.counts.total)} monitorados`}
             icon={ShieldCheck}
@@ -244,22 +184,16 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
         </section>
 
         <section className="admin-dashboard-grid">
-          <AdminSectionCard
-            eyebrow="Atalhos"
-            title="Modulos criticos"
-            description="Entradas rapidas para os fluxos mais usados do dia a dia."
-          >
+          <AdminSectionCard title="Modulos">
             <div className="admin-dashboard-quick-grid">
               {quickLinks.map((item) => (
-                <AdminQuickLinkCard key={item.href} {...item} />
+                <AdminQuickLinkCard key={item.href} {...item} description="" />
               ))}
             </div>
           </AdminSectionCard>
 
           <AdminSectionCard
-            eyebrow="Alertas"
             title="Alertas abertos"
-            description="Ocorrencias recentes com contexto de severidade e frequencia."
             actions={
               <Link href="/admin/alerts" className="secondary-action" prefetch={false}>
                 Abrir lista
@@ -269,7 +203,6 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
             {summary.alerts.latestOpen.length === 0 ? (
               <div className="admin-inline-panel">
                 <strong>Sem alertas abertos.</strong>
-                <p className="section-copy">O sistema nao reportou incidentes pendentes neste momento.</p>
               </div>
             ) : (
               <div className="stack-list">
@@ -279,8 +212,9 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
                       <strong>{alert.title}</strong>
                       <StatusBadge label={alert.severity} tone={mapAlertSeverityTone(alert.severity)} />
                     </div>
-                    <p>{alert.message}</p>
-                    <span>{formatCompactNumber(alert.occurrenceCount)} ocorrencias - {formatDateTime(alert.lastOccurredAt)}</span>
+                    <span>
+                      {formatCompactNumber(alert.occurrenceCount)} ocorrencias - {formatDateTime(alert.lastOccurredAt)}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -290,9 +224,7 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
 
         <section className="admin-dashboard-grid">
           <AdminSectionCard
-            eyebrow="Fornecedores"
-            title="Saude da integracao"
-            description="Balance rapido da camada de fornecedores com ultimo status conhecido."
+            title="Fornecedores"
             actions={
               <Link href="/admin/supplier" className="secondary-action" prefetch={false}>
                 Abrir fornecedores
@@ -303,17 +235,14 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
               <div>
                 <span>Saudaveis</span>
                 <strong>{formatCompactNumber(summary.suppliers.counts.healthy)}</strong>
-                <p>Fluxo normal.</p>
               </div>
               <div>
                 <span>Degradados</span>
                 <strong>{formatCompactNumber(summary.suppliers.counts.degraded)}</strong>
-                <p>Baixo saldo ou sinal de risco.</p>
               </div>
               <div>
                 <span>Indisponiveis</span>
                 <strong>{formatCompactNumber(summary.suppliers.counts.unavailable)}</strong>
-                <p>Requer intervencao ou monitoramento.</p>
               </div>
             </div>
 
@@ -331,88 +260,38 @@ export async function AdminDashboardPage({ session }: AdminDashboardPageProps) {
             </DataTable>
           </AdminSectionCard>
 
-          <div className="admin-dashboard-side">
-            <AdminSectionCard
-              eyebrow="Pedidos"
-              title="Fila operacional"
-              description="Leitura compacta dos estados que mais afetam a operacao."
-              actions={
+          <AdminSectionCard
+            title="Fila e financeiro"
+            actions={
+              <div className="feedback-actions">
                 <Link href="/admin/orders" className="secondary-action" prefetch={false}>
-                  Abrir pedidos
+                  Pedidos
                 </Link>
-              }
-            >
-              <div className="admin-dashboard-inline-stats">
-                <div>
-                  <span>Pending</span>
-                  <strong>{formatCompactNumber(summary.orders.counts.pending)}</strong>
-                  <p>Aguardando processamento.</p>
-                </div>
-                <div>
-                  <span>Submitted</span>
-                  <strong>{formatCompactNumber(summary.orders.counts.submitted)}</strong>
-                  <p>Encaminhados ao fornecedor.</p>
-                </div>
-                <div>
-                  <span>Queued supplier balance</span>
-                  <strong>{formatCompactNumber(summary.orders.counts.queued_supplier_balance)}</strong>
-                  <p>Bloqueados por saldo do fornecedor.</p>
-                </div>
-              </div>
-            </AdminSectionCard>
-
-            <AdminSectionCard
-              eyebrow="Pagamentos"
-              title="Conciliacao e status"
-              description="Volume confirmado e pagamentos que ainda exigem leitura."
-              actions={
                 <Link href="/admin/payments" className="secondary-action" prefetch={false}>
-                  Abrir pagamentos
+                  Pagamentos
                 </Link>
-              }
-            >
-              <div className="admin-dashboard-inline-stats">
-                <div>
-                  <span>Pending</span>
-                  <strong>{formatCompactNumber(summary.payments.counts.pending)}</strong>
-                  <p>PIX aguardando resolucao.</p>
-                </div>
-                <div>
-                  <span>Confirmed</span>
-                  <strong>{formatCompactNumber(summary.payments.counts.confirmed)}</strong>
-                  <p>Fluxo confirmado no backend.</p>
-                </div>
-                <div>
-                  <span>Expired + failed</span>
-                  <strong>{formatCompactNumber(summary.payments.counts.expired + summary.payments.counts.failed)}</strong>
-                  <p>Casos que podem pedir revisao manual.</p>
-                </div>
               </div>
-            </AdminSectionCard>
-          </div>
-        </section>
-
-        <section className="admin-dashboard-priority-row">
-          <Link href="/admin/alerts" className="admin-dashboard-pill" prefetch={false}>
-            <BellRing size={14} strokeWidth={2.1} aria-hidden="true" />
-            Alertas
-            <ArrowRight size={14} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
-          <Link href="/admin/orders" className="admin-dashboard-pill" prefetch={false}>
-            <ReceiptText size={14} strokeWidth={2.1} aria-hidden="true" />
-            Pedidos
-            <ArrowRight size={14} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
-          <Link href="/admin/payments" className="admin-dashboard-pill" prefetch={false}>
-            <CreditCard size={14} strokeWidth={2.1} aria-hidden="true" />
-            Pagamentos
-            <ArrowRight size={14} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
-          <Link href="/admin/supplier" className="admin-dashboard-pill" prefetch={false}>
-            <ShieldCheck size={14} strokeWidth={2.1} aria-hidden="true" />
-            Fornecedores
-            <ArrowRight size={14} strokeWidth={2.1} aria-hidden="true" />
-          </Link>
+            }
+          >
+            <div className="admin-dashboard-inline-stats">
+              <div>
+                <span>Pedidos</span>
+                <strong>{formatCompactNumber(summary.orders.mutableCount)}</strong>
+              </div>
+              <div>
+                <span>Saldo fornecedor</span>
+                <strong>{formatCompactNumber(summary.orders.counts.queued_supplier_balance)}</strong>
+              </div>
+              <div>
+                <span>PIX pendentes</span>
+                <strong>{formatCompactNumber(summary.payments.counts.pending)}</strong>
+              </div>
+              <div>
+                <span>Falhas</span>
+                <strong>{formatCompactNumber(summary.payments.counts.expired + summary.payments.counts.failed)}</strong>
+              </div>
+            </div>
+          </AdminSectionCard>
         </section>
       </main>
     );

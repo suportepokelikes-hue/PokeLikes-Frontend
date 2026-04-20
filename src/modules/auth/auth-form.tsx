@@ -74,20 +74,23 @@ export function AuthForm({
           </div>
 
           <div className="auth-intro">
-            <p className="eyebrow">{eyebrow}</p>
             <h1>{title}</h1>
-            <p className="section-copy">{description}</p>
+            {description ? <p className="section-copy">{description}</p> : null}
           </div>
 
-          <section className="auth-context" aria-label={panelTitle}>
-            <p className="auth-context-title">{panelTitle}</p>
-            <p className="auth-context-copy">{panelCopy}</p>
-            <ul className="auth-context-list">
-              {panelItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
+          {panelTitle || panelCopy || panelItems.length ? (
+            <section className="auth-context" aria-label={panelTitle || title}>
+              {panelTitle ? <p className="auth-context-title">{panelTitle}</p> : null}
+              {panelCopy ? <p className="auth-context-copy">{panelCopy}</p> : null}
+              {panelItems.length ? (
+                <ul className="auth-context-list">
+                  {panelItems.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
           </div>
 
           <div className="auth-surface">
@@ -113,7 +116,6 @@ export function AuthForm({
                   defaultValue={field.defaultValue}
                   required={field.required ?? true}
                 />
-                {field.description ? <small>{field.description}</small> : null}
               </label>
             ))}
 
@@ -128,7 +130,6 @@ export function AuthForm({
             </form>
 
             <div className="auth-footer">
-              <p className="auth-footnote">{view.footnote}</p>
               <p className="auth-alt">
                 {view.alternatePrompt} <Link href={view.alternateHref}>{view.alternateLabel}</Link>
               </p>

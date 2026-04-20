@@ -11,7 +11,6 @@ type EmptyStateProps = {
 export function EmptyState({ title, description, actionHref, actionLabel }: EmptyStateProps) {
   return (
     <section className="feedback-panel feedback-panel-compact">
-      <span className="feedback-kicker">Sem resultados</span>
       <div className="feedback-header">
         <div className="feedback-title-group">
           <span className="feedback-icon" aria-hidden="true">

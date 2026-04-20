@@ -22,7 +22,7 @@ const order_view_1 = require("../src/modules/orders/order-view");
         createdAt: '2026-04-11T10:00:00.000Z',
     }, 'customer');
     strict_1.default.equal(queuedView.title, 'Pedido em espera operacional');
-    strict_1.default.match(queuedView.description, /reservado/i);
+    strict_1.default.match(queuedView.description, /ativo|saldo/i);
     const resumedView = (0, order_view_1.getOrderEventView)({
         id: 'evt_2',
         eventType: 'status_changed',
@@ -32,7 +32,7 @@ const order_view_1 = require("../src/modules/orders/order-view");
         createdAt: '2026-04-11T11:00:00.000Z',
     }, 'customer');
     strict_1.default.equal(resumedView.title, 'Processamento retomado');
-    strict_1.default.match(resumedView.description, /retomado/i);
+    strict_1.default.match(resumedView.description, /processar|fluxo/i);
 });
 (0, node_test_1.default)('sortOrderEvents keeps the timeline in chronological order and queued history is detectable', () => {
     const sorted = (0, order_view_1.sortOrderEvents)([

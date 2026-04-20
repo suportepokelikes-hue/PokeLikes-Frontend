@@ -27,10 +27,10 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `src/lib/api` e a fronteira unica com o backend
 - `src/modules` concentra a maior parte da logica por dominio
 - a foundation visual compartilhada agora e dark premium e vive principalmente em `src/app/globals.css`
-- CTA principal amarelo, acentos azul/roxo, superficies escuras e drawers/tabelas/cards/botoes unificados ja fazem parte da base oficial do app
+- CTA principal amarelo, superficies escuras mais planas e componentes mais secos agora fazem parte da base oficial do app
 - a area publica agora tambem tem shell compartilhado com header sticky, footer premium e menu mobile em `src/modules/app-shell/public-shell.tsx`
-- a landing `/` agora tambem foi condensada para uma leitura mais comercial e mais curta, mantendo os fluxos reais de `/catalog`, cadastro, Pix e acompanhamento de pedidos
-- a home publica tambem ganhou uma segunda passada estrutural para ficar mais proxima de uma landing premium padrao, com hero mais forte, mockup mais visual e menos cara de pagina explicativa
+- a landing `/` agora tambem foi reduzida para hero, como funciona, categorias e CTA final, mantendo os fluxos reais de `/catalog`, cadastro, Pix e acompanhamento de pedidos
+- headers, section cards e quick links deixaram de puxar descricao por padrao; a leitura prioriza titulo, dado e acao
 - o shell autenticado do cliente em `/app` agora tambem foi redesenhado para a identidade Pokelike, com sidebar/topbar mais fortes e sem mudar links, guards, redirects ou comportamento responsivo
 - o dashboard `/app` agora funciona como painel central do cliente, priorizando saldo, proximo passo, atalhos, referral/afiliados e historico recente
 - `src/components/ui/customer-surfaces.tsx` concentra os novos wrappers visuais reutilizaveis da area interna do cliente

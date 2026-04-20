@@ -11,7 +11,6 @@ type ErrorStateProps = {
 export function ErrorState({ title, description, actionHref, actionLabel }: ErrorStateProps) {
   return (
     <section className="feedback-panel feedback-error feedback-panel-compact">
-      <span className="feedback-kicker">Atencao</span>
       <div className="feedback-header">
         <div className="feedback-title-group">
           <span className="feedback-icon feedback-icon-danger" aria-hidden="true">

@@ -38,6 +38,6 @@ const status_badge_1 = require("../src/components/ui/status-badge");
     strict_1.default.doesNotMatch(headerHtml, /eyebrow/);
     const fullHeaderHtml = (0, server_1.renderToStaticMarkup)((0, jsx_runtime_1.jsx)(page_header_1.PageHeader, { eyebrow: "Admin / testes", title: "Cabecalho", description: "Descricao do cabecalho.", actions: (0, jsx_runtime_1.jsx)("a", { href: "/admin", children: "Voltar" }) }));
     strict_1.default.match(fullHeaderHtml, /Admin \/ testes/);
-    strict_1.default.match(fullHeaderHtml, /Descricao do cabecalho\./);
+    strict_1.default.doesNotMatch(fullHeaderHtml, /Descricao do cabecalho\./);
     strict_1.default.match(fullHeaderHtml, /href="\/admin"/);
 });

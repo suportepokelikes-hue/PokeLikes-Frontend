@@ -65,7 +65,6 @@ export function PublicShell({ session, children }: PublicShellProps) {
             </span>
             <span className="public-brand-copy">
               <strong>{appName}</strong>
-              <span>Servicos digitais com mais clareza</span>
             </span>
           </Link>
 
@@ -124,8 +123,7 @@ export function PublicShell({ session, children }: PublicShellProps) {
 
       <div className={`public-mobile-panel${isMenuOpen ? ' is-open' : ''}`}>
         <div className="public-mobile-panel-copy">
-          <p className="eyebrow">Navegacao</p>
-          <strong>Explore a {appName}</strong>
+          <strong>{appName}</strong>
         </div>
 
         <nav className="public-mobile-nav" aria-label="Navegacao mobile">
@@ -171,7 +169,6 @@ export function PublicShell({ session, children }: PublicShellProps) {
             </span>
             <div className="public-footer-copy">
               <strong>{appName}</strong>
-              <p>Catalogo, Pix e pedidos em um so lugar.</p>
             </div>
           </div>
 
