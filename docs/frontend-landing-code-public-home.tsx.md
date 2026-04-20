@@ -1,3 +1,8 @@
+# PublicHome Landing Code
+
+Use esta estrutura como base principal para `src/modules/app-shell/public-home.tsx`.
+
+```tsx
 import Image from 'next/image';
 import Link from 'next/link';
 import {

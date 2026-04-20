@@ -1,3 +1,8 @@
+# PublicShell v3 Code
+
+Use este código como base principal para `src/modules/app-shell/public-shell.tsx`.
+
+```tsx
 'use client';
 
 import { ArrowRight, Menu, X } from 'lucide-react';
