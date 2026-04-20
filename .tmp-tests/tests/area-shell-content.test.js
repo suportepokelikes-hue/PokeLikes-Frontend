@@ -10,7 +10,7 @@ const user = {
     id: '7',
     role: 'admin',
     name: 'Operador',
-    email: 'ops@likesuai.com',
+    email: 'ops@exemplo.com',
     status: 'active',
 };
 (0, node_test_1.default)('isCurrentPath matches exact and nested routes without leaking to root', () => {
@@ -31,7 +31,7 @@ const user = {
     strict_1.default.equal(view.eyebrow, 'Area admin');
     strict_1.default.equal(view.title, 'Pedidos');
     strict_1.default.equal(view.userName, 'Operador');
-    strict_1.default.equal(view.userMeta, 'ops@likesuai.com - active');
+    strict_1.default.equal(view.userMeta, 'ops@exemplo.com');
     strict_1.default.equal(view.navigationLabel, 'Area admin navigation');
     strict_1.default.equal(view.children, 'conteudo');
     strict_1.default.equal(view.links.find((link) => link.href === '/admin/orders')?.isCurrent, true);
@@ -44,7 +44,7 @@ const user = {
             id: '11',
             role: 'customer',
             name: 'Cliente',
-            email: 'cliente@likesuai.com',
+            email: 'cliente@exemplo.com',
             status: 'active',
         },
         title: 'Afiliados',

@@ -81,30 +81,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
             </article>
           </section>
 
-          <section className="customer-dashboard-metrics">
-            <CustomerMetricCard
-              label="Entrada"
-              value="Aberta"
-              meta="Solicite seu perfil."
-              icon={Rocket}
-              tone="accent"
-            />
-            <CustomerMetricCard
-              label="Codigo"
-              value="Liberado"
-              meta="Aparece no painel."
-              icon={Gift}
-              tone="info"
-            />
-            <CustomerMetricCard
-              label="Painel"
-              value="Resumo"
-              meta="Status e comissoes."
-              icon={LineChart}
-              tone="default"
-            />
-          </section>
-
           <AffiliateApplyForm />
         </main>
       );

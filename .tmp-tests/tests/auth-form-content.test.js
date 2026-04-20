@@ -7,7 +7,7 @@ const node_test_1 = __importDefault(require("node:test"));
 const strict_1 = __importDefault(require("node:assert/strict"));
 const auth_form_content_1 = require("../src/modules/auth/auth-form-content");
 const baseContent = {
-    brandLabel: 'Likes Uai',
+    brandLabel: 'Pokelike',
     title: 'Entrar',
     eyebrow: 'Acesso',
     description: 'Descricao do fluxo.',
@@ -26,7 +26,7 @@ const baseContent = {
             name: 'email',
             label: 'Email',
             type: 'email',
-            placeholder: 'voce@likesuai.com',
+            placeholder: 'voce@exemplo.com',
             autoComplete: 'email',
             inputMode: 'email',
             description: 'Campo principal.',

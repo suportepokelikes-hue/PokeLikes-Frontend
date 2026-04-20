@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { getAuthFormView, type AuthFormContent } from '../src/modules/auth/auth-form-content';
 
 const baseContent: AuthFormContent = {
-  brandLabel: 'Likes Uai',
+  brandLabel: 'Pokelike',
   title: 'Entrar',
   eyebrow: 'Acesso',
   description: 'Descricao do fluxo.',
@@ -23,7 +23,7 @@ const baseContent: AuthFormContent = {
       name: 'email',
       label: 'Email',
       type: 'email',
-      placeholder: 'voce@likesuai.com',
+      placeholder: 'voce@exemplo.com',
       autoComplete: 'email',
       inputMode: 'email',
       description: 'Campo principal.',

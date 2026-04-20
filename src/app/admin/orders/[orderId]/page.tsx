@@ -4,7 +4,7 @@ import { requireAdminSession } from '@/lib/auth/guards';
 import { AdminOrderDetailPage } from '@/modules/admin-shell/admin-order-detail-page';
 
 export const metadata: Metadata = {
-  title: 'Pedido admin | Likes Uai',
+  title: 'Pedido admin | Pokelike',
 };
 
 type AdminOrderDetailRouteProps = {

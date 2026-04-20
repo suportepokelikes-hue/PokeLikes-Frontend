@@ -4,7 +4,7 @@ import { requireAdminSession } from '@/lib/auth/guards';
 import { AdminPaymentDetailPage } from '@/modules/admin-shell/admin-payment-detail-page';
 
 export const metadata: Metadata = {
-  title: 'Pagamento admin | Likes Uai',
+  title: 'Pagamento admin | Pokelike',
 };
 
 type AdminPaymentDetailRouteProps = {

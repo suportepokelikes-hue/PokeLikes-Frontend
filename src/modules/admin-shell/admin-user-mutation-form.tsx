@@ -42,7 +42,7 @@ export function AdminUserMutationForm({ mode, action, returnTo, user }: AdminUse
         {isCreate ? (
           <label className="admin-user-field admin-user-field-wide">
             <span>Email</span>
-            <input type="email" name="email" placeholder="usuario@likesuai.com" />
+            <input type="email" name="email" placeholder="usuario@exemplo.com" />
           </label>
         ) : (
           <div className="admin-user-static admin-user-field-wide">

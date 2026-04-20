@@ -6,9 +6,9 @@ import { mapLoginError, mapRegisterError, readTrimmedString } from '../src/modul
 
 test('readTrimmedString trims values and returns empty string for missing entries', () => {
   const formData = new FormData();
-  formData.set('email', '  alice@likesuai.com  ');
+  formData.set('email', '  alice@exemplo.com  ');
 
-  assert.equal(readTrimmedString(formData, 'email'), 'alice@likesuai.com');
+  assert.equal(readTrimmedString(formData, 'email'), 'alice@exemplo.com');
   assert.equal(readTrimmedString(formData, 'missing'), '');
 });
 

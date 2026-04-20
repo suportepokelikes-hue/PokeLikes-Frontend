@@ -63,7 +63,7 @@ export function PaymentPixActions({ brCode, autoRefresh }: PaymentPixActionsProp
       <div className="payment-pix-buttons">
         <button type="button" className="referral-copy-button" onClick={handleCopy} disabled={!brCode}>
           {copyState === 'copied' ? <Check size={16} strokeWidth={2.15} aria-hidden="true" /> : <Copy size={16} strokeWidth={2.15} aria-hidden="true" />}
-          {copyState === 'copied' ? 'Codigo copiado' : 'Copiar codigo PIX'}
+          {copyState === 'copied' ? 'Codigo copiado' : 'Copiar codigo'}
         </button>
 
         <button type="button" className="secondary-action" onClick={handleRefresh} disabled={isRefreshing}>
@@ -72,8 +72,8 @@ export function PaymentPixActions({ brCode, autoRefresh }: PaymentPixActionsProp
         </button>
       </div>
 
-      {copyState === 'error' ? <p className="payment-pix-meta payment-pix-meta-error">Falha ao copiar o codigo.</p> : null}
-      {autoRefresh ? <p className="payment-pix-meta">Atualizacao automatica a cada 15 segundos.</p> : null}
+      {copyState === 'error' ? <p className="payment-pix-meta payment-pix-meta-error">Falha ao copiar.</p> : null}
+      {autoRefresh ? <p className="payment-pix-meta">Atualiza a cada 15s.</p> : null}
     </div>
   );
 }

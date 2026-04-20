@@ -14,7 +14,7 @@ const sampleUser: UserSummary = {
   id: '42',
   role: 'admin',
   name: 'Alice',
-  email: 'alice@likesuai.com',
+  email: 'alice@exemplo.com',
   phone: '31999999999',
   taxId: '123.456.789-09',
   fiscalProfile: {
@@ -37,7 +37,7 @@ test('deserializeUser rejects malformed payloads', () => {
   assert.equal(deserializeUser('not-base64'), null);
 
   const invalidRole = Buffer.from(
-    JSON.stringify({ id: '1', role: 'operator', name: 'Bob', email: 'bob@likesuai.com', status: 'active' }),
+    JSON.stringify({ id: '1', role: 'operator', name: 'Bob', email: 'bob@exemplo.com', status: 'active' }),
     'utf8',
   )
     .toString('base64url');

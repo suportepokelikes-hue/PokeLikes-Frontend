@@ -30,8 +30,8 @@ type AreaShellView = {
 const areaConfig = {
   customer: {
     label: 'Area cliente',
-    brandMeta: 'Workspace do cliente',
-    sectionDescription: 'Saldo, pagamentos, pedidos e afiliados em um painel unico.',
+    brandMeta: 'Conta do cliente',
+    sectionDescription: 'Saldo, pagamentos, pedidos e afiliados.',
     links: [
       { href: '/', label: 'Publico', icon: 'public', description: 'Landing e catalogo' },
       { href: '/app', label: 'Dashboard', icon: 'dashboard', description: 'Painel central' },
@@ -44,8 +44,8 @@ const areaConfig = {
   },
   admin: {
     label: 'Area admin',
-    brandMeta: 'Console operacional',
-    sectionDescription: 'Operacao, monitoramento e mutacoes administrativas com leitura densa.',
+    brandMeta: 'Operacao Pokelike',
+    sectionDescription: 'Operacao, monitoramento e acoes administrativas.',
     links: [
       { href: '/admin', label: 'Dashboard', icon: 'dashboard', description: 'Resumo da operacao' },
       { href: '/admin/users', label: 'Usuarios', icon: 'users', description: 'Acesso e carteira' },

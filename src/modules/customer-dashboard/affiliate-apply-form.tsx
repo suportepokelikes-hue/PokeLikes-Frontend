@@ -16,22 +16,18 @@ export function AffiliateApplyForm() {
     <CustomerSectionCard
       eyebrow="Entrada no programa"
       title="Solicitar participacao"
-      description="A solicitacao cria seu painel de afiliado para acompanhar codigo, status e comissoes."
+      description="A solicitacao libera seu painel de afiliado."
       meta={<StatusBadge label="entrada disponivel" tone="info" />}
       className="customer-affiliate-apply-card"
     >
       <div className="customer-dashboard-inline-stats">
-        <div>
-          <span>Fluxo</span>
-          <strong>Solicitar agora</strong>
-        </div>
         <div>
           <span>Status inicial</span>
           <strong>Pendente</strong>
         </div>
         <div>
           <span>Painel</span>
-          <strong>Codigo e comissoes</strong>
+          <strong>Codigo e ganhos</strong>
         </div>
       </div>
 

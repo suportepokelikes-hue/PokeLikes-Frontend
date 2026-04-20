@@ -10,7 +10,7 @@ const sampleUser = {
     id: '42',
     role: 'admin',
     name: 'Alice',
-    email: 'alice@likesuai.com',
+    email: 'alice@exemplo.com',
     phone: '31999999999',
     taxId: '123.456.789-09',
     fiscalProfile: {
@@ -28,7 +28,7 @@ const sampleUser = {
 });
 (0, node_test_1.default)('deserializeUser rejects malformed payloads', () => {
     strict_1.default.equal((0, session_1.deserializeUser)('not-base64'), null);
-    const invalidRole = Buffer.from(JSON.stringify({ id: '1', role: 'operator', name: 'Bob', email: 'bob@likesuai.com', status: 'active' }), 'utf8')
+    const invalidRole = Buffer.from(JSON.stringify({ id: '1', role: 'operator', name: 'Bob', email: 'bob@exemplo.com', status: 'active' }), 'utf8')
         .toString('base64url');
     strict_1.default.equal((0, session_1.deserializeUser)(invalidRole), null);
 });

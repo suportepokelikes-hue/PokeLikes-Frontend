@@ -3,21 +3,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoginPageContent = getLoginPageContent;
 exports.getRegisterPageContent = getRegisterPageContent;
 const navigation_1 = require("../../lib/auth/navigation");
+const env_1 = require("@/lib/config/env");
 function getLoginPageContent(options) {
     const { reason, returnTo, notice, referralCode } = options;
+    const { appName } = (0, env_1.getPublicEnv)();
     return {
-        brandLabel: 'Likes Uai',
+        brandLabel: appName,
         title: 'Entre na sua conta.',
         eyebrow: 'Acesso',
         description: 'Use seu email e senha para entrar.',
         notice,
         returnTo,
         panelTitle: 'Acesso',
-        panelCopy: 'Entre para seguir para a area correspondente ao seu perfil.',
+        panelCopy: 'Entre para seguir na sua area.',
         panelItems: [
             'clientes acessam saldo, pagamentos e pedidos',
             'admins acessam o painel operacional',
-            'erros de acesso aparecem nesta tela',
+            'avisos de acesso aparecem nesta tela',
         ],
         footnote: 'Se voce ja tem cadastro, entre com as credenciais da sua conta.',
         fields: [
@@ -25,7 +27,7 @@ function getLoginPageContent(options) {
                 name: 'email',
                 label: 'Email',
                 type: 'email',
-                placeholder: 'voce@likesuai.com',
+                placeholder: 'voce@exemplo.com',
                 autoComplete: 'email',
                 inputMode: 'email',
                 description: 'Informe o email da sua conta.',
@@ -48,15 +50,16 @@ function getLoginPageContent(options) {
 }
 function getRegisterPageContent(options) {
     const { reason, returnTo, notice, referralCode } = options;
+    const { appName } = (0, env_1.getPublicEnv)();
     return {
-        brandLabel: 'Likes Uai',
+        brandLabel: appName,
         title: 'Crie sua conta.',
         eyebrow: 'Cadastro',
         description: 'Preencha seus dados para comecar.',
         notice,
         returnTo,
         panelTitle: 'Cadastro',
-        panelCopy: 'Depois do cadastro, sua conta ja fica pronta para uso.',
+        panelCopy: 'Depois do cadastro, sua conta ja fica pronta.',
         panelItems: [
             'acesso a saldo, pagamentos e pedidos',
             'entrada imediata na area do cliente',

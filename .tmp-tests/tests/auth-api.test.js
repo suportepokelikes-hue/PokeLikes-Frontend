@@ -19,12 +19,12 @@ const auth_1 = require("../src/lib/api/auth");
     try {
         await (0, auth_1.registerCustomer)({
             name: 'Alice',
-            email: 'alice@likesuai.com',
+            email: 'alice@exemplo.com',
             phone: '31999999999',
             password: 'secret',
             referralCode: 'INDIQUE123',
         });
-        await (0, auth_1.login)({ email: 'alice@likesuai.com', password: 'secret' });
+        await (0, auth_1.login)({ email: 'alice@exemplo.com', password: 'secret' });
         await (0, auth_1.refreshSession)({ refreshToken: 'refresh-token' });
         await (0, auth_1.logout)({ refreshToken: 'refresh-token' });
         await (0, auth_1.getAuthMe)('token-123');
@@ -50,12 +50,12 @@ const auth_1 = require("../src/lib/api/auth");
     ]);
     strict_1.default.equal(requests[0].init?.body, JSON.stringify({
         name: 'Alice',
-        email: 'alice@likesuai.com',
+        email: 'alice@exemplo.com',
         phone: '31999999999',
         password: 'secret',
         referralCode: 'INDIQUE123',
     }));
-    strict_1.default.equal(requests[1].init?.body, JSON.stringify({ email: 'alice@likesuai.com', password: 'secret' }));
+    strict_1.default.equal(requests[1].init?.body, JSON.stringify({ email: 'alice@exemplo.com', password: 'secret' }));
     strict_1.default.equal(requests[2].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
     strict_1.default.equal(requests[3].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
     strict_1.default.equal(new Headers(requests[4].init?.headers).get('Authorization'), 'Bearer token-123');

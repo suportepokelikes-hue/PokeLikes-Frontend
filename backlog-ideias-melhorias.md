@@ -1,38 +1,190 @@
-Inconsistências visuais e de branding
+# backlog-ideias-melhorias
 
-A inconsistência mais clara é Pokelike x Likes Uai. Visualmente o frontend fala Pokelike, mas metadados e textos institucionais ainda falam Likes Uai em vários pontos:
-src/app/layout.tsx, src/app/catalog/page.tsx, src/app/catalog/[serviceId]/page.tsx, src/app/login/page.tsx, src/app/register/page.tsx, src/app/verify-email/page.tsx
+## Objetivo
 
-Também há pequena inconsistência de naming/posicionamento de marca entre:
-Pokelike, Pokelike Ops, Nova identidade, Workspace do cliente, Console operacional, Minha conta, Admin. Isso não é grave, mas ainda passa um pouco de produto em transição em area-shell.tsx e area-shell-content.ts
+Checklist objetiva dos ajustes ainda necessarios no frontend atual, com foco em:
+- branding e consistencia
+- reducao de redundancia
+- simplificacao de fluxos criticos
+- reducao de densidade em telas admin
 
-Outro ponto: a landing está mais ousada e premium do que boa parte das páginas internas.
-A área pública tem uma assinatura visual mais forte; já cliente e admin, embora bons, se apoiam mais em superfícies utilitárias repetidas. Ou seja: há coerência de cor e tokens, mas não a mesma potência de linguagem visual.
+Fonte principal desta backlog: leitura do codigo atual do frontend no branch `master`.
 
-Fluxos que ainda merecem polimento
+---
 
-Pagamento PIX
-É um dos fluxos mais importantes e melhorou bastante em customer-payments-page.tsx, com bloqueio por CPF/CNPJ, QR e copia e cola no drawer
-Mas ainda há duas fricções:
-o fluxo depende muito de leitura textual para entender “por que está bloqueado / o que falta / onde resolver / como voltar”, e
-o detalhe principal do pagamento fica no drawer, quando poderia ter tratamento mais “modal central de tarefa” ou uma ênfase maior para pagamento pendente.
+## Como usar este arquivo
 
-Perfil → desbloquear PIX
-O fluxo está correto e explicado em customer-profile-page.tsx, mas ainda parece um pouco indireto: notice, hero, bloco lateral, métricas, cards inferiores e drawer de edição explicam a mesma trava por ângulos diferentes
-Ficou completo, porém verboso.
+- Este arquivo deve ser tratado como backlog viva.
+- Sempre que um item for concluido, trocar `[ ]` por `[x]`.
+- Se um item ficar parcial, marcar `[~]` e adicionar uma nota curta logo abaixo.
+- Se durante a execucao surgir subitem necessario, adicionar abaixo do bloco correto sem reescrever a backlog inteira.
+- Nao remover itens sem justificar.
 
-Afiliados
-A entrada sem perfil e o painel com perfil existem e estão coerentes em customer-affiliate-page.tsx
-Mas a área ainda sofre de densidade e repetição: “status”, “perfil”, “leitura rápida”, “métricas”, “histórico” acabam dizendo coisas próximas demais. O fluxo é claro, mas poderia ser mais curto.
+Legenda:
+- `[ ]` pendente
+- `[~]` parcial
+- `[x]` concluido
 
-Pedidos
-A leitura de status e timeline está boa em customer-orders-page.tsx
-Só que “pedido em espera operacional”, “saldo do fornecedor”, “segue ativo” e blocos correlatos ficam espalhados entre hero, notice e drawer. Funciona, mas ainda não é o fluxo mais econômico.
+---
 
-Admin catálogo
-É poderoso, mas é provavelmente um dos módulos mais densos do produto. Em admin-catalog-page.tsx há sincronizado, publicado, afiliados, drawer de criação, drawer de edição e drawer de configuração de afiliados quase na mesma superfície
-Operacionalmente é rico; em UX ainda pede simplificação visual e de priorização.
+## 1. Branding e consistencia
 
-Admin supplier
-Mesmo problema: providers, sync logs e serviços sincronizados na mesma página em admin-supplier-page.tsx
-É bom para operador experiente, mas para entendimento rápido ainda pesa.
+### 1.1 Auth ainda com marca antiga
+- [x] Remover remanescentes de `Likes Uai` das telas de auth.
+- [x] Trocar placeholder/email/example ligado a `likesuai.com`.
+- [x] Garantir que login e cadastro exibam a identidade atual do produto.
+- [x] Atualizar testes afetados pela troca de branding.
+
+Arquivos principais:
+- `src/modules/auth/page-content.ts`
+- `src/modules/auth/auth-form.tsx`
+- `tests/auth-form-content.test.ts`
+
+### 1.2 Consistencia de naming
+- [x] Revisar textos de shell e superficies autenticadas para manter naming coerente com a identidade atual.
+- [x] Evitar sensacao de produto em transicao entre `Pokelike`, `Pokelike Ops`, `Area cliente`, `Area admin`, `Workspace do cliente`, `Console operacional`.
+- [x] Manter consistencia sem apagar diferencas legitimas entre cliente e admin.
+
+Arquivos principais:
+- `src/modules/app-shell/area-shell-content.ts`
+- `src/modules/app-shell/public-shell.tsx`
+- `src/app/layout.tsx`
+- `src/lib/config/env.ts`
+
+### 1.3 Navegacao do cliente
+- [x] Confirmado: `/admin` nao aparece como item padrao na navegacao da area cliente.
+
+Arquivo validado:
+- `src/modules/app-shell/area-shell-content.ts`
+
+---
+
+## 2. Fluxo de pagamentos PIX
+
+### 2.1 Reducao de redundancia
+- [x] Reduzir repeticao do estado `PIX bloqueado` quando falta CPF/CNPJ.
+- [x] Evitar duplicar o mesmo aviso no card principal e no card lateral sem ganho real.
+- [x] Concentrar a explicacao de bloqueio em um unico ponto dominante.
+
+### 2.2 Mais foco operacional
+- [x] Manter destaque forte para pagamento pendente.
+- [x] Garantir que o caminho principal seja sempre obvio: pagar PIX pendente ou gerar novo PIX.
+- [x] Evitar excesso de texto explicativo espalhado.
+
+### 2.3 Drawer do pagamento
+- [x] Manter QR, copia e cola e refresh como foco principal da tarefa.
+- [x] Remover qualquer texto excedente que nao ajude a concluir o pagamento.
+
+Arquivos principais:
+- `src/modules/customer-dashboard/customer-payments-page.tsx`
+- `src/modules/customer-dashboard/payment-pix-actions.tsx`
+
+---
+
+## 3. Fluxo perfil -> desbloquear PIX
+
+### 3.1 Menos verbosidade
+- [x] Reduzir repeticao da trava fiscal ao longo da pagina de perfil.
+- [x] Evitar explicar a mesma dependencia de CPF/CNPJ no hero, metricas, cards e drawer sem necessidade.
+- [x] Manter clareza sobre o desbloqueio do PIX com menos camadas visuais.
+
+### 3.2 Hierarquia melhor
+- [x] Deixar mais claro qual e o ponto principal de acao para liberar PIX.
+- [x] Garantir que o CTA principal e o bloco principal contem a informacao central, sem ecos desnecessarios.
+
+Arquivos principais:
+- `src/modules/customer-dashboard/customer-profile-page.tsx`
+
+---
+
+## 4. Fluxo de afiliados
+
+### 4.1 Reducao real de densidade
+- [x] Enxugar a tela sem perder status, codigo e historico.
+- [x] Evitar sobreposicao entre hero, status lateral, metricas e historico.
+- [x] Tornar a area mais curta e objetiva.
+
+### 4.2 Entrada no programa
+- [x] Garantir que o estado sem perfil de afiliado seja simples e direto.
+- [x] Evitar repeticao entre texto introdutorio, metricas de entrada e card de solicitacao.
+
+### 4.3 Painel do afiliado ativo
+- [x] Priorizar codigo, status e ganhos.
+- [x] Reduzir detalhes secundarios que competem com o objetivo principal.
+
+Arquivos principais:
+- `src/modules/customer-dashboard/customer-affiliate-page.tsx`
+- `src/modules/customer-dashboard/affiliate-apply-form.tsx`
+
+---
+
+## 5. Fluxo de pedidos
+
+### 5.1 Consolidacao de contexto operacional
+- [x] Manter consolidado o contexto de `espera operacional / saldo do fornecedor / pedido segue ativo`.
+- [x] Evitar espalhar a mesma mensagem entre hero, cards e drawer sem necessidade.
+
+### 5.2 Economia de interface
+- [x] Preservar a timeline boa atual.
+- [x] Simplificar o restante do fluxo para que a timeline seja o principal detalhamento.
+
+Arquivos principais:
+- `src/modules/customer-dashboard/customer-orders-page.tsx`
+- `src/modules/orders/order-view.ts`
+
+---
+
+## 6. Admin catalog
+
+### 6.1 Menos sensacao de tudo ao mesmo tempo
+- [x] Melhorar a separacao perceptiva entre `Sincronizados`, `Servicos publicos` e `Afiliacao`.
+- [x] Reduzir a carga visual simultanea da tela principal.
+- [x] Reforcar a prioridade visual de `publicados / ativos / compraveis / afiliados`.
+
+### 6.2 Refinar leitura operacional
+- [x] Garantir leitura rapida do que esta pronto para vender, do que esta em risco e do que exige configuracao.
+- [x] Evitar que drawers e a tela principal parecam competir entre si.
+
+Arquivos principais:
+- `src/modules/admin-shell/admin-catalog-page.tsx`
+
+---
+
+## 7. Admin supplier
+
+### 7.1 Separacao visual mais forte
+- [x] Reforcar separacao entre `providers`, `logs` e `servicos sincronizados`.
+- [x] Melhorar leitura rapida para operador.
+
+### 7.2 Reducao de peso
+- [x] Reduzir sensacao de tela excessivamente pesada mesmo mantendo riqueza operacional.
+- [x] Manter filtros e acoes sem poluir o topo e as tabelas.
+
+Arquivos principais:
+- `src/modules/admin-shell/admin-supplier-page.tsx`
+
+---
+
+## 8. Regressao critica encontrada
+
+### 8.1 Branding inconsistente em producao
+- [x] Eliminar inconsistencia visivel entre marca global atual (`Pokelike`) e marca antiga em auth (`Likes Uai`).
+- [x] Confirmar que nenhuma superficie relevante do usuario final continua mostrando naming legado.
+
+Arquivos principais:
+- `src/app/layout.tsx`
+- `src/modules/auth/page-content.ts`
+- `src/modules/auth/auth-form.tsx`
+- `src/modules/app-shell/public-shell.tsx`
+- `src/modules/app-shell/area-shell-content.ts`
+
+---
+
+## 9. Criterio de conclusao
+
+So marcar como concluido quando:
+- o codigo estiver alterado
+- a UI tiver ficado objetivamente mais economica
+- a mensagem principal da tela estiver mais clara
+- a redundancia tiver sido reduzida de verdade
+- nao houver regressao de branding

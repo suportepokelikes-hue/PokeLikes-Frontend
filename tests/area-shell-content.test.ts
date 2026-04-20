@@ -8,7 +8,7 @@ const user: UserSummary = {
   id: '7',
   role: 'admin',
   name: 'Operador',
-  email: 'ops@likesuai.com',
+  email: 'ops@exemplo.com',
   status: 'active',
 };
 
@@ -32,7 +32,7 @@ test('getAreaShellView marks the current admin link and exposes user meta', () =
   assert.equal(view.eyebrow, 'Area admin');
   assert.equal(view.title, 'Pedidos');
   assert.equal(view.userName, 'Operador');
-  assert.equal(view.userMeta, 'ops@likesuai.com - active');
+  assert.equal(view.userMeta, 'ops@exemplo.com');
   assert.equal(view.navigationLabel, 'Area admin navigation');
   assert.equal(view.children, 'conteudo');
   assert.equal(view.links.find((link) => link.href === '/admin/orders')?.isCurrent, true);
@@ -46,7 +46,7 @@ test('getAreaShellView includes the affiliate route in the customer shell', () =
       id: '11',
       role: 'customer',
       name: 'Cliente',
-      email: 'cliente@likesuai.com',
+      email: 'cliente@exemplo.com',
       status: 'active',
     },
     title: 'Afiliados',

@@ -31,7 +31,7 @@ const ORDER_STATUS_VIEW: Record<OrderResource['status'], OrderStatusView> = {
   queued_supplier_balance: {
     label: 'Aguardando saldo do fornecedor',
     tone: 'warning',
-    description: 'O pedido segue em espera operacional. Seu saldo continua reservado ate o fornecedor retomar o processamento.',
+    description: 'Pedido em espera operacional. Seu saldo continua reservado.',
   },
   in_progress: {
     label: 'Em processamento',
@@ -90,8 +90,8 @@ export function getOrderEventView(event: OrderEventResource, audience: OrderAudi
       title: audience === 'customer' ? 'Pedido em espera operacional' : 'Fornecedor sem saldo para seguir',
       description:
         audience === 'customer'
-          ? 'O fornecedor esta sem saldo suficiente no momento. O pedido continua ativo e o valor do cliente segue reservado.'
-          : 'O pedido entrou em espera por saldo insuficiente no fornecedor. O valor cobrado do cliente continua reservado ate nova tentativa.',
+          ? 'O fornecedor esta sem saldo no momento. O pedido continua ativo.'
+          : 'O pedido entrou em espera por saldo insuficiente no fornecedor. O valor do cliente continua reservado.',
       fromLabel,
       toLabel,
     };
@@ -102,8 +102,8 @@ export function getOrderEventView(event: OrderEventResource, audience: OrderAudi
       title: audience === 'customer' ? 'Processamento retomado' : 'Pedido voltou para envio',
       description:
         audience === 'customer'
-          ? 'O fornecedor recuperou condicao de processar o pedido e o fluxo foi retomado.'
-          : 'Depois da espera por saldo do fornecedor, o pedido voltou para o fluxo normal de envio.',
+          ? 'O fornecedor voltou a processar o pedido.'
+          : 'Depois da espera por saldo do fornecedor, o pedido voltou ao fluxo normal.',
       fromLabel,
       toLabel,
     };

@@ -9,8 +9,8 @@ const http_1 = require("../src/lib/api/http");
 const action_helpers_1 = require("../src/modules/auth/action-helpers");
 (0, node_test_1.default)('readTrimmedString trims values and returns empty string for missing entries', () => {
     const formData = new FormData();
-    formData.set('email', '  alice@likesuai.com  ');
-    strict_1.default.equal((0, action_helpers_1.readTrimmedString)(formData, 'email'), 'alice@likesuai.com');
+    formData.set('email', '  alice@exemplo.com  ');
+    strict_1.default.equal((0, action_helpers_1.readTrimmedString)(formData, 'email'), 'alice@exemplo.com');
     strict_1.default.equal((0, action_helpers_1.readTrimmedString)(formData, 'missing'), '');
 });
 (0, node_test_1.default)('mapLoginError specializes unauthorized errors', () => {

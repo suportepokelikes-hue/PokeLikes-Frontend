@@ -49,7 +49,7 @@ export async function CustomerProfilePage({
         <PageHeader
           eyebrow="Perfil"
           title="Minha conta"
-          description="Conta, verificacao, identidade fiscal e referral."
+          description="Conta, verificacao, identidade fiscal e indicacoes."
           compact
           actions={
             <>
@@ -81,7 +81,7 @@ export async function CustomerProfilePage({
                   <span className="customer-dashboard-pill">{profile.role}</span>
                 </div>
                 <h2>{profile.name}</h2>
-                <p>Conta, verificacao e preparo para pagamentos e indicacoes.</p>
+                <p>Conta pronta para seguir com pagamentos e indicacoes.</p>
               </div>
               <StatusBadge label={profile.status} tone={profile.status === 'active' ? 'success' : 'warning'} />
             </div>

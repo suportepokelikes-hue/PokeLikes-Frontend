@@ -165,14 +165,14 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
             {!hasFiscalIdentity ? (
               <CustomerSectionCard
                 eyebrow="Status"
-                title="PIX bloqueado"
-                description="Complete o perfil para liberar recargas."
-                meta={<StatusBadge label="pix bloqueado" tone="warning" />}
+                title="Resumo da area"
+                description="Saldo e historico atual."
+                meta={<StatusBadge label="perfil pendente" tone="warning" />}
               >
                 <div className="customer-dashboard-inline-stats">
                   <div>
-                    <span>{fiscalIdentityLabel}</span>
-                    <strong>Pendente</strong>
+                    <span>Saldo</span>
+                    <strong>{formatMoney(wallet.availableBalance)}</strong>
                   </div>
                   <div>
                     <span>Confirmados</span>
@@ -188,7 +188,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               <CustomerSectionCard
                 eyebrow="Gerar outro PIX"
                 title="Nova recarga"
-                description="Se precisar, gere outro PIX por aqui."
+                description="Se precisar, gere outro por aqui."
                 meta={<StatusBadge label="pix liberado" tone="success" />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -210,7 +210,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               <CustomerSectionCard
                 eyebrow="Status"
                 title="Sem PIX em aberto"
-                description="Gere uma nova cobranca quando quiser repor saldo."
+                description="Gere uma nova cobranca quando precisar."
                 meta={<StatusBadge label="sem pendencia" tone="success" />}
               >
                 <div className="customer-dashboard-inline-stats">
@@ -243,7 +243,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
           <CustomerSectionCard
             eyebrow="Historico"
             title="Historico de pagamentos"
-            description="Status, valor e ultima atualizacao."
+            description="Status e ultima atualizacao."
             meta={<span className="panel-meta">{payments.totalItems} registro(s)</span>}
           >
             <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']}>
@@ -308,7 +308,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               <CustomerSectionCard
                 eyebrow="PIX copia e cola"
                 title="Codigo para pagamento"
-                description="Copie o codigo ou atualize o status."
+                description="Copie o codigo e acompanhe o status."
               >
                 <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>
                 <PaymentPixActions brCode={activePayment.brCode} autoRefresh={Boolean(activePaymentStatus?.autoRefresh)} />

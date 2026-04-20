@@ -1,4 +1,5 @@
 import { getLoginPath, getRegisterPath, type AuthRedirectReason } from '../../lib/auth/navigation';
+import { getPublicEnv } from '@/lib/config/env';
 
 type AuthNotice = {
   tone: 'info' | 'warning' | 'success';
@@ -13,20 +14,21 @@ export function getLoginPageContent(options: {
   referralCode?: string | null;
 }) {
   const { reason, returnTo, notice, referralCode } = options;
+  const { appName } = getPublicEnv();
 
   return {
-    brandLabel: 'Likes Uai',
+    brandLabel: appName,
     title: 'Entre na sua conta.',
     eyebrow: 'Acesso',
     description: 'Use seu email e senha para entrar.',
     notice,
     returnTo,
     panelTitle: 'Acesso',
-    panelCopy: 'Entre para seguir para a area correspondente ao seu perfil.',
+    panelCopy: 'Entre para seguir na sua area.',
     panelItems: [
       'clientes acessam saldo, pagamentos e pedidos',
       'admins acessam o painel operacional',
-      'erros de acesso aparecem nesta tela',
+      'avisos de acesso aparecem nesta tela',
     ],
     footnote: 'Se voce ja tem cadastro, entre com as credenciais da sua conta.',
     fields: [
@@ -34,7 +36,7 @@ export function getLoginPageContent(options: {
         name: 'email' as const,
         label: 'Email',
         type: 'email' as const,
-        placeholder: 'voce@likesuai.com',
+        placeholder: 'voce@exemplo.com',
         autoComplete: 'email',
         inputMode: 'email' as const,
         description: 'Informe o email da sua conta.',
@@ -63,16 +65,17 @@ export function getRegisterPageContent(options: {
   referralCode?: string | null;
 }) {
   const { reason, returnTo, notice, referralCode } = options;
+  const { appName } = getPublicEnv();
 
   return {
-    brandLabel: 'Likes Uai',
+    brandLabel: appName,
     title: 'Crie sua conta.',
     eyebrow: 'Cadastro',
     description: 'Preencha seus dados para comecar.',
     notice,
     returnTo,
     panelTitle: 'Cadastro',
-    panelCopy: 'Depois do cadastro, sua conta ja fica pronta para uso.',
+    panelCopy: 'Depois do cadastro, sua conta ja fica pronta.',
     panelItems: [
       'acesso a saldo, pagamentos e pedidos',
       'entrada imediata na area do cliente',

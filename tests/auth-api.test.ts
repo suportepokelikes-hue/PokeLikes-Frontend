@@ -28,12 +28,12 @@ test('auth api functions target the expected endpoints and methods', async () =>
   try {
     await registerCustomer({
       name: 'Alice',
-      email: 'alice@likesuai.com',
+      email: 'alice@exemplo.com',
       phone: '31999999999',
       password: 'secret',
       referralCode: 'INDIQUE123',
     });
-    await login({ email: 'alice@likesuai.com', password: 'secret' });
+    await login({ email: 'alice@exemplo.com', password: 'secret' });
     await refreshSession({ refreshToken: 'refresh-token' });
     await logout({ refreshToken: 'refresh-token' });
     await getAuthMe('token-123');
@@ -63,12 +63,12 @@ test('auth api functions target the expected endpoints and methods', async () =>
 
   assert.equal(requests[0].init?.body, JSON.stringify({
     name: 'Alice',
-    email: 'alice@likesuai.com',
+    email: 'alice@exemplo.com',
     phone: '31999999999',
     password: 'secret',
     referralCode: 'INDIQUE123',
   }));
-  assert.equal(requests[1].init?.body, JSON.stringify({ email: 'alice@likesuai.com', password: 'secret' }));
+  assert.equal(requests[1].init?.body, JSON.stringify({ email: 'alice@exemplo.com', password: 'secret' }));
   assert.equal(requests[2].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
   assert.equal(requests[3].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
   assert.equal(new Headers(requests[4].init?.headers).get('Authorization'), 'Bearer token-123');
