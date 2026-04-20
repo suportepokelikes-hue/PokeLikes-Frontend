@@ -5125,8 +5125,8 @@ textarea:focus-visible {
 
 .public-shell-v3 {
   min-height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  display: flex;
+  flex-direction: column;
   overflow: visible;
   background:
     radial-gradient(circle at top left, rgba(73, 163, 255, 0.08), transparent 24rem),
@@ -5293,6 +5293,7 @@ textarea:focus-visible {
 }
 
 .public-mobile-backdrop-v3 {
+  display: none;
   position: fixed;
   inset: 0;
   z-index: 74;
@@ -5310,12 +5311,12 @@ textarea:focus-visible {
 }
 
 .public-mobile-panel-v3 {
+  display: none;
   position: fixed;
   top: calc(0.9rem + 4.9rem);
   left: 1.5rem;
   right: 1.5rem;
   z-index: 75;
-  display: grid;
   gap: 1rem;
   width: auto;
   max-width: 28rem;
@@ -5389,6 +5390,7 @@ textarea:focus-visible {
 }
 
 .public-shell-main-v3 {
+  flex: 1 0 auto;
   width: 100%;
   max-width: none;
   margin: 0;
@@ -5420,8 +5422,7 @@ textarea:focus-visible {
 }
 
 .landing-v2 {
-  display: grid;
-  gap: 0;
+  display: block;
   width: 100%;
   overflow: visible;
   background:
@@ -5433,7 +5434,9 @@ textarea:focus-visible {
 .landing-v2-section,
 .landing-v2-final-cta,
 .landing-v2-stats-band {
+  display: block;
   padding: 5.5rem clamp(1.25rem, 3vw, 2rem);
+  width: 100%;
 }
 
 .landing-v2-hero {
@@ -5876,6 +5879,14 @@ textarea:focus-visible {
   .public-nav-v3,
   .public-header-actions-v3 {
     display: none;
+  }
+
+  .public-mobile-backdrop-v3 {
+    display: block;
+  }
+
+  .public-mobile-panel-v3 {
+    display: grid;
   }
 
   .public-mobile-toggle-v3 {
