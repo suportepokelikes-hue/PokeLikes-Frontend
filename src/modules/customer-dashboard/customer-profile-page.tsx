@@ -91,7 +91,7 @@ export async function CustomerProfilePage({
                   <strong>{profile.emailVerified ? 'Verificado' : 'Pendente'}</strong>
                 </div>
                 <div>
-                  <span>Indicacoes</span>
+                  <span>Convites referral</span>
                   <strong>{referral.summary.invitedUsers}</strong>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export async function CustomerProfilePage({
 
             <div className="customer-dashboard-command-actions">
               {!profile.emailVerified ? (
-                <Link href="/app/profile#indicacoes" className="primary-action">
+                <Link href="/app/profile" className="primary-action">
                   <MailCheck size={16} strokeWidth={2.15} aria-hidden="true" />
                   Verificar email
                 </Link>
@@ -114,9 +114,8 @@ export async function CustomerProfilePage({
                   Gerar PIX
                 </Link>
               )}
-              <Link href={editPath} className="secondary-action">
-                <CircleUserRound size={16} strokeWidth={2.15} aria-hidden="true" />
-                Ajustar cadastro
+              <Link href="/app/affiliate" className="secondary-action">
+                Ver afiliados
               </Link>
             </div>
           </article>

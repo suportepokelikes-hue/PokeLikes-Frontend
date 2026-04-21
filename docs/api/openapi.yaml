@@ -1,11 +1,12 @@
 openapi: 3.1.0
 info:
-  title: Likes Uai Platform Backend API
-  version: 1.0.0-draft
-  summary: Draft contract for Likes Uai Platform Backend V1
+  title: InstaBarato Platform Backend API
+  version: 1.0.0-current
+  summary: Current contract for the implemented V1 backend
   description: |
-    Draft OpenAPI contract for the public and admin APIs of Likes Uai Platform Backend V1.
-    This file is intentionally incomplete and must evolve with implementation.
+    OpenAPI contract for the public and admin APIs currently exposed by the backend.
+    It should evolve together with the implemented code and explicitly document
+    current limitations, transitional behavior, and admin/runtime contracts in use.
 servers:
   - url: http://localhost:3001/v1
     description: Local development
@@ -343,7 +344,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentResource'
+                $ref: '#/components/schemas/PaymentDetailResource'
+    post:
+      tags: [Payments]
+      summary: Reconcile current payment now
+      description: |
+        Customer-triggered provider refresh for one local payment.
+        Intended for the "ja paguei, verificar agora" UX while the payment is still pending.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Updated payment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDetailResource'
   /me/referral:
     get:
       tags: [Referrals]
@@ -438,6 +456,49 @@ paths:
                 $ref: '#/components/schemas/PaginatedAffiliateCommissionsResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /me/affiliate/pix-key:
+    get:
+      tags: [Affiliates]
+      summary: Current affiliate PIX receiving key
+      description: Returns the authenticated affiliate's PIX receiving key, or `null` when absent.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Affiliate PIX key or null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AffiliatePixKeyResource'
+                  - type: 'null'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    patch:
+      tags: [Affiliates]
+      summary: Update current affiliate PIX receiving key
+      description: Stores PIX receiving data for future admin-supervised affiliate payouts.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAffiliatePixKeyRequest'
+      responses:
+        '200':
+          description: Updated affiliate PIX key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliatePixKeyResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /webhooks/payments/{provider}:
     post:
       tags: [Payments]
@@ -468,6 +529,45 @@ paths:
                 $ref: '#/components/schemas/WebhookAckResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /webhooks/payouts/{provider}:
+    post:
+      tags: [Affiliates]
+      summary: PIX payout webhook receiver
+      description: |
+        Receives PIX payout transfer events from the payout provider.
+        For Asaas, configure transfer events such as `TRANSFER_PENDING`,
+        `TRANSFER_IN_BANK_PROCESSING`, `TRANSFER_DONE`, `TRANSFER_FAILED`,
+        `TRANSFER_BLOCKED`, and `TRANSFER_CANCELLED`.
+        The backend validates the `asaas-access-token` header when
+        `ASAAS_PIX_PAYOUT_WEBHOOK_TOKEN` or `ASAAS_WEBHOOK_TOKEN` is configured,
+        persists an idempotent payout event, reconciles the matching
+        `AffiliatePayout` by `providerTransactionId` or `externalReference`, and
+        updates linked commissions only on valid terminal transitions.
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [asaas]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Webhook accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookAckResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /me/orders:
     post:
       tags: [Orders]
@@ -938,10 +1038,16 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
     post:
       tags: [Affiliates]
-      summary: Admin create manual affiliate payout
+      summary: Admin create affiliate payout
       description: |
-        Manual payout marks the selected `approved` affiliate commissions as `paid`
-        and creates an `AffiliatePayout` record.
+        Admin-supervised PIX payout creates an `AffiliatePayout` in `requested` state,
+        snapshots the affiliate PIX key, and stores the selected `approved` commissions.
+        No transfer is executed at creation time. The provider transfer is dispatched when
+        the admin advances the payout to `processing`.
+        Commissions are marked `paid` only when the provider returns success or the admin
+        later marks an already-dispatched payout as `paid`.
+        Failed or cancelled payouts keep the historical selection but release the
+        commissions for a future payout attempt.
       security:
         - bearerAuth: []
       requestBody:
@@ -959,6 +1065,82 @@ paths:
                 $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/affiliate-payouts/{payoutId}/status:
+    post:
+      tags: [Affiliates]
+      summary: Admin update affiliate payout status
+      description: |
+        Advances a PIX affiliate payout state under admin supervision.
+        `processing` dispatches a real PIX transfer through the configured payout provider.
+        If the provider returns immediate success, the payout becomes `paid`; if the
+        provider returns a pending status, the payout remains `processing`.
+        `paid` marks linked commissions as paid; `failed` and `cancelled` return
+        commissions to `approved` for retry while preserving the payout selection history.
+        This flow never credits the internal wallet.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: payoutId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateAffiliatePayoutStatusRequest'
+      responses:
+        '200':
+          description: Updated affiliate payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/affiliate-payouts/{payoutId}/refresh:
+    post:
+      tags: [Affiliates]
+      summary: Admin refresh affiliate payout provider status
+      description: |
+        Refreshes a `processing` payout from the configured PIX payout provider using the
+        stored provider transaction id. This is the focused manual reconciliation path for
+        asynchronous provider processing.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: payoutId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Refreshed affiliate payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1851,6 +2033,27 @@ components:
         summary:
           $ref: '#/components/schemas/ReferralProgramSummary'
       required: [referralCode, referralLink, emailVerified, rewardRules, rewardStatus, ownReferralReward, summary]
+    AffiliatePixKeyResource:
+      type: object
+      properties:
+        pixKeyType:
+          type: string
+          enum: [cpf, cnpj, email, phone, random]
+        pixKey:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required: [pixKeyType, pixKey, updatedAt]
+    UpdateAffiliatePixKeyRequest:
+      type: object
+      properties:
+        pixKeyType:
+          type: string
+          enum: [cpf, cnpj, email, phone, random]
+        pixKey:
+          type: string
+      required: [pixKeyType, pixKey]
     AffiliateProfileResource:
       type: object
       properties:
@@ -1861,6 +2064,9 @@ components:
           enum: [pending, active, suspended]
         publicCode:
           type: string
+        affiliateCode:
+          type: string
+          description: Alias of `publicCode` kept for frontend compatibility.
         approvedAt:
           type: string
           format: date-time
@@ -1875,7 +2081,7 @@ components:
         updatedAt:
           type: string
           format: date-time
-      required: [id, status, publicCode, approvedAt, suspendedAt, createdAt, updatedAt]
+      required: [id, status, publicCode, affiliateCode, approvedAt, suspendedAt, createdAt, updatedAt]
     AdminAffiliateProfileResource:
       allOf:
         - $ref: '#/components/schemas/AffiliateProfileResource'
@@ -1919,6 +2125,7 @@ components:
       type: object
       description: |
         Affiliate commissions are created as `pending`.
+        The commission amount uses the customer sale amount as base.
         The current implementation approves on order `completed`, rejects on order
         `failed` or `canceled`, and keeps `partial` as `pending`.
       properties:
@@ -1934,11 +2141,13 @@ components:
           type: string
         grossMarginSnapshot:
           type: string
+          description: Analytical snapshot only. It is not the commission base.
         commissionPercentSnapshot:
           type: string
           description: Human-readable percentage snapshot. `30.00` means `30%`.
         commissionAmount:
           type: string
+          description: `publicPriceSnapshot * commissionPercentSnapshot / 100`, rounded to 5 decimal places.
         status:
           type: string
           enum: [pending, approved, rejected, paid]
@@ -1973,11 +2182,14 @@ components:
                   type: string
                 publicCode:
                   type: string
-              required: [userId, publicCode]
+                affiliateCode:
+                  type: string
+                  description: Alias of `publicCode` kept for frontend compatibility.
+              required: [userId, publicCode, affiliateCode]
           required: [affiliateProfileId, affiliate]
     AffiliatePayoutResource:
       type: object
-      description: Manual admin payout record for affiliate commissions.
+      description: Admin-supervised PIX payout record for affiliate commissions.
       properties:
         id:
           type: string
@@ -1994,6 +2206,67 @@ components:
         notes:
           type: string
           nullable: true
+        statusReason:
+          type: string
+          nullable: true
+        provider:
+          type: string
+          nullable: true
+          description: PIX payout provider used for the external transfer.
+        externalReference:
+          type: string
+          nullable: true
+          description: Stable local idempotency reference sent to the provider.
+        providerTransactionId:
+          type: string
+          nullable: true
+          description: External transfer id returned by the provider.
+        providerStatus:
+          type: string
+          nullable: true
+          description: Last known raw provider status.
+        providerErrorCode:
+          type: string
+          nullable: true
+        providerErrorMessage:
+          type: string
+          nullable: true
+        providerSyncedAt:
+          type: string
+          format: date-time
+          nullable: true
+        commissionCount:
+          type: integer
+          minimum: 0
+        pixKey:
+          type: object
+          nullable: true
+          properties:
+            type:
+              type: string
+              enum: [cpf, cnpj, email, phone, random]
+            key:
+              type: string
+          required: [type, key]
+        requestedAt:
+          type: string
+          format: date-time
+        processingAt:
+          type: string
+          format: date-time
+          nullable: true
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+        failedAt:
+          type: string
+          format: date-time
+          nullable: true
+        cancelledAt:
+          type: string
+          format: date-time
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -2008,9 +2281,12 @@ components:
               type: string
             publicCode:
               type: string
-          required: [userId, publicCode]
+            affiliateCode:
+              type: string
+              description: Alias of `publicCode` kept for frontend compatibility.
+          required: [userId, publicCode, affiliateCode]
       required:
-        [id, affiliateProfileId, amount, status, processedByUserId, notes, createdAt, processedAt, affiliate]
+        [id, affiliateProfileId, amount, status, processedByUserId, notes, statusReason, provider, externalReference, providerTransactionId, providerStatus, providerErrorCode, providerErrorMessage, providerSyncedAt, commissionCount, pixKey, requestedAt, processingAt, paidAt, failedAt, cancelledAt, createdAt, processedAt, affiliate]
     CreatedAffiliatePayoutResource:
       allOf:
         - $ref: '#/components/schemas/AffiliatePayoutResource'
@@ -2040,6 +2316,19 @@ components:
           type: string
           nullable: true
       required: [affiliateProfileId, commissionIds]
+    AdminUpdateAffiliatePayoutStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [processing, paid, failed, cancelled]
+        notes:
+          type: string
+          nullable: true
+        statusReason:
+          type: string
+          nullable: true
+      required: [status]
     UserReference:
       type: object
       properties:
@@ -2176,6 +2465,16 @@ components:
           format: date-time
       required:
         [id, provider, amount, status, brCode, brCodeBase64, expiresAt, confirmedAt, createdAt, updatedAt]
+    PaymentDetailResource:
+      allOf:
+        - $ref: '#/components/schemas/PaymentResource'
+        - type: object
+          properties:
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentEventResource'
+          required: [events]
     AdminPaymentResource:
       allOf:
         - $ref: '#/components/schemas/PaymentResource'
@@ -2232,25 +2531,50 @@ components:
         providerStatus:
           type: string
           enum: [unknown, healthy, degraded_low_balance, unavailable]
+        availabilityState:
+          type: string
+          enum: [available, attention, blocked]
         isPurchasable:
           type: boolean
+        requiresAttention:
+          type: boolean
+        isBlocked:
+          type: boolean
+        userFacingReasonCode:
+          type: string
+          enum:
+            [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
         reason:
           type: string
           enum:
             [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
-      required: [providerStatus, isPurchasable, reason]
+          description: Legacy alias of `userFacingReasonCode` kept for backward compatibility.
+      required:
+        [providerStatus, availabilityState, isPurchasable, requiresAttention, isBlocked, userFacingReasonCode, reason]
     ProviderStatusSummaryResource:
       type: object
       properties:
         providerStatus:
           type: string
           enum: [unknown, healthy, degraded_low_balance, unavailable]
+        availabilityState:
+          type: string
+          enum: [available, attention, blocked]
         isPurchasable:
           type: boolean
+        requiresAttention:
+          type: boolean
+        isBlocked:
+          type: boolean
+        userFacingReasonCode:
+          type: string
+          enum:
+            [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
         reason:
           type: string
           enum:
             [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
+          description: Legacy alias of `userFacingReasonCode` kept for backward compatibility.
         lastCheckedAt:
           type: string
           format: date-time
@@ -2262,7 +2586,7 @@ components:
           type: string
           nullable: true
       required:
-        [providerStatus, isPurchasable, reason, lastCheckedAt, lastErrorCode, lastErrorMessage]
+        [providerStatus, availabilityState, isPurchasable, requiresAttention, isBlocked, userFacingReasonCode, reason, lastCheckedAt, lastErrorCode, lastErrorMessage]
     CatalogSupplierServiceReference:
       type: object
       properties:
@@ -2408,6 +2732,9 @@ components:
       properties:
         isAffiliateEnabled:
           type: boolean
+        affiliateEnabled:
+          type: boolean
+          description: Alias of `isAffiliateEnabled` accepted for frontend compatibility.
         affiliateCommissionPercent:
           oneOf:
             - type: string

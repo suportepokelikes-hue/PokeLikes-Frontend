@@ -58,6 +58,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - dashboard em `/app`
 - perfil com drawer de edicao em `/app/profile?edit=1`
 - afiliados em `/app/affiliate`
+- `/app/affiliate` tambem expõe chave PIX de payout, com aviso quando o afiliado ainda nao cadastrou a chave
 - wallet em `/app/wallet`
 - PIX em `/app/payments`
 - pedidos em `/app/orders`
@@ -86,8 +87,8 @@ Isso nao e drift acidental. Faz parte do desenho atual das jornadas.
 
 - troca de email do cliente ainda nao existe na UI
 - limpeza explicita de telefone do cliente ainda nao existe
-- `affiliateCode` persistido por `?aff=` ainda nao tem expiracao/limpeza automatica
-- payout manual de afiliados ainda depende de `note` para rastrear IDs de comissao
+- `affiliateCode` persistido por `?aff=` ainda nao tem expiracao automatica, mas a UI ja permite limpeza manual explicita
+- payout admin de afiliados segue `affiliateProfileId`, `commissionIds` e `notes`; a UI registra a solicitacao inicial, mostra chave PIX, auditoria Asaas, motivo/status e timestamps reais, permite `requested -> processing` para disparar PIX real e oferece refresh do provider em `processing`; a wallet interna nao participa
 - afiliados admin nao possuem acao dedicada de reativacao
 
 ## Proximo passo recomendado

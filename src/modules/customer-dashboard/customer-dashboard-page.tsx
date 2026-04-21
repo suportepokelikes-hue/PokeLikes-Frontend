@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {
-  CircleUserRound,
   CreditCard,
   Gift,
   MailCheck,
@@ -23,6 +22,7 @@ import {
   listCustomerOrders,
   listCustomerPayments,
 } from '@/lib/api/customer';
+import { getAffiliateDisplayCode } from '@/lib/api/affiliate-normalizers';
 import type { AffiliateProfileResource, Money, ReferralRewardStatus } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -144,9 +144,9 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 meta={`${openOrders.length} ativos`}
               />
               <CustomerQuickActionCard
-                href={affiliateProfile ? '/app/affiliate' : '/app/profile#indicacoes'}
-                icon={affiliateProfile ? Gift : CircleUserRound}
-                title={affiliateProfile ? 'Afiliados' : 'Perfil e indicacoes'}
+                href="/app/affiliate"
+                icon={Gift}
+                title="Afiliados"
                 meta={affiliateStatusView.shortLabel}
               />
             </div>
@@ -177,7 +177,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           <CustomerMetricCard
             label="Afiliados"
             value={affiliateStatusView.shortLabel}
-            meta={affiliateProfile ? `${affiliateProfile.affiliateCommissionPercent}%` : 'Nao ativo'}
+            meta={affiliateProfile ? formatAffiliateMeta(affiliateProfile) : 'Nao ativo'}
             icon={affiliateProfile ? Gift : Sparkles}
             tone={affiliateProfile ? 'success' : 'default'}
           />
@@ -398,6 +398,16 @@ function getAffiliateStatusView(affiliateProfile: AffiliateProfileResource | nul
     badgeTone: 'danger' as const,
     shortLabel: affiliateProfile.status,
   };
+}
+
+function formatAffiliateMeta(affiliateProfile: AffiliateProfileResource) {
+  const commissionPercent = affiliateProfile.affiliateCommissionPercent;
+
+  if (commissionPercent) {
+    return `${commissionPercent}%`;
+  }
+
+  return getAffiliateDisplayCode(affiliateProfile) ?? 'Ativo';
 }
 
 function mapPaymentTone(status: string) {

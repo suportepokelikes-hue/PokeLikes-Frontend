@@ -1,11 +1,12 @@
 openapi: 3.1.0
 info:
-  title: Likes Uai Platform Backend API
-  version: 1.0.0-draft
-  summary: Draft contract for Likes Uai Platform Backend V1
+  title: InstaBarato Platform Backend API
+  version: 1.0.0-current
+  summary: Current contract for the implemented V1 backend
   description: |
-    Draft OpenAPI contract for the public and admin APIs of Likes Uai Platform Backend V1.
-    This file is intentionally incomplete and must evolve with implementation.
+    OpenAPI contract for the public and admin APIs currently exposed by the backend.
+    It should evolve together with the implemented code and explicitly document
+    current limitations, transitional behavior, and admin/runtime contracts in use.
 servers:
   - url: http://localhost:3001/v1
     description: Local development
@@ -15,6 +16,7 @@ tags:
   - name: Wallet
   - name: Payments
   - name: Referrals
+  - name: Affiliates
   - name: Catalog
   - name: Supplier
   - name: Orders
@@ -192,6 +194,10 @@ paths:
     get:
       tags: [Users]
       summary: Current user profile
+      description: |
+        Returns the authenticated user's own profile.
+        The response is stable for the frontend profile area and includes the same
+        identity flags exposed by the auth session summary.
       security:
         - bearerAuth: []
       responses:
@@ -204,6 +210,25 @@ paths:
     patch:
       tags: [Users]
       summary: Update current user profile
+      description: |
+        V1 self-service profile update for the authenticated user.
+
+        Editable fields in V1:
+        - `name`
+        - `phone`
+        - `taxId`
+
+        Not editable in V1:
+        - `email`
+        - `role`
+        - `status`
+        - password and any other sensitive account fields
+
+        Unsupported or sensitive keys are rejected explicitly with `VALIDATION_ERROR`.
+
+        `email` is intentionally not supported here because the current backend
+        already has email verification and session flows tied to the persisted address,
+        and there is no safe end-to-end email-change flow formalized yet.
       security:
         - bearerAuth: []
       requestBody:
@@ -211,7 +236,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCurrentUserRequest'
+              $ref: '#/components/schemas/UpdateMyProfileRequest'
       responses:
         '200':
           description: Updated user profile
@@ -219,6 +244,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserSummary'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /me/wallet:
     get:
       tags: [Wallet]
@@ -315,7 +344,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentResource'
+                $ref: '#/components/schemas/PaymentDetailResource'
+    post:
+      tags: [Payments]
+      summary: Reconcile current payment now
+      description: |
+        Customer-triggered provider refresh for one local payment.
+        Intended for the "ja paguei, verificar agora" UX while the payment is still pending.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Updated payment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDetailResource'
   /me/referral:
     get:
       tags: [Referrals]
@@ -333,15 +379,36 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
-  /me/affiliate:
-    get:
+  /me/affiliate/apply:
+    post:
       tags: [Affiliates]
-      summary: Current affiliate profile
+      summary: Apply for affiliate profile
+      description: |
+        Creates the authenticated user's `AffiliateProfile` when it does not exist.
+        If the user already has a profile, the current profile is returned unchanged.
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Affiliate profile or null for users without a profile
+          description: Affiliate profile created or returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateProfileResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /me/affiliate:
+    get:
+      tags: [Affiliates]
+      summary: Current user's affiliate profile
+      description: |
+        Returns the authenticated user's `AffiliateProfile`.
+        When the user has not applied yet, the response is `null`.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Affiliate profile or null
           content:
             application/json:
               schema:
@@ -350,25 +417,10 @@ paths:
                   - type: 'null'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /me/affiliate/apply:
-    post:
-      tags: [Affiliates]
-      summary: Apply to the affiliate program
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Affiliate profile created or updated after applying
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AffiliateProfileResource'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
   /me/affiliate/summary:
     get:
       tags: [Affiliates]
-      summary: Current affiliate summary
+      summary: Current affiliate dashboard summary
       security:
         - bearerAuth: []
       responses:
@@ -377,7 +429,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AffiliateSummaryResponse'
+                $ref: '#/components/schemas/AffiliateSummaryResource'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
   /me/affiliate/commissions:
@@ -389,21 +441,64 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Search'
         - $ref: '#/components/parameters/SortOrder'
         - name: status
           in: query
           schema:
             type: string
+            enum: [pending, approved, rejected, paid]
       responses:
         '200':
-          description: Paginated affiliate commission list
+          description: Paginated affiliate commission list for the authenticated user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedAffiliateCommissionsResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /me/affiliate/pix-key:
+    get:
+      tags: [Affiliates]
+      summary: Current affiliate PIX receiving key
+      description: Returns the authenticated affiliate's PIX receiving key, or `null` when absent.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Affiliate PIX key or null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AffiliatePixKeyResource'
+                  - type: 'null'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    patch:
+      tags: [Affiliates]
+      summary: Update current affiliate PIX receiving key
+      description: Stores PIX receiving data for future admin-supervised affiliate payouts.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAffiliatePixKeyRequest'
+      responses:
+        '200':
+          description: Updated affiliate PIX key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliatePixKeyResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /webhooks/payments/{provider}:
     post:
       tags: [Payments]
@@ -438,6 +533,10 @@ paths:
     post:
       tags: [Orders]
       summary: Create order
+      description: |
+        Creates an order for the authenticated user using wallet balance.
+        `affiliateCode` is optional. If the informed code is invalid, checkout continues without
+        affiliate attribution and the order is not blocked.
       security:
         - bearerAuth: []
       requestBody:
@@ -455,8 +554,8 @@ paths:
                 $ref: '#/components/schemas/OrderResource'
         '400':
           $ref: '#/components/responses/ValidationError'
-        '402':
-          $ref: '#/components/responses/InsufficientWalletBalanceError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
     get:
       tags: [Orders]
       summary: Current user orders
@@ -583,132 +682,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserSummary'
-  /admin/affiliates:
-    get:
-      tags: [Affiliates]
-      summary: Admin affiliate profile list
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Search'
-        - $ref: '#/components/parameters/SortOrder'
-        - name: status
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Paginated affiliate profile list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedAffiliateProfilesResponse'
-  /admin/affiliates/{affiliateProfileId}/approve:
-    post:
-      tags: [Affiliates]
-      summary: Admin approve affiliate profile
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/AffiliateProfileId'
-      responses:
-        '200':
-          description: Affiliate profile approved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AffiliateProfileResource'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-  /admin/affiliates/{affiliateProfileId}/suspend:
-    post:
-      tags: [Affiliates]
-      summary: Admin suspend affiliate profile
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/AffiliateProfileId'
-      responses:
-        '200':
-          description: Affiliate profile suspended
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AffiliateProfileResource'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-  /admin/affiliate-commissions:
-    get:
-      tags: [Affiliates]
-      summary: Admin affiliate commissions list
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Search'
-        - $ref: '#/components/parameters/SortOrder'
-        - name: status
-          in: query
-          schema:
-            type: string
-        - name: affiliateProfileId
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Paginated affiliate commissions list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedAffiliateCommissionsResponse'
-  /admin/affiliate-payouts:
-    get:
-      tags: [Affiliates]
-      summary: Admin affiliate payouts list
-      security:
-        - bearerAuth: []
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Search'
-        - $ref: '#/components/parameters/SortOrder'
-        - name: status
-          in: query
-          schema:
-            type: string
-        - name: affiliateProfileId
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Paginated affiliate payouts list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedAffiliatePayoutsResponse'
-    post:
-      tags: [Affiliates]
-      summary: Admin create affiliate payout
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreateAffiliatePayoutRequest'
-      responses:
-        '201':
-          description: Affiliate payout created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AffiliatePayoutResource'
   /admin/catalog/services:
     get:
       tags: [Catalog]
@@ -742,7 +715,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedCatalogServicesResponse'
+                $ref: '#/components/schemas/PaginatedAdminCatalogServicesResponse'
     post:
       tags: [Catalog]
       summary: Admin create catalog service
@@ -760,7 +733,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogServiceResource'
+                $ref: '#/components/schemas/AdminCatalogServiceResource'
   /admin/catalog/services/{serviceId}:
     patch:
       tags: [Catalog]
@@ -781,33 +754,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogServiceResource'
+                $ref: '#/components/schemas/AdminCatalogServiceResource'
   /admin/catalog/affiliate-settings:
     get:
       tags: [Catalog]
       summary: Admin catalog affiliate settings list
+      description: |
+        Admin-only list of catalog services focused on affiliate eligibility configuration.
+        `affiliateCommissionPercent` uses human-readable percentage semantics such as
+        `30.00 = 30%` and `12.50 = 12.5%`.
       security:
         - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Search'
-        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive]
+        - name: isAffiliateEnabled
+          in: query
+          schema:
+            type: boolean
       responses:
         '200':
-          description: Paginated catalog affiliate settings list
+          description: Paginated admin catalog list with affiliate settings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedAdminCatalogAffiliateSettingsResponse'
-  /admin/catalog/{serviceId}/affiliate-settings:
+                $ref: '#/components/schemas/PaginatedAdminCatalogServicesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/catalog/{catalogServiceId}/affiliate-settings:
     patch:
       tags: [Catalog]
       summary: Admin update catalog affiliate settings
+      description: |
+        Updates affiliate eligibility for a catalog service.
+        When `isAffiliateEnabled` is `true`, `affiliateCommissionPercent` is required and must
+        be a positive percentage with up to 2 decimal places.
+        When `isAffiliateEnabled` is `false`, the backend clears the stored percentage to `null`.
       security:
         - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/ServiceId'
+        - $ref: '#/components/parameters/CatalogServiceId'
       requestBody:
         required: true
         content:
@@ -816,11 +810,306 @@ paths:
               $ref: '#/components/schemas/AdminCatalogAffiliateSettingsUpdateRequest'
       responses:
         '200':
-          description: Catalog affiliate settings updated
+          description: Updated admin catalog resource with affiliate settings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminCatalogAffiliateSettingsResource'
+                $ref: '#/components/schemas/AdminCatalogServiceResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/affiliates:
+    get:
+      tags: [Affiliates]
+      summary: Admin affiliate profile list
+      description: |
+        Admin-only moderation list for `AffiliateProfile`.
+        Affiliate is not a separate user role; it is a normal `User` with affiliate profile state.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, active, suspended]
+      responses:
+        '200':
+          description: Paginated admin affiliate profile list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAffiliateProfilesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/affiliates/{affiliateProfileId}/approve:
+    post:
+      tags: [Affiliates]
+      summary: Admin approve affiliate profile
+      description: |
+        Approves a pending affiliate profile.
+        If the profile is already active, the current profile is returned.
+        Suspended profiles cannot be approved directly and return conflict.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AffiliateProfileId'
+      responses:
+        '200':
+          description: Affiliate profile after approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateProfileResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/affiliates/{affiliateProfileId}/suspend:
+    post:
+      tags: [Affiliates]
+      summary: Admin suspend affiliate profile
+      description: |
+        Suspends an affiliate profile.
+        If the profile is already suspended, the current profile is returned unchanged.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AffiliateProfileId'
+      responses:
+        '200':
+          description: Affiliate profile after suspension
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AffiliateProfileResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/affiliate-commissions:
+    get:
+      tags: [Affiliates]
+      summary: Admin affiliate commission list
+      description: |
+        Operational list of affiliate commissions.
+        `userId` filters by the affiliate user, not the customer who placed the order.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, paid]
+        - name: affiliateProfileId
+          in: query
+          schema:
+            type: integer
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Paginated affiliate commission list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminAffiliateCommissionsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/affiliate-payouts:
+    get:
+      tags: [Affiliates]
+      summary: Admin affiliate payout list
+      description: |
+        Operational list of affiliate payouts.
+        `userId` filters by the affiliate user, not the admin who processed the payout.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [requested, processing, paid, failed, cancelled]
+        - name: affiliateProfileId
+          in: query
+          schema:
+            type: integer
+        - name: userId
+          in: query
+          schema:
+            type: integer
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Paginated affiliate payout list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAffiliatePayoutsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+    post:
+      tags: [Affiliates]
+      summary: Admin create affiliate payout
+      description: |
+        Admin-supervised PIX payout creates an `AffiliatePayout` in `requested` state,
+        snapshots the affiliate PIX key, and stores the selected `approved` commissions.
+        No transfer is executed at creation time. The provider transfer is dispatched when
+        the admin advances the payout to `processing`.
+        Commissions are marked `paid` only when the provider returns success or the admin
+        later marks an already-dispatched payout as `paid`.
+        Failed or cancelled payouts keep the historical selection but release the
+        commissions for a future payout attempt.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateAffiliatePayoutRequest'
+      responses:
+        '201':
+          description: Created affiliate payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/affiliate-payouts/{payoutId}/status:
+    post:
+      tags: [Affiliates]
+      summary: Admin update affiliate payout status
+      description: |
+        Advances a PIX affiliate payout state under admin supervision.
+        `processing` dispatches a real PIX transfer through the configured payout provider.
+        If the provider returns immediate success, the payout becomes `paid`; if the
+        provider returns a pending status, the payout remains `processing`.
+        `paid` marks linked commissions as paid; `failed` and `cancelled` return
+        commissions to `approved` for retry while preserving the payout selection history.
+        This flow never credits the internal wallet.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: payoutId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateAffiliatePayoutStatusRequest'
+      responses:
+        '200':
+          description: Updated affiliate payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/affiliate-payouts/{payoutId}/refresh:
+    post:
+      tags: [Affiliates]
+      summary: Admin refresh affiliate payout provider status
+      description: |
+        Refreshes a `processing` payout from the configured PIX payout provider using the
+        stored provider transaction id. This is the focused manual reconciliation path for
+        asynchronous provider processing.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: payoutId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Refreshed affiliate payout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedAffiliatePayoutResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
   /admin/orders:
     get:
       tags: [Orders]
@@ -1373,12 +1662,6 @@ components:
       required: true
       schema:
         type: string
-    AffiliateProfileId:
-      name: affiliateProfileId
-      in: path
-      required: true
-      schema:
-        type: string
     PaymentId:
       name: paymentId
       in: path
@@ -1391,12 +1674,26 @@ components:
       required: true
       schema:
         type: string
+    CatalogServiceId:
+      name: catalogServiceId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
     OrderId:
       name: orderId
       in: path
       required: true
       schema:
         type: string
+    AffiliateProfileId:
+      name: affiliateProfileId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
     AlertId:
       name: alertId
       in: path
@@ -1416,8 +1713,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     NotFoundError:
       description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ConflictError:
+      description: Conflict
       content:
         application/json:
           schema:
@@ -1457,6 +1766,9 @@ components:
           format: password
         phone:
           type: string
+        taxId:
+          type: string
+          description: Optional CPF or CNPJ. Accepts formatted or digits-only input.
         referralCode:
           type: string
       required: [name, email, password, phone]
@@ -1508,25 +1820,6 @@ components:
         user:
           $ref: '#/components/schemas/UserSummary'
       required: [accessToken, refreshToken, user]
-    UpdateCurrentUserRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        phone:
-          type: string
-        taxId:
-          type: string
-      additionalProperties: false
-    FiscalProfileResource:
-      type: object
-      properties:
-        taxId:
-          type: string
-        taxIdType:
-          type: string
-          enum: [cpf, cnpj]
-      required: [taxId, taxIdType]
     UserSummary:
       type: object
       properties:
@@ -1542,19 +1835,53 @@ components:
           format: email
         phone:
           type: string
-        taxId:
-          type: string
-        fiscalProfile:
-          oneOf:
-            - $ref: '#/components/schemas/FiscalProfileResource'
-            - type: 'null'
+          nullable: true
         status:
           type: string
+          enum: [active, disabled]
         referralCode:
           type: string
         emailVerified:
           type: boolean
-      required: [id, role, name, email, status]
+        fiscalProfile:
+          oneOf:
+            - $ref: '#/components/schemas/FiscalProfileResource'
+            - type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, role, name, email, phone, status, referralCode, emailVerified, fiscalProfile, createdAt, updatedAt]
+    FiscalProfileResource:
+      type: object
+      properties:
+        taxId:
+          type: string
+        taxIdType:
+          type: string
+          enum: [cpf, cnpj]
+      required: [taxId, taxIdType]
+    UpdateMyProfileRequest:
+      type: object
+      additionalProperties: false
+      description: |
+        V1 self-service profile payload for `PATCH /v1/me`.
+        At least one editable field must be provided.
+        `email` is intentionally absent because the route rejects email changes in V1.
+        Additional or sensitive properties are rejected explicitly.
+      properties:
+        name:
+          type: string
+          description: New display name for the authenticated user.
+        phone:
+          type: string
+          description: New phone number for the authenticated user.
+        taxId:
+          type: string
+          description: CPF or CNPJ used to identify the user in the payment gateway.
+      minProperties: 1
     AdminCreateUserRequest:
       type: object
       properties:
@@ -1567,6 +1894,8 @@ components:
           type: string
           format: password
         phone:
+          type: string
+        taxId:
           type: string
         role:
           type: string
@@ -1586,6 +1915,10 @@ components:
         phone:
           type: string
           nullable: true
+        taxId:
+          oneOf:
+            - type: string
+            - type: 'null'
         role:
           type: string
           enum: [customer, admin]
@@ -1661,28 +1994,40 @@ components:
         summary:
           $ref: '#/components/schemas/ReferralProgramSummary'
       required: [referralCode, referralLink, emailVerified, rewardRules, rewardStatus, ownReferralReward, summary]
-    UserReference:
+    AffiliatePixKeyResource:
       type: object
       properties:
-        id:
+        pixKeyType:
           type: string
-        name:
+          enum: [cpf, cnpj, email, phone, random]
+        pixKey:
           type: string
-        email:
+        updatedAt:
           type: string
-          format: email
-      required: [id, name, email]
+          format: date-time
+      required: [pixKeyType, pixKey, updatedAt]
+    UpdateAffiliatePixKeyRequest:
+      type: object
+      properties:
+        pixKeyType:
+          type: string
+          enum: [cpf, cnpj, email, phone, random]
+        pixKey:
+          type: string
+      required: [pixKeyType, pixKey]
     AffiliateProfileResource:
       type: object
       properties:
         id:
           type: string
-        affiliateCode:
-          type: string
         status:
           type: string
-        affiliateCommissionPercent:
+          enum: [pending, active, suspended]
+        publicCode:
           type: string
+        affiliateCode:
+          type: string
+          description: Alias of `publicCode` kept for frontend compatibility.
         approvedAt:
           type: string
           format: date-time
@@ -1697,12 +2042,37 @@ components:
         updatedAt:
           type: string
           format: date-time
-        user:
-          allOf:
-            - $ref: '#/components/schemas/UserReference'
-          nullable: true
-      required: [id, affiliateCode, status, affiliateCommissionPercent, approvedAt, suspendedAt, createdAt, updatedAt]
-    AffiliateSummaryResponse:
+      required: [id, status, publicCode, affiliateCode, approvedAt, suspendedAt, createdAt, updatedAt]
+    AdminAffiliateProfileResource:
+      allOf:
+        - $ref: '#/components/schemas/AffiliateProfileResource'
+        - type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/UserReference'
+          required: [user]
+    AffiliateSummaryTotalsResource:
+      type: object
+      properties:
+        commissionsPendingCount:
+          type: integer
+        commissionsApprovedCount:
+          type: integer
+        commissionsRejectedCount:
+          type: integer
+        commissionsPaidCount:
+          type: integer
+        commissionsPendingAmount:
+          type: string
+        commissionsApprovedAmount:
+          type: string
+        commissionsPaidAmount:
+          type: string
+        totalRevenueAttributed:
+          type: string
+      required:
+        [commissionsPendingCount, commissionsApprovedCount, commissionsRejectedCount, commissionsPaidCount, commissionsPendingAmount, commissionsApprovedAmount, commissionsPaidAmount, totalRevenueAttributed]
+    AffiliateSummaryResource:
       type: object
       properties:
         affiliateProfile:
@@ -1710,101 +2080,227 @@ components:
             - $ref: '#/components/schemas/AffiliateProfileResource'
             - type: 'null'
         totals:
-          type: object
-          additionalProperties: true
+          $ref: '#/components/schemas/AffiliateSummaryTotalsResource'
       required: [affiliateProfile, totals]
     AffiliateCommissionResource:
       type: object
+      description: |
+        Affiliate commissions are created as `pending`.
+        The commission amount uses the customer sale amount as base.
+        The current implementation approves on order `completed`, rejects on order
+        `failed` or `canceled`, and keeps `partial` as `pending`.
       properties:
         id:
-          type: string
-        status:
-          type: string
-        affiliateCommissionPercent:
-          type: string
-        commissionAmount:
-          $ref: '#/components/schemas/Money'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        affiliateProfileId:
           type: string
         orderId:
           type: string
-          nullable: true
-        payoutId:
+        catalogServiceId:
           type: string
+        publicPriceSnapshot:
+          type: string
+        supplierCostSnapshot:
+          type: string
+        grossMarginSnapshot:
+          type: string
+          description: Analytical snapshot only. It is not the commission base.
+        commissionPercentSnapshot:
+          type: string
+          description: Human-readable percentage snapshot. `30.00` means `30%`.
+        commissionAmount:
+          type: string
+          description: `publicPriceSnapshot * commissionPercentSnapshot / 100`, rounded to 5 decimal places.
+        status:
+          type: string
+          enum: [pending, approved, rejected, paid]
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectedAt:
+          type: string
+          format: date-time
           nullable: true
         paidAt:
           type: string
           format: date-time
           nullable: true
-      required: [id, status, affiliateCommissionPercent, commissionAmount, createdAt, updatedAt]
-    AffiliatePayoutResource:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: string
-        amount:
-          $ref: '#/components/schemas/Money'
         createdAt:
           type: string
           format: date-time
-        updatedAt:
+      required:
+        [id, orderId, catalogServiceId, publicPriceSnapshot, supplierCostSnapshot, grossMarginSnapshot, commissionPercentSnapshot, commissionAmount, status, approvedAt, rejectedAt, paidAt, createdAt]
+    AdminAffiliateCommissionResource:
+      allOf:
+        - $ref: '#/components/schemas/AffiliateCommissionResource'
+        - type: object
+          properties:
+            affiliateProfileId:
+              type: string
+            affiliate:
+              type: object
+              properties:
+                userId:
+                  type: string
+                publicCode:
+                  type: string
+                affiliateCode:
+                  type: string
+                  description: Alias of `publicCode` kept for frontend compatibility.
+              required: [userId, publicCode, affiliateCode]
+          required: [affiliateProfileId, affiliate]
+    AffiliatePayoutResource:
+      type: object
+      description: Admin-supervised PIX payout record for affiliate commissions.
+      properties:
+        id:
+          type: string
+        affiliateProfileId:
+          type: string
+        amount:
+          type: string
+        status:
+          type: string
+          enum: [requested, processing, paid, failed, cancelled]
+        processedByUserId:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        statusReason:
+          type: string
+          nullable: true
+        provider:
+          type: string
+          nullable: true
+          description: PIX payout provider used for the external transfer.
+        externalReference:
+          type: string
+          nullable: true
+          description: Stable local idempotency reference sent to the provider.
+        providerTransactionId:
+          type: string
+          nullable: true
+          description: External transfer id returned by the provider.
+        providerStatus:
+          type: string
+          nullable: true
+          description: Last known raw provider status.
+        providerErrorCode:
+          type: string
+          nullable: true
+        providerErrorMessage:
+          type: string
+          nullable: true
+        providerSyncedAt:
           type: string
           format: date-time
+          nullable: true
+        commissionCount:
+          type: integer
+          minimum: 0
+        pixKey:
+          type: object
+          nullable: true
+          properties:
+            type:
+              type: string
+              enum: [cpf, cnpj, email, phone, random]
+            key:
+              type: string
+          required: [type, key]
+        requestedAt:
+          type: string
+          format: date-time
+        processingAt:
+          type: string
+          format: date-time
+          nullable: true
         paidAt:
           type: string
           format: date-time
           nullable: true
-        affiliateProfileId:
+        failedAt:
           type: string
+          format: date-time
           nullable: true
-        note:
+        cancelledAt:
           type: string
+          format: date-time
           nullable: true
-      required: [id, status, amount, createdAt, updatedAt, paidAt]
+        createdAt:
+          type: string
+          format: date-time
+        processedAt:
+          type: string
+          format: date-time
+          nullable: true
+        affiliate:
+          type: object
+          properties:
+            userId:
+              type: string
+            publicCode:
+              type: string
+            affiliateCode:
+              type: string
+              description: Alias of `publicCode` kept for frontend compatibility.
+          required: [userId, publicCode, affiliateCode]
+      required:
+        [id, affiliateProfileId, amount, status, processedByUserId, notes, statusReason, provider, externalReference, providerTransactionId, providerStatus, providerErrorCode, providerErrorMessage, providerSyncedAt, commissionCount, pixKey, requestedAt, processingAt, paidAt, failedAt, cancelledAt, createdAt, processedAt, affiliate]
+    CreatedAffiliatePayoutResource:
+      allOf:
+        - $ref: '#/components/schemas/AffiliatePayoutResource'
+        - type: object
+          properties:
+            commissionIds:
+              type: array
+              items:
+                type: string
+            commissionCount:
+              type: integer
+          required: [commissionIds, commissionCount]
     AdminCreateAffiliatePayoutRequest:
       type: object
       properties:
         affiliateProfileId:
+          type: integer
+          minimum: 1
+        commissionIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: integer
+            minimum: 1
+        notes:
           type: string
-        amount:
-          type: string
-        note:
-          type: string
-      required: [affiliateProfileId, amount]
-    AdminCatalogAffiliateSettingsResource:
+          nullable: true
+      required: [affiliateProfileId, commissionIds]
+    AdminUpdateAffiliatePayoutStatusRequest:
       type: object
       properties:
-        catalogServiceId:
+        status:
           type: string
-        affiliateEnabled:
-          type: boolean
-        affiliateCommissionPercent:
+          enum: [processing, paid, failed, cancelled]
+        notes:
           type: string
           nullable: true
-        updatedAt:
+        statusReason:
           type: string
-          format: date-time
-        catalogService:
-          allOf:
-            - $ref: '#/components/schemas/CatalogServiceReference'
           nullable: true
-      required: [catalogServiceId, affiliateEnabled, affiliateCommissionPercent, updatedAt]
-    AdminCatalogAffiliateSettingsUpdateRequest:
+      required: [status]
+    UserReference:
       type: object
       properties:
-        affiliateEnabled:
-          type: boolean
-        affiliateCommissionPercent:
+        id:
           type: string
-          nullable: true
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+      required: [id, name, email]
     WalletSummary:
       type: object
       properties:
@@ -1930,6 +2426,16 @@ components:
           format: date-time
       required:
         [id, provider, amount, status, brCode, brCodeBase64, expiresAt, confirmedAt, createdAt, updatedAt]
+    PaymentDetailResource:
+      allOf:
+        - $ref: '#/components/schemas/PaymentResource'
+        - type: object
+          properties:
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentEventResource'
+          required: [events]
     AdminPaymentResource:
       allOf:
         - $ref: '#/components/schemas/PaymentResource'
@@ -1986,25 +2492,50 @@ components:
         providerStatus:
           type: string
           enum: [unknown, healthy, degraded_low_balance, unavailable]
+        availabilityState:
+          type: string
+          enum: [available, attention, blocked]
         isPurchasable:
           type: boolean
+        requiresAttention:
+          type: boolean
+        isBlocked:
+          type: boolean
+        userFacingReasonCode:
+          type: string
+          enum:
+            [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
         reason:
           type: string
           enum:
             [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
-      required: [providerStatus, isPurchasable, reason]
+          description: Legacy alias of `userFacingReasonCode` kept for backward compatibility.
+      required:
+        [providerStatus, availabilityState, isPurchasable, requiresAttention, isBlocked, userFacingReasonCode, reason]
     ProviderStatusSummaryResource:
       type: object
       properties:
         providerStatus:
           type: string
           enum: [unknown, healthy, degraded_low_balance, unavailable]
+        availabilityState:
+          type: string
+          enum: [available, attention, blocked]
         isPurchasable:
           type: boolean
+        requiresAttention:
+          type: boolean
+        isBlocked:
+          type: boolean
+        userFacingReasonCode:
+          type: string
+          enum:
+            [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
         reason:
           type: string
           enum:
             [provider_status_unknown, provider_healthy, provider_low_balance, provider_unavailable]
+          description: Legacy alias of `userFacingReasonCode` kept for backward compatibility.
         lastCheckedAt:
           type: string
           format: date-time
@@ -2016,7 +2547,7 @@ components:
           type: string
           nullable: true
       required:
-        [providerStatus, isPurchasable, reason, lastCheckedAt, lastErrorCode, lastErrorMessage]
+        [providerStatus, availabilityState, isPurchasable, requiresAttention, isBlocked, userFacingReasonCode, reason, lastCheckedAt, lastErrorCode, lastErrorMessage]
     CatalogSupplierServiceReference:
       type: object
       properties:
@@ -2081,6 +2612,18 @@ components:
           $ref: '#/components/schemas/CatalogSupplierServiceReference'
       required:
         [id, name, description, publicPrice, status, sortOrder, socialNetwork, category, type, minQuantity, maxQuantity, availability, metadata, supplierService]
+    AdminCatalogServiceResource:
+      allOf:
+        - $ref: '#/components/schemas/CatalogServiceResource'
+        - type: object
+          properties:
+            isAffiliateEnabled:
+              type: boolean
+            affiliateCommissionPercent:
+              type: string
+              nullable: true
+              description: Human-readable percentage. `30.00` means `30%`.
+          required: [isAffiliateEnabled, affiliateCommissionPercent]
     AdminCatalogServiceUpsertRequest:
       type: object
       properties:
@@ -2145,30 +2688,53 @@ components:
           type: integer
         metadata:
           nullable: true
+    AdminCatalogAffiliateSettingsUpdateRequest:
+      type: object
+      properties:
+        isAffiliateEnabled:
+          type: boolean
+        affiliateEnabled:
+          type: boolean
+          description: Alias of `isAffiliateEnabled` accepted for frontend compatibility.
+        affiliateCommissionPercent:
+          oneOf:
+            - type: string
+            - type: 'null'
+          description: |
+            Human-readable percentage with up to 2 decimal places.
+            Required when `isAffiliateEnabled=true`.
+      required: [isAffiliateEnabled]
     CreateOrderRequest:
       type: object
       properties:
         catalogServiceId:
           type: integer
+          minimum: 1
         link:
           type: string
         quantity:
           type: integer
-        affiliateCode:
-          type: string
+          minimum: 1
+          description: Required for quantity-based services. Not used for `Package`.
         runs:
           type: integer
+          minimum: 1
         interval:
           type: integer
+          minimum: 1
         comments:
           type: array
           items:
             type: string
+          description: Used for `Custom Comments` services. Quantity is derived from the number of comments.
         answerNumber:
           oneOf:
             - type: string
             - type: integer
-      required: [catalogServiceId, link, quantity]
+        affiliateCode:
+          type: string
+          description: Optional affiliate public code. Invalid codes do not block checkout.
+      required: [catalogServiceId, link]
     CatalogServiceReference:
       type: object
       properties:
@@ -2775,29 +3341,13 @@ components:
         totalPages:
           type: integer
       required: [items, page, pageSize, totalItems, totalPages]
-    PaginatedPaymentsResponse:
+    PaginatedAdminCatalogServicesResponse:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/PaymentResource'
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        totalItems:
-          type: integer
-        totalPages:
-          type: integer
-      required: [items, page, pageSize, totalItems, totalPages]
-    PaginatedAdminPaymentsResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/AdminPaymentResource'
+            $ref: '#/components/schemas/AdminCatalogServiceResource'
         page:
           type: integer
         pageSize:
@@ -2813,7 +3363,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/AffiliateProfileResource'
+            $ref: '#/components/schemas/AdminAffiliateProfileResource'
         page:
           type: integer
         pageSize:
@@ -2839,6 +3389,22 @@ components:
         totalPages:
           type: integer
       required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminAffiliateCommissionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminAffiliateCommissionResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
     PaginatedAffiliatePayoutsResponse:
       type: object
       properties:
@@ -2855,13 +3421,29 @@ components:
         totalPages:
           type: integer
       required: [items, page, pageSize, totalItems, totalPages]
-    PaginatedAdminCatalogAffiliateSettingsResponse:
+    PaginatedPaymentsResponse:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/AdminCatalogAffiliateSettingsResource'
+            $ref: '#/components/schemas/PaymentResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminPaymentsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPaymentResource'
         page:
           type: integer
         pageSize:

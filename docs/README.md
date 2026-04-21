@@ -48,7 +48,7 @@ Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para 
 - troca de email do cliente ainda nao existe pela UI
 - limpeza explicita de telefone do cliente ainda nao existe pela UI
 - detalhe de usuario e detalhe de catalogo no admin nao sao paginas independentes; as rotas `[id]` redirecionam para drawers na listagem
-- payout admin de afiliados ainda segue o payload validado com `affiliateProfileId`, `amount` e `note`
+- payout admin de afiliados segue o contrato atual do backend com `affiliateProfileId`, `commissionIds` e `notes`; `requested -> processing` dispara PIX real via Asaas e `POST /admin/affiliate-payouts/{payoutId}/refresh` reconcilia o provider
 - a area admin de afiliados nao expoe acao de reativacao dedicada; hoje ha aprovar e suspender
 
 ## Onde olhar em seguida

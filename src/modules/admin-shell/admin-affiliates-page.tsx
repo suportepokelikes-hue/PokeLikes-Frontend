@@ -5,6 +5,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { listAdminAffiliates } from '@/lib/api/admin';
+import { getAffiliateDisplayCode } from '@/lib/api/affiliate-normalizers';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime } from '@/lib/format';
@@ -42,13 +43,6 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
             <AdminFilterBar
               pathname="/admin/affiliates"
               fields={[
-                {
-                  name: 'search',
-                  label: 'Busca',
-                  type: 'search',
-                  placeholder: 'ID, codigo ou usuario',
-                  defaultValue: filters.search,
-                },
                 {
                   name: 'status',
                   label: 'Status',
@@ -98,7 +92,7 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
           <AdminSectionCard
             eyebrow="Programa"
             title="Perfis monitorados"
-            description="Cada linha concentra codigo, percentual, usuario e proxima acao."
+            description="Cada linha concentra codigo publico, usuario e proxima acao."
             meta={<span className="panel-meta">{affiliates.totalItems} registros</span>}
           >
             <DataTable columns={['ID', 'Codigo publico', 'Usuario', 'Status', 'Aprovado em', 'Suspenso em', 'Criado em', 'Acao']}>
@@ -107,8 +101,8 @@ export async function AdminAffiliatesPage({ session, filters }: AdminAffiliatesP
                   <td>{profile.id}</td>
                   <td>
                     <div className="stack-list">
-                      <strong>{profile.affiliateCode}</strong>
-                      <span className="panel-meta">{profile.affiliateCommissionPercent}%</span>
+                      <strong>{getAffiliateDisplayCode(profile) || '-'}</strong>
+                      <span className="panel-meta">{profile.user?.name || '-'}</span>
                     </div>
                   </td>
                   <td>

@@ -13,6 +13,7 @@ exports.readSupplierSyncName = readSupplierSyncName;
 exports.parseCatalogCreatePayload = parseCatalogCreatePayload;
 exports.parseCatalogUpdatePayload = parseCatalogUpdatePayload;
 exports.parseAffiliatePayoutPayload = parseAffiliatePayoutPayload;
+exports.parseAffiliatePayoutStatusPayload = parseAffiliatePayoutStatusPayload;
 exports.parseCatalogAffiliateSettingsUpdatePayload = parseCatalogAffiliateSettingsUpdatePayload;
 exports.mapAdminActionError = mapAdminActionError;
 const http_1 = require("../../lib/api/http");
@@ -100,16 +101,14 @@ function parseCatalogUpdatePayload(formData) {
     return { value: base.value };
 }
 function parseAffiliatePayoutPayload(formData) {
-    const affiliateProfileId = readRequiredString(formData, 'affiliateProfileId');
-    const amount = readRequiredString(formData, 'amount');
-    const commissionReferences = readRequiredString(formData, 'commissionIds');
-    const note = readOptionalString(formData, 'note');
-    const commissionIds = splitCommissionIds(commissionReferences);
-    if (!affiliateProfileId || !amount) {
+    const affiliateProfileId = readPositiveInteger(readRequiredString(formData, 'affiliateProfileId'));
+    const commissionIds = splitCommissionIds(readRequiredString(formData, 'commissionIds'));
+    const notes = readOptionalString(formData, 'notes');
+    if (!affiliateProfileId) {
         return {
             error: {
                 status: 'error',
-                message: 'Perfil afiliado e valor sao obrigatorios para registrar o payout.',
+                message: 'Informe um ID numerico de perfil afiliado para registrar o payout.',
             },
         };
     }
@@ -117,18 +116,47 @@ function parseAffiliatePayoutPayload(formData) {
         return {
             error: {
                 status: 'error',
-                message: 'Informe ao menos um ID de comissao aprovada para rastreio operacional.',
+                message: 'Informe ao menos um ID numerico de comissao aprovada.',
             },
         };
     }
-    const composedNote = [`Comissoes consideradas: ${commissionIds.join(', ')}`, ...(note ? [`Observacao: ${note}`] : [])].join('\n');
     return {
         value: {
             affiliateProfileId,
-            amount,
-            note: composedNote,
+            commissionIds,
+            ...(notes ? { notes } : {}),
         },
         commissionIds,
+    };
+}
+function parseAffiliatePayoutStatusPayload(formData) {
+    const payoutId = readRequiredString(formData, 'payoutId');
+    const status = readAffiliatePayoutStatus(formData);
+    const notes = readOptionalString(formData, 'notes');
+    const statusReason = readOptionalString(formData, 'statusReason');
+    if (!payoutId) {
+        return {
+            error: {
+                status: 'error',
+                message: 'Informe um payout valido para atualizar.',
+            },
+        };
+    }
+    if (!status) {
+        return {
+            error: {
+                status: 'error',
+                message: 'Escolha um status valido para o payout.',
+            },
+        };
+    }
+    return {
+        payoutId,
+        value: {
+            status,
+            ...(notes ? { notes } : {}),
+            ...(statusReason ? { statusReason } : {}),
+        },
     };
 }
 function parseCatalogAffiliateSettingsUpdatePayload(formData) {
@@ -153,14 +181,14 @@ function parseCatalogAffiliateSettingsUpdatePayload(formData) {
         }
         return {
             value: {
-                affiliateEnabled: true,
+                isAffiliateEnabled: true,
                 affiliateCommissionPercent,
             },
         };
     }
     return {
         value: {
-            affiliateEnabled: false,
+            isAffiliateEnabled: false,
         },
     };
 }
@@ -262,15 +290,6 @@ function parseOptionalJson(value) {
         return { error: true };
     }
 }
-function splitCommissionIds(value) {
-    if (!value) {
-        return [];
-    }
-    return Array.from(new Set(value
-        .split(/[\n,;]+/)
-        .map((item) => item.trim())
-        .filter(Boolean)));
-}
 function normalizePercentInput(value) {
     if (!value) {
         return undefined;
@@ -284,4 +303,33 @@ function normalizePercentInput(value) {
         return undefined;
     }
     return normalized;
+}
+function readPositiveInteger(value) {
+    if (!value) {
+        return undefined;
+    }
+    if (!/^\d+$/.test(value.trim())) {
+        return undefined;
+    }
+    const parsed = Number(value.trim());
+    if (!Number.isSafeInteger(parsed) || parsed <= 0) {
+        return undefined;
+    }
+    return parsed;
+}
+function readAffiliatePayoutStatus(formData) {
+    const value = readRequiredString(formData, 'status');
+    if (value === 'processing' || value === 'paid' || value === 'failed' || value === 'cancelled') {
+        return value;
+    }
+    return undefined;
+}
+function splitCommissionIds(value) {
+    if (!value) {
+        return [];
+    }
+    return Array.from(new Set(value
+        .split(/[\n,;]+/)
+        .map((item) => readPositiveInteger(item.trim()))
+        .filter((item) => item !== undefined)));
 }

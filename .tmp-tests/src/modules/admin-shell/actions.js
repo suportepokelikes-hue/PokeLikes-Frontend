@@ -10,6 +10,8 @@ exports.createWalletAdjustmentAction = createWalletAdjustmentAction;
 exports.approveAffiliateAction = approveAffiliateAction;
 exports.suspendAffiliateAction = suspendAffiliateAction;
 exports.createAffiliatePayoutAction = createAffiliatePayoutAction;
+exports.updateAffiliatePayoutStatusAction = updateAffiliatePayoutStatusAction;
+exports.refreshAffiliatePayoutAction = refreshAffiliatePayoutAction;
 exports.resolveAlertAction = resolveAlertAction;
 exports.refreshSupplierProvidersAction = refreshSupplierProvidersAction;
 exports.syncSupplierServicesAction = syncSupplierServicesAction;
@@ -262,11 +264,54 @@ async function createAffiliatePayoutAction(_, formData) {
         (0, cache_1.revalidatePath)('/admin/affiliate-commissions');
         return {
             status: 'success',
-            message: `Payout ${result.id} registrado para ${payload.value.affiliateProfileId}.`,
+            message: `Payout ${result.id} registrado com ${payload.commissionIds.length} comissao(oes).`,
         };
     }
     catch (error) {
-        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel registrar o payout manual agora.');
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel registrar o payout agora.');
+    }
+}
+async function updateAffiliatePayoutStatusAction(_, formData) {
+    const session = await requireAuthenticatedAdmin(formData);
+    const payload = (0, action_helpers_1.parseAffiliatePayoutStatusPayload)(formData);
+    if ('error' in payload) {
+        return payload.error;
+    }
+    try {
+        const result = await (0, admin_1.updateAdminAffiliatePayoutStatus)(session.accessToken, payload.payoutId, payload.value);
+        (0, cache_1.revalidatePath)('/admin');
+        (0, cache_1.revalidatePath)('/admin/affiliate-payouts');
+        (0, cache_1.revalidatePath)('/admin/affiliate-commissions');
+        return {
+            status: 'success',
+            message: `Payout ${result.id} atualizado para ${result.status}.`,
+        };
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel atualizar o status do payout agora.');
+    }
+}
+async function refreshAffiliatePayoutAction(_, formData) {
+    const session = await requireAuthenticatedAdmin(formData);
+    const payoutId = (0, action_helpers_1.readRequiredString)(formData, 'payoutId');
+    if (!payoutId) {
+        return {
+            status: 'error',
+            message: 'Informe um payout valido para atualizar no provider.',
+        };
+    }
+    try {
+        const result = await (0, admin_1.refreshAdminAffiliatePayout)(session.accessToken, payoutId);
+        (0, cache_1.revalidatePath)('/admin');
+        (0, cache_1.revalidatePath)('/admin/affiliate-payouts');
+        (0, cache_1.revalidatePath)('/admin/affiliate-commissions');
+        return {
+            status: 'success',
+            message: `Payout ${result.id} sincronizado: ${result.providerStatus ?? result.status}.`,
+        };
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapAdminActionError)(error, 'Nao foi possivel sincronizar o payout no provider agora.');
     }
 }
 async function resolveAlertAction(_, formData) {

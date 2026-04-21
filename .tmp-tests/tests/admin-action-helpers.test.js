@@ -34,6 +34,32 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
         metadata: { speed: 'fast' },
     });
 });
+(0, node_test_1.default)('affiliate payout status parser targets the payout status mutation contract', () => {
+    const formData = new FormData();
+    formData.set('payoutId', 'payout-123');
+    formData.set('status', 'paid');
+    formData.set('statusReason', 'PIX manual confirmado');
+    formData.set('notes', 'Fechamento validado');
+    const parsed = (0, action_helpers_1.parseAffiliatePayoutStatusPayload)(formData);
+    strict_1.default.ok('value' in parsed);
+    strict_1.default.deepEqual(parsed, {
+        payoutId: 'payout-123',
+        value: {
+            status: 'paid',
+            notes: 'Fechamento validado',
+            statusReason: 'PIX manual confirmado',
+        },
+    });
+    const invalid = new FormData();
+    invalid.set('payoutId', 'payout-123');
+    invalid.set('status', 'requested');
+    strict_1.default.deepEqual((0, action_helpers_1.parseAffiliatePayoutStatusPayload)(invalid), {
+        error: {
+            status: 'error',
+            message: 'Escolha um status valido para o payout.',
+        },
+    });
+});
 (0, node_test_1.default)('catalog create parser rejects invalid ranges and malformed metadata', () => {
     const invalidRange = new FormData();
     invalidRange.set('name', 'Service');
@@ -87,7 +113,7 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     const enabledParsed = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(enabledForm);
     strict_1.default.ok('value' in enabledParsed);
     strict_1.default.deepEqual(enabledParsed.value, {
-        affiliateEnabled: true,
+        isAffiliateEnabled: true,
         affiliateCommissionPercent: '12.5',
     });
     const disabledForm = new FormData();
@@ -95,7 +121,7 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     const disabledParsed = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(disabledForm);
     strict_1.default.ok('value' in disabledParsed);
     strict_1.default.deepEqual(disabledParsed.value, {
-        affiliateEnabled: false,
+        isAffiliateEnabled: false,
     });
     const invalidEnabledForm = new FormData();
     invalidEnabledForm.set('affiliateEnabled', 'true');
@@ -129,27 +155,32 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
         message: 'fallback',
     });
 });
-(0, node_test_1.default)('affiliate payout parser keeps commission references only inside note for the current contract', () => {
+(0, node_test_1.default)('affiliate payout parser sends affiliateProfileId, commissionIds and notes according to the current contract', () => {
     const formData = new FormData();
-    formData.set('affiliateProfileId', 'aff-123');
-    formData.set('amount', '150.00');
-    formData.set('commissionIds', ' com-1,\ncom-2\ncom-1 ');
-    formData.set('note', 'Validado pelo financeiro');
+    formData.set('affiliateProfileId', '123');
+    formData.set('commissionIds', ' 1,\n2\n1 ');
+    formData.set('notes', 'Validado pelo financeiro');
     const parsed = (0, action_helpers_1.parseAffiliatePayoutPayload)(formData);
     strict_1.default.ok('value' in parsed);
-    strict_1.default.deepEqual(parsed.commissionIds, ['com-1', 'com-2']);
+    strict_1.default.deepEqual(parsed.commissionIds, [1, 2]);
     strict_1.default.deepEqual(parsed.value, {
-        affiliateProfileId: 'aff-123',
-        amount: '150.00',
-        note: 'Comissoes consideradas: com-1, com-2\nObservacao: Validado pelo financeiro',
+        affiliateProfileId: 123,
+        commissionIds: [1, 2],
+        notes: 'Validado pelo financeiro',
     });
     const missingIds = new FormData();
-    missingIds.set('affiliateProfileId', 'aff-123');
-    missingIds.set('amount', '150.00');
     strict_1.default.deepEqual((0, action_helpers_1.parseAffiliatePayoutPayload)(missingIds), {
         error: {
             status: 'error',
-            message: 'Informe ao menos um ID de comissao aprovada para rastreio operacional.',
+            message: 'Informe um ID numerico de perfil afiliado para registrar o payout.',
+        },
+    });
+    const missingCommissions = new FormData();
+    missingCommissions.set('affiliateProfileId', '123');
+    strict_1.default.deepEqual((0, action_helpers_1.parseAffiliatePayoutPayload)(missingCommissions), {
+        error: {
+            status: 'error',
+            message: 'Informe ao menos um ID numerico de comissao aprovada.',
         },
     });
 });

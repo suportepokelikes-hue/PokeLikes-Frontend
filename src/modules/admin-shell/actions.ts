@@ -11,12 +11,14 @@ import {
   createAdminUser,
   reconcileAdminPayment,
   reconcileAdminPayments,
+  refreshAdminAffiliatePayout,
   refreshSupplierProviders,
   resolveAdminAlert,
   suspendAdminAffiliate,
   syncAdminOrder,
   syncAdminOrders,
   syncSupplierServices,
+  updateAdminAffiliatePayoutStatus,
   updateAdminCatalogAffiliateSettings,
   updateAdminCatalogService,
   updateAdminUser,
@@ -30,6 +32,7 @@ import {
   type AdminActionState,
   mapAdminActionError,
   parseAffiliatePayoutPayload,
+  parseAffiliatePayoutStatusPayload,
   parseCatalogAffiliateSettingsUpdatePayload,
   parseCatalogCreatePayload,
   parseCatalogUpdatePayload,
@@ -326,10 +329,61 @@ export async function createAffiliatePayoutAction(_: AdminActionState, formData:
 
     return {
       status: 'success',
-      message: `Payout ${result.id} registrado para ${payload.value.affiliateProfileId}.`,
+      message: `Payout ${result.id} registrado com ${payload.commissionIds.length} comissao(oes).`,
     };
   } catch (error) {
-    return mapAdminActionError(error, 'Nao foi possivel registrar o payout manual agora.');
+    return mapAdminActionError(error, 'Nao foi possivel registrar o payout agora.');
+  }
+}
+
+export async function updateAffiliatePayoutStatusAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const payload = parseAffiliatePayoutStatusPayload(formData);
+
+  if ('error' in payload) {
+    return payload.error;
+  }
+
+  try {
+    const result = await updateAdminAffiliatePayoutStatus(session.accessToken, payload.payoutId, payload.value);
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/affiliate-payouts');
+    revalidatePath('/admin/affiliate-commissions');
+
+    return {
+      status: 'success',
+      message: `Payout ${result.id} atualizado para ${result.status}.`,
+    };
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel atualizar o status do payout agora.');
+  }
+}
+
+export async function refreshAffiliatePayoutAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const payoutId = readRequiredString(formData, 'payoutId');
+
+  if (!payoutId) {
+    return {
+      status: 'error',
+      message: 'Informe um payout valido para atualizar no provider.',
+    };
+  }
+
+  try {
+    const result = await refreshAdminAffiliatePayout(session.accessToken, payoutId);
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/affiliate-payouts');
+    revalidatePath('/admin/affiliate-commissions');
+
+    return {
+      status: 'success',
+      message: `Payout ${result.id} sincronizado: ${result.providerStatus ?? result.status}.`,
+    };
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel sincronizar o payout no provider agora.');
   }
 }
 

@@ -8,11 +8,18 @@ import type {
   PaginatedResponse,
   PaymentResource,
   ReferralSummaryResponse,
+  UpdateAffiliatePixRequest,
   UpdateCurrentUserProfileRequest,
   UserSummary,
   WalletSummary,
   WalletTransactionResource,
 } from './contracts';
+import {
+  normalizeAffiliateCommissionsResponse,
+  normalizeAffiliatePixKey,
+  normalizeAffiliateProfile,
+  normalizeAffiliateSummary,
+} from './affiliate-normalizers';
 import { apiRequest } from './http';
 
 type AuthOptions = {
@@ -50,32 +57,48 @@ export function getCustomerReferralSummary({ accessToken }: AuthOptions) {
 }
 
 export function getCustomerAffiliateProfile({ accessToken }: AuthOptions) {
-  return apiRequest<AffiliateProfileResource | null>({
+  return apiRequest<unknown>({
     path: '/me/affiliate',
     accessToken,
-  });
+  }).then(normalizeAffiliateProfile);
+}
+
+export function getCustomerAffiliatePix({ accessToken }: AuthOptions) {
+  return apiRequest<unknown>({
+    path: '/me/affiliate/pix-key',
+    accessToken,
+  }).then(normalizeAffiliatePixKey);
 }
 
 export function applyToAffiliateProgram({ accessToken }: AuthOptions) {
-  return apiRequest<AffiliateProfileResource>({
+  return apiRequest<unknown>({
     path: '/me/affiliate/apply',
     method: 'POST',
     accessToken,
-  });
+  }).then((response) => normalizeAffiliateProfile(response) as AffiliateProfileResource);
+}
+
+export function updateCustomerAffiliatePix({ accessToken }: AuthOptions, payload: UpdateAffiliatePixRequest) {
+  return apiRequest<unknown>({
+    path: '/me/affiliate/pix-key',
+    method: 'PATCH',
+    accessToken,
+    body: payload,
+  }).then(normalizeAffiliatePixKey);
 }
 
 export function getCustomerAffiliateSummary({ accessToken }: AuthOptions) {
-  return apiRequest<AffiliateSummaryResponse>({
+  return apiRequest<unknown>({
     path: '/me/affiliate/summary',
     accessToken,
-  });
+  }).then(normalizeAffiliateSummary);
 }
 
 export function listCustomerAffiliateCommissions({ accessToken }: AuthOptions) {
-  return apiRequest<PaginatedResponse<AffiliateCommissionResource>>({
+  return apiRequest<unknown>({
     path: '/me/affiliate/commissions?page=1&pageSize=10&sortOrder=desc',
     accessToken,
-  });
+  }).then(normalizeAffiliateCommissionsResponse);
 }
 
 export function listCustomerPayments({ accessToken }: AuthOptions) {

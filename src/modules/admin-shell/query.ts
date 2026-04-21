@@ -54,7 +54,6 @@ export type AdminTransactionsListParams = AdminBaseListParams & {
 export type AdminAffiliateProfilesListParams = {
   page?: number;
   pageSize?: number;
-  search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: string;
 };
@@ -62,19 +61,23 @@ export type AdminAffiliateProfilesListParams = {
 export type AdminAffiliateCommissionsListParams = {
   page?: number;
   pageSize?: number;
-  search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: string;
   affiliateProfileId?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type AdminAffiliatePayoutsListParams = {
   page?: number;
   pageSize?: number;
-  search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: string;
   affiliateProfileId?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type AdminAlertsListParams = AdminBaseListParams & {
@@ -188,7 +191,6 @@ export function parseAdminAffiliatesParams(searchParams: Record<string, SearchPa
   return {
     page: readPositiveInt(searchParams.page),
     pageSize: readPositiveInt(searchParams.pageSize),
-    search: readString(searchParams.search),
     sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
     status: readString(searchParams.status),
   };
@@ -200,10 +202,12 @@ export function parseAdminAffiliateCommissionsParams(searchParams: Record<string
   return {
     page: readPositiveInt(searchParams.page),
     pageSize: readPositiveInt(searchParams.pageSize),
-    search: readString(searchParams.search),
     sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
     status: readString(searchParams.status),
     affiliateProfileId: readString(searchParams.affiliateProfileId),
+    userId: readString(searchParams.userId),
+    dateFrom: readString(searchParams.dateFrom),
+    dateTo: readString(searchParams.dateTo),
   };
 }
 
@@ -213,10 +217,12 @@ export function parseAdminAffiliatePayoutsParams(searchParams: Record<string, Se
   return {
     page: readPositiveInt(searchParams.page),
     pageSize: readPositiveInt(searchParams.pageSize),
-    search: readString(searchParams.search),
     sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
     status: readString(searchParams.status),
     affiliateProfileId: readString(searchParams.affiliateProfileId),
+    userId: readString(searchParams.userId),
+    dateFrom: readString(searchParams.dateFrom),
+    dateTo: readString(searchParams.dateTo),
   };
 }
 

@@ -2,6 +2,19 @@
 
 ## Latest Update
 
+- [x] `/admin/affiliate-payouts` ganhou acabamento operacional pos-webhook Asaas: status em `processing` diferencia aguardando retorno automatico, sync do provider mostra timestamp de `providerSyncedAt` e refresh manual ficou descrito como fallback
+- [x] admin payouts foi adaptado para payout PIX real via Asaas: `requested -> processing` usa a mutation de status e `processing` ganhou refresh manual por `POST /admin/affiliate-payouts/{payoutId}/refresh`
+- [x] contratos/tipos/normalizacao de payouts passaram a carregar auditoria do provider: `provider`, `externalReference`, `providerTransactionId`, `providerStatus`, `providerErrorCode`, `providerErrorMessage` e `providerSyncedAt`
+- [x] `/admin/affiliate-payouts` agora deixa explicito que a wallet interna nao participa, mostra chave PIX, timestamps de ciclo, motivo/status e erro operacional do provider sem redesenhar a tela
+- [x] frontend de afiliados foi reconciliado com o OpenAPI atual do backend: `/app/affiliate` passou a usar `GET/PATCH /me/affiliate/pix-key`
+- [x] admin payouts agora normaliza `pixKey`, `statusReason`, `requestedAt`, `processingAt`, `paidAt`, `failedAt` e `cancelledAt`
+- [x] `/admin/affiliate-payouts` passou a operar mudanca de status por `POST /admin/affiliate-payouts/{payoutId}/status`
+- [x] `/app/affiliate` ganhou leitura e edicao minima de chave PIX para payout de afiliado, com aviso claro quando a chave ainda esta pendente
+- [x] admin payouts passou a reforcar estados operacionais reais (`requested`, `processing`, `paid`, `failed`, `cancelled`)
+- [x] afiliados foram ajustados para a regra de comissao como percentual sobre o valor da venda, com copy explicita em `/app/affiliate`, admin commissions, admin payouts e configuracao de afiliacao no catalogo
+- [x] payout admin foi reconciliado com o `docs/api/openapi.yaml` atual: `affiliateProfileId`, `commissionIds` e `notes`
+- [x] fluxo atual de afiliados no cliente foi endurecido sem mudar regra de negocio: entradas operacionais agora apontam para `/app/affiliate`, anchors quebradas `#indicacoes` sairam da UX, catalogo/checkout exibem `affiliateCode` ativo com limpeza manual e `/app/affiliate` degrada parcialmente quando summary ou comissoes falham
+- [x] integracao de afiliados foi ajustada para o backend atual com fallback entre `affiliateCode` e `publicCode`, leitura defensiva de perfil/summary/comissoes/payouts e payload de payout admin baseado no contrato validado
 - [x] landing publica recebeu ajuste fino para ficar mais proxima dos prints de referencia, com hero mais comercial, navbar por ancoras, faixa de stats azul/roxo e fallback visual para o mascote ausente
 - [x] rodada ampla de simplificacao visual concluida em foundation, shells, auth, landing, dashboards e superficies principais
 - [x] headers, section cards e quick links deixaram de puxar descricao por padrao; a leitura agora prioriza titulo, dado e acao
@@ -145,7 +158,7 @@ Tasks:
 - [x] audits
 - [x] transactions
 - [x] affiliates com listagem, filtro basico e acoes de aprovar/suspender em `/admin/affiliates`
-- [x] affiliate commissions e affiliate payouts com registro manual minimo em `/admin/affiliate-commissions` e `/admin/affiliate-payouts`, mantendo as referencias de comissao no `note` porque este continua sendo o payload real do contrato local
+- [x] affiliate commissions e affiliate payouts com registro minimo em `/admin/affiliate-commissions` e `/admin/affiliate-payouts`, usando `commissionIds` como payload real do contrato local
 - [x] integrar a configuracao de afiliabilidade por servico dentro de `/admin/catalog`, com leitura complementar e drawer minimo para editar status e percentual humano sem criar um modulo separado
 - [x] adicionar mutacoes operacionais iniciais no admin para resolve de alertas e refresh/sync de fornecedores
 - [x] expandir mutacoes operacionais reais no admin para conciliacao e sync de pedidos/pagamentos
@@ -189,19 +202,23 @@ Tasks:
 Pronto na V1:
 
 - [x] `/app/affiliate` cobre entrada no programa, apply, status do perfil, summary e comissoes do usuario
+- [x] `/app/affiliate` agora mostra e permite atualizar chave PIX de payout do afiliado
 - [x] o shell do cliente expoe `Afiliados`, e o shell admin e a home admin apontam para os modulos administrativos de afiliados
 - [x] `?aff=` e capturado em `/catalog` e `/catalog/[serviceId]`, o codigo fica persistido localmente e `affiliateCode` segue para `POST /me/orders` quando existir
 - [x] a regra atual do `affiliateCode` ficou explicita: um novo `?aff=` valido substitui o codigo salvo; navegar sem `?aff=` nao limpa o valor na V1
+- [x] catalogo e checkout agora mostram explicitamente quando o `affiliateCode` esta ativo e permitem limpar o valor persistido sem mudar a atribuicao atual
+- [x] dashboard e perfil do cliente deixaram de apontar para `#indicacoes`; a entrada do usuario no programa ficou consolidada em `/app/affiliate`
+- [x] `/app/affiliate` agora preserva perfil/status quando summary ou comissoes falham isoladamente
 - [x] o fluxo novo de afiliados permanece separado do `?ref=`/`referralCode` ja existente no cadastro
 - [x] `/admin/affiliates`, `/admin/affiliate-commissions` e `/admin/affiliate-payouts` estao entregues contra `docs/contracts/backend-openapi.yaml`
-- [x] o payout manual segue o contrato validado atual, mantendo referencias de comissao apenas dentro de `note`
+- [x] o payout admin segue o contrato validado atual, com `commissionIds`, auditoria Asaas e refresh do provider
 - [x] `/admin/catalog` ja incorpora affiliate settings por leitura complementar e drawer lateral no mesmo modulo operacional
 
 Fora de escopo da V1:
 
-- politica de expiracao ou limpeza automatica do `affiliateCode` persistido
+- politica de expiracao automatica do `affiliateCode` persistido
 - ampliacao de E2E para toda a jornada publica/admin de afiliados
-- evolucao contratual para `commissionIds` dedicados no payload de payout
+- evolucao contratual para vinculo dedicado entre payout e comissoes
 
 ## Phase 7: Customer Visual Polish
 
@@ -319,6 +336,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar por fluxo manual ou E2E a jornada completa de payout admin via Asaas por `affiliateProfileId`, `commissionIds`, `notes`, `requested -> processing` e refresh do provider
 - validar a landing publica com o asset final `public/brand/landing-mascot.png` e fazer ajuste fino de proporcao, contraste e espacamento do hero
 - revisar tela a tela onde ainda vale remover copy residual em catalogo publico, detalhe de servico e modulos admin secundarios
 - consolidar os pontos restantes onde o layout ainda depende demais de `globals.css`
@@ -338,9 +356,10 @@ Na proxima sessao do Codex:
 - cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
 - cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
 - cobrir em E2E o bloqueio de PIX sem CPF/CNPJ e a retomada do fluxo depois do preenchimento do perfil
-- decidir se a V2 vai precisar de expiracao ou limpeza automatica do `affiliateCode` armazenado no navegador
+- decidir se a V2 vai precisar de expiracao automatica do `affiliateCode` armazenado no navegador
+- cobrir por teste de UI a limpeza manual do `affiliateCode` e a degradacao parcial de `/app/affiliate`
 - resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml`, especialmente na parte financeira de afiliados
-- so depois revisitar uma eventual formalizacao de `commissionIds` no payout, mantendo a separacao em relacao ao referral do usuario
+- so depois revisitar uma eventual formalizacao de vinculo entre payout e comissoes, mantendo a separacao em relacao ao referral do usuario
 - consolidar a massa de dados e as credenciais do ambiente E2E para execucao reproduzivel
 - revisar se a proxima iteracao da conta vai precisar de politica dedicada para troca de email ou remocao explicita de telefone
 

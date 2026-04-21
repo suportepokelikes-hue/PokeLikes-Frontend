@@ -18,6 +18,7 @@ import type {
   AdminPaymentsListParams,
   AdminTransactionsListParams,
   AdminUpdateUserRequest,
+  AdminUpdateAffiliatePayoutStatusRequest,
   AdminUsersListParams,
   AdminPaymentDetailResource,
   AdminPaymentsSummaryResponse,
@@ -44,6 +45,13 @@ import type {
   SupplierSyncLogsListParams,
   UserSummary,
 } from './contracts';
+import {
+  normalizeAffiliateCommissionsResponse,
+  normalizeAffiliatePayout,
+  normalizeAffiliatePayoutsResponse,
+  normalizeAffiliateProfile,
+  normalizeAffiliateProfilesResponse,
+} from './affiliate-normalizers';
 import { apiRequest } from './http';
 
 export function getAdminDashboardSummary(accessToken: string) {
@@ -86,26 +94,26 @@ export function updateAdminUser(accessToken: string, userId: string, body: Admin
 }
 
 export function listAdminAffiliates(accessToken: string, params: AdminAffiliateProfileListParams = {}) {
-  return apiRequest<PaginatedResponse<AffiliateProfileResource>>({
+  return apiRequest<unknown>({
     path: buildAdminPath('/admin/affiliates', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
-  });
+  }).then(normalizeAffiliateProfilesResponse);
 }
 
 export function approveAdminAffiliate(accessToken: string, affiliateProfileId: string) {
-  return apiRequest<AffiliateProfileResource>({
+  return apiRequest<unknown>({
     path: `/admin/affiliates/${affiliateProfileId}/approve`,
     method: 'POST',
     accessToken,
-  });
+  }).then((response) => normalizeAffiliateProfile(response) as AffiliateProfileResource);
 }
 
 export function suspendAdminAffiliate(accessToken: string, affiliateProfileId: string) {
-  return apiRequest<AffiliateProfileResource>({
+  return apiRequest<unknown>({
     path: `/admin/affiliates/${affiliateProfileId}/suspend`,
     method: 'POST',
     accessToken,
-  });
+  }).then((response) => normalizeAffiliateProfile(response) as AffiliateProfileResource);
 }
 
 export function listAdminPayments(accessToken: string, params: AdminPaymentsListParams = {}) {
@@ -206,10 +214,10 @@ export function listAdminCatalogAffiliateSettings(
   accessToken: string,
   params: AdminCatalogAffiliateSettingsListParams = {},
 ) {
-  return apiRequest<PaginatedResponse<AdminCatalogAffiliateSettingsResource>>({
+  return apiRequest<unknown>({
     path: buildAdminPath('/admin/catalog/affiliate-settings', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
-  });
+  }).then(normalizeAdminCatalogAffiliateSettingsResponse);
 }
 
 export function updateAdminCatalogAffiliateSettings(
@@ -217,12 +225,12 @@ export function updateAdminCatalogAffiliateSettings(
   catalogServiceId: string,
   body: AdminCatalogAffiliateSettingsUpdateRequest,
 ) {
-  return apiRequest<AdminCatalogAffiliateSettingsResource>({
+  return apiRequest<unknown>({
     path: `/admin/catalog/${catalogServiceId}/affiliate-settings`,
     method: 'PATCH',
     accessToken,
     body,
-  });
+  }).then(normalizeAdminCatalogAffiliateSettings);
 }
 
 export function listAdminTransactions(accessToken: string, params: AdminTransactionsListParams = {}) {
@@ -242,26 +250,47 @@ export function createAdminWalletAdjustment(accessToken: string, userId: string,
 }
 
 export function listAdminAffiliateCommissions(accessToken: string, params: AdminAffiliateCommissionsListParams = {}) {
-  return apiRequest<PaginatedResponse<AffiliateCommissionResource>>({
+  return apiRequest<unknown>({
     path: buildAdminPath('/admin/affiliate-commissions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
-  });
+  }).then(normalizeAffiliateCommissionsResponse);
 }
 
 export function listAdminAffiliatePayouts(accessToken: string, params: AdminAffiliatePayoutsListParams = {}) {
-  return apiRequest<PaginatedResponse<AffiliatePayoutResource>>({
+  return apiRequest<unknown>({
     path: buildAdminPath('/admin/affiliate-payouts', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
     accessToken,
-  });
+  }).then(normalizeAffiliatePayoutsResponse);
 }
 
 export function createAdminAffiliatePayout(accessToken: string, body: AdminCreateAffiliatePayoutRequest) {
-  return apiRequest<AffiliatePayoutResource>({
+  return apiRequest<unknown>({
     path: '/admin/affiliate-payouts',
     method: 'POST',
     accessToken,
     body,
-  });
+  }).then((response) => normalizeAffiliatePayout(response) as AffiliatePayoutResource);
+}
+
+export function updateAdminAffiliatePayoutStatus(
+  accessToken: string,
+  payoutId: string,
+  body: AdminUpdateAffiliatePayoutStatusRequest,
+) {
+  return apiRequest<unknown>({
+    path: `/admin/affiliate-payouts/${payoutId}/status`,
+    method: 'POST',
+    accessToken,
+    body,
+  }).then((response) => normalizeAffiliatePayout(response) as AffiliatePayoutResource);
+}
+
+export function refreshAdminAffiliatePayout(accessToken: string, payoutId: string) {
+  return apiRequest<unknown>({
+    path: `/admin/affiliate-payouts/${payoutId}/refresh`,
+    method: 'POST',
+    accessToken,
+  }).then((response) => normalizeAffiliatePayout(response) as AffiliatePayoutResource);
 }
 
 export function listSupplierProviders(accessToken: string) {
@@ -361,4 +390,56 @@ function buildAdminPath(path: string, params: Record<string, string | number | b
 
   const query = searchParams.toString();
   return query ? `${path}?${query}` : path;
+}
+
+function normalizeAdminCatalogAffiliateSettingsResponse(input: unknown): PaginatedResponse<AdminCatalogAffiliateSettingsResource> {
+  const source = isRecord(input) ? input : {};
+  const itemsSource = Array.isArray(source.items) ? source.items : [];
+
+  return {
+    items: itemsSource.map(normalizeAdminCatalogAffiliateSettings).filter((item): item is AdminCatalogAffiliateSettingsResource => Boolean(item)),
+    page: readNumber(source.page) ?? 1,
+    pageSize: readNumber(source.pageSize) ?? itemsSource.length,
+    totalItems: readNumber(source.totalItems) ?? itemsSource.length,
+    totalPages: readNumber(source.totalPages) ?? 1,
+  };
+}
+
+function normalizeAdminCatalogAffiliateSettings(input: unknown): AdminCatalogAffiliateSettingsResource {
+  const source = isRecord(input) ? input : {};
+  const serviceId = readString(source.id) ?? readString(source.catalogServiceId) ?? '';
+  const affiliateEnabled = readBoolean(source.isAffiliateEnabled) ?? readBoolean(source.affiliateEnabled) ?? false;
+  const affiliateCommissionPercent = readNullableString(source.affiliateCommissionPercent);
+  const serviceName = readString(source.name);
+
+  return {
+    catalogServiceId: serviceId,
+    affiliateEnabled,
+    affiliateCommissionPercent,
+    catalogService: serviceId && serviceName ? { id: serviceId, name: serviceName } : null,
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function readString(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function readNullableString(value: unknown) {
+  if (value === null) {
+    return null;
+  }
+
+  return readString(value) ?? null;
+}
+
+function readNumber(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function readBoolean(value: unknown) {
+  return typeof value === 'boolean' ? value : undefined;
 }

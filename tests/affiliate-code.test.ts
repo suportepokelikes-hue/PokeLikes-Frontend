@@ -28,7 +28,7 @@ test('appendAffiliateCodeToPath appends or preserves the affiliate code safely',
   assert.equal(appendAffiliateCodeToPath('/catalog?search=likes', '   '), '/catalog?search=likes');
 });
 
-test('persistAffiliateCode keeps the latest valid code and ignores blank replacements', () => {
+test('persistAffiliateCode keeps the latest valid code, can be cleared, and ignores blank replacements', () => {
   const storage = new Map<string, string>();
   const target = globalThis as typeof globalThis & {
     window?: {
@@ -70,6 +70,9 @@ test('persistAffiliateCode keeps the latest valid code and ignores blank replace
 
     persistAffiliateCode('   ');
     assert.equal(getStoredAffiliateCode(), 'AFF02');
+
+    clearStoredAffiliateCode();
+    assert.equal(getStoredAffiliateCode(), undefined);
   } finally {
     if (originalWindow) {
       target.window = originalWindow;

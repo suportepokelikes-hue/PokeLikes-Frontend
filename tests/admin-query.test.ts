@@ -91,7 +91,6 @@ test('parseAdminAffiliatesParams keeps only supported affiliate filters', () => 
   const params = parseAdminAffiliatesParams({
     page: '2',
     pageSize: '20',
-    search: '  AFILIA30  ',
     status: 'pending',
     sortOrder: 'asc',
     sortBy: 'createdAt',
@@ -100,7 +99,6 @@ test('parseAdminAffiliatesParams keeps only supported affiliate filters', () => 
   assert.deepEqual(params, {
     page: 2,
     pageSize: 20,
-    search: 'AFILIA30',
     status: 'pending',
     sortOrder: 'asc',
   });
@@ -110,20 +108,22 @@ test('parseAdminAffiliateCommissionsParams keeps only supported commission filte
   const params = parseAdminAffiliateCommissionsParams({
     page: '3',
     pageSize: '50',
-    search: ' com-99 ',
     status: 'approved',
     affiliateProfileId: 'aff-1',
     sortOrder: 'desc',
-    userId: 'ignored',
+    userId: '42',
+    dateFrom: '2026-04-20T10:00:00.000Z',
   });
 
   assert.deepEqual(params, {
     page: 3,
     pageSize: 50,
-    search: 'com-99',
     status: 'approved',
     affiliateProfileId: 'aff-1',
     sortOrder: 'desc',
+    userId: '42',
+    dateFrom: '2026-04-20T10:00:00.000Z',
+    dateTo: undefined,
   });
 });
 
@@ -131,19 +131,21 @@ test('parseAdminAffiliatePayoutsParams keeps only supported payout filters', () 
   const params = parseAdminAffiliatePayoutsParams({
     page: '1',
     pageSize: '10',
-    search: ' payout-1 ',
     status: 'paid',
     affiliateProfileId: 'aff-2',
     sortOrder: 'asc',
-    dateFrom: 'ignored',
+    dateFrom: '2026-04-20T00:00:00.000Z',
+    userId: '84',
   });
 
   assert.deepEqual(params, {
     page: 1,
     pageSize: 10,
-    search: 'payout-1',
     status: 'paid',
     affiliateProfileId: 'aff-2',
     sortOrder: 'asc',
+    userId: '84',
+    dateFrom: '2026-04-20T00:00:00.000Z',
+    dateTo: undefined,
   });
 });

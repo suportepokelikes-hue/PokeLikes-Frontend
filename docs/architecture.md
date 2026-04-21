@@ -98,6 +98,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/catalog` lista servicos reais
 - `/catalog/[serviceId]` carrega detalhe real e cria pedido por `POST /me/orders`
 - `?aff=` capturado em `/catalog` e `/catalog/[serviceId]` fica persistido localmente
+- catalogo e checkout mostram explicitamente quando ha `affiliateCode` ativo e permitem limpeza manual do codigo salvo
 - quando houver checkout autenticado, `affiliateCode` segue no payload do pedido
 
 ### Perfil e verify-email
@@ -128,6 +129,8 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/app/affiliate` trata `GET /me/affiliate = null` como entrada no programa
 - o apply usa `POST /me/affiliate/apply`
 - quando existe perfil, a tela carrega `GET /me/affiliate/summary` e `GET /me/affiliate/commissions`
+- se summary ou commissions falharem isoladamente, a tela preserva perfil e status e degrada apenas o bloco afetado
+- a tela de afiliado exibe e edita chave PIX de payout pelos endpoints dedicados `GET /me/affiliate/pix-key` e `PATCH /me/affiliate/pix-key`, deixando claro quando o recebimento ainda esta pendente
 
 ## Current Admin Journeys
 
@@ -164,7 +167,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/admin/audits` e leitura
 - `/admin/affiliates` aprova e suspende perfis
 - `/admin/affiliate-commissions` e leitura financeira
-- `/admin/affiliate-payouts` lista e registra payout manual
+- `/admin/affiliate-payouts` lista, registra a solicitacao inicial do payout e permite avancar `requested -> processing` por `POST /admin/affiliate-payouts/{payoutId}/status`, disparando PIX real via Asaas; payouts em `processing` podem ser reconciliados por `POST /admin/affiliate-payouts/{payoutId}/refresh`
 
 ## UX Direction That Already Exists In Code
 
@@ -222,8 +225,8 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - troca de email do cliente ainda nao foi entregue
 - a UI do cliente nao oferece remocao explicita de telefone; enviar vazio hoje nao limpa o campo existente
-- o payout admin ainda nao usa `commissionIds` dedicados porque o contrato validado nao expoe esse payload
-- o `affiliateCode` salvo por `?aff=` ainda nao tem politica automatica de expiracao ou limpeza
+- o payout admin segue o contrato atual do backend com `affiliateProfileId`, `commissionIds`, `notes`, `pixKey`, campos de provider/auditoria Asaas, `statusReason` e timestamps de ciclo; a wallet interna nao participa do fluxo
+- o `affiliateCode` salvo por `?aff=` ainda nao tem politica automatica de expiracao, mas a UI permite limpeza manual explicita
 - o admin nao expoe acao dedicada para reativar afiliado suspenso
 
 ## Testing Baseline

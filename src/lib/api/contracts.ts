@@ -134,16 +134,30 @@ export type AffiliateCommissionStatus = string;
 
 export type AffiliatePayoutStatus = string;
 
+export type AffiliatePixKeyResource = {
+  pixKeyType: string;
+  pixKey: string;
+  updatedAt: string;
+};
+
 export type AffiliateProfileResource = {
   id: string;
-  affiliateCode: string;
+  affiliateCode?: string | null;
+  publicCode?: string | null;
   status: AffiliateProfileStatus;
-  affiliateCommissionPercent: string;
+  affiliateCommissionPercent?: string | null;
+  pixKeyType?: string | null;
+  pixKey?: string | null;
   approvedAt: string | null;
   suspendedAt: string | null;
   createdAt: string;
   updatedAt: string;
   user?: UserReference | null;
+};
+
+export type UpdateAffiliatePixRequest = {
+  pixKeyType: string;
+  pixKey: string;
 };
 
 export type AffiliateSummaryResponse = {
@@ -154,7 +168,7 @@ export type AffiliateSummaryResponse = {
 export type AffiliateCommissionResource = {
   id: string;
   status: AffiliateCommissionStatus;
-  affiliateCommissionPercent: string;
+  affiliateCommissionPercent?: string | null;
   commissionAmount: Money;
   createdAt: string;
   updatedAt: string;
@@ -166,13 +180,37 @@ export type AffiliateCommissionResource = {
 
 export type AffiliatePayoutResource = {
   id: string;
+  affiliateProfileId: string;
+  amount: string;
   status: AffiliatePayoutStatus;
-  amount: Money;
   createdAt: string;
-  updatedAt: string;
+  processedAt: string | null;
+  processedByUserId: string | null;
+  notes: string | null;
+  statusReason: string | null;
+  provider: string | null;
+  externalReference: string | null;
+  providerTransactionId: string | null;
+  providerStatus: string | null;
+  providerErrorCode: string | null;
+  providerErrorMessage: string | null;
+  providerSyncedAt: string | null;
+  pixKey: {
+    type: string;
+    key: string;
+  } | null;
+  requestedAt: string;
+  processingAt: string | null;
   paidAt: string | null;
-  affiliateProfileId?: string | null;
-  note?: string | null;
+  failedAt: string | null;
+  cancelledAt: string | null;
+  affiliate: {
+    userId: string;
+    publicCode: string;
+    affiliateCode: string;
+  };
+  commissionIds?: string[];
+  commissionCount?: number;
 };
 
 export type WalletSummary = {
@@ -639,7 +677,6 @@ export type AdminTransactionsListParams = {
 export type AdminAffiliateProfileListParams = {
   page?: number;
   pageSize?: number;
-  search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: AffiliateProfileStatus;
 };
@@ -647,32 +684,41 @@ export type AdminAffiliateProfileListParams = {
 export type AdminAffiliateCommissionsListParams = {
   page?: number;
   pageSize?: number;
-  search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: AffiliateCommissionStatus;
   affiliateProfileId?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type AdminAffiliatePayoutsListParams = {
   page?: number;
   pageSize?: number;
-  search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: AffiliatePayoutStatus;
   affiliateProfileId?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 };
 
 export type AdminCreateAffiliatePayoutRequest = {
-  affiliateProfileId: string;
-  amount: string;
-  note?: string;
+  affiliateProfileId: number;
+  commissionIds: number[];
+  notes?: string;
+};
+
+export type AdminUpdateAffiliatePayoutStatusRequest = {
+  status: 'processing' | 'paid' | 'failed' | 'cancelled';
+  notes?: string;
+  statusReason?: string;
 };
 
 export type AdminCatalogAffiliateSettingsResource = {
   catalogServiceId: string;
   affiliateEnabled: boolean;
   affiliateCommissionPercent: string | null;
-  updatedAt: string;
   catalogService?: CatalogServiceReference | null;
 };
 
@@ -684,7 +730,7 @@ export type AdminCatalogAffiliateSettingsListParams = {
 };
 
 export type AdminCatalogAffiliateSettingsUpdateRequest = {
-  affiliateEnabled?: boolean;
+  isAffiliateEnabled?: boolean;
   affiliateCommissionPercent?: string | null;
 };
 

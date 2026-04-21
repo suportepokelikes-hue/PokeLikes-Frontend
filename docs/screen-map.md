@@ -31,6 +31,7 @@
 - `/app/affiliate`
   - entrada do programa quando nao existe perfil
   - status, summary e comissoes quando ja existe perfil
+  - leitura e edicao de chave PIX pelos endpoints dedicados de afiliado
 - `/app/wallet`
   - saldo e extrato
 - `/app/payments`
@@ -64,6 +65,8 @@
 - `/admin/affiliate-payouts`
   - listagem
   - drawer de criacao por `?create=1`
+  - `requested -> processing` dispara PIX real via Asaas
+  - refresh manual do provider enquanto o payout esta `processing`
 - `/admin/catalog`
   - listagem de servicos sincronizados
   - publicacao no catalogo por drawer

@@ -12,6 +12,7 @@ import { getServerSession } from '@/lib/auth/cookies';
 import { formatMoney } from '@/lib/format';
 import { PublicShell } from '@/modules/app-shell/public-shell';
 import { AffiliateCodeCapture } from './affiliate-code-capture';
+import { AffiliateCodeNotice } from './affiliate-code-input';
 import { getCatalogAvailabilityView } from './availability-view';
 
 type CatalogListPageProps = {
@@ -42,6 +43,7 @@ export async function CatalogListPage({ searchParams }: CatalogListPageProps) {
             description="Leia a disponibilidade antes de abrir o checkout: compra liberada, compra com atencao ou compra pausada."
             actions={<CatalogFilterBar initialValues={catalogFilters} affiliateCodeFromUrl={affiliateCodeFromUrl} />}
           />
+          <AffiliateCodeNotice initialAffiliateCode={affiliateCodeFromUrl} />
 
           <section className="catalog-overview-grid public-section">
             <article className="catalog-spotlight">

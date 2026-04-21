@@ -9,14 +9,17 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import {
   getCustomerAffiliateProfile,
+  getCustomerAffiliatePix,
   getCustomerAffiliateSummary,
   listCustomerAffiliateCommissions,
 } from '@/lib/api/customer';
+import { getAffiliateDisplayCode } from '@/lib/api/affiliate-normalizers';
 import type { AffiliateCommissionResource, AffiliateProfileResource, Money } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import { AffiliateApplyForm } from './affiliate-apply-form';
+import { AffiliatePixForm } from './affiliate-pix-form';
 
 type CustomerAffiliatePageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
@@ -81,14 +84,23 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
       );
     }
 
-    const [summary, commissions] = await Promise.all([
+    const [summaryResult, commissionsResult, pixResult] = await Promise.allSettled([
       getCustomerAffiliateSummary({ accessToken: session.accessToken }),
       listCustomerAffiliateCommissions({ accessToken: session.accessToken }),
+      getCustomerAffiliatePix({ accessToken: session.accessToken }),
     ]);
 
-    const effectiveProfile = summary.affiliateProfile ?? affiliateProfile;
+    const summary = summaryResult.status === 'fulfilled' ? summaryResult.value : null;
+    const commissions = commissionsResult.status === 'fulfilled' ? commissionsResult.value : null;
+    const affiliatePix = pixResult.status === 'fulfilled' ? pixResult.value : null;
+    const effectiveProfile = {
+      ...(summary?.affiliateProfile ?? affiliateProfile),
+      pixKeyType: affiliatePix?.pixKeyType ?? (summary?.affiliateProfile ?? affiliateProfile).pixKeyType ?? null,
+      pixKey: affiliatePix?.pixKey ?? (summary?.affiliateProfile ?? affiliateProfile).pixKey ?? null,
+    };
+    const affiliatePublicCode = getAffiliateDisplayCode(effectiveProfile) ?? '-';
     const statusView = getAffiliateProfileStatusView(effectiveProfile.status);
-    const summaryCards = buildAffiliateSummaryCards(summary.totals);
+    const summaryCards = buildAffiliateSummaryCards(summary?.totals ?? {});
 
     return (
       <main className="page page-customer">
@@ -112,7 +124,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
           <article className="customer-dashboard-command customer-affiliate-command">
             <div className="customer-dashboard-command-head">
               <div className="customer-dashboard-command-copy">
-                <h2>{effectiveProfile.affiliateCode}</h2>
+                <h2>{affiliatePublicCode}</h2>
                 <p>{statusView.noteDescription}</p>
               </div>
               <StatusBadge label={statusView.label} tone={statusView.tone} />
@@ -122,15 +134,15 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
               <div className="customer-dashboard-snapshot">
                 <div>
                   <span>Codigo publico</span>
-                  <strong>{effectiveProfile.affiliateCode}</strong>
+                  <strong>{affiliatePublicCode}</strong>
                 </div>
                 <div>
-                  <span>Comissao</span>
-                  <strong>{effectiveProfile.affiliateCommissionPercent}%</strong>
+                  <span>Comissao sobre venda</span>
+                  <strong>{formatCommissionPercent(effectiveProfile.affiliateCommissionPercent)}</strong>
                 </div>
                 <div>
-                  <span>Criado em</span>
-                  <strong>{formatDateTime(effectiveProfile.createdAt)}</strong>
+                  <span>Recebimento</span>
+                  <strong>{effectiveProfile.pixKey ? 'PIX cadastrado' : 'PIX pendente'}</strong>
                 </div>
               </div>
             </div>
@@ -154,10 +166,30 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
                   <span>Suspenso</span>
                   <strong>{formatDateTime(effectiveProfile.suspendedAt)}</strong>
                 </div>
+                <div>
+                  <span>Payout</span>
+                  <strong>Via PIX</strong>
+                </div>
               </div>
             </CustomerSectionCard>
           </div>
         </section>
+
+        <AffiliatePixForm profile={effectiveProfile} />
+
+        {pixResult.status === 'rejected' ? (
+          <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
+            <strong>PIX temporariamente indisponivel</strong>
+            <p>{getLocalAffiliateErrorMessage(pixResult.reason, 'A chave PIX nao pode ser carregada agora.')}</p>
+          </div>
+        ) : null}
+
+        {summaryResult.status === 'rejected' ? (
+          <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
+            <strong>Resumo temporariamente indisponivel</strong>
+            <p>{getLocalAffiliateErrorMessage(summaryResult.reason, 'Os totais nao puderam ser carregados agora.')}</p>
+          </div>
+        ) : null}
 
         <section className="customer-dashboard-metrics">
           {summaryCards.map((card) => (
@@ -174,16 +206,21 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
 
         <CustomerSectionCard
           title="Historico"
-          meta={<span className="panel-meta">{formatNumber(commissions.totalItems)} registro(s)</span>}
+          meta={<span className="panel-meta">{formatNumber(commissions?.totalItems ?? 0)} registro(s)</span>}
         >
-          {commissions.items.length === 0 ? (
+          {commissionsResult.status === 'rejected' ? (
+            <div className="auth-notice auth-notice-warning" role="status" aria-live="polite">
+              <strong>Historico temporariamente indisponivel</strong>
+              <p>{getLocalAffiliateErrorMessage(commissionsResult.reason, 'As comissoes nao puderam ser carregadas agora.')}</p>
+            </div>
+          ) : commissions && commissions.items.length === 0 ? (
             <EmptyState
               title="Nenhuma comissao encontrada"
               description="As comissoes aparecem aqui."
             />
           ) : (
-            <DataTable columns={['ID', 'Pedido', 'Perfil', 'Comissao', 'Status', 'Criada em', 'Paga em']}>
-              {commissions.items.map((commission) => {
+            <DataTable columns={['ID', 'Pedido', 'Perfil', 'Comissao sobre venda', 'Status', 'Criada em', 'Paga em']}>
+              {commissions?.items.map((commission) => {
                 const commissionStatusView = getAffiliateCommissionStatusView(commission.status);
 
                 return (
@@ -223,26 +260,34 @@ function buildAffiliateSummaryCards(totals: Record<string, number | Money>) {
   return [
     {
       label: 'Pendentes',
-      value: formatSummaryMetric(findSummaryMetric(totals, ['pendingCommissionAmount', 'pendingAmount'], ['pending', 'commission'])),
+      value: formatSummaryMetric(
+        findSummaryMetric(totals, ['commissionsPendingAmount', 'pendingCommissionAmount', 'pendingAmount'], ['pending', 'commission']),
+      ),
       meta: 'Aguardando avanco.',
       tone: 'warning' as const,
     },
     {
       label: 'Aprovadas',
-      value: formatSummaryMetric(findSummaryMetric(totals, ['approvedCommissionAmount', 'approvedAmount'], ['approved', 'commission'])),
+      value: formatSummaryMetric(
+        findSummaryMetric(totals, ['commissionsApprovedAmount', 'approvedCommissionAmount', 'approvedAmount'], ['approved', 'commission']),
+      ),
       meta: 'Ja liberadas.',
       tone: 'accent' as const,
     },
     {
       label: 'Pagas',
-      value: formatSummaryMetric(findSummaryMetric(totals, ['paidCommissionAmount', 'paidAmount'], ['paid', 'commission'])),
+      value: formatSummaryMetric(findSummaryMetric(totals, ['commissionsPaidAmount', 'paidCommissionAmount', 'paidAmount'], ['paid', 'commission'])),
       meta: 'Ja liquidadas.',
       tone: 'success' as const,
     },
     {
-      label: 'Receita atribuida',
+      label: 'Vendas atribuidas',
       value: formatSummaryMetric(
-        findSummaryMetric(totals, ['attributedRevenue', 'attributedRevenueAmount', 'totalAttributedRevenue'], ['revenue']),
+        findSummaryMetric(
+          totals,
+          ['totalSalesAmount', 'salesAmount', 'totalSaleAmount', 'totalRevenueAttributed', 'attributedRevenue', 'attributedRevenueAmount', 'totalAttributedRevenue'],
+          ['sale'],
+        ) ?? findSummaryMetric(totals, ['totalRevenueAttributed', 'attributedRevenue', 'attributedRevenueAmount', 'totalAttributedRevenue'], ['revenue']),
       ),
       meta: 'Ligada ao seu codigo.',
       tone: 'default' as const,
@@ -285,6 +330,10 @@ function isMoney(value: SummaryMetricValue): value is Money {
   return Boolean(value) && typeof value === 'object' && 'amount' in value && 'currency' in value;
 }
 
+function formatCommissionPercent(value?: string | null) {
+  return value ? `${value}%` : '-';
+}
+
 function getAffiliateProfileStatusView(status: AffiliateProfileResource['status']) {
   if (status === 'pending') {
     return {
@@ -292,7 +341,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
       tone: 'warning' as const,
       description: 'Aguardando aprovacao.',
       noteTitle: 'Aguardando aprovacao',
-      noteDescription: 'Divulgacao e comissoes liberam depois da aprovacao.',
+      noteDescription: 'Divulgacao, comissoes e payouts via PIX liberam depois da aprovacao.',
     };
   }
 
@@ -302,7 +351,7 @@ function getAffiliateProfileStatusView(status: AffiliateProfileResource['status'
       tone: 'success' as const,
       description: 'Perfil ativo.',
       noteTitle: 'Pronto para divulgar',
-      noteDescription: 'Use o codigo e acompanhe os ganhos.',
+      noteDescription: 'Use o codigo, acompanhe as comissoes e mantenha sua chave PIX atualizada.',
     };
   }
 
@@ -371,4 +420,12 @@ function mapAffiliateMetricIcon(label: string) {
     default:
       return LineChart;
   }
+}
+
+function getLocalAffiliateErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof ApiClientError) {
+    return error.message || fallback;
+  }
+
+  return fallback;
 }

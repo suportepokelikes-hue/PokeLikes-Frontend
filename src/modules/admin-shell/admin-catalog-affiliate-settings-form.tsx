@@ -37,7 +37,7 @@ export function AdminCatalogAffiliateSettingsForm({
       <div className="admin-user-form">
         <div className="admin-form-note">
           <strong>Afiliacao comercial</strong>
-          <p>Defina se o servico pode ser promovido e qual percentual orienta a comissao.</p>
+          <p>Defina se o servico pode ser promovido e qual percentual da venda vira comissao.</p>
         </div>
 
         <div className="admin-user-static admin-user-field-wide">
@@ -59,7 +59,7 @@ export function AdminCatalogAffiliateSettingsForm({
         </label>
 
         <label className="admin-user-field">
-          <span>Percentual de comissao</span>
+          <span>Percentual sobre a venda</span>
           <input
             type="text"
             name="affiliateCommissionPercent"
@@ -74,7 +74,7 @@ export function AdminCatalogAffiliateSettingsForm({
         <div className="admin-user-static admin-user-field-wide">
           <span>Preenchimento</span>
           <strong>Percentual normal</strong>
-          <small>Informe como porcentagem comum: 30.00 = 30% e 12.50 = 12,5%.</small>
+          <small>Informe como porcentagem comum da venda: 30.00 = 30% e 12.50 = 12,5%.</small>
         </div>
 
         {!affiliateEnabled ? (

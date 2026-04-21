@@ -13,7 +13,7 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     const enabledParsed = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(enabledForm);
     strict_1.default.ok('value' in enabledParsed);
     strict_1.default.deepEqual(enabledParsed.value, {
-        affiliateEnabled: true,
+        isAffiliateEnabled: true,
         affiliateCommissionPercent: '12.5',
     });
     const disabledForm = new FormData();
@@ -21,7 +21,7 @@ const action_helpers_1 = require("../src/modules/admin-shell/action-helpers");
     const disabledParsed = (0, action_helpers_1.parseCatalogAffiliateSettingsUpdatePayload)(disabledForm);
     strict_1.default.ok('value' in disabledParsed);
     strict_1.default.deepEqual(disabledParsed.value, {
-        affiliateEnabled: false,
+        isAffiliateEnabled: false,
     });
     const invalidEnabledForm = new FormData();
     invalidEnabledForm.set('affiliateEnabled', 'true');

@@ -27,6 +27,8 @@ exports.createAdminWalletAdjustment = createAdminWalletAdjustment;
 exports.listAdminAffiliateCommissions = listAdminAffiliateCommissions;
 exports.listAdminAffiliatePayouts = listAdminAffiliatePayouts;
 exports.createAdminAffiliatePayout = createAdminAffiliatePayout;
+exports.updateAdminAffiliatePayoutStatus = updateAdminAffiliatePayoutStatus;
+exports.refreshAdminAffiliatePayout = refreshAdminAffiliatePayout;
 exports.listSupplierProviders = listSupplierProviders;
 exports.listSupplierServices = listSupplierServices;
 exports.listSupplierSyncLogs = listSupplierSyncLogs;
@@ -36,6 +38,7 @@ exports.resolveAdminAlert = resolveAdminAlert;
 exports.refreshSupplierProviders = refreshSupplierProviders;
 exports.syncSupplierServices = syncSupplierServices;
 exports.normalizeSupplierSyncName = normalizeSupplierSyncName;
+const affiliate_normalizers_1 = require("./affiliate-normalizers");
 const http_1 = require("./http");
 function getAdminDashboardSummary(accessToken) {
     return (0, http_1.apiRequest)({
@@ -75,21 +78,21 @@ function listAdminAffiliates(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
         path: buildAdminPath('/admin/affiliates', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
         accessToken,
-    });
+    }).then(affiliate_normalizers_1.normalizeAffiliateProfilesResponse);
 }
 function approveAdminAffiliate(accessToken, affiliateProfileId) {
     return (0, http_1.apiRequest)({
         path: `/admin/affiliates/${affiliateProfileId}/approve`,
         method: 'POST',
         accessToken,
-    });
+    }).then((response) => (0, affiliate_normalizers_1.normalizeAffiliateProfile)(response));
 }
 function suspendAdminAffiliate(accessToken, affiliateProfileId) {
     return (0, http_1.apiRequest)({
         path: `/admin/affiliates/${affiliateProfileId}/suspend`,
         method: 'POST',
         accessToken,
-    });
+    }).then((response) => (0, affiliate_normalizers_1.normalizeAffiliateProfile)(response));
 }
 function listAdminPayments(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
@@ -177,7 +180,7 @@ function listAdminCatalogAffiliateSettings(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
         path: buildAdminPath('/admin/catalog/affiliate-settings', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
         accessToken,
-    });
+    }).then(normalizeAdminCatalogAffiliateSettingsResponse);
 }
 function updateAdminCatalogAffiliateSettings(accessToken, catalogServiceId, body) {
     return (0, http_1.apiRequest)({
@@ -185,7 +188,7 @@ function updateAdminCatalogAffiliateSettings(accessToken, catalogServiceId, body
         method: 'PATCH',
         accessToken,
         body,
-    });
+    }).then(normalizeAdminCatalogAffiliateSettings);
 }
 function listAdminTransactions(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
@@ -205,13 +208,13 @@ function listAdminAffiliateCommissions(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
         path: buildAdminPath('/admin/affiliate-commissions', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
         accessToken,
-    });
+    }).then(affiliate_normalizers_1.normalizeAffiliateCommissionsResponse);
 }
 function listAdminAffiliatePayouts(accessToken, params = {}) {
     return (0, http_1.apiRequest)({
         path: buildAdminPath('/admin/affiliate-payouts', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
         accessToken,
-    });
+    }).then(affiliate_normalizers_1.normalizeAffiliatePayoutsResponse);
 }
 function createAdminAffiliatePayout(accessToken, body) {
     return (0, http_1.apiRequest)({
@@ -219,7 +222,22 @@ function createAdminAffiliatePayout(accessToken, body) {
         method: 'POST',
         accessToken,
         body,
-    });
+    }).then((response) => (0, affiliate_normalizers_1.normalizeAffiliatePayout)(response));
+}
+function updateAdminAffiliatePayoutStatus(accessToken, payoutId, body) {
+    return (0, http_1.apiRequest)({
+        path: `/admin/affiliate-payouts/${payoutId}/status`,
+        method: 'POST',
+        accessToken,
+        body,
+    }).then((response) => (0, affiliate_normalizers_1.normalizeAffiliatePayout)(response));
+}
+function refreshAdminAffiliatePayout(accessToken, payoutId) {
+    return (0, http_1.apiRequest)({
+        path: `/admin/affiliate-payouts/${payoutId}/refresh`,
+        method: 'POST',
+        accessToken,
+    }).then((response) => (0, affiliate_normalizers_1.normalizeAffiliatePayout)(response));
 }
 function listSupplierProviders(accessToken) {
     return (0, http_1.apiRequest)({
@@ -300,4 +318,46 @@ function buildAdminPath(path, params) {
     }
     const query = searchParams.toString();
     return query ? `${path}?${query}` : path;
+}
+function normalizeAdminCatalogAffiliateSettingsResponse(input) {
+    const source = isRecord(input) ? input : {};
+    const itemsSource = Array.isArray(source.items) ? source.items : [];
+    return {
+        items: itemsSource.map(normalizeAdminCatalogAffiliateSettings).filter((item) => Boolean(item)),
+        page: readNumber(source.page) ?? 1,
+        pageSize: readNumber(source.pageSize) ?? itemsSource.length,
+        totalItems: readNumber(source.totalItems) ?? itemsSource.length,
+        totalPages: readNumber(source.totalPages) ?? 1,
+    };
+}
+function normalizeAdminCatalogAffiliateSettings(input) {
+    const source = isRecord(input) ? input : {};
+    const serviceId = readString(source.id) ?? readString(source.catalogServiceId) ?? '';
+    const affiliateEnabled = readBoolean(source.isAffiliateEnabled) ?? readBoolean(source.affiliateEnabled) ?? false;
+    const affiliateCommissionPercent = readNullableString(source.affiliateCommissionPercent);
+    const serviceName = readString(source.name);
+    return {
+        catalogServiceId: serviceId,
+        affiliateEnabled,
+        affiliateCommissionPercent,
+        catalogService: serviceId && serviceName ? { id: serviceId, name: serviceName } : null,
+    };
+}
+function isRecord(value) {
+    return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+function readString(value) {
+    return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+function readNullableString(value) {
+    if (value === null) {
+        return null;
+    }
+    return readString(value) ?? null;
+}
+function readNumber(value) {
+    return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+function readBoolean(value) {
+    return typeof value === 'boolean' ? value : undefined;
 }

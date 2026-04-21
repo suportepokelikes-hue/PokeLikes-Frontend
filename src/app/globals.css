@@ -80,11 +80,13 @@ button {
 .site-frame {
   min-height: 100vh;
   position: relative;
+  isolation: isolate;
 }
 
 .site-backdrop {
   position: fixed;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(circle at top left, rgba(73, 163, 255, 0.18), transparent 28rem),
@@ -2746,6 +2748,22 @@ textarea:focus-visible {
   text-transform: uppercase;
 }
 
+.page-admin .admin-inline-stack {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 10rem;
+}
+
+.page-admin .admin-inline-stack span {
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.page-admin .admin-inline-stack strong {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
 .page-admin .stack-item,
 .page-admin .admin-inline-panel,
 .page-admin .admin-user-static,
@@ -3204,6 +3222,31 @@ textarea:focus-visible {
 
 .detail-note-neutral {
   background: rgba(73, 163, 255, 0.14);
+}
+
+.affiliate-code-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.affiliate-code-status-copy {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.affiliate-code-status-copy p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.affiliate-code-status-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .order-timeline {
@@ -5125,6 +5168,8 @@ textarea:focus-visible {
 
 .public-shell-v3 {
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   overflow: visible;
@@ -5391,6 +5436,8 @@ textarea:focus-visible {
 
 .public-shell-main-v3 {
   flex: 1 0 auto;
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: none;
   margin: 0;
@@ -5423,6 +5470,8 @@ textarea:focus-visible {
 
 .landing-v2 {
   display: block;
+  position: relative;
+  z-index: 1;
   width: 100%;
   overflow: visible;
   background:

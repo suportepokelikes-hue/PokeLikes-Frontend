@@ -278,12 +278,16 @@ export function mapAffiliateFinanceStatusTone(status: string): BadgeTone {
     return 'success';
   }
 
-  if (status === 'approved') {
+  if (status === 'processing' || status === 'approved') {
     return 'warning';
   }
 
-  if (status === 'pending') {
+  if (status === 'requested' || status === 'pending') {
     return 'info';
+  }
+
+  if (status === 'rejected') {
+    return 'danger';
   }
 
   if (status === 'failed' || status === 'cancelled' || status === 'canceled') {

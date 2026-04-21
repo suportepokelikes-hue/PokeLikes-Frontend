@@ -20,18 +20,13 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
     >
       <div className="admin-user-form">
         <div className="admin-form-note">
-          <strong>Payout manual rastreavel</strong>
-          <p>Registre apenas valores validados e mantenha as comissoes referenciadas na observacao.</p>
+          <strong>Payout PIX via Asaas</strong>
+          <p>Selecione comissoes aprovadas. O backend calcula o valor e cria a solicitacao antes da transferencia.</p>
         </div>
 
         <label className="admin-user-field">
           <span>ID do perfil</span>
-          <input type="text" name="affiliateProfileId" defaultValue={defaultAffiliateProfileId ?? ''} placeholder="Cole o ID do perfil" />
-        </label>
-
-        <label className="admin-user-field">
-          <span>Valor</span>
-          <input type="text" name="amount" placeholder="125.00" />
+          <input type="text" name="affiliateProfileId" inputMode="numeric" defaultValue={defaultAffiliateProfileId ?? ''} placeholder="Cole o ID numerico" />
         </label>
 
         <label className="admin-user-field admin-user-field-wide">
@@ -39,21 +34,21 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
           <textarea
             name="commissionIds"
             rows={4}
-            placeholder="Cole IDs separados por virgula ou quebra de linha"
+            placeholder="Cole IDs numericos separados por virgula ou quebra de linha"
           />
         </label>
 
         <label className="admin-user-field admin-user-field-wide">
           <span>Observacao adicional</span>
           <textarea
-            name="note"
+            name="notes"
             rows={4}
-            placeholder="Opcional. Ex.: payout manual validado pelo financeiro."
+            placeholder="Opcional. Ex.: fechamento validado pelo financeiro."
           />
         </label>
 
         <p className="panel-meta">
-          Use comissoes aprovadas do mesmo afiliado. Os IDs ficam registrados na observacao deste payout.
+          O PIX e disparado depois, ao processar o payout. Use apenas comissoes aprovadas do mesmo afiliado.
         </p>
       </div>
     </AdminActionForm>

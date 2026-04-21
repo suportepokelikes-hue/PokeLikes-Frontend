@@ -5,6 +5,7 @@ import { ApiClientError } from '../src/lib/api/http';
 import {
   mapAdminActionError,
   parseAffiliatePayoutPayload,
+  parseAffiliatePayoutStatusPayload,
   parseCatalogAffiliateSettingsUpdatePayload,
   parseCatalogCreatePayload,
   parseCatalogUpdatePayload,
@@ -42,6 +43,37 @@ test('catalog create parser builds a valid payload from supported fields', () =>
     supplierServiceId: 123,
     supplierName: 'main-supplier',
     metadata: { speed: 'fast' },
+  });
+});
+
+test('affiliate payout status parser targets the payout status mutation contract', () => {
+  const formData = new FormData();
+  formData.set('payoutId', 'payout-123');
+  formData.set('status', 'paid');
+  formData.set('statusReason', 'PIX manual confirmado');
+  formData.set('notes', 'Fechamento validado');
+
+  const parsed = parseAffiliatePayoutStatusPayload(formData);
+
+  assert.ok('value' in parsed);
+  assert.deepEqual(parsed, {
+    payoutId: 'payout-123',
+    value: {
+      status: 'paid',
+      notes: 'Fechamento validado',
+      statusReason: 'PIX manual confirmado',
+    },
+  });
+
+  const invalid = new FormData();
+  invalid.set('payoutId', 'payout-123');
+  invalid.set('status', 'requested');
+
+  assert.deepEqual(parseAffiliatePayoutStatusPayload(invalid), {
+    error: {
+      status: 'error',
+      message: 'Escolha um status valido para o payout.',
+    },
   });
 });
 
@@ -107,7 +139,7 @@ test('catalog affiliate settings parser enforces a human commission percent only
 
   assert.ok('value' in enabledParsed);
   assert.deepEqual(enabledParsed.value, {
-    affiliateEnabled: true,
+    isAffiliateEnabled: true,
     affiliateCommissionPercent: '12.5',
   });
 
@@ -118,7 +150,7 @@ test('catalog affiliate settings parser enforces a human commission percent only
 
   assert.ok('value' in disabledParsed);
   assert.deepEqual(disabledParsed.value, {
-    affiliateEnabled: false,
+    isAffiliateEnabled: false,
   });
 
   const invalidEnabledForm = new FormData();
@@ -160,31 +192,38 @@ test('admin helper readers and error mapping keep only supported values', () => 
   });
 });
 
-test('affiliate payout parser keeps commission references only inside note for the current contract', () => {
+test('affiliate payout parser sends affiliateProfileId, commissionIds and notes according to the current contract', () => {
   const formData = new FormData();
-  formData.set('affiliateProfileId', 'aff-123');
-  formData.set('amount', '150.00');
-  formData.set('commissionIds', ' com-1,\ncom-2\ncom-1 ');
-  formData.set('note', 'Validado pelo financeiro');
+  formData.set('affiliateProfileId', '123');
+  formData.set('commissionIds', ' 1,\n2\n1 ');
+  formData.set('notes', 'Validado pelo financeiro');
 
   const parsed = parseAffiliatePayoutPayload(formData);
 
   assert.ok('value' in parsed);
-  assert.deepEqual(parsed.commissionIds, ['com-1', 'com-2']);
+  assert.deepEqual(parsed.commissionIds, [1, 2]);
   assert.deepEqual(parsed.value, {
-    affiliateProfileId: 'aff-123',
-    amount: '150.00',
-    note: 'Comissoes consideradas: com-1, com-2\nObservacao: Validado pelo financeiro',
+    affiliateProfileId: 123,
+    commissionIds: [1, 2],
+    notes: 'Validado pelo financeiro',
   });
 
   const missingIds = new FormData();
-  missingIds.set('affiliateProfileId', 'aff-123');
-  missingIds.set('amount', '150.00');
 
   assert.deepEqual(parseAffiliatePayoutPayload(missingIds), {
     error: {
       status: 'error',
-      message: 'Informe ao menos um ID de comissao aprovada para rastreio operacional.',
+      message: 'Informe um ID numerico de perfil afiliado para registrar o payout.',
+    },
+  });
+
+  const missingCommissions = new FormData();
+  missingCommissions.set('affiliateProfileId', '123');
+
+  assert.deepEqual(parseAffiliatePayoutPayload(missingCommissions), {
+    error: {
+      status: 'error',
+      message: 'Informe ao menos um ID numerico de comissao aprovada.',
     },
   });
 });

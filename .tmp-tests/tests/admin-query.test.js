@@ -72,7 +72,6 @@ const query_1 = require("../src/modules/admin-shell/query");
     const params = (0, query_1.parseAdminAffiliatesParams)({
         page: '2',
         pageSize: '20',
-        search: '  AFILIA30  ',
         status: 'pending',
         sortOrder: 'asc',
         sortBy: 'createdAt',
@@ -80,7 +79,6 @@ const query_1 = require("../src/modules/admin-shell/query");
     strict_1.default.deepEqual(params, {
         page: 2,
         pageSize: 20,
-        search: 'AFILIA30',
         status: 'pending',
         sortOrder: 'asc',
     });
@@ -89,37 +87,41 @@ const query_1 = require("../src/modules/admin-shell/query");
     const params = (0, query_1.parseAdminAffiliateCommissionsParams)({
         page: '3',
         pageSize: '50',
-        search: ' com-99 ',
         status: 'approved',
         affiliateProfileId: 'aff-1',
         sortOrder: 'desc',
-        userId: 'ignored',
+        userId: '42',
+        dateFrom: '2026-04-20T10:00:00.000Z',
     });
     strict_1.default.deepEqual(params, {
         page: 3,
         pageSize: 50,
-        search: 'com-99',
         status: 'approved',
         affiliateProfileId: 'aff-1',
         sortOrder: 'desc',
+        userId: '42',
+        dateFrom: '2026-04-20T10:00:00.000Z',
+        dateTo: undefined,
     });
 });
 (0, node_test_1.default)('parseAdminAffiliatePayoutsParams keeps only supported payout filters', () => {
     const params = (0, query_1.parseAdminAffiliatePayoutsParams)({
         page: '1',
         pageSize: '10',
-        search: ' payout-1 ',
         status: 'paid',
         affiliateProfileId: 'aff-2',
         sortOrder: 'asc',
-        dateFrom: 'ignored',
+        dateFrom: '2026-04-20T00:00:00.000Z',
+        userId: '84',
     });
     strict_1.default.deepEqual(params, {
         page: 1,
         pageSize: 10,
-        search: 'payout-1',
         status: 'paid',
         affiliateProfileId: 'aff-2',
         sortOrder: 'asc',
+        userId: '84',
+        dateFrom: '2026-04-20T00:00:00.000Z',
+        dateTo: undefined,
     });
 });

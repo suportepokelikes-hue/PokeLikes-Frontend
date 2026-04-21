@@ -438,7 +438,7 @@ export async function AdminCatalogPage({
                 </div>
                 <p className="section-copy">
                   {activeAffiliateSettings
-                    ? `Atualizado em ${formatDateTime(activeAffiliateSettings.updatedAt)}.`
+                    ? 'Leitura atual carregada a partir do contrato do catalogo. O percentual e aplicado sobre o valor da venda.'
                     : affiliateSettingsError
                       ? affiliateSettingsError
                       : 'Sem leitura previa.'}
@@ -558,10 +558,9 @@ function renderCatalogAffiliateState(settings: AdminCatalogAffiliateSettingsReso
       <StatusBadge label={settings.affiliateEnabled ? 'habilitado' : 'desligado'} tone={settings.affiliateEnabled ? 'success' : 'neutral'} />
       <span className="panel-meta">
         {settings.affiliateCommissionPercent
-          ? `${formatAffiliateCommissionPercent(settings.affiliateCommissionPercent)}${settings.affiliateEnabled ? '' : ' em referencia'}`
+          ? `${formatAffiliateCommissionPercent(settings.affiliateCommissionPercent)} sobre venda${settings.affiliateEnabled ? '' : ' em referencia'}`
           : 'Sem percentual ativo'}
       </span>
-      <span className="panel-meta">{formatDateTime(settings.updatedAt)}</span>
     </div>
   );
 }

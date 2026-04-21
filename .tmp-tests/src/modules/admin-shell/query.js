@@ -85,7 +85,6 @@ function parseAdminAffiliatesParams(searchParams) {
     return {
         page: readPositiveInt(searchParams.page),
         pageSize: readPositiveInt(searchParams.pageSize),
-        search: readString(searchParams.search),
         sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
         status: readString(searchParams.status),
     };
@@ -95,10 +94,12 @@ function parseAdminAffiliateCommissionsParams(searchParams) {
     return {
         page: readPositiveInt(searchParams.page),
         pageSize: readPositiveInt(searchParams.pageSize),
-        search: readString(searchParams.search),
         sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
         status: readString(searchParams.status),
         affiliateProfileId: readString(searchParams.affiliateProfileId),
+        userId: readString(searchParams.userId),
+        dateFrom: readString(searchParams.dateFrom),
+        dateTo: readString(searchParams.dateTo),
     };
 }
 function parseAdminAffiliatePayoutsParams(searchParams) {
@@ -106,10 +107,12 @@ function parseAdminAffiliatePayoutsParams(searchParams) {
     return {
         page: readPositiveInt(searchParams.page),
         pageSize: readPositiveInt(searchParams.pageSize),
-        search: readString(searchParams.search),
         sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
         status: readString(searchParams.status),
         affiliateProfileId: readString(searchParams.affiliateProfileId),
+        userId: readString(searchParams.userId),
+        dateFrom: readString(searchParams.dateFrom),
+        dateTo: readString(searchParams.dateTo),
     };
 }
 function parseAdminAlertsParams(searchParams) {

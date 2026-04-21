@@ -5,7 +5,9 @@ exports.getCustomerProfile = getCustomerProfile;
 exports.updateCustomerProfile = updateCustomerProfile;
 exports.getCustomerReferralSummary = getCustomerReferralSummary;
 exports.getCustomerAffiliateProfile = getCustomerAffiliateProfile;
+exports.getCustomerAffiliatePix = getCustomerAffiliatePix;
 exports.applyToAffiliateProgram = applyToAffiliateProgram;
+exports.updateCustomerAffiliatePix = updateCustomerAffiliatePix;
 exports.getCustomerAffiliateSummary = getCustomerAffiliateSummary;
 exports.listCustomerAffiliateCommissions = listCustomerAffiliateCommissions;
 exports.listCustomerPayments = listCustomerPayments;
@@ -15,6 +17,7 @@ exports.createPixPayment = createPixPayment;
 exports.getCustomerPaymentDetail = getCustomerPaymentDetail;
 exports.createCustomerOrder = createCustomerOrder;
 exports.getCustomerOrderDetail = getCustomerOrderDetail;
+const affiliate_normalizers_1 = require("./affiliate-normalizers");
 const http_1 = require("./http");
 function getWalletSummary({ accessToken }) {
     return (0, http_1.apiRequest)({
@@ -46,26 +49,40 @@ function getCustomerAffiliateProfile({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me/affiliate',
         accessToken,
-    });
+    }).then(affiliate_normalizers_1.normalizeAffiliateProfile);
+}
+function getCustomerAffiliatePix({ accessToken }) {
+    return (0, http_1.apiRequest)({
+        path: '/me/affiliate/pix-key',
+        accessToken,
+    }).then(affiliate_normalizers_1.normalizeAffiliatePixKey);
 }
 function applyToAffiliateProgram({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me/affiliate/apply',
         method: 'POST',
         accessToken,
-    });
+    }).then((response) => (0, affiliate_normalizers_1.normalizeAffiliateProfile)(response));
+}
+function updateCustomerAffiliatePix({ accessToken }, payload) {
+    return (0, http_1.apiRequest)({
+        path: '/me/affiliate/pix-key',
+        method: 'PATCH',
+        accessToken,
+        body: payload,
+    }).then(affiliate_normalizers_1.normalizeAffiliatePixKey);
 }
 function getCustomerAffiliateSummary({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me/affiliate/summary',
         accessToken,
-    });
+    }).then(affiliate_normalizers_1.normalizeAffiliateSummary);
 }
 function listCustomerAffiliateCommissions({ accessToken }) {
     return (0, http_1.apiRequest)({
         path: '/me/affiliate/commissions?page=1&pageSize=10&sortOrder=desc',
         accessToken,
-    });
+    }).then(affiliate_normalizers_1.normalizeAffiliateCommissionsResponse);
 }
 function listCustomerPayments({ accessToken }) {
     return (0, http_1.apiRequest)({

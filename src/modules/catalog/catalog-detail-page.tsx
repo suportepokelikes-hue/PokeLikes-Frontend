@@ -66,7 +66,6 @@ export async function CatalogDetailPage({ serviceId, affiliateCodeFromUrl }: Cat
               </div>
             }
           />
-
           <section className="public-hero-grid public-section">
             <article className="public-spotlight">
               <div className="public-spotlight-head">

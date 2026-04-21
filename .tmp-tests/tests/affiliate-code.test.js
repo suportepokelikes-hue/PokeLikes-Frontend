@@ -20,7 +20,7 @@ const affiliate_code_1 = require("../src/lib/affiliate-code");
     strict_1.default.equal((0, affiliate_code_1.appendAffiliateCodeToPath)('/catalog?search=likes', 'AFF10'), '/catalog?search=likes&aff=AFF10');
     strict_1.default.equal((0, affiliate_code_1.appendAffiliateCodeToPath)('/catalog?search=likes', '   '), '/catalog?search=likes');
 });
-(0, node_test_1.default)('persistAffiliateCode keeps the latest valid code and ignores blank replacements', () => {
+(0, node_test_1.default)('persistAffiliateCode keeps the latest valid code, can be cleared, and ignores blank replacements', () => {
     const storage = new Map();
     const target = globalThis;
     const originalWindow = target.window;
@@ -53,6 +53,8 @@ const affiliate_code_1 = require("../src/lib/affiliate-code");
         strict_1.default.equal((0, affiliate_code_1.getStoredAffiliateCode)(), 'AFF02');
         (0, affiliate_code_1.persistAffiliateCode)('   ');
         strict_1.default.equal((0, affiliate_code_1.getStoredAffiliateCode)(), 'AFF02');
+        (0, affiliate_code_1.clearStoredAffiliateCode)();
+        strict_1.default.equal((0, affiliate_code_1.getStoredAffiliateCode)(), undefined);
     }
     finally {
         if (originalWindow) {

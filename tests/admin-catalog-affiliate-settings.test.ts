@@ -12,7 +12,7 @@ test('catalog affiliate settings parser enforces a human commission percent only
 
   assert.ok('value' in enabledParsed);
   assert.deepEqual(enabledParsed.value, {
-    affiliateEnabled: true,
+    isAffiliateEnabled: true,
     affiliateCommissionPercent: '12.5',
   });
 
@@ -23,7 +23,7 @@ test('catalog affiliate settings parser enforces a human commission percent only
 
   assert.ok('value' in disabledParsed);
   assert.deepEqual(disabledParsed.value, {
-    affiliateEnabled: false,
+    isAffiliateEnabled: false,
   });
 
   const invalidEnabledForm = new FormData();

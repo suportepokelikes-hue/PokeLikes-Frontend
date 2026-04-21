@@ -32,18 +32,11 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
         <PageHeader
           eyebrow="Admin / comissoes afiliados"
           title="Comissoes afiliados"
-          description="Leitura financeira de aprovacao, pagamento e vinculacao por pedido."
+          description="Leitura financeira de comissoes calculadas como percentual sobre o valor da venda."
           actions={
             <AdminFilterBar
               pathname="/admin/affiliate-commissions"
               fields={[
-                {
-                  name: 'search',
-                  label: 'Busca',
-                  type: 'search',
-                  placeholder: 'ID da comissao, payout ou pedido',
-                  defaultValue: filters.search,
-                },
                 {
                   name: 'status',
                   label: 'Status',
@@ -52,6 +45,7 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
                   options: [
                     { label: 'Pendente', value: 'pending' },
                     { label: 'Aprovada', value: 'approved' },
+                    { label: 'Rejeitada', value: 'rejected' },
                     { label: 'Paga', value: 'paid' },
                   ],
                 },
@@ -98,21 +92,21 @@ export async function AdminAffiliateCommissionsPage({ session, filters }: AdminA
           <AdminSectionCard
             eyebrow="Financeiro"
             title="Comissoes registradas"
-            description="Status, valor e payout associado em uma grade unica para conciliacao."
+            description="Status, valor da comissao, pedido e payout vinculado. O percentual exibido tem como base a venda."
             meta={<span className="panel-meta">{commissions.totalItems} registros</span>}
           >
-            <DataTable columns={['ID', 'Afiliado', 'Pedido', 'Percentual', 'Valor', 'Status', 'Payout', 'Pago em', 'Criado em']}>
+            <DataTable columns={['ID', 'Afiliado', 'Pedido', 'Payout', '% venda', 'Comissao', 'Status', 'Pago em', 'Criado em']}>
               {commissions.items.map((commission) => (
                 <tr key={commission.id}>
                   <td>{commission.id}</td>
                   <td>{commission.affiliateProfileId || '-'}</td>
                   <td>{commission.orderId || '-'}</td>
-                  <td>{commission.affiliateCommissionPercent}%</td>
+                  <td>{commission.payoutId || '-'}</td>
+                  <td>{commission.affiliateCommissionPercent ? `${commission.affiliateCommissionPercent}%` : '-'}</td>
                   <td>{formatMoney(commission.commissionAmount)}</td>
                   <td>
                     <StatusBadge label={commission.status} tone={mapAffiliateFinanceStatusTone(commission.status)} />
                   </td>
-                  <td>{commission.payoutId || '-'}</td>
                   <td>{formatDateTime(commission.paidAt)}</td>
                   <td>{formatDateTime(commission.createdAt)}</td>
                 </tr>
