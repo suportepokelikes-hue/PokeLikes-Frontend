@@ -19,7 +19,10 @@ import {
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import { AdminAffiliatePayoutForm } from '@/modules/admin-shell/admin-affiliate-payout-form';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
-import type { AdminAffiliatePayoutsListParams } from '@/modules/admin-shell/query';
+import type {
+  AdminAffiliatePayoutCreationDraft,
+  AdminAffiliatePayoutsListParams,
+} from '@/modules/admin-shell/query';
 import {
   AdminFilterBar,
   AdminSummaryCard,
@@ -33,9 +36,15 @@ type AdminAffiliatePayoutsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   filters: AdminAffiliatePayoutsListParams;
   isCreateOpen?: boolean;
+  creationDraft?: AdminAffiliatePayoutCreationDraft;
 };
 
-export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen = false }: AdminAffiliatePayoutsPageProps) {
+export async function AdminAffiliatePayoutsPage({
+  session,
+  filters,
+  isCreateOpen = false,
+  creationDraft,
+}: AdminAffiliatePayoutsPageProps) {
   try {
     const payouts = await listAdminAffiliatePayouts(session.accessToken, filters);
     const returnTo = buildPathWithSearch('/admin/affiliate-payouts', {
@@ -178,7 +187,8 @@ export async function AdminAffiliatePayoutsPage({ session, filters, isCreateOpen
             <AdminAffiliatePayoutForm
               action={createAffiliatePayoutAction}
               returnTo={returnTo}
-              defaultAffiliateProfileId={filters.affiliateProfileId}
+              defaultAffiliateProfileId={creationDraft?.affiliateProfileId ?? filters.affiliateProfileId}
+              defaultCommissionIds={creationDraft?.commissionIds}
             />
           </AdminSlideOver>
         ) : null}

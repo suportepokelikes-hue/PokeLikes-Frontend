@@ -64,6 +64,7 @@ export type AdminAffiliateCommissionsListParams = {
   sortOrder?: 'asc' | 'desc';
   status?: string;
   affiliateProfileId?: string;
+  commissionIds?: string;
   userId?: string;
   dateFrom?: string;
   dateTo?: string;
@@ -78,6 +79,11 @@ export type AdminAffiliatePayoutsListParams = {
   userId?: string;
   dateFrom?: string;
   dateTo?: string;
+};
+
+export type AdminAffiliatePayoutCreationDraft = {
+  affiliateProfileId?: string;
+  commissionIds: string[];
 };
 
 export type AdminAlertsListParams = AdminBaseListParams & {
@@ -205,6 +211,7 @@ export function parseAdminAffiliateCommissionsParams(searchParams: Record<string
     sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
     status: readString(searchParams.status),
     affiliateProfileId: readString(searchParams.affiliateProfileId),
+    commissionIds: readStringList(searchParams.commissionIds).join(',') || undefined,
     userId: readString(searchParams.userId),
     dateFrom: readString(searchParams.dateFrom),
     dateTo: readString(searchParams.dateTo),
@@ -223,6 +230,13 @@ export function parseAdminAffiliatePayoutsParams(searchParams: Record<string, Se
     userId: readString(searchParams.userId),
     dateFrom: readString(searchParams.dateFrom),
     dateTo: readString(searchParams.dateTo),
+  };
+}
+
+export function parseAdminAffiliatePayoutCreationDraft(searchParams: Record<string, SearchParamValue>): AdminAffiliatePayoutCreationDraft {
+  return {
+    affiliateProfileId: readString(searchParams.affiliateProfileId),
+    commissionIds: readStringList(searchParams.commissionIds),
   };
 }
 
@@ -305,6 +319,19 @@ function readString(value: SearchParamValue) {
 
   const trimmed = single.trim();
   return trimmed ? trimmed : undefined;
+}
+
+function readStringList(value: SearchParamValue) {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+
+  return Array.from(
+    new Set(
+      values
+        .flatMap((item) => item.split(/[\n,;]+/))
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  );
 }
 
 function readPositiveInt(value: SearchParamValue) {

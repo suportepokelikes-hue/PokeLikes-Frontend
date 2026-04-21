@@ -5,6 +5,7 @@ import {
   buildAdminPath,
   parseAdminCatalogCreateSupplierServiceId,
   parseAdminAffiliateCommissionsParams,
+  parseAdminAffiliatePayoutCreationDraft,
   parseAdminAffiliatePayoutsParams,
   parseAdminAffiliatesParams,
   parseAdminTransactionsParams,
@@ -120,10 +121,31 @@ test('parseAdminAffiliateCommissionsParams keeps only supported commission filte
     pageSize: 50,
     status: 'approved',
     affiliateProfileId: 'aff-1',
+    commissionIds: undefined,
     sortOrder: 'desc',
     userId: '42',
     dateFrom: '2026-04-20T10:00:00.000Z',
     dateTo: undefined,
+  });
+});
+
+test('parseAdminAffiliateCommissionsParams keeps payout selection ids only as local UI state', () => {
+  const params = parseAdminAffiliateCommissionsParams({
+    commissionIds: ['1, 2', '3'],
+  });
+
+  assert.equal(params.commissionIds, '1,2,3');
+});
+
+test('parseAdminAffiliatePayoutCreationDraft reads guided payout defaults from query params', () => {
+  const draft = parseAdminAffiliatePayoutCreationDraft({
+    affiliateProfileId: '7',
+    commissionIds: ['1, 2', '2;3'],
+  });
+
+  assert.deepEqual(draft, {
+    affiliateProfileId: '7',
+    commissionIds: ['1', '2', '3'],
   });
 });
 

@@ -166,8 +166,8 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/admin/alerts` lista e resolve alertas
 - `/admin/audits` e leitura
 - `/admin/affiliates` aprova e suspende perfis
-- `/admin/affiliate-commissions` e leitura financeira
-- `/admin/affiliate-payouts` lista, registra a solicitacao inicial do payout e permite avancar `requested -> processing` por `POST /admin/affiliate-payouts/{payoutId}/status`, disparando PIX real via Asaas; payouts em `processing` podem ser reconciliados por `POST /admin/affiliate-payouts/{payoutId}/refresh`
+- `/admin/affiliate-commissions` e leitura financeira, com selecao guiada de comissoes `approved` sem `payoutId` para iniciar payout de um unico `affiliateProfileId`
+- `/admin/affiliate-payouts` lista, registra a solicitacao inicial do payout por `affiliateProfileId`, `commissionIds` e `notes`, aceita pre-selecao por query params vinda das comissoes e permite avancar `requested -> processing` por `POST /admin/affiliate-payouts/{payoutId}/status`, disparando PIX real via Asaas; payouts em `processing` podem ser reconciliados por `POST /admin/affiliate-payouts/{payoutId}/refresh`
 
 ## UX Direction That Already Exists In Code
 
@@ -225,7 +225,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - troca de email do cliente ainda nao foi entregue
 - a UI do cliente nao oferece remocao explicita de telefone; enviar vazio hoje nao limpa o campo existente
-- o payout admin segue o contrato atual do backend com `affiliateProfileId`, `commissionIds`, `notes`, `pixKey`, campos de provider/auditoria Asaas, `statusReason` e timestamps de ciclo; a wallet interna nao participa do fluxo
+- o payout admin segue o contrato atual do backend com `affiliateProfileId`, `commissionIds`, `notes`, `pixKey`, campos de provider/auditoria Asaas, `statusReason` e timestamps de ciclo; a wallet interna nao participa do fluxo; a selecao guiada no admin apenas preenche o mesmo formulario contratual
 - o `affiliateCode` salvo por `?aff=` ainda nao tem politica automatica de expiracao, mas a UI permite limpeza manual explicita
 - o admin nao expoe acao dedicada para reativar afiliado suspenso
 

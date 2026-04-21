@@ -2,6 +2,8 @@
 
 ## Latest Update
 
+- [x] `/admin/affiliate-commissions` agora permite selecionar comissoes aprovadas sem payout, bloqueando mistura entre afiliados na UI e abrindo `/admin/affiliate-payouts` com o drawer preenchido por `affiliateProfileId` e `commissionIds`
+- [x] `/admin/affiliate-payouts` preserva o formulario manual e passou a aceitar pre-selecao por query params para o fluxo guiado iniciado na lista de comissoes
 - [x] `/admin/affiliate-payouts` ganhou acabamento operacional pos-webhook Asaas: status em `processing` diferencia aguardando retorno automatico, sync do provider mostra timestamp de `providerSyncedAt` e refresh manual ficou descrito como fallback
 - [x] admin payouts foi adaptado para payout PIX real via Asaas: `requested -> processing` usa a mutation de status e `processing` ganhou refresh manual por `POST /admin/affiliate-payouts/{payoutId}/refresh`
 - [x] contratos/tipos/normalizacao de payouts passaram a carregar auditoria do provider: `provider`, `externalReference`, `providerTransactionId`, `providerStatus`, `providerErrorCode`, `providerErrorMessage` e `providerSyncedAt`

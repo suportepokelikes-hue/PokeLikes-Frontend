@@ -7,9 +7,15 @@ type AdminAffiliatePayoutFormProps = {
   action: AffiliatePayoutAction;
   returnTo: string;
   defaultAffiliateProfileId?: string;
+  defaultCommissionIds?: string[];
 };
 
-export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliateProfileId }: AdminAffiliatePayoutFormProps) {
+export function AdminAffiliatePayoutForm({
+  action,
+  returnTo,
+  defaultAffiliateProfileId,
+  defaultCommissionIds = [],
+}: AdminAffiliatePayoutFormProps) {
   return (
     <AdminActionForm
       action={action}
@@ -34,6 +40,7 @@ export function AdminAffiliatePayoutForm({ action, returnTo, defaultAffiliatePro
           <textarea
             name="commissionIds"
             rows={4}
+            defaultValue={defaultCommissionIds.join('\n')}
             placeholder="Cole IDs numericos separados por virgula ou quebra de linha"
           />
         </label>

@@ -2175,6 +2175,10 @@ components:
           properties:
             affiliateProfileId:
               type: string
+            affiliatePayoutId:
+              type: string
+              nullable: true
+              description: Current operational payout linked to this commission, or `null` when still selectable for a new payout.
             affiliate:
               type: object
               properties:
@@ -2186,7 +2190,7 @@ components:
                   type: string
                   description: Alias of `publicCode` kept for frontend compatibility.
               required: [userId, publicCode, affiliateCode]
-          required: [affiliateProfileId, affiliate]
+          required: [affiliateProfileId, affiliatePayoutId, affiliate]
     AffiliatePayoutResource:
       type: object
       description: Admin-supervised PIX payout record for affiliate commissions.

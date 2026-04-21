@@ -62,9 +62,11 @@
   - listagem e acoes de aprovar/suspender
 - `/admin/affiliate-commissions`
   - leitura financeira
+  - selecao de comissoes aprovadas sem payout para iniciar payout guiado de um unico afiliado
 - `/admin/affiliate-payouts`
   - listagem
   - drawer de criacao por `?create=1`
+  - aceita `affiliateProfileId` e `commissionIds` na query para preencher o drawer a partir das comissoes
   - `requested -> processing` dispara PIX real via Asaas
   - refresh manual do provider enquanto o payout esta `processing`
 - `/admin/catalog`
