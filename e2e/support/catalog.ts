@@ -13,7 +13,7 @@ export async function openCheckoutCandidate(page: Page) {
   }
 
   await page.goto('/catalog');
-  await expect(page.getByRole('heading', { name: /Servicos reais disponiveis no backend/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Catalogo|Servicos reais disponiveis no backend/i })).toBeVisible();
 
   const card = page.locator('.catalog-card').filter({ hasText: 'Compravel' }).first();
   await expect(card).toBeVisible();

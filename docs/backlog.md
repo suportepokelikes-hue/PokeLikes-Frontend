@@ -2,6 +2,9 @@
 
 ## Latest Update
 
+- [x] checklist de smoke test de staging para rollout de afiliados foi consolidado em `docs/checklists/affiliate-rollout-smoke.md`, encurtando a ordem manual de validacao cliente/admin sem mudar regra de negocio
+- [x] E2E de afiliados ganhou cobertura minima dos fluxos principais: captura `?aff=` e reaproveitamento no checkout, leitura de `/app/affiliate` com PIX, fluxo guiado de payout por comissoes aprovadas e visibilidade de `requested -> processing`/refresh manual no admin
+- [x] `/admin/affiliate-payouts` agora destaca payouts problemáticos sem mudar fluxo: `processing` com mais de 30 minutos sem sync do provider recebe alerta discreto, erros/status falhos do provider ficam em destaque e o refresh manual segue como fallback operacional
 - [x] `/admin/affiliate-commissions` agora permite selecionar comissoes aprovadas sem payout, bloqueando mistura entre afiliados na UI e abrindo `/admin/affiliate-payouts` com o drawer preenchido por `affiliateProfileId` e `commissionIds`
 - [x] `/admin/affiliate-payouts` preserva o formulario manual e passou a aceitar pre-selecao por query params para o fluxo guiado iniciado na lista de comissoes
 - [x] `/admin/affiliate-payouts` ganhou acabamento operacional pos-webhook Asaas: status em `processing` diferencia aguardando retorno automatico, sync do provider mostra timestamp de `providerSyncedAt` e refresh manual ficou descrito como fallback
@@ -332,12 +335,14 @@ Tasks:
 - [x] preparar helpers de ambiente e auth para E2E
 - [x] cobrir fluxos de maior valor: login cliente/admin, PIX e checkout por UI
 - [x] cobrir cenarios negativos de auth e primeira operacao admin por UI
+- [x] cobrir fluxos principais de afiliados: `?aff=`, `/app/affiliate`, payout guiado por comissoes e refresh/processamento admin
 - [ ] ampliar cobertura E2E para operacoes admin e cenarios negativos
 
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
+- executar o smoke test manual curto de `docs/checklists/affiliate-rollout-smoke.md` em staging com massa valida de afiliado/comprador/admin
 - validar por fluxo manual ou E2E a jornada completa de payout admin via Asaas por `affiliateProfileId`, `commissionIds`, `notes`, `requested -> processing` e refresh do provider
 - validar a landing publica com o asset final `public/brand/landing-mascot.png` e fazer ajuste fino de proporcao, contraste e espacamento do hero
 - revisar tela a tela onde ainda vale remover copy residual em catalogo publico, detalhe de servico e modulos admin secundarios

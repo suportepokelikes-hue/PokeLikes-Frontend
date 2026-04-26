@@ -48,3 +48,13 @@ export function getAdminAlertId() {
 
   return value || null;
 }
+
+export function getAffiliateCode() {
+  return process.env.E2E_AFFILIATE_CODE?.trim() || 'E2E-AFFILIATE';
+}
+
+export function getAdminRequestedPayoutId() {
+  const value = process.env.E2E_ADMIN_REQUESTED_PAYOUT_ID?.trim();
+
+  return value || null;
+}

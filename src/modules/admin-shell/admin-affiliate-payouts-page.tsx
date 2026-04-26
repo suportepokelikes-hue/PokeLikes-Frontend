@@ -32,6 +32,8 @@ import {
   summarizeText,
 } from '@/modules/admin-shell/shared';
 
+const PROCESSING_DELAY_THRESHOLD_MS = 30 * 60 * 1000;
+
 type AdminAffiliatePayoutsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   filters: AdminAffiliatePayoutsListParams;
@@ -61,9 +63,10 @@ export async function AdminAffiliatePayoutsPage({
     const paidCount = payouts.items.filter((item) => item.status === 'paid').length;
     const processingCount = payouts.items.filter((item) => item.status === 'requested' || item.status === 'processing').length;
     const awaitingProviderCount = payouts.items.filter((item) => item.status === 'processing' && !item.providerSyncedAt).length;
+    const delayedProcessingCount = payouts.items.filter(isProcessingDelayed).length;
     const providerSyncedCount = payouts.items.filter((item) => Boolean(item.providerSyncedAt)).length;
     const blockedCount = payouts.items.filter((item) => item.status === 'failed' || item.status === 'cancelled').length;
-    const providerErrorCount = payouts.items.filter((item) => item.providerErrorCode || item.providerErrorMessage).length;
+    const providerErrorCount = payouts.items.filter(hasProviderFailureSignal).length;
 
     return (
       <main className="page page-admin">
@@ -127,7 +130,12 @@ export async function AdminAffiliatePayoutsPage({
         <section className="metric-list">
           <AdminSummaryCard label="Na pagina" value={String(payouts.items.length)} meta={`${payouts.totalItems} no total`} />
           <AdminSummaryCard label="Pagos" value={String(paidCount)} tone="accent" />
-          <AdminSummaryCard label="Em andamento" value={String(processingCount)} tone="warning" meta={`${awaitingProviderCount} aguardando provider`} />
+          <AdminSummaryCard
+            label="Em andamento"
+            value={String(processingCount)}
+            tone="warning"
+            meta={`${awaitingProviderCount} aguardando provider, ${delayedProcessingCount} atrasado(s)`}
+          />
           <AdminSummaryCard label="Sync provider" value={String(providerSyncedCount)} tone="accent" />
           <AdminSummaryCard label="Alertas provider" value={String(providerErrorCount || blockedCount)} tone="danger" />
         </section>
@@ -142,27 +150,39 @@ export async function AdminAffiliatePayoutsPage({
             meta={<span className="panel-meta">{payouts.totalItems} registros</span>}
           >
             <DataTable columns={['ID', 'Afiliado', 'Comissoes', 'Valor', 'PIX', 'Status', 'Provider', 'Timeline', 'Motivo/erro', 'Acao']}>
-              {payouts.items.map((payout) => (
-                <tr key={payout.id}>
-                  <td>{payout.id}</td>
-                  <td>{payout.affiliateProfileId || '-'}</td>
-                  <td>{formatCommissionLinkage(payout.commissionCount, payout.commissionIds)}</td>
-                  <td>{formatPayoutAmount(payout.amount)}</td>
-                  <td>{formatPayoutPixKey(payout.pixKey)}</td>
-                  <td>
-                    <span className="admin-inline-stack">
-                      <StatusBadge label={formatPayoutStatus(payout.status)} tone={mapAffiliateFinanceStatusTone(payout.status)} />
-                      <span>{formatPayoutSyncHint(payout)}</span>
-                    </span>
-                  </td>
-                  <td>{formatProviderAudit(payout)}</td>
-                  <td>{formatPayoutTimeline(payout)}</td>
-                  <td>{formatOperationalReason(payout)}</td>
-                  <td>
-                    <AffiliatePayoutActions payout={payout} returnTo={returnTo} />
-                  </td>
-                </tr>
-              ))}
+              {payouts.items.map((payout) => {
+                const operationalSignal = getPayoutOperationalSignal(payout);
+
+                return (
+                  <tr key={payout.id} className={formatOperationalRowClass(operationalSignal)}>
+                    <td>{payout.id}</td>
+                    <td>{payout.affiliateProfileId || '-'}</td>
+                    <td>{formatCommissionLinkage(payout.commissionCount, payout.commissionIds)}</td>
+                    <td>{formatPayoutAmount(payout.amount)}</td>
+                    <td>{formatPayoutPixKey(payout.pixKey)}</td>
+                    <td>
+                      <span className="admin-inline-stack">
+                        <StatusBadge label={formatPayoutStatus(payout.status)} tone={mapAffiliateFinanceStatusTone(payout.status)} />
+                        {operationalSignal ? (
+                          <StatusBadge label={operationalSignal.label} tone={operationalSignal.tone} />
+                        ) : null}
+                        <span>{formatPayoutSyncHint(payout)}</span>
+                        {operationalSignal?.actionText ? (
+                          <span className={`admin-operational-hint admin-operational-hint-${operationalSignal.tone}`}>
+                            {operationalSignal.actionText}
+                          </span>
+                        ) : null}
+                      </span>
+                    </td>
+                    <td>{formatProviderAudit(payout)}</td>
+                    <td>{formatPayoutTimeline(payout)}</td>
+                    <td>{formatOperationalReason(payout, operationalSignal)}</td>
+                    <td>
+                      <AffiliatePayoutActions payout={payout} returnTo={returnTo} />
+                    </td>
+                  </tr>
+                );
+              })}
             </DataTable>
 
             <PaginationSummary
@@ -312,6 +332,75 @@ function formatPayoutSyncHint(payout: AffiliatePayoutResource) {
   return 'Sem sync provider registrado';
 }
 
+type PayoutOperationalSignal = {
+  kind: 'processing-delayed' | 'provider-error';
+  label: string;
+  tone: 'warning' | 'danger';
+  actionText?: string;
+};
+
+function getPayoutOperationalSignal(payout: AffiliatePayoutResource): PayoutOperationalSignal | null {
+  if (hasProviderFailureSignal(payout)) {
+    return {
+      kind: 'provider-error',
+      label: 'Erro provider',
+      tone: 'danger',
+      actionText: isTerminalPayout(payout)
+        ? 'Finalizado com erro registrado.'
+        : 'Atualize Asaas ou marque falha com motivo.',
+    };
+  }
+
+  if (isProcessingDelayed(payout)) {
+    return {
+      kind: 'processing-delayed',
+      label: 'Processing atrasado',
+      tone: 'warning',
+      actionText: 'Use refresh Asaas e confira o provider.',
+    };
+  }
+
+  return null;
+}
+
+function isProcessingDelayed(payout: AffiliatePayoutResource) {
+  if (payout.status !== 'processing' || payout.providerSyncedAt || !payout.processingAt) {
+    return false;
+  }
+
+  const processingTime = Date.parse(payout.processingAt);
+
+  return Number.isFinite(processingTime) && Date.now() - processingTime >= PROCESSING_DELAY_THRESHOLD_MS;
+}
+
+function hasProviderFailureSignal(payout: AffiliatePayoutResource) {
+  if (payout.providerErrorCode || payout.providerErrorMessage) {
+    return true;
+  }
+
+  const providerStatus = payout.providerStatus?.toLowerCase();
+
+  if (!providerStatus) {
+    return false;
+  }
+
+  return ['fail', 'error', 'refused', 'reject', 'cancel', 'denied', 'expired'].some((signal) =>
+    providerStatus.includes(signal),
+  );
+}
+
+function isTerminalPayout(payout: AffiliatePayoutResource) {
+  return payout.status === 'paid' || payout.status === 'failed' || payout.status === 'cancelled';
+}
+
+function formatOperationalRowClass(signal: PayoutOperationalSignal | null) {
+  if (!signal) {
+    return undefined;
+  }
+
+  return signal.tone === 'danger' ? 'data-table-row-danger' : 'data-table-row-warning';
+}
+
 function formatProviderAudit(payout: AffiliatePayoutResource) {
   const rows = [
     ['Provider', payout.provider ?? (payout.status === 'requested' ? null : 'Asaas')],
@@ -336,9 +425,10 @@ function formatProviderAudit(payout: AffiliatePayoutResource) {
   );
 }
 
-function formatOperationalReason(payout: AffiliatePayoutResource) {
+function formatOperationalReason(payout: AffiliatePayoutResource, signal?: PayoutOperationalSignal | null) {
   const providerError = [payout.providerErrorCode, payout.providerErrorMessage].filter(Boolean).join(' - ');
   const rows = [
+    signal ? ['Alerta', signal.actionText ?? signal.label] : null,
     providerError ? ['Erro provider', providerError] : null,
     payout.statusReason ? ['Motivo', payout.statusReason] : null,
     payout.notes ? ['Obs.', payout.notes] : null,
