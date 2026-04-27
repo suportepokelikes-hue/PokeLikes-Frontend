@@ -12,7 +12,6 @@ import {
 import { CustomerMetricCard, CustomerQuickActionCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import {
@@ -55,30 +54,13 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
       pendingPaymentId: pendingPayments[0]?.id,
       openOrdersCount: openOrders.length,
     });
+    const showPriorityAction = priorityAction.href !== '/catalog' && priorityAction.href !== '/app/payments';
     const PriorityActionIcon = priorityAction.icon;
     const latestOrder = orders.items[0] ?? null;
     const affiliateStatusView = getAffiliateStatusView(affiliateProfile);
 
     return (
       <main className="page page-customer customer-dashboard-page">
-        <PageHeader
-          eyebrow="Area do cliente"
-          title="Dashboard"
-          compact
-          actions={
-            <>
-              <Link href="/catalog" prefetch={false} className="primary-action">
-                <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
-                Novo pedido
-              </Link>
-              <Link href="/app/payments" prefetch={false} className="secondary-action">
-                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
-                Gerar PIX
-              </Link>
-            </>
-          }
-        />
-
         <section className="customer-dashboard-hero">
           <article className="customer-dashboard-command">
             <div className="customer-dashboard-command-head">
@@ -111,10 +93,20 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             </div>
 
             <div className="customer-dashboard-command-actions">
-              <Link href={priorityAction.href} prefetch={false} className="primary-action">
-                <PriorityActionIcon size={16} strokeWidth={2.15} aria-hidden="true" />
-                {priorityAction.label}
+              <Link href="/catalog" prefetch={false} className="primary-action">
+                <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
+                Novo pedido
               </Link>
+              <Link href="/app/payments" prefetch={false} className="secondary-action">
+                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
+                Gerar PIX
+              </Link>
+              {showPriorityAction ? (
+                <Link href={priorityAction.href} prefetch={false} className="secondary-action">
+                  <PriorityActionIcon size={16} strokeWidth={2.15} aria-hidden="true" />
+                  {priorityAction.label}
+                </Link>
+              ) : null}
               <Link href="/app/wallet" prefetch={false} className="secondary-action">
                 <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
                 Ver carteira

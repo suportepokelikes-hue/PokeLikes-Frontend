@@ -10,6 +10,7 @@ exports.parseAdminTransactionsParams = parseAdminTransactionsParams;
 exports.parseAdminAffiliatesParams = parseAdminAffiliatesParams;
 exports.parseAdminAffiliateCommissionsParams = parseAdminAffiliateCommissionsParams;
 exports.parseAdminAffiliatePayoutsParams = parseAdminAffiliatePayoutsParams;
+exports.parseAdminAffiliatePayoutCreationDraft = parseAdminAffiliatePayoutCreationDraft;
 exports.parseAdminAlertsParams = parseAdminAlertsParams;
 exports.parseAdminAuditsParams = parseAdminAuditsParams;
 exports.parseSupplierServicesParams = parseSupplierServicesParams;
@@ -97,6 +98,7 @@ function parseAdminAffiliateCommissionsParams(searchParams) {
         sortOrder: sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : undefined,
         status: readString(searchParams.status),
         affiliateProfileId: readString(searchParams.affiliateProfileId),
+        commissionIds: readStringList(searchParams.commissionIds).join(',') || undefined,
         userId: readString(searchParams.userId),
         dateFrom: readString(searchParams.dateFrom),
         dateTo: readString(searchParams.dateTo),
@@ -113,6 +115,12 @@ function parseAdminAffiliatePayoutsParams(searchParams) {
         userId: readString(searchParams.userId),
         dateFrom: readString(searchParams.dateFrom),
         dateTo: readString(searchParams.dateTo),
+    };
+}
+function parseAdminAffiliatePayoutCreationDraft(searchParams) {
+    return {
+        affiliateProfileId: readString(searchParams.affiliateProfileId),
+        commissionIds: readStringList(searchParams.commissionIds),
     };
 }
 function parseAdminAlertsParams(searchParams) {
@@ -181,6 +189,13 @@ function readString(value) {
     }
     const trimmed = single.trim();
     return trimmed ? trimmed : undefined;
+}
+function readStringList(value) {
+    const values = Array.isArray(value) ? value : value ? [value] : [];
+    return Array.from(new Set(values
+        .flatMap((item) => item.split(/[\n,;]+/))
+        .map((item) => item.trim())
+        .filter(Boolean)));
 }
 function readPositiveInt(value) {
     const stringValue = readString(value);

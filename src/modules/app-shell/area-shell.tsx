@@ -119,7 +119,7 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
         </div>
 
         <div className="account-badge">
-          <div>
+          <div className="account-badge-copy">
             <strong>{view.userName}</strong>
             <span>{view.userMeta}</span>
           </div>

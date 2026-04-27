@@ -98,10 +98,27 @@ const query_1 = require("../src/modules/admin-shell/query");
         pageSize: 50,
         status: 'approved',
         affiliateProfileId: 'aff-1',
+        commissionIds: undefined,
         sortOrder: 'desc',
         userId: '42',
         dateFrom: '2026-04-20T10:00:00.000Z',
         dateTo: undefined,
+    });
+});
+(0, node_test_1.default)('parseAdminAffiliateCommissionsParams keeps payout selection ids only as local UI state', () => {
+    const params = (0, query_1.parseAdminAffiliateCommissionsParams)({
+        commissionIds: ['1, 2', '3'],
+    });
+    strict_1.default.equal(params.commissionIds, '1,2,3');
+});
+(0, node_test_1.default)('parseAdminAffiliatePayoutCreationDraft reads guided payout defaults from query params', () => {
+    const draft = (0, query_1.parseAdminAffiliatePayoutCreationDraft)({
+        affiliateProfileId: '7',
+        commissionIds: ['1, 2', '2;3'],
+    });
+    strict_1.default.deepEqual(draft, {
+        affiliateProfileId: '7',
+        commissionIds: ['1', '2', '3'],
     });
 });
 (0, node_test_1.default)('parseAdminAffiliatePayoutsParams keeps only supported payout filters', () => {
