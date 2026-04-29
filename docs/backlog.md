@@ -2,6 +2,13 @@
 
 ## Latest Update
 
+- [x] detalhe publico de `/catalog/[serviceId]` agora funciona como um card unico de produto + checkout, com resumo e compra no mesmo bloco responsivo sem duplicar nome, badge ou CTA
+- [x] detalhe publico de `/catalog/[serviceId]` foi drasticamente simplificado para foco em compra: saiu exposicao de origem/fornecedor, boxes inferiores e campos avancados do checkout, preservando o fluxo de pedido
+- [x] dashboard do cliente agora destaca `Proximo passo recomendado` no hero usando a logica existente de prioridade e reforca o estado do referral sem mudar contratos nem backend
+- [x] `/app/affiliate` agora destaca um bloco de divulgacao com codigo publico, link `/catalog?aff=...` e acoes de copiar, deixando mais claro o proximo passo do afiliado sem mudar backend nem payout
+- [x] `/app/orders` e `/app/payments` agora aceitam paginação simples por query string, preservando `orderId` e `paymentId` ao navegar entre páginas sem mudar backend nem filtros
+- [x] checkout de `/catalog/[serviceId]` foi simplificado sem mexer no payload: servico, quantidade, link e codigo de afiliado ficaram no fluxo principal; campos tecnicos opcionais passaram para a secao `Configuracoes avancadas`
+- [x] checkout de `/catalog/[serviceId]` ganhou resumo cirurgico antes do pedido com preco, faixa de quantidade, aviso de cobranca por quantidade e saldo da carteira quando o cliente esta autenticado, sem mudar `createOrderAction` nem contrato da API
 - [x] checklist de smoke test de staging para rollout de afiliados foi consolidado em `docs/checklists/affiliate-rollout-smoke.md`, encurtando a ordem manual de validacao cliente/admin sem mudar regra de negocio
 - [x] E2E de afiliados ganhou cobertura minima dos fluxos principais: captura `?aff=` e reaproveitamento no checkout, leitura de `/app/affiliate` com PIX, fluxo guiado de payout por comissoes aprovadas e visibilidade de `requested -> processing`/refresh manual no admin
 - [x] `/admin/affiliate-payouts` agora destaca payouts problemáticos sem mudar fluxo: `processing` com mais de 30 minutos sem sync do provider recebe alerta discreto, erros/status falhos do provider ficam em destaque e o refresh manual segue como fallback operacional

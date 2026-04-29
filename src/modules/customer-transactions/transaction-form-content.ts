@@ -4,7 +4,7 @@ import type { TransactionFormState } from './types';
 
 export type TransactionFormContent = {
   title: string;
-  description: string;
+  description?: string;
   children: ReactNode;
   submitLabel: string;
   returnTo?: string;

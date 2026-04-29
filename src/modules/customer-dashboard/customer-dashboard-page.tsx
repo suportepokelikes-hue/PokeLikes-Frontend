@@ -54,7 +54,6 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
       pendingPaymentId: pendingPayments[0]?.id,
       openOrdersCount: openOrders.length,
     });
-    const showPriorityAction = priorityAction.href !== '/catalog' && priorityAction.href !== '/app/payments';
     const PriorityActionIcon = priorityAction.icon;
     const latestOrder = orders.items[0] ?? null;
     const affiliateStatusView = getAffiliateStatusView(affiliateProfile);
@@ -92,6 +91,26 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
               </div>
             </div>
 
+            <section className="customer-dashboard-priority-card" aria-label="Proximo passo recomendado">
+              <div className="customer-dashboard-priority-head">
+                <div className="customer-dashboard-priority-copy">
+                  <span>Proximo passo recomendado</span>
+                  <strong>{priorityAction.title}</strong>
+                  <p>{priorityAction.description}</p>
+                </div>
+                <StatusBadge label={priorityAction.badgeLabel} tone={priorityAction.badgeTone} />
+              </div>
+              <div className="customer-dashboard-priority-footer">
+                <Link href={priorityAction.href} prefetch={false} className="primary-action">
+                  <PriorityActionIcon size={16} strokeWidth={2.15} aria-hidden="true" />
+                  {priorityAction.label}
+                </Link>
+                <p className="customer-dashboard-referral-note">
+                  <strong>{referralView.title}</strong> {referralView.description}
+                </p>
+              </div>
+            </section>
+
             <div className="customer-dashboard-command-actions">
               <Link href="/catalog" prefetch={false} className="primary-action">
                 <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
@@ -101,12 +120,6 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
                 Gerar PIX
               </Link>
-              {showPriorityAction ? (
-                <Link href={priorityAction.href} prefetch={false} className="secondary-action">
-                  <PriorityActionIcon size={16} strokeWidth={2.15} aria-hidden="true" />
-                  {priorityAction.label}
-                </Link>
-              ) : null}
               <Link href="/app/wallet" prefetch={false} className="secondary-action">
                 <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
                 Ver carteira

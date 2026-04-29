@@ -13,7 +13,7 @@ import type { PaymentResource } from '@/lib/api/contracts';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
-import { buildPathWithSearch } from '@/modules/admin-shell/shared';
+import { PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
 import {
   formatTaxIdForDisplay,
   getFiscalIdentityLabel,
@@ -29,14 +29,15 @@ import { initialTransactionFormState } from '@/modules/customer-transactions/typ
 type CustomerPaymentsPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   activePaymentId?: string;
+  page: number;
 };
 
-export async function CustomerPaymentsPage({ session, activePaymentId }: CustomerPaymentsPageProps) {
+export async function CustomerPaymentsPage({ session, activePaymentId, page }: CustomerPaymentsPageProps) {
   try {
     const [profile, wallet, payments] = await Promise.all([
       getCustomerProfile({ accessToken: session.accessToken }),
       getWalletSummary({ accessToken: session.accessToken }),
-      listCustomerPayments({ accessToken: session.accessToken }),
+      listCustomerPayments({ accessToken: session.accessToken }, { page }),
     ]);
     let activePayment = null;
     let activePaymentError: string | null = null;
@@ -49,7 +50,9 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
       }
     }
 
-    const returnTo = buildPathWithSearch('/app/payments', {});
+    const returnTo = buildPathWithSearch('/app/payments', {
+      page: payments.page > 1 ? payments.page : undefined,
+    });
     const pendingPayments = payments.items.filter((payment) => payment.status === 'pending');
     const confirmedCount = payments.items.filter((payment) => payment.status === 'confirmed').length;
     const latestPendingPayment = pendingPayments[0] ?? null;
@@ -96,7 +99,13 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 }
                 className="customer-payment-focus-card"
                 actions={
-                  <Link href={buildPathWithSearch('/app/payments', { paymentId: latestPendingPayment.id })} className="primary-action">
+                  <Link
+                    href={buildPathWithSearch('/app/payments', {
+                      paymentId: latestPendingPayment.id,
+                      page: payments.page > 1 ? payments.page : undefined,
+                    })}
+                    className="primary-action"
+                  >
                     <QrCode size={16} strokeWidth={2.15} aria-hidden="true" />
                     Abrir pagamento
                   </Link>
@@ -239,7 +248,13 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
                   <td>
-                    <Link href={buildPathWithSearch('/app/payments', { paymentId: payment.id })} className="table-link">
+                    <Link
+                      href={buildPathWithSearch('/app/payments', {
+                        paymentId: payment.id,
+                        page: payments.page > 1 ? payments.page : undefined,
+                      })}
+                      className="table-link"
+                    >
                       PIX {getPaymentShortId(payment.id)}
                     </Link>
                   </td>
@@ -251,6 +266,15 @@ export async function CustomerPaymentsPage({ session, activePaymentId }: Custome
                 </tr>
               ))}
             </DataTable>
+            <PaginationSummary
+              page={payments.page}
+              pageSize={payments.pageSize}
+              totalItems={payments.totalItems}
+              totalPages={payments.totalPages}
+              pathname="/app/payments"
+              params={{ paymentId: activePaymentId }}
+              label="pagamentos"
+            />
           </CustomerSectionCard>
         )}
 

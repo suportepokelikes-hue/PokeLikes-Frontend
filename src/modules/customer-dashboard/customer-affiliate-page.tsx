@@ -18,6 +18,7 @@ import type { AffiliateCommissionResource, AffiliateProfileResource, Money } fro
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney, formatNumber } from '@/lib/format';
+import { AffiliateShareActions } from './affiliate-share-actions';
 import { AffiliateApplyForm } from './affiliate-apply-form';
 import { AffiliatePixForm } from './affiliate-pix-form';
 
@@ -99,6 +100,7 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
       pixKey: affiliatePix?.pixKey ?? (summary?.affiliateProfile ?? affiliateProfile).pixKey ?? null,
     };
     const affiliatePublicCode = getAffiliateDisplayCode(effectiveProfile) ?? '-';
+    const affiliateSharePath = affiliatePublicCode !== '-' ? `/catalog?aff=${encodeURIComponent(affiliatePublicCode)}` : null;
     const statusView = getAffiliateProfileStatusView(effectiveProfile.status);
     const summaryCards = buildAffiliateSummaryCards(summary?.totals ?? {});
 
@@ -174,6 +176,28 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
             </CustomerSectionCard>
           </div>
         </section>
+
+        {affiliateSharePath && (effectiveProfile.status === 'active' || effectiveProfile.status === 'pending') ? (
+          <CustomerSectionCard
+            title="Seu link de divulgacao"
+            meta={<StatusBadge label={statusView.label} tone={statusView.tone} />}
+          >
+            <div className="affiliate-share-card">
+              <div className="affiliate-share-stack">
+                <span>Codigo publico</span>
+                <strong>{affiliatePublicCode}</strong>
+              </div>
+              <div className="affiliate-share-stack">
+                <span>Link de divulgacao</span>
+                <p className="code-block">{affiliateSharePath}</p>
+              </div>
+              <p className="section-copy">
+                Compartilhe esse link. Quando alguem comprar usando seu codigo, a comissao aparece neste painel.
+              </p>
+              <AffiliateShareActions affiliateCode={affiliatePublicCode} affiliateLink={affiliateSharePath} />
+            </div>
+          </CustomerSectionCard>
+        ) : null}
 
         <AffiliatePixForm profile={effectiveProfile} />
 

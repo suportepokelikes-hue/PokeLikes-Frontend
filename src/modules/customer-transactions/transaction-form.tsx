@@ -9,6 +9,7 @@ import type { TransactionFormState } from '@/modules/customer-transactions/types
 type TransactionFormProps = TransactionFormContent & {
   action: (state: TransactionFormState, formData: FormData) => Promise<TransactionFormState>;
   initialState: TransactionFormState;
+  surface?: 'card' | 'plain';
 };
 
 export function TransactionForm({
@@ -19,6 +20,7 @@ export function TransactionForm({
   children,
   submitLabel,
   returnTo,
+  surface = 'card',
 }: TransactionFormProps) {
   const [state, formAction] = useActionState(action, initialState);
   const view = getTransactionFormView(
@@ -32,12 +34,12 @@ export function TransactionForm({
     state,
   );
 
-  return (
-    <section className="detail-card">
+  const content = (
+    <>
       <div className="panel-heading">
         <div className="stack-item">
           <strong>{view.title}</strong>
-          <p>{view.description}</p>
+          {view.description ? <p>{view.description}</p> : null}
         </div>
       </div>
 
@@ -63,8 +65,14 @@ export function TransactionForm({
         ) : null}
         <SubmitButton label={view.submitLabel} pendingLabel={view.pendingLabel} />
       </form>
-    </section>
+    </>
   );
+
+  if (surface === 'plain') {
+    return <div className="transaction-form-shell">{content}</div>;
+  }
+
+  return <section className="detail-card">{content}</section>;
 }
 
 type TransactionFieldProps = {

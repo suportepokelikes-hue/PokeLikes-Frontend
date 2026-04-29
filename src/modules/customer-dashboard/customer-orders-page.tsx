@@ -12,17 +12,18 @@ import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
-import { buildPathWithSearch } from '@/modules/admin-shell/shared';
+import { PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
 import { getOrderEventView, getOrderStatusView, orderHasQueuedSupplierBalance, sortOrderEvents } from '@/modules/orders/order-view';
 
 type CustomerOrdersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   activeOrderId?: string;
+  page: number;
 };
 
-export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrdersPageProps) {
+export async function CustomerOrdersPage({ session, activeOrderId, page }: CustomerOrdersPageProps) {
   try {
-    const orders = await listCustomerOrders({ accessToken: session.accessToken });
+    const orders = await listCustomerOrders({ accessToken: session.accessToken }, { page });
     let activeOrder = null;
     let activeOrderError: string | null = null;
 
@@ -34,7 +35,9 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
       }
     }
 
-    const returnTo = buildPathWithSearch('/app/orders', {});
+    const returnTo = buildPathWithSearch('/app/orders', {
+      page: orders.page > 1 ? orders.page : undefined,
+    });
     const openOrders = orders.items.filter((order) =>
       ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
     );
@@ -107,7 +110,13 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
               }
               actions={
                 latestOrder ? (
-                  <Link href={buildPathWithSearch('/app/orders', { orderId: latestOrder.id })} className="secondary-action">
+                  <Link
+                    href={buildPathWithSearch('/app/orders', {
+                      orderId: latestOrder.id,
+                      page: orders.page > 1 ? orders.page : undefined,
+                    })}
+                    className="secondary-action"
+                  >
                     <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
                     Abrir ultimo pedido
                   </Link>
@@ -180,7 +189,13 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                 return (
                   <tr key={order.id}>
                     <td>
-                      <Link href={buildPathWithSearch('/app/orders', { orderId: order.id })} className="table-link">
+                      <Link
+                        href={buildPathWithSearch('/app/orders', {
+                          orderId: order.id,
+                          page: orders.page > 1 ? orders.page : undefined,
+                        })}
+                        className="table-link"
+                      >
                         {order.id}
                       </Link>
                     </td>
@@ -194,6 +209,15 @@ export async function CustomerOrdersPage({ session, activeOrderId }: CustomerOrd
                 );
               })}
             </DataTable>
+            <PaginationSummary
+              page={orders.page}
+              pageSize={orders.pageSize}
+              totalItems={orders.totalItems}
+              totalPages={orders.totalPages}
+              pathname="/app/orders"
+              params={{ orderId: activeOrderId }}
+              label="pedidos"
+            />
           </CustomerSectionCard>
         )}
 

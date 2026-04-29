@@ -26,6 +26,12 @@ type AuthOptions = {
   accessToken: string;
 };
 
+type CustomerListParams = {
+  page?: number;
+  pageSize?: number;
+  sortOrder?: 'asc' | 'desc';
+};
+
 export function getWalletSummary({ accessToken }: AuthOptions) {
   return apiRequest<WalletSummary>({
     path: '/me/wallet',
@@ -101,16 +107,22 @@ export function listCustomerAffiliateCommissions({ accessToken }: AuthOptions) {
   }).then(normalizeAffiliateCommissionsResponse);
 }
 
-export function listCustomerPayments({ accessToken }: AuthOptions) {
+export function listCustomerPayments(
+  { accessToken }: AuthOptions,
+  { page = 1, pageSize = 5, sortOrder = 'desc' }: CustomerListParams = {},
+) {
   return apiRequest<PaginatedResponse<PaymentResource>>({
-    path: '/me/payments?page=1&pageSize=5&sortOrder=desc',
+    path: `/me/payments?page=${page}&pageSize=${pageSize}&sortOrder=${sortOrder}`,
     accessToken,
   });
 }
 
-export function listCustomerOrders({ accessToken }: AuthOptions) {
+export function listCustomerOrders(
+  { accessToken }: AuthOptions,
+  { page = 1, pageSize = 5, sortOrder = 'desc' }: CustomerListParams = {},
+) {
   return apiRequest<PaginatedResponse<OrderResource>>({
-    path: '/me/orders?page=1&pageSize=5&sortOrder=desc',
+    path: `/me/orders?page=${page}&pageSize=${pageSize}&sortOrder=${sortOrder}`,
     accessToken,
   });
 }
