@@ -25,6 +25,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `docs/contracts/backend-openapi.yaml` continua sendo a fonte contratual operacional
 - `docs/api/openapi.yaml` continua auxiliar e nao deve guiar payloads divergentes
 - `src/lib/api` e a fronteira unica com o backend
+- o catalogo em `/catalog/services` e `/catalog/services/{serviceId}` agora deve ser tratado como endpoint autenticado quando usado pelas superficies internas; `/app/services` e o fallback do admin ja enviam `Bearer`
 - `src/modules` concentra a maior parte da logica por dominio
 - a foundation visual compartilhada agora e dark premium e vive principalmente em `src/app/globals.css`
 - CTA principal amarelo, superficies escuras mais planas e componentes mais secos agora fazem parte da base oficial do app
@@ -48,14 +49,16 @@ Toda nova sessao do Codex neste repositorio deve ler:
 ### Publico
 
 - landing em `/`
+- `/` agora redireciona usuario autenticado para a area interna correspondente; a landing segue apenas para visitantes
 - auth em `/login` e `/register`
 - verify-email em `/verify-email`
-- catalogo em `/catalog` e `/catalog/[serviceId]`
+- `/catalog` e `/catalog/[serviceId]` permanecem apenas como entradas legadas de redirecionamento
 - captura de `?aff=` no catalogo publico
 
 ### Cliente
 
-- dashboard em `/app`
+- `/app` agora so redireciona para `/app/services`
+- catalogo interno em `/app/services` e detalhe em `/app/services/[serviceId]`
 - perfil com drawer de edicao em `/app/profile?edit=1`
 - afiliados em `/app/affiliate`
 - `/app/affiliate` tambem expõe chave PIX de payout, com aviso quando o afiliado ainda nao cadastrou a chave

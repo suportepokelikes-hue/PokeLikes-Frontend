@@ -27,11 +27,13 @@ O frontend nao deve inventar payloads fora do contrato validado.
 - landing em `/`
 - autenticacao em `/login` e `/register`
 - confirmacao de email em `/verify-email`
-- catalogo publico em `/catalog` e `/catalog/[serviceId]`
+- `/catalog` e `/catalog/[serviceId]` permanecem apenas como entradas de redirecionamento para login, `/app/services` ou `/admin/catalog`
 
 ### Customer
 
 - shell autenticado em `/app`
+- catalogo interno em `/app/services` e `/app/services/[serviceId]`
+- `/app` agora funciona apenas como redirecionamento para `/app/services`
 - perfil, referral e afiliados
 - wallet, PIX e pedidos
 
@@ -95,9 +97,12 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 ### Catalogo e checkout
 
-- `/catalog` lista servicos reais
-- `/catalog/[serviceId]` carrega detalhe real e cria pedido por `POST /me/orders`
+- `/catalog` deixou de ser navegavel publicamente: visitante vai para login com `returnTo` interno, customer vai para `/app/services` e admin vai para `/admin/catalog`
+- `/catalog/[serviceId]` segue a mesma regra, redirecionando para `/app/services/[serviceId]` quando o cliente ja esta autenticado
+- `/app/services` reaproveita o mesmo catalogo dentro da area autenticada, com lista vertical e filtros essenciais
+- `/app/services/[serviceId]` reaproveita o detalhe e o checkout dentro do shell do cliente
 - `?aff=` capturado em `/catalog` e `/catalog/[serviceId]` fica persistido localmente
+- `?aff=` tambem e preservado na navegacao de `/app/services` e `/app/services/[serviceId]`
 - catalogo e checkout mostram explicitamente quando ha `affiliateCode` ativo e permitem limpeza manual do codigo salvo
 - quando houver checkout autenticado, `affiliateCode` segue no payload do pedido
 

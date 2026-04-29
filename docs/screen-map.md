@@ -4,6 +4,7 @@
 
 - `/`
   - landing comercial
+  - usuario autenticado redireciona para sua area interna padrao
 - `/login`
   - login com `returnTo`
 - `/register`
@@ -12,18 +13,28 @@
 - `/verify-email`
   - confirma token vindo da URL
 - `/catalog`
-  - listagem publica real
-  - captura `?aff=` e persiste o codigo no navegador
+  - entrada legada
+  - visitante vai para `/login?returnTo=/app/services`
+  - customer vai para `/app/services`
+  - admin vai para `/admin/catalog`
 - `/catalog/[serviceId]`
-  - detalhe publico real
-  - mantem `?aff=` na navegacao quando presente
-  - cria pedido autenticado por `POST /me/orders`
+  - entrada legada de detalhe
+  - visitante vai para `/login?returnTo=/app/services/[serviceId]`
+  - customer vai para `/app/services/[serviceId]`
+  - admin vai para `/admin/catalog`
 
 ## Customer
 
 - `/app`
-  - dashboard do cliente
-  - resume wallet, pagamentos, pedidos e referral
+  - redirect para `/app/services`
+- `/app/services`
+  - catalogo interno do cliente
+  - lista vertical com filtros de busca, rede social, categoria e tipo
+  - preserva `?aff=` quando presente
+- `/app/services/[serviceId]`
+  - detalhe do servico dentro do shell autenticado
+  - checkout real com `POST /me/orders`
+  - preserva `?aff=` na navegacao
 - `/app/profile`
   - leitura de perfil
   - referral e status de email

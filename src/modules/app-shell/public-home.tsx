@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 import { getPublicEnv } from '@/lib/config/env';
+import { getLoginPath } from '@/lib/auth/navigation';
 import type { SessionState } from '@/lib/auth/session';
 import { PublicShell } from '@/modules/app-shell/public-shell';
 
@@ -64,12 +65,12 @@ const benefits = [
 ] as const;
 
 const serviceCards = [
-  { title: 'Instagram', href: '/catalog?socialNetwork=instagram' },
-  { title: 'TikTok', href: '/catalog?socialNetwork=tiktok' },
-  { title: 'YouTube', href: '/catalog?socialNetwork=youtube' },
-  { title: 'Telegram', href: '/catalog?socialNetwork=telegram' },
-  { title: 'Facebook', href: '/catalog?socialNetwork=facebook' },
-  { title: 'Catalogo completo', href: '/catalog' },
+  { title: 'Instagram', filters: { socialNetwork: 'instagram' } },
+  { title: 'TikTok', filters: { socialNetwork: 'tiktok' } },
+  { title: 'YouTube', filters: { socialNetwork: 'youtube' } },
+  { title: 'Telegram', filters: { socialNetwork: 'telegram' } },
+  { title: 'Facebook', filters: { socialNetwork: 'facebook' } },
+  { title: 'Servicos completos', filters: {} },
 ] as const;
 
 const stats = [
@@ -99,12 +100,37 @@ const testimonials = [
 
 function getAccountHref(session: SessionState) {
   if (session.status !== 'authenticated') return '/register';
-  return session.user.role === 'admin' ? '/admin' : '/app';
+  return session.user.role === 'admin' ? '/admin' : '/app/services';
 }
 
 function getAccountLabel(session: SessionState) {
   if (session.status !== 'authenticated') return 'Criar conta';
   return session.user.role === 'admin' ? 'Abrir admin' : 'Abrir minha area';
+}
+
+function getServicesHref(
+  session: SessionState,
+  filters: { aff?: string; search?: string; socialNetwork?: string; category?: string; type?: string } = {},
+) {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) {
+      searchParams.set(key, value);
+    }
+  }
+
+  const servicesPath = searchParams.toString() ? `/app/services?${searchParams.toString()}` : '/app/services';
+
+  if (session.status !== 'authenticated') {
+    return getLoginPath({ reason: 'required', returnTo: servicesPath });
+  }
+
+  if (session.user.role === 'admin') {
+    return '/admin/catalog';
+  }
+
+  return servicesPath;
 }
 
 export function PublicHome({ session }: PublicHomeProps) {
@@ -139,9 +165,6 @@ export function PublicHome({ session }: PublicHomeProps) {
               <div className="landing-v2-hero-actions">
                 <Link href={accountHref} className="landing-v2-primary">
                   {accountLabel}
-                </Link>
-                <Link href="/catalog" className="landing-v2-secondary">
-                  Ver servicos
                 </Link>
               </div>
 
@@ -242,7 +265,7 @@ export function PublicHome({ session }: PublicHomeProps) {
 
           <div className="landing-v2-service-grid">
             {serviceCards.map((item) => (
-              <Link key={item.title} href={item.href} className="landing-v2-service-card">
+              <Link key={item.title} href={getServicesHref(session, item.filters)} className="landing-v2-service-card">
                 <strong>{item.title}</strong>
                 <span>
                   Explorar
@@ -312,9 +335,6 @@ export function PublicHome({ session }: PublicHomeProps) {
           <div className="landing-v2-final-actions">
             <Link href={accountHref} className="landing-v2-primary">
               {accountLabel}
-            </Link>
-            <Link href="/catalog" className="landing-v2-secondary">
-              Ver servicos
             </Link>
           </div>
         </section>

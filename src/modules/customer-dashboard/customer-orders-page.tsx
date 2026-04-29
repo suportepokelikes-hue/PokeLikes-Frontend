@@ -56,7 +56,7 @@ export async function CustomerOrdersPage({ session, activeOrderId, page }: Custo
           compact
           actions={
             <>
-              <Link href="/catalog" className="primary-action">
+              <Link href="/app/services" className="primary-action">
                 <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
                 Novo pedido
               </Link>
@@ -174,7 +174,7 @@ export async function CustomerOrdersPage({ session, activeOrderId, page }: Custo
           <EmptyState
             title="Nenhum pedido encontrado"
             description="Escolha um servico para começar."
-            actionHref="/catalog"
+            actionHref="/app/services"
             actionLabel="Explorar catalogo"
           />
         ) : (

@@ -1,8 +1,5 @@
-import { requireCustomerSession } from '@/lib/auth/guards';
-import { CustomerDashboardPage } from '@/modules/customer-dashboard/customer-dashboard-page';
+import { redirect } from 'next/navigation';
 
 export default async function CustomerPage() {
-  const session = await requireCustomerSession();
-
-  return <CustomerDashboardPage session={session} />;
+  redirect('/app/services');
 }

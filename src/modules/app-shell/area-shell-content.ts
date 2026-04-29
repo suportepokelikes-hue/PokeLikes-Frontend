@@ -33,8 +33,7 @@ const areaConfig = {
     brandMeta: 'Cliente',
     sectionDescription: 'Conta, saldo e pedidos.',
     links: [
-      { href: '/', label: 'Publico', icon: 'public' },
-      { href: '/app', label: 'Dashboard', icon: 'dashboard' },
+      { href: '/app/services', label: 'Servicos', icon: 'catalog' },
       { href: '/app/profile', label: 'Perfil', icon: 'profile' },
       { href: '/app/affiliate', label: 'Afiliados', icon: 'affiliate' },
       { href: '/app/wallet', label: 'Carteira', icon: 'wallet' },

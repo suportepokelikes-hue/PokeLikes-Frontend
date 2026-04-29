@@ -150,6 +150,8 @@ paths:
     get:
       tags: [Catalog]
       summary: Catalog service list
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
@@ -175,10 +177,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedCatalogServicesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /catalog/services/{serviceId}:
     get:
       tags: [Catalog]
       summary: Catalog service detail
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/ServiceId'
       responses:
@@ -188,6 +194,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CatalogServiceResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
   /me:

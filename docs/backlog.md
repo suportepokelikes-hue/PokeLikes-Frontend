@@ -2,6 +2,16 @@
 
 ## Latest Update
 
+- [x] filtros de `/app/services` ficaram mais compactos no desktop e os cards-resumo `Liberados`, `Com atencao` e `Pausados` sairam da area de descoberta do cliente
+- [x] dashboard do cliente saiu da navegacao principal e `/app` virou redirect para `/app/services`, deixando o pos-login focado em descoberta e compra de servicos
+- [x] home `/` agora redireciona usuario autenticado para sua area interna padrao, evitando retorno para a landing antes do logout
+- [x] sidebar do cliente removeu a entrada `Publico` e a landing removeu os botoes `Ver servicos`, mantendo a navegacao do usuario dentro da area interna depois do login
+- [x] integracao de `/app/services` e fallback de detalhe do catalogo admin agora enviam `accessToken` para `/catalog/services` e `/catalog/services/{serviceId}`, alinhando o frontend ao OpenAPI atualizado com `bearerAuth`
+- [x] `/catalog` e `/catalog/[serviceId]` deixaram de ser navegaveis publicamente: visitante vai para login com `returnTo` interno, customer vai para `/app/services` e admin vai para `/admin/catalog`
+- [x] landing e atalhos publicos de servicos agora apontam para login com destino em `/app/services` ou para a area correta quando ja existe sessao
+- [x] cliente autenticado agora tem a secao `Servicos` na sidebar com rotas `/app/services` e `/app/services/[serviceId]`, reaproveitando o catalogo e o checkout dentro do shell interno sem mexer no backend
+- [x] `/app/services` trocou a grade publica por lista vertical com busca textual e filtros de rede social, categoria e tipo, preservando `?aff=` na navegacao autenticada
+- [x] CTAs internos do cliente para novo pedido foram realinhados para `/app/services`, evitando mandar usuario logado de volta para `/catalog`
 - [x] detalhe publico de `/catalog/[serviceId]` agora funciona como um card unico de produto + checkout, com resumo e compra no mesmo bloco responsivo sem duplicar nome, badge ou CTA
 - [x] detalhe publico de `/catalog/[serviceId]` foi drasticamente simplificado para foco em compra: saiu exposicao de origem/fornecedor, boxes inferiores e campos avancados do checkout, preservando o fluxo de pedido
 - [x] dashboard do cliente agora destaca `Proximo passo recomendado` no hero usando a logica existente de prioridade e reforca o estado do referral sem mudar contratos nem backend
@@ -349,6 +359,9 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- revisar se ainda vale manter metadata e componentes publicos antigos do catalogo so como fallback tecnico, sem reabrir a navegacao publica
+- validar manualmente a jornada autenticada `/app/services -> /app/services/[serviceId] -> createOrderAction` com e sem `?aff=` persistido
+- decidir se a area autenticada de servicos vai ganhar pagina de paginacao/filtros via query string visivel ou se a V1 atual ja cobre a descoberta
 - executar o smoke test manual curto de `docs/checklists/affiliate-rollout-smoke.md` em staging com massa valida de afiliado/comprador/admin
 - validar por fluxo manual ou E2E a jornada completa de payout admin via Asaas por `affiliateProfileId`, `commissionIds`, `notes`, `requested -> processing` e refresh do provider
 - validar a landing publica com o asset final `public/brand/landing-mascot.png` e fazer ajuste fino de proporcao, contraste e espacamento do hero

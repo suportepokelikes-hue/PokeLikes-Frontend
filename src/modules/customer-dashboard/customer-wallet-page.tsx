@@ -77,7 +77,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
                 <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
                 Gerar PIX
               </Link>
-              <Link href="/catalog" className="secondary-action">
+              <Link href="/app/services" className="secondary-action">
                 <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
                 Fazer pedido
               </Link>

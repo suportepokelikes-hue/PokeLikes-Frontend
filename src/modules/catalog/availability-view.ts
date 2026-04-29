@@ -55,7 +55,10 @@ export function getCatalogAvailabilityView(service: Pick<CatalogServiceResource,
   };
 }
 
-export function getCatalogAlternativePath(service: Pick<CatalogServiceResource, 'socialNetwork' | 'category'>) {
+export function getCatalogAlternativePath(
+  service: Pick<CatalogServiceResource, 'socialNetwork' | 'category'>,
+  basePath = '/catalog',
+) {
   const searchParams = new URLSearchParams();
 
   if (service.socialNetwork) {
@@ -67,7 +70,7 @@ export function getCatalogAlternativePath(service: Pick<CatalogServiceResource, 
   }
 
   const query = searchParams.toString();
-  return query ? `/catalog?${query}` : '/catalog';
+  return query ? `${basePath}?${query}` : basePath;
 }
 
 function getBlockedAvailabilityView(availability: CatalogAvailabilityResource): CatalogAvailabilityView {

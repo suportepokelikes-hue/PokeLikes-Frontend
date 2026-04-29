@@ -43,7 +43,7 @@ export function PublicShell({ session, children }: PublicShellProps) {
     session.status === 'authenticated'
       ? session.user.role === 'admin'
         ? '/admin'
-        : '/app'
+        : '/app/services'
       : '/register';
 
   const accountLabel =

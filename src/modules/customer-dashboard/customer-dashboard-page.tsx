@@ -112,7 +112,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             </section>
 
             <div className="customer-dashboard-command-actions">
-              <Link href="/catalog" prefetch={false} className="primary-action">
+              <Link href="/app/services" prefetch={false} className="primary-action">
                 <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
                 Novo pedido
               </Link>
@@ -331,7 +331,7 @@ function getPriorityAction(options: {
   return {
     title: 'Pronto para um novo pedido',
     description: 'Conta pronta.',
-    href: '/catalog',
+    href: '/app/services',
     label: 'Abrir catalogo',
     icon: ShoppingBag,
     badgeLabel: 'pronto',

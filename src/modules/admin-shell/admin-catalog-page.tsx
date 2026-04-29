@@ -117,7 +117,7 @@ export async function AdminCatalogPage({
 
     if (activeServiceId) {
       try {
-        activeService = await resolveCatalogServiceForDrawer(activeServiceId, catalog.items);
+        activeService = await resolveCatalogServiceForDrawer(activeServiceId, catalog.items, session.accessToken);
       } catch (error) {
         activeServiceError = error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este servico.';
       }
@@ -131,7 +131,7 @@ export async function AdminCatalogPage({
         activeAffiliateService =
           activeService?.id === activeAffiliateServiceId
             ? activeService
-            : await resolveCatalogServiceForDrawer(activeAffiliateServiceId, catalog.items);
+            : await resolveCatalogServiceForDrawer(activeAffiliateServiceId, catalog.items, session.accessToken);
       } catch (error) {
         activeAffiliateServiceError =
           error instanceof ApiClientError ? error.message : 'Nao foi possivel carregar este servico para configurar afiliacao.';
@@ -468,14 +468,14 @@ export async function AdminCatalogPage({
   }
 }
 
-async function resolveCatalogServiceForDrawer(serviceId: string, currentItems: CatalogServiceResource[]) {
+async function resolveCatalogServiceForDrawer(serviceId: string, currentItems: CatalogServiceResource[], accessToken: string) {
   const cachedService = currentItems.find((service) => service.id === serviceId);
 
   if (cachedService) {
     return cachedService;
   }
 
-  return getCatalogService(serviceId);
+  return getCatalogService(serviceId, { accessToken });
 }
 
 async function loadCatalogAffiliateSettingsByServiceId(

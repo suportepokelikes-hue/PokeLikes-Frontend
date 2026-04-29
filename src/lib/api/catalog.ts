@@ -1,6 +1,10 @@
 import type { CatalogServiceResource, PaginatedResponse } from '@/lib/api/contracts';
 import { apiRequest } from '@/lib/api/http';
 
+type CatalogAuthOptions = {
+  accessToken?: string;
+};
+
 export type CatalogListParams = {
   page?: number;
   pageSize?: number;
@@ -12,15 +16,17 @@ export type CatalogListParams = {
   type?: string;
 };
 
-export function listCatalogServices(params: CatalogListParams = {}) {
+export function listCatalogServices(params: CatalogListParams = {}, { accessToken }: CatalogAuthOptions = {}) {
   return apiRequest<PaginatedResponse<CatalogServiceResource>>({
     path: `/catalog/services${buildQueryString(params)}`,
+    accessToken,
   });
 }
 
-export function getCatalogService(serviceId: string) {
+export function getCatalogService(serviceId: string, { accessToken }: CatalogAuthOptions = {}) {
   return apiRequest<CatalogServiceResource>({
     path: `/catalog/services/${serviceId}`,
+    accessToken,
   });
 }
 
