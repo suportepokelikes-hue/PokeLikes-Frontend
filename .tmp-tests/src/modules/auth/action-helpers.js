@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.readTrimmedString = readTrimmedString;
 exports.mapAuthError = mapAuthError;
 exports.mapLoginError = mapLoginError;
+exports.mapGoogleAuthError = mapGoogleAuthError;
 exports.mapRegisterError = mapRegisterError;
 exports.mapEmailVerificationRequestError = mapEmailVerificationRequestError;
 const http_1 = require("../../lib/api/http");
@@ -30,6 +31,21 @@ function mapLoginError(error) {
         };
     }
     return mapAuthError(error, 'Nao foi possivel autenticar agora. Tente novamente em instantes.');
+}
+function mapGoogleAuthError(error) {
+    if (error instanceof http_1.ApiClientError && error.status === 400 && hasReferralCodeHint(error)) {
+        return {
+            status: 'error',
+            message: 'Codigo de indicacao invalido. Revise o codigo ou continue sem ele.',
+        };
+    }
+    if (error instanceof http_1.ApiClientError && (error.status === 400 || error.status === 401)) {
+        return {
+            status: 'error',
+            message: 'Nao foi possivel validar sua conta Google. Tente novamente ou entre com email e senha.',
+        };
+    }
+    return mapAuthError(error, 'O login com Google nao esta disponivel agora. Tente novamente em instantes.');
 }
 function mapRegisterError(error) {
     if (error instanceof http_1.ApiClientError && error.status === 400 && hasReferralCodeHint(error)) {

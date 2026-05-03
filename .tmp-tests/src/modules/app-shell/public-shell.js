@@ -31,7 +31,7 @@ function PublicShell({ session, children }) {
     const accountHref = session.status === 'authenticated'
         ? session.user.role === 'admin'
             ? '/admin'
-            : '/app'
+            : '/app/services'
         : '/register';
     const accountLabel = session.status === 'authenticated'
         ? 'Minha area'

@@ -115,7 +115,7 @@ export async function CustomerProfilePage({
                 </Link>
               )}
               <Link href="/app/affiliate" className="secondary-action">
-                Ver afiliados
+                Afiliados em breve
               </Link>
             </div>
           </article>

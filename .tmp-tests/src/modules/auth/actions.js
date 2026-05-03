@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginAction = loginAction;
 exports.registerAction = registerAction;
+exports.googleAuthAction = googleAuthAction;
 exports.logoutAction = logoutAction;
 exports.requestEmailVerificationAction = requestEmailVerificationAction;
 const cache_1 = require("next/cache");
@@ -62,6 +63,31 @@ async function registerAction(_, formData) {
         return (0, action_helpers_1.mapRegisterError)(error);
     }
     (0, navigation_1.redirect)((0, navigation_2.getPostAuthRedirectPath)(role, returnTo));
+}
+async function googleAuthAction(_, formData) {
+    const idToken = (0, action_helpers_1.readTrimmedString)(formData, 'idToken');
+    const referralCode = (0, navigation_2.normalizeReferralCode)((0, action_helpers_1.readTrimmedString)(formData, 'referralCode'));
+    const returnTo = (0, navigation_2.normalizeReturnTo)((0, action_helpers_1.readTrimmedString)(formData, 'returnTo'));
+    if (!idToken) {
+        return {
+            status: 'error',
+            message: 'Nao recebemos a credencial do Google. Tente novamente.',
+        };
+    }
+    try {
+        const session = await (0, auth_1.loginWithGoogle)({
+            idToken,
+            ...(referralCode ? { referralCode } : {}),
+        });
+        await (0, server_cookies_1.writeServerSessionCookies)(session);
+        return {
+            status: 'success',
+            redirectPath: (0, navigation_2.getPostAuthRedirectPath)(session.user.role, returnTo),
+        };
+    }
+    catch (error) {
+        return (0, action_helpers_1.mapGoogleAuthError)(error);
+    }
 }
 async function logoutAction() {
     const session = await (0, cookies_1.getServerSession)();

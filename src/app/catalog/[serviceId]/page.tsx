@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath } from '@/lib/auth/navigation';
+import { buildCustomerNewOrderPath } from '@/modules/catalog/navigation';
 
 export const metadata: Metadata = {
   title: 'Servico | Pokelike',
@@ -17,7 +18,10 @@ export default async function CatalogServicePage({ params, searchParams }: Catal
   const { serviceId } = await params;
   const session = await getServerSession();
   const resolvedSearchParams = await searchParams;
-  const destination = buildServiceDetailPath(serviceId, readString(resolvedSearchParams.aff));
+  const destination = buildCustomerNewOrderPath({
+    serviceId,
+    affiliateCode: readString(resolvedSearchParams.aff),
+  });
 
   if (session.status !== 'authenticated') {
     redirect(getLoginPath({ reason: 'required', returnTo: destination }));
@@ -32,15 +36,4 @@ export default async function CatalogServicePage({ params, searchParams }: Catal
 
 function readString(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function buildServiceDetailPath(serviceId: string, affiliateCode?: string) {
-  const searchParams = new URLSearchParams();
-
-  if (affiliateCode) {
-    searchParams.set('aff', affiliateCode);
-  }
-
-  const query = searchParams.toString();
-  return query ? `/app/services/${serviceId}?${query}` : `/app/services/${serviceId}`;
 }

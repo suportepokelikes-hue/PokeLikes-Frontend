@@ -15,7 +15,15 @@ export default async function CustomerNewOrderRoute({ searchParams }: CustomerNe
   const session = await requireCustomerSession();
   const resolved = await searchParams;
 
-  return <CustomerNewOrderPage session={session} affiliateCodeFromUrl={readString(resolved.aff)} />;
+  return (
+    <CustomerNewOrderPage
+      session={session}
+      affiliateCodeFromUrl={readString(resolved.aff)}
+      initialServiceId={readString(resolved.serviceId)}
+      initialCategory={readString(resolved.category)}
+      initialSearch={readString(resolved.search)}
+    />
+  );
 }
 
 function readString(value: string | string[] | undefined) {

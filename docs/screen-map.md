@@ -34,20 +34,20 @@
 - `/app/new-order`
   - pedido rapido em tela unica
   - busca local opcional, filtro por categoria e seletor de servico
+  - aceita pre-selecao por `serviceId`, `category` e `search` na query string
   - resumo do servico, validacao de faixa/disponibilidade e envio pelo mesmo `POST /me/orders`
   - preserva `?aff=` no envio
 - `/app/services/[serviceId]`
-  - detalhe do servico dentro do shell autenticado
-  - checkout real com `POST /me/orders`
+  - redirect de compatibilidade para `/app/new-order`
   - preserva `?aff=` na navegacao
 - `/app/profile`
   - leitura de perfil
   - referral e status de email
   - drawer de edicao por `?edit=1`
 - `/app/affiliate`
-  - entrada do programa quando nao existe perfil
-  - status, summary e comissoes quando ja existe perfil
-  - leitura e edicao de chave PIX pelos endpoints dedicados de afiliado
+  - rota mantida no shell do cliente
+  - tela pausada com `Programa de afiliados` e destaque `Em breve`
+  - sem apply, PIX, comissoes ou link de divulgacao
 - `/app/wallet`
   - saldo e extrato
 - `/app/payments`

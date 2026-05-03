@@ -2622,10 +2622,8 @@ textarea:focus-visible {
 .new-order-shell,
 .new-order-form,
 .new-order-main,
-.new-order-summary-card,
 .new-order-estimate-card,
-.new-order-description-card,
-.new-order-state-card {
+.new-order-description-card {
   display: grid;
   gap: 0.85rem;
 }
@@ -2724,8 +2722,7 @@ textarea:focus-visible {
 }
 
 .new-order-description-card,
-.new-order-estimate-card,
-.new-order-state-card {
+.new-order-estimate-card {
   padding: 1rem 1.05rem;
   border-radius: 1rem;
   border: 1px solid var(--outline-ghost);
@@ -2752,8 +2749,7 @@ textarea:focus-visible {
   letter-spacing: -0.04em;
 }
 
-.new-order-description-head,
-.new-order-summary-head {
+.new-order-description-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -2761,8 +2757,7 @@ textarea:focus-visible {
   flex-wrap: wrap;
 }
 
-.new-order-description-card p,
-.new-order-state-card p {
+.new-order-description-card p {
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
@@ -2789,18 +2784,6 @@ textarea:focus-visible {
   margin: 0;
   color: var(--ink);
   line-height: 1.6;
-}
-
-.new-order-state-healthy {
-  border-color: rgba(67, 209, 125, 0.18);
-}
-
-.new-order-state-degraded {
-  border-color: rgba(255, 184, 77, 0.24);
-}
-
-.new-order-state-blocked {
-  border-color: rgba(255, 114, 136, 0.22);
 }
 
 .catalog-meta,

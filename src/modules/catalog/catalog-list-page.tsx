@@ -16,6 +16,7 @@ import { PublicShell } from '@/modules/app-shell/public-shell';
 import { AffiliateCodeCapture } from './affiliate-code-capture';
 import { AffiliateCodeNotice } from './affiliate-code-input';
 import { getCatalogAvailabilityView } from './availability-view';
+import { buildCatalogDetailPath, buildCustomerNewOrderPathFromService } from './navigation';
 
 type CatalogListPageProps = {
   variant?: 'public' | 'customer';
@@ -30,7 +31,7 @@ type CatalogListContentProps = {
   catalogFilters: CatalogListParams;
   affiliateCodeFromUrl?: string;
   listPath: string;
-  detailBasePath: string;
+  detailBasePath?: string;
   purchasableCount: number;
   degradedCount: number;
   blockedCount: number;
@@ -47,7 +48,7 @@ export async function CatalogListPage({ variant = 'public', accessToken, searchP
     const { aff: affiliateCodeFromUrl, ...catalogFilters } = searchParams;
     const response = await listCatalogServices(catalogFilters, { accessToken });
     const listPath = variant === 'customer' ? '/app/services' : '/catalog';
-    const detailBasePath = variant === 'customer' ? '/app/services' : '/catalog';
+    const detailBasePath = variant === 'public' ? '/catalog' : undefined;
     const contentProps: CatalogListContentProps = {
       response,
       catalogFilters,
@@ -170,7 +171,7 @@ function PublicCatalogListContent({
                 key={service.id}
                 service={service}
                 affiliateCodeFromUrl={affiliateCodeFromUrl}
-                detailHref={buildServiceDetailPath(detailBasePath, service.id)}
+                detailHref={buildCatalogDetailPath(detailBasePath ?? '/catalog', service.id)}
               />
             ))}
           </section>
@@ -237,7 +238,7 @@ function CustomerCatalogListContent({
                 key={service.id}
                 service={service}
                 affiliateCodeFromUrl={affiliateCodeFromUrl}
-                detailHref={buildServiceDetailPath(detailBasePath, service.id)}
+                detailHref={buildCustomerNewOrderPathFromService(service, affiliateCodeFromUrl)}
               />
             ))}
           </section>
@@ -451,10 +452,6 @@ function getUniqueFilterValues<T extends 'socialNetwork' | 'category' | 'type'>(
   }
 
   return Array.from(values).sort((left, right) => left.localeCompare(right));
-}
-
-function buildServiceDetailPath(basePath: string, serviceId: string) {
-  return `${basePath}/${serviceId}`;
 }
 
 function summarizeCopy(value: string, maxLength: number) {

@@ -2,6 +2,9 @@
 
 ## Latest Update
 
+- [x] a area de afiliados do cliente foi pausada no frontend: `/app/affiliate` agora mostra apenas `Programa de afiliados` com destaque `Em breve`, sem carregar perfil, summary, comissoes ou PIX
+- [x] CTAs customer de afiliados foram neutralizados para nao incentivar operacao enquanto a rota permanece ativa no shell
+- [x] o CTA `Comprar` de `/app/services` agora abre `/app/new-order` com o servico preselecionado e `/app/services/[serviceId]` virou apenas redirecionamento de compatibilidade para o novo fluxo
 - [x] `/app/new-order` agora mostra `Estimativa de valor` em tempo real pela regra de preco por 1000, sem mudar o backend nem o fluxo final de cobranca
 - [x] a area customer ganhou `/app/new-order` como tela separada de pedido rapido, com filtro local de categoria/servico, resumo inline do servico e envio pelo mesmo `createOrderAction`, sem substituir `/app/services`
 - [x] o shell autenticado removeu a badge textual de area no topo e passou a mostrar apenas icones na navegacao lateral, evitando duplicar no menu o titulo da secao atual
@@ -364,6 +367,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar manualmente `/app/affiliate`, `/app/profile` e qualquer entrada do shell customer para confirmar que o cliente so encontra a mensagem `Em breve` e que nao ha fluxo operacional residual de afiliados
 - validar manualmente `/app/new-order` com servico saudavel, servico bloqueado, quantidade fora da faixa e `?aff=` ativo para confirmar desabilitacao de envio e atribuicao correta do codigo de afiliado
 - validar manualmente o shell customer em desktop/mobile nas rotas `/app/services`, `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` para confirmar o comportamento do novo atalho de carteira/perfil e o fallback de saldo indisponivel
 - validar manualmente o fluxo Google em staging para login existente, criacao de conta nova e rejeicao de token/popup com `NEXT_PUBLIC_GOOGLE_CLIENT_ID` real

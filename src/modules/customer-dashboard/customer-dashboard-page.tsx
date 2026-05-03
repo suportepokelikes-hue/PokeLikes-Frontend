@@ -5,7 +5,6 @@ import {
   MailCheck,
   PackageCheck,
   ShoppingBag,
-  Sparkles,
   Wallet,
 } from 'lucide-react';
 
@@ -15,14 +14,12 @@ import { ErrorState } from '@/components/ui/error-state';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import {
-  getCustomerAffiliateProfile,
   getCustomerReferralSummary,
   getWalletSummary,
   listCustomerOrders,
   listCustomerPayments,
 } from '@/lib/api/customer';
-import { getAffiliateDisplayCode } from '@/lib/api/affiliate-normalizers';
-import type { AffiliateProfileResource, Money, ReferralRewardStatus } from '@/lib/api/contracts';
+import type { Money, ReferralRewardStatus } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
@@ -34,12 +31,11 @@ type CustomerDashboardPageProps = {
 
 export async function CustomerDashboardPage({ session }: CustomerDashboardPageProps) {
   try {
-    const [wallet, payments, orders, referral, affiliateProfile] = await Promise.all([
+    const [wallet, payments, orders, referral] = await Promise.all([
       getWalletSummary({ accessToken: session.accessToken }),
       listCustomerPayments({ accessToken: session.accessToken }),
       listCustomerOrders({ accessToken: session.accessToken }),
       getCustomerReferralSummary({ accessToken: session.accessToken }),
-      getCustomerAffiliateProfile({ accessToken: session.accessToken }),
     ]);
     const confirmedPayments = payments.items.filter((payment) => payment.status === 'confirmed').length;
     const pendingPayments = payments.items.filter((payment) => payment.status === 'pending');
@@ -50,13 +46,11 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
     const priorityAction = getPriorityAction({
       emailVerified: session.user.emailVerified ?? false,
       referralStatus: referral.rewardStatus,
-      affiliateProfile,
       pendingPaymentId: pendingPayments[0]?.id,
       openOrdersCount: openOrders.length,
     });
     const PriorityActionIcon = priorityAction.icon;
     const latestOrder = orders.items[0] ?? null;
-    const affiliateStatusView = getAffiliateStatusView(affiliateProfile);
 
     return (
       <main className="page page-customer customer-dashboard-page">
@@ -152,7 +146,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
                 href="/app/affiliate"
                 icon={Gift}
                 title="Afiliados"
-                meta={affiliateStatusView.shortLabel}
+                meta="Em breve"
               />
             </div>
           </div>
@@ -181,10 +175,10 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
           />
           <CustomerMetricCard
             label="Afiliados"
-            value={affiliateStatusView.shortLabel}
-            meta={affiliateProfile ? formatAffiliateMeta(affiliateProfile) : 'Nao ativo'}
-            icon={affiliateProfile ? Gift : Sparkles}
-            tone={affiliateProfile ? 'success' : 'default'}
+            value="Em breve"
+            meta="Programa pausado no frontend"
+            icon={Gift}
+            tone="warning"
           />
         </section>
 
@@ -262,11 +256,10 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
 function getPriorityAction(options: {
   emailVerified: boolean;
   referralStatus: ReferralRewardStatus;
-  affiliateProfile: AffiliateProfileResource | null;
   pendingPaymentId?: string;
   openOrdersCount: number;
 }) {
-  const { emailVerified, referralStatus, affiliateProfile, pendingPaymentId, openOrdersCount } = options;
+  const { emailVerified, referralStatus, pendingPaymentId, openOrdersCount } = options;
 
   if (!emailVerified) {
     return {
@@ -316,18 +309,6 @@ function getPriorityAction(options: {
     };
   }
 
-  if (!affiliateProfile) {
-    return {
-      title: 'Ative afiliados',
-      description: 'Painel ainda nao ativo.',
-      href: '/app/affiliate',
-      label: 'Ver afiliados',
-      icon: Gift,
-      badgeLabel: 'expansao',
-      badgeTone: 'neutral' as const,
-    };
-  }
-
   return {
     title: 'Pronto para um novo pedido',
     description: 'Conta pronta.',
@@ -363,56 +344,6 @@ function getReferralDashboardView(status: ReferralRewardStatus, minimumTopupAmou
         description: 'Compartilhe o codigo.',
       };
   }
-}
-
-function getAffiliateStatusView(affiliateProfile: AffiliateProfileResource | null) {
-  if (!affiliateProfile) {
-    return {
-      title: 'Programa ainda nao ativado',
-      description: 'Painel nao ativo.',
-      badgeLabel: 'nao participante',
-      badgeTone: 'neutral' as const,
-      shortLabel: 'nao ativo',
-    };
-  }
-
-  if (affiliateProfile.status === 'active') {
-    return {
-      title: 'Painel de afiliado ativo',
-      description: 'Codigo e ganhos.',
-      badgeLabel: 'ativo',
-      badgeTone: 'success' as const,
-      shortLabel: 'ativo',
-    };
-  }
-
-  if (affiliateProfile.status === 'pending') {
-    return {
-      title: 'Perfil aguardando aprovacao',
-      description: 'Aguardando aprovacao.',
-      badgeLabel: 'pendente',
-      badgeTone: 'warning' as const,
-      shortLabel: 'pendente',
-    };
-  }
-
-  return {
-    title: 'Perfil de afiliado pausado',
-    description: 'Perfil pausado.',
-    badgeLabel: affiliateProfile.status,
-    badgeTone: 'danger' as const,
-    shortLabel: affiliateProfile.status,
-  };
-}
-
-function formatAffiliateMeta(affiliateProfile: AffiliateProfileResource) {
-  const commissionPercent = affiliateProfile.affiliateCommissionPercent;
-
-  if (commissionPercent) {
-    return `${commissionPercent}%`;
-  }
-
-  return getAffiliateDisplayCode(affiliateProfile) ?? 'Ativo';
 }
 
 function mapPaymentTone(status: string) {

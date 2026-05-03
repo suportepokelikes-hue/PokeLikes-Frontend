@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 import { requireCustomerSession } from '@/lib/auth/guards';
-import { CatalogDetailPage } from '@/modules/catalog/catalog-detail-page';
+import { buildCustomerNewOrderPath } from '@/modules/catalog/navigation';
 
 export const metadata: Metadata = {
-  title: 'Servico | Pokelike',
+  title: 'Novo pedido | Pokelike',
 };
 
 type CustomerServiceDetailPageProps = {
@@ -13,18 +14,15 @@ type CustomerServiceDetailPageProps = {
 };
 
 export default async function CustomerServiceDetailPage({ params, searchParams }: CustomerServiceDetailPageProps) {
-  const session = await requireCustomerSession();
+  await requireCustomerSession();
   const { serviceId } = await params;
   const resolvedSearchParams = await searchParams;
+  const destination = buildCustomerNewOrderPath({
+    serviceId,
+    affiliateCode: readString(resolvedSearchParams.aff),
+  });
 
-  return (
-    <CatalogDetailPage
-      mode="customer"
-      accessToken={session.accessToken}
-      serviceId={serviceId}
-      affiliateCodeFromUrl={readString(resolvedSearchParams.aff)}
-    />
-  );
+  redirect(destination);
 }
 
 function readString(value: string | string[] | undefined) {

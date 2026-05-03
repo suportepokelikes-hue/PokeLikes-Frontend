@@ -36,7 +36,7 @@ function getCatalogAvailabilityView(service) {
         state: 'healthy',
     };
 }
-function getCatalogAlternativePath(service) {
+function getCatalogAlternativePath(service, basePath = '/catalog') {
     const searchParams = new URLSearchParams();
     if (service.socialNetwork) {
         searchParams.set('socialNetwork', service.socialNetwork);
@@ -45,7 +45,7 @@ function getCatalogAlternativePath(service) {
         searchParams.set('category', service.category);
     }
     const query = searchParams.toString();
-    return query ? `/catalog?${query}` : '/catalog';
+    return query ? `${basePath}?${query}` : basePath;
 }
 function getBlockedAvailabilityView(availability) {
     if (availability.reason === 'provider_low_balance') {

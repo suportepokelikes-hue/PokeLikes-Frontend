@@ -25,6 +25,7 @@ const auth_1 = require("../src/lib/api/auth");
             referralCode: 'INDIQUE123',
         });
         await (0, auth_1.login)({ email: 'alice@exemplo.com', password: 'secret' });
+        await (0, auth_1.loginWithGoogle)({ idToken: 'google-id-token', referralCode: 'INDIQUE123' });
         await (0, auth_1.refreshSession)({ refreshToken: 'refresh-token' });
         await (0, auth_1.logout)({ refreshToken: 'refresh-token' });
         await (0, auth_1.getAuthMe)('token-123');
@@ -41,6 +42,7 @@ const auth_1 = require("../src/lib/api/auth");
     })), [
         { url: 'http://localhost:3001/v1/auth/register', method: 'POST' },
         { url: 'http://localhost:3001/v1/auth/login', method: 'POST' },
+        { url: 'http://localhost:3001/v1/auth/google', method: 'POST' },
         { url: 'http://localhost:3001/v1/auth/refresh', method: 'POST' },
         { url: 'http://localhost:3001/v1/auth/logout', method: 'POST' },
         { url: 'http://localhost:3001/v1/auth/me', method: 'GET' },
@@ -56,10 +58,11 @@ const auth_1 = require("../src/lib/api/auth");
         referralCode: 'INDIQUE123',
     }));
     strict_1.default.equal(requests[1].init?.body, JSON.stringify({ email: 'alice@exemplo.com', password: 'secret' }));
-    strict_1.default.equal(requests[2].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
+    strict_1.default.equal(requests[2].init?.body, JSON.stringify({ idToken: 'google-id-token', referralCode: 'INDIQUE123' }));
     strict_1.default.equal(requests[3].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
-    strict_1.default.equal(new Headers(requests[4].init?.headers).get('Authorization'), 'Bearer token-123');
+    strict_1.default.equal(requests[4].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
     strict_1.default.equal(new Headers(requests[5].init?.headers).get('Authorization'), 'Bearer token-123');
     strict_1.default.equal(new Headers(requests[6].init?.headers).get('Authorization'), 'Bearer token-123');
-    strict_1.default.equal(requests[7].init?.body, JSON.stringify({ token: 'preview-token' }));
+    strict_1.default.equal(new Headers(requests[7].init?.headers).get('Authorization'), 'Bearer token-123');
+    strict_1.default.equal(requests[8].init?.body, JSON.stringify({ token: 'preview-token' }));
 });

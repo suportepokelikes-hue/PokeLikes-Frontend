@@ -28,7 +28,6 @@ const user = {
         children: 'conteudo',
     });
     strict_1.default.equal(view.areaClassName, 'area-shell area-shell-admin');
-    strict_1.default.equal(view.eyebrow, 'Area admin');
     strict_1.default.equal(view.title, 'Pedidos');
     strict_1.default.equal(view.userName, 'Operador');
     strict_1.default.equal(view.userMeta, 'ops@exemplo.com');
@@ -38,6 +37,10 @@ const user = {
     strict_1.default.equal(view.links.find((link) => link.href === '/admin/users')?.isCurrent, false);
 });
 (0, node_test_1.default)('getAreaShellView includes the affiliate route in the customer shell', () => {
+    const walletSummary = {
+        id: 'wallet-1',
+        availableBalance: { amount: '10', currency: 'BRL' },
+    };
     const customerView = (0, area_shell_content_1.getAreaShellView)({
         area: 'customer',
         user: {
@@ -49,10 +52,32 @@ const user = {
         },
         title: 'Afiliados',
         pathname: '/app/affiliate',
+        walletSummary,
         children: 'conteudo-cliente',
     });
     strict_1.default.equal(customerView.links.find((link) => link.href === '/app/affiliate')?.isCurrent, true);
-    strict_1.default.equal(customerView.links.find((link) => link.href === '/app/profile')?.isCurrent, false);
+    strict_1.default.equal(customerView.links.some((link) => link.href === '/app/new-order'), true);
+    strict_1.default.equal(customerView.links.some((link) => link.href === '/app/profile'), false);
+    strict_1.default.equal(customerView.walletShortcut?.href, '/app/wallet');
+    strict_1.default.equal(customerView.walletShortcut?.label, 'R$\u00a010,00');
+    strict_1.default.equal(customerView.profileShortcut?.href, '/app/profile');
+});
+(0, node_test_1.default)('getAreaShellView keeps profile as a titled customer section outside the sidebar', () => {
+    const customerView = (0, area_shell_content_1.getAreaShellView)({
+        area: 'customer',
+        user: {
+            id: '12',
+            role: 'customer',
+            name: 'Cliente',
+            email: 'cliente@exemplo.com',
+            status: 'active',
+        },
+        title: 'Minha conta',
+        pathname: '/app/profile',
+        children: 'conteudo-cliente',
+    });
+    strict_1.default.equal(customerView.currentSectionLabel, 'Perfil');
+    strict_1.default.equal(customerView.walletShortcut?.label, 'Saldo indisponivel');
 });
 (0, node_test_1.default)('getAreaShellView includes the affiliate route in the admin shell', () => {
     const adminView = (0, area_shell_content_1.getAreaShellView)({

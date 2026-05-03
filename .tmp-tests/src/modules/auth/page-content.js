@@ -8,12 +8,14 @@ function getLoginPageContent(options) {
     const { reason, returnTo, notice, referralCode } = options;
     const { appName } = (0, env_1.getPublicEnv)();
     return {
+        mode: 'login',
         brandLabel: appName,
         title: 'Entrar',
         eyebrow: 'Acesso',
         description: 'Entre para continuar.',
         notice,
         returnTo,
+        referralCode,
         panelTitle: '',
         panelCopy: '',
         panelItems: [],
@@ -46,12 +48,14 @@ function getRegisterPageContent(options) {
     const { reason, returnTo, notice, referralCode } = options;
     const { appName } = (0, env_1.getPublicEnv)();
     return {
+        mode: 'register',
         brandLabel: appName,
         title: 'Criar conta',
         eyebrow: 'Cadastro',
         description: 'Crie sua conta.',
         notice,
         returnTo,
+        referralCode,
         panelTitle: '',
         panelCopy: '',
         panelItems: [],

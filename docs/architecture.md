@@ -35,7 +35,7 @@ O frontend nao deve inventar payloads fora do contrato validado.
 - catalogo interno em `/app/services` e `/app/services/[serviceId]`
 - criacao rapida de pedido em `/app/new-order`, reaproveitando `createOrderAction` em uma unica tela com filtro local de categoria/servico e preservacao de `?aff=`
 - `/app` agora funciona apenas como redirecionamento para `/app/services`
-- perfil, referral e afiliados
+- perfil, referral e rota pausada de afiliados
 - wallet, PIX e pedidos
 
 ### Admin
@@ -101,9 +101,10 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/catalog` deixou de ser navegavel publicamente: visitante vai para login com `returnTo` interno, customer vai para `/app/services` e admin vai para `/admin/catalog`
 - `/catalog/[serviceId]` segue a mesma regra, redirecionando para `/app/services/[serviceId]` quando o cliente ja esta autenticado
 - `/app/services` reaproveita o mesmo catalogo dentro da area autenticada, com lista vertical e filtros essenciais
-- `/app/new-order` funciona como fluxo rapido de pedido na mesma area autenticada: lista os servicos do catalogo com token do cliente, filtra localmente por busca/categoria e envia `catalogServiceId`, `link`, `quantity` e `affiliateCode` opcional pelo mesmo `createOrderAction`
+- `/app/new-order` funciona como fluxo rapido de pedido na mesma area autenticada: lista os servicos do catalogo com token do cliente, filtra localmente por busca/categoria, aceita pre-selecao por query string (`serviceId`, `category`, `search`) e envia `catalogServiceId`, `link`, `quantity` e `affiliateCode` opcional pelo mesmo `createOrderAction`
 - o resumo de `/app/new-order` agora mostra `Estimativa de valor` calculada no frontend pela regra `publicPrice / 1000 * quantity`, mantendo o backend como fonte da cobranca final
-- `/app/services/[serviceId]` reaproveita o detalhe e o checkout dentro do shell do cliente
+- clicar em `Comprar` na lista de `/app/services` agora leva direto para `/app/new-order` com servico/categoria preselecionados
+- `/app/services/[serviceId]` permanece apenas como compatibilidade de rota e redireciona para `/app/new-order`
 - `?aff=` capturado em `/catalog` e `/catalog/[serviceId]` fica persistido localmente
 - `?aff=` tambem e preservado na navegacao de `/app/services` e `/app/services/[serviceId]`
 - catalogo e checkout mostram explicitamente quando ha `affiliateCode` ativo e permitem limpeza manual do codigo salvo
@@ -134,11 +135,10 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 ### Afiliados do cliente
 
-- `/app/affiliate` trata `GET /me/affiliate = null` como entrada no programa
-- o apply usa `POST /me/affiliate/apply`
-- quando existe perfil, a tela carrega `GET /me/affiliate/summary` e `GET /me/affiliate/commissions`
-- se summary ou commissions falharem isoladamente, a tela preserva perfil e status e degrada apenas o bloco afetado
-- a tela de afiliado exibe e edita chave PIX de payout pelos endpoints dedicados `GET /me/affiliate/pix-key` e `PATCH /me/affiliate/pix-key`, deixando claro quando o recebimento ainda esta pendente
+- `/app/affiliate` continua existindo como rota autenticada, mas a operacao foi pausada no frontend
+- a tela mostra apenas `Programa de afiliados`, destaque `Em breve` e a mensagem sobre experiencia mais segura e completa
+- a tela nao chama `GET /me/affiliate`, `GET /me/affiliate/summary`, `GET /me/affiliate/commissions` nem `GET /me/affiliate/pix-key`
+- apply, chave PIX, historico de comissoes e link de divulgacao deixam de ser renderizados, mas os componentes antigos permanecem no codigo sem uso na rota atual
 
 ## Current Admin Journeys
 
@@ -222,7 +222,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora herdam a mesma linguagem premium do shell e do dashboard, com foco em leitura rapida, status e proximas acoes
 - pagamentos e pedidos mantiveram o modelo atual de listagem + drawer; o redesign ficou concentrado na hierarquia visual, nos blocos de contexto e na leitura de estados financeiros/transacionais
-- perfil e afiliados agora priorizam status da conta, identidade fiscal, referral e comissoes sem reabrir escopo de email editavel, limpeza explicita de telefone ou mudancas contratuais
+- perfil continua priorizando status da conta, identidade fiscal e referral; `/app/affiliate` ficou reduzida a uma tela de pausa sem reabrir escopo de email editavel, limpeza explicita de telefone ou mudancas contratuais
 
 ## Public Shell
 
@@ -236,6 +236,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - troca de email do cliente ainda nao foi entregue
 - a UI do cliente nao oferece remocao explicita de telefone; enviar vazio hoje nao limpa o campo existente
+- a area de afiliados do cliente esta temporariamente pausada no frontend; o backend e os componentes antigos permanecem, mas `/app/affiliate` nao expone operacao
 - o payout admin segue o contrato atual do backend com `affiliateProfileId`, `commissionIds`, `notes`, `pixKey`, campos de provider/auditoria Asaas, `statusReason` e timestamps de ciclo; a wallet interna nao participa do fluxo; a selecao guiada no admin apenas preenche o mesmo formulario contratual
 - o `affiliateCode` salvo por `?aff=` ainda nao tem politica automatica de expiracao, mas a UI permite limpeza manual explicita
 - o admin nao expoe acao dedicada para reativar afiliado suspenso

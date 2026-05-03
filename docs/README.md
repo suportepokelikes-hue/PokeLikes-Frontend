@@ -18,7 +18,7 @@ Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para 
 
 - `/app` com dashboard e destaque de referral
 - `/app/profile` com leitura de `GET /me`, resumo de referral e drawer de edicao por `PATCH /me`
-- `/app/affiliate` cobrindo entrada no programa, status, summary e comissoes
+- `/app/affiliate` mantida como rota ativa, mas pausada no frontend com mensagem `Em breve`
 - `/app/wallet` com saldo e extrato
 - `/app/payments` com criacao de PIX, QR code, copia do codigo e detalhe em drawer
 - `/app/orders` com listagem e detalhe em drawer
@@ -47,6 +47,7 @@ Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para 
 
 - troca de email do cliente ainda nao existe pela UI
 - limpeza explicita de telefone do cliente ainda nao existe pela UI
+- a operacao do programa de afiliados do cliente esta pausada no frontend; a rota `/app/affiliate` existe, mas nao expone apply, PIX, comissoes nem link de divulgacao
 - detalhe de usuario e detalhe de catalogo no admin nao sao paginas independentes; as rotas `[id]` redirecionam para drawers na listagem
 - payout admin de afiliados segue o contrato atual do backend com `affiliateProfileId`, `commissionIds` e `notes`; `requested -> processing` dispara PIX real via Asaas e `POST /admin/affiliate-payouts/{payoutId}/refresh` reconcilia o provider
 - a area admin de afiliados nao expoe acao de reativacao dedicada; hoje ha aprovar e suspender

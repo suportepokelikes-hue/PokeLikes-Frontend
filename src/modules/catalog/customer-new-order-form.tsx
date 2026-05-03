@@ -16,7 +16,6 @@ export type CustomerNewOrderService = {
   name: string;
   description: string | null;
   publicPrice: Money;
-  status: string;
   socialNetwork: string;
   category: string;
   type: string;
@@ -33,17 +32,23 @@ type CustomerNewOrderFormProps = {
   services: CustomerNewOrderService[];
   affiliateCodeFromUrl?: string;
   returnTo: string;
+  initialServiceId?: string;
+  initialCategory?: string;
+  initialSearch?: string;
 };
 
 export function CustomerNewOrderForm({
   services,
   affiliateCodeFromUrl,
   returnTo,
+  initialServiceId,
+  initialCategory,
+  initialSearch,
 }: CustomerNewOrderFormProps) {
   const [state, formAction] = useActionState(createOrderAction, initialTransactionFormState);
-  const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedServiceId, setSelectedServiceId] = useState(() => services[0]?.id ?? '');
+  const [search, setSearch] = useState(initialSearch ?? '');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory ?? '');
+  const [selectedServiceId, setSelectedServiceId] = useState(() => initialServiceId ?? services[0]?.id ?? '');
   const [link, setLink] = useState('');
   const [quantity, setQuantity] = useState('');
 

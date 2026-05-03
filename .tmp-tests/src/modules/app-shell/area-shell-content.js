@@ -2,20 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAreaShellView = getAreaShellView;
 exports.isCurrentPath = isCurrentPath;
+const format_1 = require("@/lib/format");
 const areaConfig = {
     customer: {
         label: 'Area cliente',
         brandMeta: 'Cliente',
         sectionDescription: 'Conta, saldo e pedidos.',
         links: [
-            { href: '/', label: 'Publico', icon: 'public' },
-            { href: '/app', label: 'Dashboard', icon: 'dashboard' },
-            { href: '/app/profile', label: 'Perfil', icon: 'profile' },
+            { href: '/app/new-order', label: 'Novo pedido', icon: 'orders' },
+            { href: '/app/services', label: 'Servicos', icon: 'catalog' },
             { href: '/app/affiliate', label: 'Afiliados', icon: 'affiliate' },
             { href: '/app/wallet', label: 'Carteira', icon: 'wallet' },
             { href: '/app/payments', label: 'Pagamentos', icon: 'payments' },
             { href: '/app/orders', label: 'Pedidos', icon: 'orders' },
         ],
+        sections: [{ href: '/app/profile', label: 'Perfil' }],
     },
     admin: {
         label: 'Area admin',
@@ -35,19 +36,20 @@ const areaConfig = {
             { href: '/admin/audits', label: 'Auditoria', icon: 'audits' },
             { href: '/admin/transactions', label: 'Transacoes', icon: 'transactions' },
         ],
+        sections: [],
     },
 };
 function getAreaShellView(options) {
-    const { area, user, title, pathname, children } = options;
+    const { area, user, title, pathname, walletSummary, children } = options;
     const config = areaConfig[area];
-    const currentLink = config.links.find((link) => isCurrentPath(pathname, link.href));
+    const currentSection = [...config.links, ...config.sections].find((link) => isCurrentPath(pathname, link.href));
+    const walletLabel = walletSummary ? (0, format_1.formatMoney)(walletSummary.availableBalance) : 'Saldo indisponivel';
     return {
         areaClassName: `area-shell area-shell-${area}`,
         brandTitle: area === 'admin' ? 'Pokelike Ops' : 'Pokelike',
         brandMeta: config.brandMeta,
-        eyebrow: config.label,
         title,
-        currentSectionLabel: currentLink?.label ?? title,
+        currentSectionLabel: currentSection?.label ?? title,
         currentSectionDescription: config.sectionDescription,
         userName: user.name,
         userMeta: user.email,
@@ -56,6 +58,20 @@ function getAreaShellView(options) {
             ...link,
             isCurrent: isCurrentPath(pathname, link.href),
         })),
+        walletShortcut: area === 'customer'
+            ? {
+                href: '/app/wallet',
+                label: walletLabel,
+                ariaLabel: walletSummary ? `Abrir carteira com saldo ${walletLabel}` : 'Abrir carteira',
+            }
+            : null,
+        profileShortcut: area === 'customer'
+            ? {
+                href: '/app/profile',
+                label: 'Abrir perfil',
+                ariaLabel: 'Abrir perfil',
+            }
+            : null,
         children,
     };
 }

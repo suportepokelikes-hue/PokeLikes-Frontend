@@ -38,9 +38,9 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - o badge textual de area foi removido do topo e a navegacao lateral dos shells ficou iconica, com labels expostos por `title`/acessibilidade em vez de repetir visualmente o nome da pagina
 - o dashboard `/app` agora funciona como painel central do cliente, priorizando saldo, proximo passo, atalhos, referral/afiliados e historico recente
 - `src/components/ui/customer-surfaces.tsx` concentra os novos wrappers visuais reutilizaveis da area interna do cliente
-- `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora tambem foram redesenhados com a mesma base premium, preservando os fluxos reais da V1
+- `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora tambem foram redesenhados com a mesma base premium, mas `/app/affiliate` foi pausada no frontend e hoje mostra apenas `Em breve`
 - pagamentos e pedidos continuam usando drawers e redirects atuais; a mudanca foi de hierarquia visual, contexto e clareza
-- profile, referral e afiliados agora mostram status, identidade fiscal e ganhos com leitura mais rapida e mais orientada a acao
+- profile e referral seguem operacionais; afiliados do cliente ficaram temporariamente sem operacao exposta
 - o shell administrativo e o dashboard `/admin` agora tambem foram redesenhados para a identidade Pokelike, mas com tom mais sobrio e foco operacional
 - `src/components/ui/admin-surfaces.tsx` passa a concentrar os wrappers visuais reutilizaveis do admin
 - o dashboard administrativo agora funciona como central de operacao, priorizando alertas, fila, pagamentos e saude de fornecedores antes da navegacao secundaria
@@ -63,6 +63,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `/app` agora so redireciona para `/app/services`
 - catalogo interno em `/app/services` e detalhe em `/app/services/[serviceId]`
 - `/app/new-order` oferece criacao rapida de pedido em tela unica, com filtro local de categoria/servico, resumo inline e envio pelo mesmo `createOrderAction`
+- o botao `Comprar` da lista de `/app/services` agora entra direto em `/app/new-order` com `serviceId` e `category` preselecionados; `/app/services/[serviceId]` ficou apenas como redirect de compatibilidade
 - o resumo dessa tela agora exibe `Estimativa de valor` calculada no frontend por `publicPrice / 1000 * quantity`; a cobranca final continua pertencendo ao fluxo real do backend
 - perfil com drawer de edicao em `/app/profile?edit=1`
 - afiliados em `/app/affiliate`
@@ -95,6 +96,7 @@ Isso nao e drift acidental. Faz parte do desenho atual das jornadas.
 
 - troca de email do cliente ainda nao existe na UI
 - limpeza explicita de telefone do cliente ainda nao existe
+- o frontend do cliente nao permite operar afiliados neste momento; `/app/affiliate` exibe apenas `Em breve`
 - `affiliateCode` persistido por `?aff=` ainda nao tem expiracao automatica, mas a UI ja permite limpeza manual explicita
 - payout admin de afiliados segue `affiliateProfileId`, `commissionIds` e `notes`; a UI registra a solicitacao inicial, mostra chave PIX, auditoria Asaas, motivo/status e timestamps reais, permite `requested -> processing` para disparar PIX real e oferece refresh do provider em `processing`; a wallet interna nao participa
 - afiliados admin nao possuem acao dedicada de reativacao

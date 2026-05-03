@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerCustomer = registerCustomer;
 exports.login = login;
+exports.loginWithGoogle = loginWithGoogle;
 exports.refreshSession = refreshSession;
 exports.logout = logout;
 exports.getAuthMe = getAuthMe;
@@ -19,6 +20,13 @@ function registerCustomer(payload) {
 function login(payload) {
     return (0, http_1.apiRequest)({
         path: '/auth/login',
+        method: 'POST',
+        body: payload,
+    });
+}
+function loginWithGoogle(payload) {
+    return (0, http_1.apiRequest)({
+        path: '/auth/google',
         method: 'POST',
         body: payload,
     });

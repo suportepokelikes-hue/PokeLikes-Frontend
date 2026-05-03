@@ -84,15 +84,15 @@ function listCustomerAffiliateCommissions({ accessToken }) {
         accessToken,
     }).then(affiliate_normalizers_1.normalizeAffiliateCommissionsResponse);
 }
-function listCustomerPayments({ accessToken }) {
+function listCustomerPayments({ accessToken }, { page = 1, pageSize = 5, sortOrder = 'desc' } = {}) {
     return (0, http_1.apiRequest)({
-        path: '/me/payments?page=1&pageSize=5&sortOrder=desc',
+        path: `/me/payments?page=${page}&pageSize=${pageSize}&sortOrder=${sortOrder}`,
         accessToken,
     });
 }
-function listCustomerOrders({ accessToken }) {
+function listCustomerOrders({ accessToken }, { page = 1, pageSize = 5, sortOrder = 'desc' } = {}) {
     return (0, http_1.apiRequest)({
-        path: '/me/orders?page=1&pageSize=5&sortOrder=desc',
+        path: `/me/orders?page=${page}&pageSize=${pageSize}&sortOrder=${sortOrder}`,
         accessToken,
     });
 }

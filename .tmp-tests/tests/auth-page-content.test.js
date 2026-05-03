@@ -18,8 +18,10 @@ const page_content_1 = require("../src/modules/auth/page-content");
         },
     });
     strict_1.default.equal(content.title, 'Entrar');
+    strict_1.default.equal(content.mode, 'login');
     strict_1.default.equal(content.notice?.title, 'Acesso necessario');
     strict_1.default.equal(content.returnTo, '/admin/users/42');
+    strict_1.default.equal(content.referralCode, 'INDIQUE42');
     strict_1.default.equal(content.alternateHref, '/register?reason=required&returnTo=%2Fadmin%2Fusers%2F42&ref=INDIQUE42');
     strict_1.default.equal(content.fields.length, 2);
     strict_1.default.deepEqual(content.fields.map((field) => field.name), ['email', 'password']);
@@ -36,7 +38,9 @@ const page_content_1 = require("../src/modules/auth/page-content");
         },
     });
     strict_1.default.equal(content.title, 'Criar conta');
+    strict_1.default.equal(content.mode, 'register');
     strict_1.default.equal(content.notice?.tone, 'warning');
+    strict_1.default.equal(content.referralCode, 'GANHE5');
     strict_1.default.equal(content.alternateHref, '/login?reason=expired&returnTo=%2Fcatalog%2F10&ref=GANHE5');
     strict_1.default.equal(content.fields.length, 5);
     strict_1.default.deepEqual(content.fields.map((field) => field.name), ['name', 'email', 'phone', 'password', 'referralCode']);

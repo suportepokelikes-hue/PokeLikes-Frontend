@@ -11,11 +11,17 @@ import { CustomerNewOrderForm, type CustomerNewOrderService } from './customer-n
 type CustomerNewOrderPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   affiliateCodeFromUrl?: string;
+  initialServiceId?: string;
+  initialCategory?: string;
+  initialSearch?: string;
 };
 
 export async function CustomerNewOrderPage({
   session,
   affiliateCodeFromUrl,
+  initialServiceId,
+  initialCategory,
+  initialSearch,
 }: CustomerNewOrderPageProps) {
   try {
     const services = await listCatalogServicesForOrderForm({ accessToken: session.accessToken });
@@ -24,7 +30,6 @@ export async function CustomerNewOrderPage({
       name: service.name,
       description: service.description,
       publicPrice: service.publicPrice,
-      status: service.status,
       socialNetwork: service.socialNetwork,
       category: service.category,
       type: service.type,
@@ -51,6 +56,9 @@ export async function CustomerNewOrderPage({
             services={serializableServices}
             affiliateCodeFromUrl={affiliateCodeFromUrl}
             returnTo={returnTo}
+            initialServiceId={initialServiceId}
+            initialCategory={initialCategory}
+            initialSearch={initialSearch}
           />
         )}
       </main>

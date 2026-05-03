@@ -7,6 +7,7 @@ const node_test_1 = __importDefault(require("node:test"));
 const strict_1 = __importDefault(require("node:assert/strict"));
 const auth_form_content_1 = require("../src/modules/auth/auth-form-content");
 const baseContent = {
+    mode: 'login',
     brandLabel: 'Pokelike',
     title: 'Entrar',
     eyebrow: 'Acesso',
@@ -17,6 +18,7 @@ const baseContent = {
         description: 'Entre novamente.',
     },
     returnTo: '/admin/orders',
+    referralCode: 'INDIQUE42',
     panelTitle: 'Painel',
     panelCopy: 'Resumo',
     panelItems: ['item 1', 'item 2'],
@@ -49,6 +51,7 @@ const baseContent = {
     const view = (0, auth_form_content_1.getAuthFormView)(baseContent, { status: 'idle' });
     strict_1.default.deepEqual(view.notice, baseContent.notice);
     strict_1.default.equal(view.hiddenReturnTo, '/admin/orders');
+    strict_1.default.equal(view.referralCode, 'INDIQUE42');
     strict_1.default.equal(view.fields.length, 2);
     strict_1.default.equal(view.fields[0]?.name, 'email');
     strict_1.default.equal(view.fields[0]?.description, 'Campo principal.');
@@ -68,9 +71,11 @@ const baseContent = {
         ...baseContent,
         notice: null,
         returnTo: null,
+        referralCode: null,
     }, { status: 'error' });
     strict_1.default.equal(fallbackError.notice, null);
     strict_1.default.equal(fallbackError.hiddenReturnTo, null);
+    strict_1.default.equal(fallbackError.referralCode, null);
     strict_1.default.deepEqual(fallbackError.error, {
         title: 'Falha na autenticacao',
         message: 'Nao foi possivel concluir a autenticacao.',
