@@ -76,9 +76,9 @@ As rotas filhas abaixo existem apenas como redirecionamento para esses fluxos:
 - `src/lib/auth/cookies.ts` le sessao do servidor
 - `src/lib/auth/guards.ts` separa acesso publico, cliente e admin
 - `src/middleware.ts` protege `/app` e `/admin`, tenta refresh quando houver `refreshToken` e preserva `returnTo`
-- `src/modules/auth/actions.ts` centraliza login, cadastro, logout e request de verificacao de email
+- `src/modules/auth/actions.ts` centraliza login, cadastro, logout, Google auth por `POST /auth/google` e request de verificacao de email
 
-`/login` e `/register` aceitam `returnTo` seguro. `normalizeReturnTo` bloqueia retorno para `/login?...` e `/register?...` para evitar loop de auth.
+`/login` e `/register` aceitam `returnTo` seguro. `normalizeReturnTo` bloqueia retorno para `/login?...` e `/register?...` para evitar loop de auth. O login/cadastro com Google usa Google Identity Services no client, exige `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, reaproveita os mesmos cookies HTTP-only de sessao e respeita o mesmo `getPostAuthRedirectPath` do fluxo por email/senha.
 
 ## API Boundary
 

@@ -63,6 +63,29 @@ paths:
                 $ref: '#/components/schemas/AuthSessionResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /auth/google:
+    post:
+      tags: [Auth]
+      summary: Login with Google ID Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleAuthRequest'
+      responses:
+        '200':
+          description: Authenticated session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailableError'
   /auth/refresh:
     post:
       tags: [Auth]
@@ -1778,6 +1801,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    ServiceUnavailableError:
+      description: Service unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     InsufficientWalletBalanceError:
       description: Insufficient wallet balance
       content:
@@ -1829,6 +1858,14 @@ components:
           type: string
           format: password
       required: [email, password]
+    GoogleAuthRequest:
+      type: object
+      properties:
+        idToken:
+          type: string
+        referralCode:
+          type: string
+      required: [idToken]
     RefreshRequest:
       type: object
       properties:

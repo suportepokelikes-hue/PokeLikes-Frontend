@@ -1,7 +1,19 @@
-export type AuthFormState = {
-  status: 'idle' | 'error';
-  message?: string;
-};
+export type AuthFormState =
+  | {
+      status: 'idle';
+      message?: undefined;
+      redirectPath?: undefined;
+    }
+  | {
+      status: 'error';
+      message?: string;
+      redirectPath?: undefined;
+    }
+  | {
+      status: 'success';
+      message?: string;
+      redirectPath: string;
+    };
 
 export const initialAuthFormState: AuthFormState = {
   status: 'idle',

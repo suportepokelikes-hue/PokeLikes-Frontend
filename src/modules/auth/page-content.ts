@@ -17,12 +17,14 @@ export function getLoginPageContent(options: {
   const { appName } = getPublicEnv();
 
   return {
+    mode: 'login' as const,
     brandLabel: appName,
     title: 'Entrar',
     eyebrow: 'Acesso',
     description: 'Entre para continuar.',
     notice,
     returnTo,
+    referralCode,
     panelTitle: '',
     panelCopy: '',
     panelItems: [],
@@ -62,12 +64,14 @@ export function getRegisterPageContent(options: {
   const { appName } = getPublicEnv();
 
   return {
+    mode: 'register' as const,
     brandLabel: appName,
     title: 'Criar conta',
     eyebrow: 'Cadastro',
     description: 'Crie sua conta.',
     notice,
     returnTo,
+    referralCode,
     panelTitle: '',
     panelCopy: '',
     panelItems: [],

@@ -50,3 +50,10 @@ Para comportamento REST do frontend, a precedencia e:
 - `npm run build`
 - `npm run test`
 - `npm run test:e2e`
+
+## Ambiente publico
+
+- `NEXT_PUBLIC_API_BASE_URL`: base URL da API backend V1. Default local: `http://localhost:3001/v1`
+- `NEXT_PUBLIC_APP_NAME`: nome exibido no frontend. Default: `Pokelike`
+- `NEXT_PUBLIC_APP_URL`: URL publica do frontend. Default local: `http://localhost:3000`
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID`: client ID do Google Identity Services usado por `Continuar com Google` em `/login` e `/register`

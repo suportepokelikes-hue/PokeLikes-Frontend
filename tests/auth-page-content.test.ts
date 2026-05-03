@@ -16,8 +16,10 @@ test('getLoginPageContent preserves auth return flow and login-specific copy', (
   });
 
   assert.equal(content.title, 'Entrar');
+  assert.equal(content.mode, 'login');
   assert.equal(content.notice?.title, 'Acesso necessario');
   assert.equal(content.returnTo, '/admin/users/42');
+  assert.equal(content.referralCode, 'INDIQUE42');
   assert.equal(content.alternateHref, '/register?reason=required&returnTo=%2Fadmin%2Fusers%2F42&ref=INDIQUE42');
   assert.equal(content.fields.length, 2);
   assert.deepEqual(
@@ -39,7 +41,9 @@ test('getRegisterPageContent preserves register-specific fields and alternate lo
   });
 
   assert.equal(content.title, 'Criar conta');
+  assert.equal(content.mode, 'register');
   assert.equal(content.notice?.tone, 'warning');
+  assert.equal(content.referralCode, 'GANHE5');
   assert.equal(content.alternateHref, '/login?reason=expired&returnTo=%2Fcatalog%2F10&ref=GANHE5');
   assert.equal(content.fields.length, 5);
   assert.deepEqual(

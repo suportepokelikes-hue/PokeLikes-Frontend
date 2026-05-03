@@ -65,6 +65,11 @@ export type LoginRequest = {
   password: string;
 };
 
+export type GoogleAuthRequest = {
+  idToken: string;
+  referralCode?: string;
+};
+
 export type RefreshRequest = {
   refreshToken: string;
 };

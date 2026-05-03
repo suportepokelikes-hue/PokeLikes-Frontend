@@ -7,7 +7,7 @@ import {
   type AuthRedirectReason,
 } from '@/lib/auth/navigation';
 import { redirectAuthenticatedUser } from '@/lib/auth/guards';
-import { loginAction } from '@/modules/auth/actions';
+import { googleAuthAction, loginAction } from '@/modules/auth/actions';
 import { AuthForm } from '@/modules/auth/auth-form';
 import { getLoginPageContent } from '@/modules/auth/page-content';
 import { initialAuthFormState } from '@/modules/auth/types';
@@ -39,6 +39,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <AuthForm
       {...content}
       action={loginAction}
+      googleAction={googleAuthAction}
       initialState={initialAuthFormState}
     />
   );

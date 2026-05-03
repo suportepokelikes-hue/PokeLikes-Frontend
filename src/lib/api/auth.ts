@@ -2,6 +2,7 @@ import type {
   AuthSessionResponse,
   EmailVerificationConfirmRequest,
   EmailVerificationRequestResponse,
+  GoogleAuthRequest,
   LoginRequest,
   RefreshRequest,
   RegisterRequest,
@@ -20,6 +21,14 @@ export function registerCustomer(payload: RegisterRequest): Promise<AuthSessionR
 export function login(payload: LoginRequest): Promise<AuthSessionResponse> {
   return apiRequest<AuthSessionResponse>({
     path: '/auth/login',
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export function loginWithGoogle(payload: GoogleAuthRequest): Promise<AuthSessionResponse> {
+  return apiRequest<AuthSessionResponse>({
+    path: '/auth/google',
     method: 'POST',
     body: payload,
   });

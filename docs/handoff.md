@@ -25,6 +25,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `docs/contracts/backend-openapi.yaml` continua sendo a fonte contratual operacional
 - `docs/api/openapi.yaml` continua auxiliar e nao deve guiar payloads divergentes
 - `src/lib/api` e a fronteira unica com o backend
+- `/login` e `/register` agora tambem oferecem `Continuar com Google` via Google Identity Services; o frontend envia `idToken` para `POST /auth/google`, grava os mesmos cookies HTTP-only do fluxo atual e preserva `referralCode` no cadastro
 - o catalogo em `/catalog/services` e `/catalog/services/{serviceId}` agora deve ser tratado como endpoint autenticado quando usado pelas superficies internas; `/app/services` e o fallback do admin ja enviam `Bearer`
 - `src/modules` concentra a maior parte da logica por dominio
 - a foundation visual compartilhada agora e dark premium e vive principalmente em `src/app/globals.css`

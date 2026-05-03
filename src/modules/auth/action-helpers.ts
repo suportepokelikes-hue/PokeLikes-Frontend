@@ -32,6 +32,24 @@ export function mapLoginError(error: unknown): AuthFormState {
   return mapAuthError(error, 'Nao foi possivel autenticar agora. Tente novamente em instantes.');
 }
 
+export function mapGoogleAuthError(error: unknown): AuthFormState {
+  if (error instanceof ApiClientError && error.status === 400 && hasReferralCodeHint(error)) {
+    return {
+      status: 'error',
+      message: 'Codigo de indicacao invalido. Revise o codigo ou continue sem ele.',
+    };
+  }
+
+  if (error instanceof ApiClientError && (error.status === 400 || error.status === 401)) {
+    return {
+      status: 'error',
+      message: 'Nao foi possivel validar sua conta Google. Tente novamente ou entre com email e senha.',
+    };
+  }
+
+  return mapAuthError(error, 'O login com Google nao esta disponivel agora. Tente novamente em instantes.');
+}
+
 export function mapRegisterError(error: unknown): AuthFormState {
   if (error instanceof ApiClientError && error.status === 400 && hasReferralCodeHint(error)) {
     return {

@@ -7,7 +7,7 @@ import {
   type AuthRedirectReason,
 } from '@/lib/auth/navigation';
 import { redirectAuthenticatedUser } from '@/lib/auth/guards';
-import { registerAction } from '@/modules/auth/actions';
+import { googleAuthAction, registerAction } from '@/modules/auth/actions';
 import { AuthForm } from '@/modules/auth/auth-form';
 import { getRegisterPageContent } from '@/modules/auth/page-content';
 import { initialAuthFormState } from '@/modules/auth/types';
@@ -39,6 +39,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
     <AuthForm
       {...content}
       action={registerAction}
+      googleAction={googleAuthAction}
       initialState={initialAuthFormState}
     />
   );

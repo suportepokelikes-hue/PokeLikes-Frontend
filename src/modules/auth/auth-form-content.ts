@@ -21,12 +21,14 @@ export type AuthNotice = {
 };
 
 export type AuthFormContent = {
+  mode: 'login' | 'register';
   brandLabel: string;
   title: string;
   eyebrow: string;
   description: string;
   notice?: AuthNotice | null;
   returnTo?: string | null;
+  referralCode?: string | null;
   panelTitle: string;
   panelCopy: string;
   panelItems: string[];
@@ -43,6 +45,7 @@ export function getAuthFormView(content: AuthFormContent, state: AuthFormState) 
   return {
     notice: content.notice ?? null,
     hiddenReturnTo: content.returnTo ?? null,
+    referralCode: content.referralCode ?? null,
     fields: content.fields,
     error:
       state.status === 'error'

@@ -4443,6 +4443,72 @@ textarea:focus-visible {
   gap: 0.9rem;
 }
 
+.auth-google-block {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.auth-google-button-shell {
+  position: relative;
+}
+
+.auth-google-button {
+  min-height: 2.9rem;
+  width: 100%;
+}
+
+.auth-google-button > div,
+.auth-google-button iframe {
+  width: 100% !important;
+}
+
+.auth-google-button:not(.is-ready) {
+  display: none;
+}
+
+.auth-google-placeholder {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.82rem 1.16rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--outline-ghost);
+  background: linear-gradient(180deg, rgba(28, 36, 63, 0.92), rgba(16, 21, 39, 0.98));
+  color: var(--ink);
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--outline-ghost);
+}
+
+.auth-google-feedback {
+  border-radius: 1rem;
+  border: 1px solid var(--outline-ghost);
+  background: rgba(16, 21, 39, 0.88);
+  padding: 0.85rem 1rem;
+}
+
+.auth-google-feedback p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .auth-notice {
   padding: 0.9rem 1rem;
   border-radius: 0.95rem;

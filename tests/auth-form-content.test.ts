@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { getAuthFormView, type AuthFormContent } from '../src/modules/auth/auth-form-content';
 
 const baseContent: AuthFormContent = {
+  mode: 'login',
   brandLabel: 'Pokelike',
   title: 'Entrar',
   eyebrow: 'Acesso',
@@ -14,6 +15,7 @@ const baseContent: AuthFormContent = {
     description: 'Entre novamente.',
   },
   returnTo: '/admin/orders',
+  referralCode: 'INDIQUE42',
   panelTitle: 'Painel',
   panelCopy: 'Resumo',
   panelItems: ['item 1', 'item 2'],
@@ -48,6 +50,7 @@ test('getAuthFormView exposes notice, hidden returnTo and field descriptors', ()
 
   assert.deepEqual(view.notice, baseContent.notice);
   assert.equal(view.hiddenReturnTo, '/admin/orders');
+  assert.equal(view.referralCode, 'INDIQUE42');
   assert.equal(view.fields.length, 2);
   assert.equal(view.fields[0]?.name, 'email');
   assert.equal(view.fields[0]?.description, 'Campo principal.');
@@ -71,12 +74,14 @@ test('getAuthFormView builds auth error copy and fallback message', () => {
       ...baseContent,
       notice: null,
       returnTo: null,
+      referralCode: null,
     },
     { status: 'error' },
   );
 
   assert.equal(fallbackError.notice, null);
   assert.equal(fallbackError.hiddenReturnTo, null);
+  assert.equal(fallbackError.referralCode, null);
   assert.deepEqual(fallbackError.error, {
     title: 'Falha na autenticacao',
     message: 'Nao foi possivel concluir a autenticacao.',

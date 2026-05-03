@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] `/login` e `/register` agora aceitam `Continuar com Google` via Google Identity Services, enviando `idToken` para `POST /auth/google`, reaproveitando os mesmos cookies/sessao do login atual e preservando `referralCode` no cadastro
 - [x] filtros de `/app/services` ficaram mais compactos no desktop e os cards-resumo `Liberados`, `Com atencao` e `Pausados` sairam da area de descoberta do cliente
 - [x] dashboard do cliente saiu da navegacao principal e `/app` virou redirect para `/app/services`, deixando o pos-login focado em descoberta e compra de servicos
 - [x] home `/` agora redireciona usuario autenticado para sua area interna padrao, evitando retorno para a landing antes do logout
@@ -359,6 +360,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar manualmente o fluxo Google em staging para login existente, criacao de conta nova e rejeicao de token/popup com `NEXT_PUBLIC_GOOGLE_CLIENT_ID` real
 - revisar se ainda vale manter metadata e componentes publicos antigos do catalogo so como fallback tecnico, sem reabrir a navegacao publica
 - validar manualmente a jornada autenticada `/app/services -> /app/services/[serviceId] -> createOrderAction` com e sem `?aff=` persistido
 - decidir se a area autenticada de servicos vai ganhar pagina de paginacao/filtros via query string visivel ou se a V1 atual ja cobre a descoberta

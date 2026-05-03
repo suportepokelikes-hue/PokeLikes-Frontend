@@ -63,6 +63,27 @@ paths:
                 $ref: '#/components/schemas/AuthSessionResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /auth/google:
+    post:
+      tags: [Auth]
+      summary: Login or register with Google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleAuthRequest'
+      responses:
+        '200':
+          description: Authenticated session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /auth/refresh:
     post:
       tags: [Auth]
@@ -1790,6 +1811,16 @@ components:
           type: string
           format: password
       required: [email, password]
+    GoogleAuthRequest:
+      type: object
+      properties:
+        idToken:
+          type: string
+          description: Google ID token returned by Google Identity Services.
+        referralCode:
+          type: string
+          description: Optional referral code preserved by the frontend during Google signup.
+      required: [idToken]
     RefreshRequest:
       type: object
       properties:

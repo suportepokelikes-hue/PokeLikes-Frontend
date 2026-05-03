@@ -6,6 +6,7 @@ import {
   getAuthMe,
   getCurrentUser,
   login,
+  loginWithGoogle,
   logout,
   refreshSession,
   registerCustomer,
@@ -34,6 +35,7 @@ test('auth api functions target the expected endpoints and methods', async () =>
       referralCode: 'INDIQUE123',
     });
     await login({ email: 'alice@exemplo.com', password: 'secret' });
+    await loginWithGoogle({ idToken: 'google-id-token', referralCode: 'INDIQUE123' });
     await refreshSession({ refreshToken: 'refresh-token' });
     await logout({ refreshToken: 'refresh-token' });
     await getAuthMe('token-123');
@@ -52,6 +54,7 @@ test('auth api functions target the expected endpoints and methods', async () =>
     [
       { url: 'http://localhost:3001/v1/auth/register', method: 'POST' },
       { url: 'http://localhost:3001/v1/auth/login', method: 'POST' },
+      { url: 'http://localhost:3001/v1/auth/google', method: 'POST' },
       { url: 'http://localhost:3001/v1/auth/refresh', method: 'POST' },
       { url: 'http://localhost:3001/v1/auth/logout', method: 'POST' },
       { url: 'http://localhost:3001/v1/auth/me', method: 'GET' },
@@ -69,10 +72,11 @@ test('auth api functions target the expected endpoints and methods', async () =>
     referralCode: 'INDIQUE123',
   }));
   assert.equal(requests[1].init?.body, JSON.stringify({ email: 'alice@exemplo.com', password: 'secret' }));
-  assert.equal(requests[2].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
+  assert.equal(requests[2].init?.body, JSON.stringify({ idToken: 'google-id-token', referralCode: 'INDIQUE123' }));
   assert.equal(requests[3].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
-  assert.equal(new Headers(requests[4].init?.headers).get('Authorization'), 'Bearer token-123');
+  assert.equal(requests[4].init?.body, JSON.stringify({ refreshToken: 'refresh-token' }));
   assert.equal(new Headers(requests[5].init?.headers).get('Authorization'), 'Bearer token-123');
   assert.equal(new Headers(requests[6].init?.headers).get('Authorization'), 'Bearer token-123');
-  assert.equal(requests[7].init?.body, JSON.stringify({ token: 'preview-token' }));
+  assert.equal(new Headers(requests[7].init?.headers).get('Authorization'), 'Bearer token-123');
+  assert.equal(requests[8].init?.body, JSON.stringify({ token: 'preview-token' }));
 });

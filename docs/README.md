@@ -56,3 +56,7 @@ Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para 
 - `docs/architecture.md` para entender fronteiras, shells e jornadas
 - `docs/screen-map.md` para mapa de rotas e comportamento
 - `docs/handoff.md` para resumo operacional da ultima rodada
+
+## Ambiente publico relevante
+
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` habilita o fluxo `Continuar com Google` nas telas de login e cadastro

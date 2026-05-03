@@ -3,12 +3,13 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { login, logout, registerCustomer, requestEmailVerification } from '@/lib/api/auth';
+import { login, loginWithGoogle, logout, registerCustomer, requestEmailVerification } from '@/lib/api/auth';
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath, getPostAuthRedirectPath, normalizeReferralCode, normalizeReturnTo } from '@/lib/auth/navigation';
 import { clearServerSessionCookies, writeServerSessionCookies, writeServerUserCookie } from '@/lib/auth/server-cookies';
 import {
   mapEmailVerificationRequestError,
+  mapGoogleAuthError,
   mapLoginError,
   mapRegisterError,
   readTrimmedString,
@@ -72,6 +73,34 @@ export async function registerAction(_: AuthFormState, formData: FormData): Prom
   }
 
   redirect(getPostAuthRedirectPath(role, returnTo));
+}
+
+export async function googleAuthAction(_: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  const idToken = readTrimmedString(formData, 'idToken');
+  const referralCode = normalizeReferralCode(readTrimmedString(formData, 'referralCode'));
+  const returnTo = normalizeReturnTo(readTrimmedString(formData, 'returnTo'));
+
+  if (!idToken) {
+    return {
+      status: 'error',
+      message: 'Nao recebemos a credencial do Google. Tente novamente.',
+    };
+  }
+
+  try {
+    const session = await loginWithGoogle({
+      idToken,
+      ...(referralCode ? { referralCode } : {}),
+    });
+    await writeServerSessionCookies(session);
+
+    return {
+      status: 'success',
+      redirectPath: getPostAuthRedirectPath(session.user.role, returnTo),
+    };
+  } catch (error) {
+    return mapGoogleAuthError(error);
+  }
 }
 
 export async function logoutAction() {
