@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, ShoppingBag, Wallet } from 'lucide-react';
+import { Search, ShoppingBag } from 'lucide-react';
 
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -204,22 +204,11 @@ function CustomerCatalogListContent({
               <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
               Ver pedidos
             </Link>
-            <Link href="/app/wallet" className="secondary-action">
-              <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-              Ver carteira
-            </Link>
           </>
         }
       />
 
-      <CustomerSectionCard
-        eyebrow="Checkout"
-        title="Escolha um servico para criar seu pedido."
-        meta={<span className="panel-meta">{response.totalItems} servico(s)</span>}
-      >
-        <div className="catalog-customer-intro">
-          <p className="section-copy">Filtre por texto, rede social, categoria ou tipo para chegar mais rapido ao pedido certo.</p>
-        </div>
+      <section className="customer-section-card">
         <CatalogFilterBar
           actionPath={listPath}
           initialValues={catalogFilters}
@@ -228,7 +217,7 @@ function CustomerCatalogListContent({
           compact
         />
         <AffiliateCodeNotice initialAffiliateCode={affiliateCodeFromUrl} />
-      </CustomerSectionCard>
+      </section>
 
       {response.items.length === 0 ? (
         <EmptyState

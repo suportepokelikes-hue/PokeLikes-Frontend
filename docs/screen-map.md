@@ -31,6 +31,11 @@
   - catalogo interno do cliente
   - lista vertical com filtros de busca, rede social, categoria e tipo
   - preserva `?aff=` quando presente
+- `/app/new-order`
+  - pedido rapido em tela unica
+  - busca local opcional, filtro por categoria e seletor de servico
+  - resumo do servico, validacao de faixa/disponibilidade e envio pelo mesmo `POST /me/orders`
+  - preserva `?aff=` no envio
 - `/app/services/[serviceId]`
   - detalhe do servico dentro do shell autenticado
   - checkout real com `POST /me/orders`

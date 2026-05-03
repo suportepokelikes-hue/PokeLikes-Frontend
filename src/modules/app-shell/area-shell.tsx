@@ -23,7 +23,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import type { UserSummary } from '@/lib/api/contracts';
+import type { UserSummary, WalletSummary } from '@/lib/api/contracts';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { LogoutButton } from '@/modules/auth/logout-button';
 import { getAreaShellView, type AreaShellArea } from './area-shell-content';
@@ -32,6 +32,7 @@ type AreaShellProps = {
   area: AreaShellArea;
   user: UserSummary;
   title: string;
+  walletSummary?: WalletSummary | null;
   children: React.ReactNode;
 };
 
@@ -52,7 +53,7 @@ const navIcons: Record<string, LucideIcon> = {
   transactions: CreditCard,
 };
 
-export function AreaShell({ area, user, title, children }: AreaShellProps) {
+export function AreaShell({ area, user, title, walletSummary, children }: AreaShellProps) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const view = getAreaShellView({
@@ -60,12 +61,15 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
     user,
     title,
     pathname,
+    walletSummary,
     children,
   });
 
   useEffect(() => {
     setIsSidebarOpen(false);
   }, [pathname]);
+
+  const hasHeaderShortcuts = Boolean(view.walletShortcut || view.profileShortcut);
 
   return (
     <div className={view.areaClassName} data-sidebar-open={isSidebarOpen ? 'true' : 'false'}>
@@ -104,6 +108,8 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
                   href={link.href}
                   prefetch={false}
                   className={link.isCurrent ? 'is-current' : ''}
+                  aria-label={link.label}
+                  title={link.label}
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   <span className="area-nav-icon" aria-hidden="true">
@@ -149,11 +155,34 @@ export function AreaShell({ area, user, title, children }: AreaShellProps) {
             </div>
           </div>
 
-          <div className="area-header-actions">
-            <div className="area-header-statuses">
-              <StatusBadge label={view.eyebrow} tone="neutral" />
+          {hasHeaderShortcuts ? (
+            <div className="area-header-actions">
+              <div className="area-header-shortcuts">
+                {view.walletShortcut ? (
+                  <Link
+                    href={view.walletShortcut.href}
+                    className="area-wallet-link"
+                    aria-label={view.walletShortcut.ariaLabel}
+                    title={view.walletShortcut.ariaLabel}
+                  >
+                    <Wallet size={16} strokeWidth={2.1} aria-hidden="true" />
+                    <span>{view.walletShortcut.label}</span>
+                  </Link>
+                ) : null}
+
+                {view.profileShortcut ? (
+                  <Link
+                    href={view.profileShortcut.href}
+                    className="area-profile-link"
+                    aria-label={view.profileShortcut.ariaLabel}
+                    title={view.profileShortcut.ariaLabel}
+                  >
+                    <CircleUserRound size={17} strokeWidth={2.1} aria-hidden="true" />
+                  </Link>
+                ) : null}
+              </div>
             </div>
-          </div>
+          ) : null}
         </header>
 
         <div className="area-content">{view.children}</div>

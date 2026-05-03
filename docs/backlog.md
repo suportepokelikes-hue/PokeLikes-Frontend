@@ -2,6 +2,10 @@
 
 ## Latest Update
 
+- [x] `/app/new-order` agora mostra `Estimativa de valor` em tempo real pela regra de preco por 1000, sem mudar o backend nem o fluxo final de cobranca
+- [x] a area customer ganhou `/app/new-order` como tela separada de pedido rapido, com filtro local de categoria/servico, resumo inline do servico e envio pelo mesmo `createOrderAction`, sem substituir `/app/services`
+- [x] o shell autenticado removeu a badge textual de area no topo e passou a mostrar apenas icones na navegacao lateral, evitando duplicar no menu o titulo da secao atual
+- [x] a area customer moveu `Perfil` da sidebar para o topo direito do shell, mantendo `/app/profile` acessivel por icone e exibindo o saldo resumido da carteira em todas as telas com fallback quando `GET /me/wallet` falha
 - [x] `/login` e `/register` agora aceitam `Continuar com Google` via Google Identity Services, enviando `idToken` para `POST /auth/google`, reaproveitando os mesmos cookies/sessao do login atual e preservando `referralCode` no cadastro
 - [x] filtros de `/app/services` ficaram mais compactos no desktop e os cards-resumo `Liberados`, `Com atencao` e `Pausados` sairam da area de descoberta do cliente
 - [x] dashboard do cliente saiu da navegacao principal e `/app` virou redirect para `/app/services`, deixando o pos-login focado em descoberta e compra de servicos
@@ -360,6 +364,8 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar manualmente `/app/new-order` com servico saudavel, servico bloqueado, quantidade fora da faixa e `?aff=` ativo para confirmar desabilitacao de envio e atribuicao correta do codigo de afiliado
+- validar manualmente o shell customer em desktop/mobile nas rotas `/app/services`, `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` para confirmar o comportamento do novo atalho de carteira/perfil e o fallback de saldo indisponivel
 - validar manualmente o fluxo Google em staging para login existente, criacao de conta nova e rejeicao de token/popup com `NEXT_PUBLIC_GOOGLE_CLIENT_ID` real
 - revisar se ainda vale manter metadata e componentes publicos antigos do catalogo so como fallback tecnico, sem reabrir a navegacao publica
 - validar manualmente a jornada autenticada `/app/services -> /app/services/[serviceId] -> createOrderAction` com e sem `?aff=` persistido

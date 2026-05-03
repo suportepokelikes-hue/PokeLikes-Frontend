@@ -23,6 +23,36 @@ export function listCatalogServices(params: CatalogListParams = {}, { accessToke
   });
 }
 
+export async function listCatalogServicesForOrderForm({ accessToken }: CatalogAuthOptions = {}) {
+  const firstPage = await listCatalogServices(
+    {
+      page: 1,
+      pageSize: 100,
+      sortOrder: 'asc',
+    },
+    { accessToken },
+  );
+
+  if (firstPage.totalPages <= 1) {
+    return firstPage.items;
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: firstPage.totalPages - 1 }, (_, index) =>
+      listCatalogServices(
+        {
+          page: index + 2,
+          pageSize: 100,
+          sortOrder: 'asc',
+        },
+        { accessToken },
+      ),
+    ),
+  );
+
+  return [firstPage, ...remainingPages].flatMap((page) => page.items);
+}
+
 export function getCatalogService(serviceId: string, { accessToken }: CatalogAuthOptions = {}) {
   return apiRequest<CatalogServiceResource>({
     path: `/catalog/services/${serviceId}`,

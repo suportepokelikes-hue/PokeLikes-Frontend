@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { UserSummary } from '@/lib/api/contracts';
+import type { UserSummary, WalletSummary } from '@/lib/api/contracts';
+import { formatMoney } from '@/lib/format';
 
 export type AreaShellArea = 'customer' | 'admin';
 
@@ -12,11 +13,21 @@ type AreaShellLink = {
   isCurrent: boolean;
 };
 
+type AreaShellSection = {
+  href: string;
+  label: string;
+};
+
+type AreaShellShortcut = {
+  href: string;
+  label: string;
+  ariaLabel: string;
+};
+
 type AreaShellView = {
   areaClassName: string;
   brandTitle: string;
   brandMeta: string;
-  eyebrow: string;
   title: string;
   currentSectionLabel: string;
   currentSectionDescription: string;
@@ -24,6 +35,8 @@ type AreaShellView = {
   userMeta: string;
   navigationLabel: string;
   links: AreaShellLink[];
+  walletShortcut: AreaShellShortcut | null;
+  profileShortcut: AreaShellShortcut | null;
   children: ReactNode;
 };
 
@@ -33,13 +46,14 @@ const areaConfig = {
     brandMeta: 'Cliente',
     sectionDescription: 'Conta, saldo e pedidos.',
     links: [
+      { href: '/app/new-order', label: 'Novo pedido', icon: 'orders' },
       { href: '/app/services', label: 'Servicos', icon: 'catalog' },
-      { href: '/app/profile', label: 'Perfil', icon: 'profile' },
       { href: '/app/affiliate', label: 'Afiliados', icon: 'affiliate' },
       { href: '/app/wallet', label: 'Carteira', icon: 'wallet' },
       { href: '/app/payments', label: 'Pagamentos', icon: 'payments' },
       { href: '/app/orders', label: 'Pedidos', icon: 'orders' },
     ],
+    sections: [{ href: '/app/profile', label: 'Perfil' }],
   },
   admin: {
     label: 'Area admin',
@@ -59,6 +73,7 @@ const areaConfig = {
       { href: '/admin/audits', label: 'Auditoria', icon: 'audits' },
       { href: '/admin/transactions', label: 'Transacoes', icon: 'transactions' },
     ],
+    sections: [],
   },
 } as const;
 
@@ -67,19 +82,20 @@ export function getAreaShellView(options: {
   user: UserSummary;
   title: string;
   pathname: string;
+  walletSummary?: WalletSummary | null;
   children: ReactNode;
 }): AreaShellView {
-  const { area, user, title, pathname, children } = options;
+  const { area, user, title, pathname, walletSummary, children } = options;
   const config = areaConfig[area];
-  const currentLink = config.links.find((link) => isCurrentPath(pathname, link.href));
+  const currentSection = [...config.links, ...config.sections].find((link) => isCurrentPath(pathname, link.href));
+  const walletLabel = walletSummary ? formatMoney(walletSummary.availableBalance) : 'Saldo indisponivel';
 
   return {
     areaClassName: `area-shell area-shell-${area}`,
     brandTitle: area === 'admin' ? 'Pokelike Ops' : 'Pokelike',
     brandMeta: config.brandMeta,
-    eyebrow: config.label,
     title,
-    currentSectionLabel: currentLink?.label ?? title,
+    currentSectionLabel: currentSection?.label ?? title,
     currentSectionDescription: config.sectionDescription,
     userName: user.name,
     userMeta: user.email,
@@ -88,6 +104,22 @@ export function getAreaShellView(options: {
       ...link,
       isCurrent: isCurrentPath(pathname, link.href),
     })),
+    walletShortcut:
+      area === 'customer'
+        ? {
+            href: '/app/wallet',
+            label: walletLabel,
+            ariaLabel: walletSummary ? `Abrir carteira com saldo ${walletLabel}` : 'Abrir carteira',
+          }
+        : null,
+    profileShortcut:
+      area === 'customer'
+        ? {
+            href: '/app/profile',
+            label: 'Abrir perfil',
+            ariaLabel: 'Abrir perfil',
+          }
+        : null,
     children,
   };
 }

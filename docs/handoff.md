@@ -34,6 +34,8 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - a landing `/` agora tambem foi reduzida para hero, como funciona, categorias e CTA final, mantendo os fluxos reais de `/catalog`, cadastro, Pix e acompanhamento de pedidos
 - headers, section cards e quick links deixaram de puxar descricao por padrao; a leitura prioriza titulo, dado e acao
 - o shell autenticado do cliente em `/app` agora tambem foi redesenhado para a identidade Pokelike, com sidebar/topbar mais fortes e sem mudar links, guards, redirects ou comportamento responsivo
+- `Perfil` saiu da sidebar do customer e agora fica no topo direito como atalho iconico ao lado da carteira; `/app/profile` continua sendo rota oficial e o topo tenta mostrar saldo de `GET /me/wallet` sem derrubar o shell se a chamada falhar
+- o badge textual de area foi removido do topo e a navegacao lateral dos shells ficou iconica, com labels expostos por `title`/acessibilidade em vez de repetir visualmente o nome da pagina
 - o dashboard `/app` agora funciona como painel central do cliente, priorizando saldo, proximo passo, atalhos, referral/afiliados e historico recente
 - `src/components/ui/customer-surfaces.tsx` concentra os novos wrappers visuais reutilizaveis da area interna do cliente
 - `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora tambem foram redesenhados com a mesma base premium, preservando os fluxos reais da V1
@@ -60,6 +62,8 @@ Toda nova sessao do Codex neste repositorio deve ler:
 
 - `/app` agora so redireciona para `/app/services`
 - catalogo interno em `/app/services` e detalhe em `/app/services/[serviceId]`
+- `/app/new-order` oferece criacao rapida de pedido em tela unica, com filtro local de categoria/servico, resumo inline e envio pelo mesmo `createOrderAction`
+- o resumo dessa tela agora exibe `Estimativa de valor` calculada no frontend por `publicPrice / 1000 * quantity`; a cobranca final continua pertencendo ao fluxo real do backend
 - perfil com drawer de edicao em `/app/profile?edit=1`
 - afiliados em `/app/affiliate`
 - `/app/affiliate` tambem expõe chave PIX de payout, com aviso quando o afiliado ainda nao cadastrou a chave

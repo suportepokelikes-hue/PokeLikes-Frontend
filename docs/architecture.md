@@ -33,6 +33,7 @@ O frontend nao deve inventar payloads fora do contrato validado.
 
 - shell autenticado em `/app`
 - catalogo interno em `/app/services` e `/app/services/[serviceId]`
+- criacao rapida de pedido em `/app/new-order`, reaproveitando `createOrderAction` em uma unica tela com filtro local de categoria/servico e preservacao de `?aff=`
 - `/app` agora funciona apenas como redirecionamento para `/app/services`
 - perfil, referral e afiliados
 - wallet, PIX e pedidos
@@ -100,6 +101,8 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/catalog` deixou de ser navegavel publicamente: visitante vai para login com `returnTo` interno, customer vai para `/app/services` e admin vai para `/admin/catalog`
 - `/catalog/[serviceId]` segue a mesma regra, redirecionando para `/app/services/[serviceId]` quando o cliente ja esta autenticado
 - `/app/services` reaproveita o mesmo catalogo dentro da area autenticada, com lista vertical e filtros essenciais
+- `/app/new-order` funciona como fluxo rapido de pedido na mesma area autenticada: lista os servicos do catalogo com token do cliente, filtra localmente por busca/categoria e envia `catalogServiceId`, `link`, `quantity` e `affiliateCode` opcional pelo mesmo `createOrderAction`
+- o resumo de `/app/new-order` agora mostra `Estimativa de valor` calculada no frontend pela regra `publicPrice / 1000 * quantity`, mantendo o backend como fonte da cobranca final
 - `/app/services/[serviceId]` reaproveita o detalhe e o checkout dentro do shell do cliente
 - `?aff=` capturado em `/catalog` e `/catalog/[serviceId]` fica persistido localmente
 - `?aff=` tambem e preservado na navegacao de `/app/services` e `/app/services/[serviceId]`
@@ -194,6 +197,9 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - o shell autenticado do cliente em `/app` agora usa navegacao lateral mais forte, topo com contexto da area atual e branding alinhado a Pokelike
 - a navegacao do cliente preserva as mesmas rotas, links, guards e comportamento mobile/tablet; a mudanca ficou concentrada em apresentacao e hierarquia visual
+- `Perfil` deixou de aparecer na sidebar do customer e passou a viver como atalho fixo no topo direito junto da carteira, mantendo `/app/profile` como rota valida em qualquer tela da area
+- o topo direito do customer agora tenta carregar `GET /me/wallet` no layout do shell para exibir saldo resumido com link persistente para `/app/wallet`; se a wallet falhar isoladamente, o shell continua renderizando com fallback textual
+- o badge textual de area no topo foi removido e a navegacao lateral dos shells passou a priorizar icones com tooltip/title, evitando repetir no menu o mesmo nome da secao ja exibido no header da pagina
 - o dashboard `/app` foi reorganizado como painel central: saldo, prioridade atual, atalhos, referral e afiliados aparecem antes das tabelas de historico
 - wrappers reutilizaveis do cliente foram introduzidos em `src/components/ui/customer-surfaces.tsx` para sustentar as proximas paginas internas sem abrir uma camada paralela ao design system
 

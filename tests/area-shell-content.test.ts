@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { getAreaShellView, isCurrentPath } from '../src/modules/app-shell/area-shell-content';
-import type { UserSummary } from '../src/lib/api/contracts';
+import type { UserSummary, WalletSummary } from '../src/lib/api/contracts';
 
 const user: UserSummary = {
   id: '7',
@@ -29,7 +29,6 @@ test('getAreaShellView marks the current admin link and exposes user meta', () =
   });
 
   assert.equal(view.areaClassName, 'area-shell area-shell-admin');
-  assert.equal(view.eyebrow, 'Area admin');
   assert.equal(view.title, 'Pedidos');
   assert.equal(view.userName, 'Operador');
   assert.equal(view.userMeta, 'ops@exemplo.com');
@@ -40,6 +39,10 @@ test('getAreaShellView marks the current admin link and exposes user meta', () =
 });
 
 test('getAreaShellView includes the affiliate route in the customer shell', () => {
+  const walletSummary: WalletSummary = {
+    id: 'wallet-1',
+    availableBalance: { amount: '10', currency: 'BRL' },
+  };
   const customerView = getAreaShellView({
     area: 'customer',
     user: {
@@ -51,11 +54,35 @@ test('getAreaShellView includes the affiliate route in the customer shell', () =
     },
     title: 'Afiliados',
     pathname: '/app/affiliate',
+    walletSummary,
     children: 'conteudo-cliente',
   });
 
   assert.equal(customerView.links.find((link) => link.href === '/app/affiliate')?.isCurrent, true);
-  assert.equal(customerView.links.find((link) => link.href === '/app/profile')?.isCurrent, false);
+  assert.equal(customerView.links.some((link) => link.href === '/app/new-order'), true);
+  assert.equal(customerView.links.some((link) => link.href === '/app/profile'), false);
+  assert.equal(customerView.walletShortcut?.href, '/app/wallet');
+  assert.equal(customerView.walletShortcut?.label, 'R$\u00a010,00');
+  assert.equal(customerView.profileShortcut?.href, '/app/profile');
+});
+
+test('getAreaShellView keeps profile as a titled customer section outside the sidebar', () => {
+  const customerView = getAreaShellView({
+    area: 'customer',
+    user: {
+      id: '12',
+      role: 'customer',
+      name: 'Cliente',
+      email: 'cliente@exemplo.com',
+      status: 'active',
+    },
+    title: 'Minha conta',
+    pathname: '/app/profile',
+    children: 'conteudo-cliente',
+  });
+
+  assert.equal(customerView.currentSectionLabel, 'Perfil');
+  assert.equal(customerView.walletShortcut?.label, 'Saldo indisponivel');
 });
 
 test('getAreaShellView includes the affiliate route in the admin shell', () => {

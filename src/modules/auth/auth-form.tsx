@@ -48,6 +48,7 @@ export function AuthForm({
   const [googleState, setGoogleState] = useState<AuthFormState>(initialState);
   const [googleReady, setGoogleReady] = useState(false);
   const [googleScriptError, setGoogleScriptError] = useState<string | null>(null);
+  const [googleButtonWidth, setGoogleButtonWidth] = useState(320);
   const [isGooglePending, startGoogleTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const googleButtonRef = useRef<HTMLDivElement>(null);
@@ -81,6 +82,30 @@ export function AuthForm({
   );
 
   useEffect(() => {
+    if (!googleButtonRef.current) {
+      return;
+    }
+
+    const container = googleButtonRef.current;
+    const updateWidth = () => {
+      const nextWidth = Math.max(220, Math.min(320, Math.floor(container.clientWidth)));
+      setGoogleButtonWidth((current) => (current === nextWidth ? current : nextWidth));
+    };
+
+    updateWidth();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateWidth();
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isRegister) {
       return;
     }
@@ -89,73 +114,76 @@ export function AuthForm({
   }, [isRegister, view.referralCode]);
 
   useEffect(() => {
-    if (!googleClientId || !googleReady || !window.google || !googleButtonRef.current || googleInitializedRef.current) {
+    if (!googleClientId || !googleReady || !window.google || !googleButtonRef.current) {
       return;
     }
 
     const container = googleButtonRef.current;
-    container.innerHTML = '';
 
-    window.google.accounts.id.initialize({
-      client_id: googleClientId,
-      ux_mode: 'popup',
-      context: isRegister ? 'signup' : 'signin',
-      callback: (response) => {
-        const credential = response.credential?.trim();
+    if (!googleInitializedRef.current) {
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        ux_mode: 'popup',
+        context: isRegister ? 'signup' : 'signin',
+        callback: (response) => {
+          const credential = response.credential?.trim();
 
-        if (!credential) {
-          setGoogleState({
-            status: 'error',
-            message: 'O Google nao retornou uma credencial valida. Tente novamente.',
-          });
-          return;
-        }
-
-        const formData = new FormData();
-        formData.set('idToken', credential);
-
-        if (view.hiddenReturnTo) {
-          formData.set('returnTo', view.hiddenReturnTo);
-        }
-
-        if (isRegister) {
-          const currentReferralCode = readReferralCode(formRef.current, view.referralCode);
-
-          if (currentReferralCode) {
-            formData.set('referralCode', currentReferralCode);
-          }
-
-          syncReferralCookie(currentReferralCode);
-        }
-
-        setGoogleState(initialState);
-        setGoogleScriptError(null);
-
-        startGoogleTransition(async () => {
-          const result = await googleAction(initialState, formData);
-
-          if (result.status === 'success') {
-            router.replace(result.redirectPath);
+          if (!credential) {
+            setGoogleState({
+              status: 'error',
+              message: 'O Google nao retornou uma credencial valida. Tente novamente.',
+            });
             return;
           }
 
-          setGoogleState(result);
-        });
-      },
-    });
+          const formData = new FormData();
+          formData.set('idToken', credential);
+
+          if (view.hiddenReturnTo) {
+            formData.set('returnTo', view.hiddenReturnTo);
+          }
+
+          if (isRegister) {
+            const currentReferralCode = readReferralCode(formRef.current, view.referralCode);
+
+            if (currentReferralCode) {
+              formData.set('referralCode', currentReferralCode);
+            }
+
+            syncReferralCookie(currentReferralCode);
+          }
+
+          setGoogleState(initialState);
+          setGoogleScriptError(null);
+
+          startGoogleTransition(async () => {
+            const result = await googleAction(initialState, formData);
+
+            if (result.status === 'success') {
+              router.replace(result.redirectPath);
+              return;
+            }
+
+            setGoogleState(result);
+          });
+        },
+      });
+
+      googleInitializedRef.current = true;
+    }
+
+    container.innerHTML = '';
 
     window.google.accounts.id.renderButton(container, {
       type: 'standard',
       theme: 'outline',
       size: 'large',
-      shape: 'rectangular',
+      shape: 'pill',
       text: isRegister ? 'signup_with' : 'continue_with',
-      width: 360,
+      width: googleButtonWidth,
       logo_alignment: 'left',
     });
-
-    googleInitializedRef.current = true;
-  }, [googleAction, googleClientId, googleReady, initialState, isRegister, router, view.hiddenReturnTo, view.referralCode]);
+  }, [googleAction, googleButtonWidth, googleClientId, googleReady, initialState, isRegister, router, view.hiddenReturnTo, view.referralCode]);
 
   return (
     <PublicShell session={createGuestSession()}>
