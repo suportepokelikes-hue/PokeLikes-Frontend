@@ -2487,6 +2487,93 @@ textarea:focus-visible {
     linear-gradient(180deg, rgba(18, 24, 44, 0.99), rgba(10, 13, 24, 1));
 }
 
+.customer-orders-filters {
+  display: grid;
+  gap: 1rem;
+}
+
+.customer-orders-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.customer-orders-status-pill {
+  min-height: 2.35rem;
+  padding: 0.62rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--outline-ghost);
+  background: rgba(14, 19, 35, 0.88);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.customer-orders-status-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(73, 163, 255, 0.24);
+  color: var(--ink);
+}
+
+.customer-orders-status-pill.is-active {
+  background: rgba(255, 210, 51, 0.12);
+  border-color: rgba(255, 210, 51, 0.26);
+  color: var(--accent);
+}
+
+.customer-orders-toolbar {
+  align-items: end;
+}
+
+.customer-orders-search-field {
+  flex: 1 1 20rem;
+}
+
+.customer-orders-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.customer-orders-date {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.customer-orders-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: min(26rem, 100%);
+  color: var(--ink);
+}
+
+.customer-orders-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.customer-orders-link svg {
+  flex: 0 0 auto;
+  color: var(--outline);
+}
+
+.customer-orders-service {
+  min-width: 12rem;
+}
+
+.customer-orders-service strong {
+  display: inline-block;
+  color: var(--ink);
+}
+
 .customer-affiliate-command {
   background:
     radial-gradient(circle at top left, rgba(255, 210, 51, 0.18), transparent 18rem),
@@ -2635,7 +2722,8 @@ textarea:focus-visible {
 .catalog-list-item {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  padding: 1.1rem 1.15rem;
+  gap: 1.35rem;
+  padding: 1.3rem 1.4rem;
   border-radius: 1.15rem;
   border: 1px solid var(--outline-ghost);
   background: linear-gradient(180deg, rgba(16, 21, 39, 0.92), rgba(11, 15, 28, 1));
@@ -2659,20 +2747,35 @@ textarea:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.2rem;
+  margin-bottom: 0.95rem;
+}
+
+.catalog-list-item-main {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.catalog-list-item-title {
+  display: grid;
+  gap: 0.45rem;
 }
 
 .catalog-list-item-title h2 {
   margin: 0;
+  line-height: 1.15;
 }
 
 .catalog-list-item-title p {
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
+  max-width: 58rem;
 }
 
 .catalog-list-item-status {
+  display: grid;
+  gap: 0.65rem;
   justify-items: end;
   align-content: start;
 }
@@ -2680,13 +2783,14 @@ textarea:focus-visible {
 .catalog-list-item-meta {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.85rem;
+  gap: 1rem;
   margin: 0;
+  padding-top: 0.1rem;
 }
 
 .catalog-list-item-meta div {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .catalog-list-item-meta dt {
@@ -2705,6 +2809,8 @@ textarea:focus-visible {
 
 .catalog-list-item-actions {
   justify-items: end;
+  align-self: stretch;
+  padding-left: 0.4rem;
 }
 
 .new-order-filter-grid,
@@ -4044,6 +4150,7 @@ textarea:focus-visible {
 
 .area-sidebar-panel,
 .area-nav-shell,
+.area-sidebar-footer,
 .account-badge {
   padding: 1rem;
   border-radius: 1.15rem;
@@ -4076,6 +4183,7 @@ textarea:focus-visible {
 
 .area-shell-admin .area-sidebar-panel,
 .area-shell-admin .area-nav-shell,
+.area-shell-admin .area-sidebar-footer,
 .area-shell-admin .account-badge {
   background: linear-gradient(180deg, rgba(15, 19, 34, 0.96), rgba(9, 12, 23, 1));
 }
@@ -4276,6 +4384,19 @@ textarea:focus-visible {
   overflow: hidden;
 }
 
+.area-sidebar-footer {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.area-sidebar-footer form {
+  margin: 0;
+}
+
+.area-sidebar-footer .logout-button {
+  width: 100%;
+}
+
 .area-brand > div,
 .account-badge-copy {
   min-width: 0;
@@ -4383,6 +4504,7 @@ textarea:focus-visible {
 }
 
 .area-profile-link {
+  position: relative;
   width: 2.9rem;
   height: 2.9rem;
   border-radius: 999px;
@@ -4402,6 +4524,18 @@ textarea:focus-visible {
 
 .area-profile-link:hover {
   border-color: rgba(73, 163, 255, 0.24);
+}
+
+.area-profile-link-indicator {
+  position: absolute;
+  top: 0.32rem;
+  right: 0.32rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd45f, #ffb347);
+  border: 1px solid rgba(13, 16, 21, 0.95);
+  box-shadow: 0 0 0 2px rgba(13, 16, 21, 0.78);
 }
 
 .area-mobile-toggle,
@@ -5433,6 +5567,7 @@ textarea:focus-visible {
   .area-sidebar,
   .area-nav-shell,
   .area-sidebar-panel,
+  .area-sidebar-footer,
   .account-badge {
     padding: 0.95rem;
   }
@@ -5597,6 +5732,7 @@ textarea:focus-visible {
 
 .area-sidebar-panel,
 .area-nav-shell,
+.area-sidebar-footer,
 .account-badge {
   padding: 0.9rem;
 }

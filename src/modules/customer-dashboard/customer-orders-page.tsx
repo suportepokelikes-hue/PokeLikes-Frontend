@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { ArrowRight, Clock3, PackageCheck, ShoppingBag, Wallet } from 'lucide-react';
+import { ExternalLink, ShoppingBag, Wallet } from 'lucide-react';
 
-import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
+import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -13,17 +13,35 @@ import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
-import { getOrderEventView, getOrderStatusView, orderHasQueuedSupplierBalance, sortOrderEvents } from '@/modules/orders/order-view';
+import { getOrderEventView, getOrderStatusView, sortOrderEvents } from '@/modules/orders/order-view';
+
+type OrderStatusFilterValue = 'pending' | 'submitted' | 'in_progress' | 'completed' | 'partial' | 'canceled' | 'failed';
+
+const ORDER_STATUS_FILTERS: Array<{ label: string; value?: OrderStatusFilterValue }> = [
+  { label: 'Tudo' },
+  { label: 'Pendente', value: 'pending' },
+  { label: 'Processando', value: 'submitted' },
+  { label: 'Em progresso', value: 'in_progress' },
+  { label: 'Concluido', value: 'completed' },
+  { label: 'Parcial', value: 'partial' },
+  { label: 'Cancelado', value: 'canceled' },
+  { label: 'Falhou', value: 'failed' },
+] as const;
 
 type CustomerOrdersPageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   activeOrderId?: string;
   page: number;
+  status?: string;
+  search?: string;
 };
 
-export async function CustomerOrdersPage({ session, activeOrderId, page }: CustomerOrdersPageProps) {
+export async function CustomerOrdersPage({ session, activeOrderId, page, status, search }: CustomerOrdersPageProps) {
   try {
-    const orders = await listCustomerOrders({ accessToken: session.accessToken }, { page });
+    const orders = await listCustomerOrders(
+      { accessToken: session.accessToken },
+      { page, pageSize: 5, sortOrder: 'desc', status, search },
+    );
     let activeOrder = null;
     let activeOrderError: string | null = null;
 
@@ -37,152 +55,98 @@ export async function CustomerOrdersPage({ session, activeOrderId, page }: Custo
 
     const returnTo = buildPathWithSearch('/app/orders', {
       page: orders.page > 1 ? orders.page : undefined,
+      status,
+      search,
     });
-    const openOrders = orders.items.filter((order) =>
-      ['pending', 'submitted', 'queued_supplier_balance', 'in_progress'].includes(order.status),
-    );
-    const completedCount = orders.items.filter((order) => order.status === 'completed').length;
-    const queuedCount = orders.items.filter((order) => order.status === 'queued_supplier_balance').length;
-    const latestOrder = orders.items[0] ?? null;
-    const latestOrderStatusView = latestOrder ? getOrderStatusView(latestOrder.status) : null;
     const activeOrderStatusView = activeOrder ? getOrderStatusView(activeOrder.status) : null;
     const activeEvents = activeOrder ? sortOrderEvents(activeOrder.events) : [];
+    const hasFilters = Boolean(status || search);
+    const showRemainsColumn = orders.items.some((order) => order.supplier.remains !== null);
 
     return (
       <main className="page page-customer">
         <PageHeader
-          eyebrow="Pedidos"
           title="Pedidos"
           compact
           actions={
             <>
-              <Link href="/app/services" className="primary-action">
+              <Link href="/app/new-order" className="primary-action">
                 <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
                 Novo pedido
               </Link>
-              <Link href="/app/payments" className="secondary-action">
+              <Link href="/app/wallet" className="secondary-action">
                 <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-                Ver pagamentos
+                Carteira
               </Link>
             </>
           }
         />
 
-        <section className="customer-dashboard-hero">
-          <article className="customer-dashboard-command customer-orders-command">
-            <div className="customer-dashboard-command-head">
-              <div className="customer-dashboard-command-copy">
-                <h2>{openOrders.length}</h2>
-                <p>Pedidos ativos agora.</p>
-              </div>
-              {latestOrderStatusView ? (
-                <StatusBadge label={latestOrderStatusView.label} tone={latestOrderStatusView.tone} />
-              ) : null}
-            </div>
+        <CustomerSectionCard
+          title="Historico de pedidos"
+          meta={<span className="panel-meta">{orders.totalItems} registro(s)</span>}
+        >
+          <div className="customer-orders-filters">
+            <nav className="customer-orders-status-bar" aria-label="Filtrar pedidos por status">
+              {ORDER_STATUS_FILTERS.map((filter) => {
+                const href = buildPathWithSearch('/app/orders', {
+                  status: filter.value,
+                  search,
+                });
+                const isActive = (filter.value ?? undefined) === status;
 
-            <div className="customer-dashboard-balance-row">
-              <div className="customer-dashboard-snapshot">
-                <div>
-                  <span>Concluidos</span>
-                  <strong>{completedCount}</strong>
-                </div>
-                <div>
-                  <span>Em espera operacional</span>
-                  <strong>{queuedCount}</strong>
-                </div>
-                <div>
-                  <span>Ultimo update</span>
-                  <strong>{latestOrder ? formatDateTime(latestOrder.updatedAt) : 'Sem pedidos'}</strong>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <div className="customer-dashboard-side">
-            <CustomerSectionCard
-              title={latestOrder ? latestOrder.catalogService?.name || `Pedido ${latestOrder.id}` : 'Sem pedidos recentes'}
-              meta={
-                latestOrderStatusView ? (
-                  <StatusBadge label={latestOrderStatusView.label} tone={latestOrderStatusView.tone} />
-                ) : (
-                  <StatusBadge label="sem pedidos" tone="neutral" />
-                )
-              }
-              actions={
-                latestOrder ? (
+                return (
                   <Link
-                    href={buildPathWithSearch('/app/orders', {
-                      orderId: latestOrder.id,
-                      page: orders.page > 1 ? orders.page : undefined,
-                    })}
-                    className="secondary-action"
+                    key={filter.value ?? 'all'}
+                    href={href}
+                    className={`customer-orders-status-pill${isActive ? ' is-active' : ''}`}
                   >
-                    <ArrowRight size={16} strokeWidth={2.15} aria-hidden="true" />
-                    Abrir ultimo pedido
+                    {filter.label}
                   </Link>
-                ) : null
-              }
-            >
-              <div className="customer-dashboard-inline-stats">
-                <div>
-                  <span>Atualizado em</span>
-                  <strong>{latestOrder ? formatDateTime(latestOrder.updatedAt) : '-'}</strong>
-                </div>
-                <div>
-                  <span>Cobranca</span>
-                  <strong>{latestOrder ? formatMoney(latestOrder.customerCharge) : '-'}</strong>
-                </div>
-                <div>
-                  <span>Status</span>
-                  <strong>{latestOrderStatusView?.label || 'Sem pedidos'}</strong>
-                </div>
+                );
+              })}
+            </nav>
+
+            <form action="/app/orders" className="toolbar customer-orders-toolbar">
+              {status ? <input type="hidden" name="status" value={status} /> : null}
+              <label className="toolbar-field customer-orders-search-field">
+                <span>Buscar</span>
+                <input
+                  type="search"
+                  name="search"
+                  defaultValue={search ?? ''}
+                  placeholder="Buscar por ID, servico ou link"
+                  className="toolbar-input"
+                />
+              </label>
+              <div className="customer-orders-toolbar-actions">
+                <button type="submit" className="primary-action">
+                  Buscar
+                </button>
+                {hasFilters ? (
+                  <Link href="/app/orders" className="secondary-action">
+                    Limpar filtros
+                  </Link>
+                ) : null}
               </div>
-            </CustomerSectionCard>
+            </form>
           </div>
-        </section>
 
-        <section className="customer-dashboard-metrics">
-          <CustomerMetricCard
-            label="Pedidos ativos"
-            value={String(openOrders.length)}
-            icon={Clock3}
-            tone="warning"
-          />
-          <CustomerMetricCard
-            label="Concluidos"
-            value={String(completedCount)}
-            icon={PackageCheck}
-            tone="success"
-          />
-          <CustomerMetricCard
-            label="Em espera operacional"
-            value={String(queuedCount)}
-            meta="Fornecedor"
-            icon={Wallet}
-            tone={queuedCount > 0 ? 'warning' : 'default'}
-          />
-          <CustomerMetricCard
-            label="Na pagina"
-            value={String(orders.items.length)}
-            meta={`${orders.totalItems} total`}
-            icon={ShoppingBag}
-            tone="default"
-          />
-        </section>
-
-        {orders.items.length === 0 ? (
-          <EmptyState
-            title="Nenhum pedido encontrado"
-            description="Escolha um servico para começar."
-            actionHref="/app/services"
-            actionLabel="Explorar catalogo"
-          />
-        ) : (
-          <CustomerSectionCard
-            title="Pedidos recentes"
-            meta={<span className="panel-meta">{orders.totalItems} registro(s)</span>}
-          >
-            <DataTable columns={['ID', 'Servico', 'Status', 'Cobranca', 'Atualizado em']}>
+          {orders.items.length === 0 ? (
+            <EmptyState
+              title={hasFilters ? 'Nenhum pedido encontrado para este filtro' : 'Voce ainda nao fez nenhum pedido'}
+              description={
+                hasFilters
+                  ? 'Tente ajustar a busca ou limpar os filtros para ver outros pedidos.'
+                  : 'Quando voce criar um pedido, o historico aparece aqui.'
+              }
+              actionHref={hasFilters ? '/app/orders' : '/app/new-order'}
+              actionLabel={hasFilters ? 'Limpar filtros' : 'Novo pedido'}
+            />
+          ) : (
+            <DataTable
+              columns={['ID', 'Data', 'Link', 'Servico', 'Quantidade', 'Valor', ...(showRemainsColumn ? ['Restam'] : []), 'Status']}
+            >
               {orders.items.map((order) => {
                 const statusView = getOrderStatusView(order.status);
 
@@ -193,33 +157,59 @@ export async function CustomerOrdersPage({ session, activeOrderId, page }: Custo
                         href={buildPathWithSearch('/app/orders', {
                           orderId: order.id,
                           page: orders.page > 1 ? orders.page : undefined,
+                          status,
+                          search,
                         })}
                         className="table-link"
                       >
                         {order.id}
                       </Link>
                     </td>
-                    <td>{order.catalogService?.name || 'Servico nao associado'}</td>
+                    <td>
+                      <span className="customer-orders-date">{formatDateTime(order.createdAt)}</span>
+                    </td>
+                    <td>
+                      <a
+                        href={order.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="customer-orders-link"
+                        title={order.link}
+                        aria-label={`Abrir link do pedido ${order.id}`}
+                      >
+                        <span>{order.link}</span>
+                        <ExternalLink size={14} strokeWidth={2.1} aria-hidden="true" />
+                      </a>
+                    </td>
+                    <td>
+                      <div className="customer-orders-service">
+                        <strong>{order.catalogService?.name || 'Servico nao associado'}</strong>
+                      </div>
+                    </td>
+                    <td>{order.quantity}</td>
+                    <td>{order.customerCharge ? formatMoney(order.customerCharge) : '-'}</td>
+                    {showRemainsColumn ? <td>{order.supplier.remains ?? '-'}</td> : null}
                     <td>
                       <StatusBadge label={statusView.label} tone={statusView.tone} />
                     </td>
-                    <td>{formatMoney(order.customerCharge)}</td>
-                    <td>{formatDateTime(order.updatedAt)}</td>
                   </tr>
                 );
               })}
             </DataTable>
+          )}
+
+          {orders.items.length > 0 ? (
             <PaginationSummary
               page={orders.page}
               pageSize={orders.pageSize}
               totalItems={orders.totalItems}
               totalPages={orders.totalPages}
               pathname="/app/orders"
-              params={{ orderId: activeOrderId }}
+              params={{ orderId: activeOrderId, status, search }}
               label="pedidos"
             />
-          </CustomerSectionCard>
-        )}
+          ) : null}
+        </CustomerSectionCard>
 
         {activeOrder ? (
           <AdminSlideOver
@@ -232,12 +222,6 @@ export async function CustomerOrdersPage({ session, activeOrderId, page }: Custo
                 title={`Pedido ${activeOrder.id}`}
                 meta={activeOrderStatusView ? <StatusBadge label={activeOrderStatusView.label} tone={activeOrderStatusView.tone} /> : null}
               >
-                {activeOrder.status === 'queued_supplier_balance' ? (
-                  <div className="detail-note detail-note-warning">
-                    <strong>Pedido em espera operacional</strong>
-                    <p>Saldo do fornecedor pendente. Pedido segue ativo.</p>
-                  </div>
-                ) : null}
                 <div className="customer-dashboard-inline-stats">
                   <div>
                     <span>Servico</span>
@@ -249,7 +233,7 @@ export async function CustomerOrdersPage({ session, activeOrderId, page }: Custo
                   </div>
                   <div>
                     <span>Cobranca</span>
-                    <strong>{formatMoney(activeOrder.customerCharge)}</strong>
+                    <strong>{activeOrder.customerCharge ? formatMoney(activeOrder.customerCharge) : '-'}</strong>
                   </div>
                 </div>
               </CustomerSectionCard>

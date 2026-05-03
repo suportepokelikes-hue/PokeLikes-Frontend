@@ -39,6 +39,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - o dashboard `/app` agora funciona como painel central do cliente, priorizando saldo, proximo passo, atalhos, referral/afiliados e historico recente
 - `src/components/ui/customer-surfaces.tsx` concentra os novos wrappers visuais reutilizaveis da area interna do cliente
 - `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora tambem foram redesenhados com a mesma base premium, mas `/app/affiliate` foi pausada no frontend e hoje mostra apenas `Em breve`
+- `/app/orders` deixou de funcionar como mini-dashboard e agora prioriza historico de consulta: filtros por `status`, busca por `search`, tabela mais direta e drawer preservado por `orderId`
 - pagamentos e pedidos continuam usando drawers e redirects atuais; a mudanca foi de hierarquia visual, contexto e clareza
 - profile e referral seguem operacionais; afiliados do cliente ficaram temporariamente sem operacao exposta
 - o shell administrativo e o dashboard `/admin` agora tambem foram redesenhados para a identidade Pokelike, mas com tom mais sobrio e foco operacional
@@ -112,4 +113,4 @@ Isso nao e drift acidental. Faz parte do desenho atual das jornadas.
 - decidir se a superficie publica vai ganhar um CTA real de suporte; hoje a landing nao deve inventar esse canal
 - se a home for revisitada de novo, o proximo passo deve ser calibrar detalhes finos de espacamento e animacao, nao voltar a expandir copy
 - manter a documentacao enxuta e aderente ao codigo daqui para frente, atualizando-a junto com qualquer mudanca de rota, superficie ou fluxo
-- ampliar E2E dos fluxos que ainda carregam mais risco: `?aff= -> catalogo -> pedido`, affiliate settings em `/admin/catalog` e bloqueio de PIX sem CPF/CNPJ
+- ampliar E2E dos fluxos que ainda carregam mais risco: `?aff= -> catalogo -> pedido`, affiliate settings em `/admin/catalog` e geracao de PIX sem CPF/CNPJ em `/app/payments`

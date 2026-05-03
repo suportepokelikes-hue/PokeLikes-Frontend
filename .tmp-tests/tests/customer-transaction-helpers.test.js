@@ -77,10 +77,8 @@ const action_helpers_1 = require("../src/modules/customer-transactions/action-he
         message: 'Saldo insuficiente',
     });
     strict_1.default.deepEqual((0, action_helpers_1.mapTransactionFormError)(new http_1.ApiClientError('Fiscal identity missing', 422, 'USER_FISCAL_IDENTITY_REQUIRED'), 'fallback'), {
-        status: 'blocked',
-        message: 'Voce precisa informar um CPF ou CNPJ valido no perfil antes de gerar PIX.',
-        actionHref: '/app/profile?edit=1',
-        actionLabel: 'Completar CPF/CNPJ',
+        status: 'error',
+        message: 'Nao foi possivel gerar o PIX agora. Tente novamente em instantes.',
     });
     strict_1.default.deepEqual((0, action_helpers_1.mapTransactionFormError)(new Error('boom'), 'fallback'), {
         status: 'error',

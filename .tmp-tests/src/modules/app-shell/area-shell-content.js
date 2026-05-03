@@ -11,10 +11,10 @@ const areaConfig = {
         links: [
             { href: '/app/new-order', label: 'Novo pedido', icon: 'orders' },
             { href: '/app/services', label: 'Servicos', icon: 'catalog' },
+            { href: '/app/orders', label: 'Pedidos', icon: 'orders' },
             { href: '/app/affiliate', label: 'Afiliados', icon: 'affiliate' },
             { href: '/app/wallet', label: 'Carteira', icon: 'wallet' },
             { href: '/app/payments', label: 'Pagamentos', icon: 'payments' },
-            { href: '/app/orders', label: 'Pedidos', icon: 'orders' },
         ],
         sections: [{ href: '/app/profile', label: 'Perfil' }],
     },
@@ -69,7 +69,8 @@ function getAreaShellView(options) {
             ? {
                 href: '/app/profile',
                 label: 'Abrir perfil',
-                ariaLabel: 'Abrir perfil',
+                ariaLabel: user.emailVerified ? 'Abrir perfil' : 'Abrir perfil, email pendente',
+                hasNotification: !user.emailVerified,
             }
             : null,
         children,

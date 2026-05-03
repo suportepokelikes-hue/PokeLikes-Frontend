@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { QrCode, ShieldCheck, Wallet } from 'lucide-react';
+import { QrCode, Wallet } from 'lucide-react';
 
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -7,19 +7,13 @@ import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
-import { getCustomerPaymentDetail, getCustomerProfile, getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
+import { getCustomerPaymentDetail, getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
 import type { PaymentResource } from '@/lib/api/contracts';
 import type { SessionState } from '@/lib/auth/session';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
-import {
-  formatTaxIdForDisplay,
-  getFiscalIdentityLabel,
-  getUserTaxId,
-  hasUserFiscalIdentity,
-} from '@/modules/customer-dashboard/customer-fiscal-profile';
 import { PaymentPixActions } from '@/modules/customer-dashboard/payment-pix-actions';
 import { getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
 import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
@@ -34,8 +28,7 @@ type CustomerPaymentsPageProps = {
 
 export async function CustomerPaymentsPage({ session, activePaymentId, page }: CustomerPaymentsPageProps) {
   try {
-    const [profile, wallet, payments] = await Promise.all([
-      getCustomerProfile({ accessToken: session.accessToken }),
+    const [wallet, payments] = await Promise.all([
       getWalletSummary({ accessToken: session.accessToken }),
       listCustomerPayments({ accessToken: session.accessToken }, { page }),
     ]);
@@ -58,10 +51,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
     const latestPendingPayment = pendingPayments[0] ?? null;
     const activePaymentStatus = activePayment ? getPaymentStatusView(activePayment.status) : null;
     const activePaymentQrImageSrc = activePayment ? getPaymentQrImageSrc(activePayment.brCodeBase64) : null;
-    const hasFiscalIdentity = hasUserFiscalIdentity(profile);
-    const taxId = getUserTaxId(profile);
-    const fiscalIdentityLabel = getFiscalIdentityLabel(profile);
-
     return (
       <main className="page page-customer">
         <PageHeader
@@ -69,19 +58,10 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
           title="Adicionar saldo com PIX"
           compact
           actions={
-            <>
-              {!hasFiscalIdentity ? (
-                <Link href="/app/profile?edit=1" className="primary-action">
-                  <ShieldCheck size={16} strokeWidth={2.15} aria-hidden="true" />
-                  Completar CPF/CNPJ
-                </Link>
-              ) : (
-                <Link href="/app/wallet" className="secondary-action">
-                  <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-                  Ver carteira
-                </Link>
-              )}
-            </>
+            <Link href="/app/wallet" className="secondary-action">
+              <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
+              Ver carteira
+            </Link>
           }
         />
 
@@ -126,10 +106,10 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
                   </div>
                 </div>
               </CustomerSectionCard>
-            ) : hasFiscalIdentity ? (
+            ) : (
               <TransactionForm
                 title="Gerar PIX"
-                description={`${fiscalIdentityLabel}: ${formatTaxIdForDisplay(taxId)}.`}
+                description="Informe o valor e gere seu codigo PIX."
                 action={createPixPaymentAction}
                 initialState={initialTransactionFormState}
                 submitLabel="Gerar PIX"
@@ -137,58 +117,11 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
               >
                 <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
               </TransactionForm>
-            ) : (
-              <CustomerSectionCard
-                eyebrow="PIX bloqueado"
-                title="Complete seu CPF/CNPJ"
-                meta={<StatusBadge label="pix bloqueado" tone="warning" />}
-                className="customer-payments-blocked-card"
-                actions={
-                  <Link href="/app/profile?edit=1" className="primary-action">
-                    Completar CPF/CNPJ
-                  </Link>
-                }
-              >
-                <div className="customer-dashboard-inline-stats">
-                  <div>
-                    <span>Falta</span>
-                    <strong>{fiscalIdentityLabel}</strong>
-                  </div>
-                  <div>
-                    <span>Status</span>
-                    <strong>Pendente</strong>
-                  </div>
-                  <div>
-                    <span>Resolver</span>
-                    <strong>Perfil</strong>
-                  </div>
-                </div>
-              </CustomerSectionCard>
             )}
           </div>
 
           <div className="customer-dashboard-side">
-            {!hasFiscalIdentity ? (
-              <CustomerSectionCard
-                title="Resumo"
-                meta={<StatusBadge label="perfil pendente" tone="warning" />}
-              >
-                <div className="customer-dashboard-inline-stats">
-                  <div>
-                    <span>Saldo</span>
-                    <strong>{formatMoney(wallet.availableBalance)}</strong>
-                  </div>
-                  <div>
-                    <span>Confirmados</span>
-                    <strong>{confirmedCount}</strong>
-                  </div>
-                  <div>
-                    <span>Em aberto</span>
-                    <strong>{pendingPayments.length}</strong>
-                  </div>
-                </div>
-              </CustomerSectionCard>
-            ) : latestPendingPayment ? (
+            {latestPendingPayment ? (
               <CustomerSectionCard
                 title="Nova recarga"
                 meta={<StatusBadge label="pix liberado" tone="success" />}
@@ -235,9 +168,9 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
         {payments.items.length === 0 ? (
           <EmptyState
             title="Nenhum pagamento encontrado"
-            description="Gere um PIX para começar."
-            actionHref={hasFiscalIdentity ? '/app/payments' : '/app/profile?edit=1'}
-            actionLabel={hasFiscalIdentity ? 'Gerar PIX' : 'Completar perfil'}
+            description="Gere um PIX para comecar."
+            actionHref="/app/payments"
+            actionLabel="Gerar PIX"
           />
         ) : (
           <CustomerSectionCard

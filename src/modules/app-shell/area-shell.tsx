@@ -124,17 +124,23 @@ export function AreaShell({ area, user, title, walletSummary, children }: AreaSh
           </nav>
         </div>
 
-        <div className="account-badge">
-          <div className="account-badge-copy">
-            <strong>{view.userName}</strong>
-            <span>{view.userMeta}</span>
+        {area === 'customer' ? (
+          <div className="area-sidebar-footer">
+            <LogoutButton label="Encerrar sessao" />
           </div>
-          <div className="account-badge-statuses">
-            <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
-            <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
+        ) : (
+          <div className="account-badge">
+            <div className="account-badge-copy">
+              <strong>{view.userName}</strong>
+              <span>{view.userMeta}</span>
+            </div>
+            <div className="account-badge-statuses">
+              <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
+              <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
+            </div>
+            <LogoutButton label="Encerrar sessao" />
           </div>
-          <LogoutButton label="Encerrar sessao" />
-        </div>
+        )}
       </aside>
 
       <div className="area-main">
@@ -173,11 +179,14 @@ export function AreaShell({ area, user, title, walletSummary, children }: AreaSh
                 {view.profileShortcut ? (
                   <Link
                     href={view.profileShortcut.href}
-                    className="area-profile-link"
+                    className={`area-profile-link${view.profileShortcut.hasNotification ? ' has-notification' : ''}`}
                     aria-label={view.profileShortcut.ariaLabel}
                     title={view.profileShortcut.ariaLabel}
                   >
                     <CircleUserRound size={17} strokeWidth={2.1} aria-hidden="true" />
+                    {view.profileShortcut.hasNotification ? (
+                      <span className="area-profile-link-indicator" aria-hidden="true" />
+                    ) : null}
                   </Link>
                 ) : null}
               </div>

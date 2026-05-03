@@ -278,11 +278,11 @@ function CatalogCard({
 
       <div className="catalog-card-body">
         <h2>{service.name}</h2>
-        <p className="catalog-card-summary">{serviceSummary}</p>
+        {serviceSummary ? <p className="catalog-card-summary">{serviceSummary}</p> : null}
         {availabilityView.hasInlineNotice ? (
           <div className={`catalog-card-note catalog-card-note-${availabilityView.badgeTone}`}>
             <strong>{availabilityView.cardHeadline}</strong>
-            <p>{availabilityView.cardDescription}</p>
+            {availabilityView.cardDescription ? <p>{availabilityView.cardDescription}</p> : null}
           </div>
         ) : null}
       </div>
@@ -322,6 +322,7 @@ function CatalogListItem({
   detailHref: string;
 }) {
   const availabilityView = getCatalogAvailabilityView(service);
+  const serviceSummary = summarizeCopy(service.description || availabilityView.cardDescription, 160);
 
   return (
     <article className={`catalog-list-item catalog-list-item-${availabilityView.state}`}>
@@ -329,7 +330,7 @@ function CatalogListItem({
         <div className="catalog-list-item-head">
           <div className="catalog-list-item-title">
             <h2>{service.name}</h2>
-            <p>{summarizeCopy(service.description || availabilityView.cardDescription, 160)}</p>
+            {serviceSummary ? <p>{serviceSummary}</p> : null}
           </div>
           <div className="catalog-list-item-status">
             <StatusBadge label={availabilityView.badgeLabel} tone={availabilityView.badgeTone} />

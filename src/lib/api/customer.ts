@@ -30,6 +30,8 @@ type CustomerListParams = {
   page?: number;
   pageSize?: number;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
+  status?: string;
 };
 
 export function getWalletSummary({ accessToken }: AuthOptions) {
@@ -119,10 +121,24 @@ export function listCustomerPayments(
 
 export function listCustomerOrders(
   { accessToken }: AuthOptions,
-  { page = 1, pageSize = 5, sortOrder = 'desc' }: CustomerListParams = {},
+  { page = 1, pageSize = 5, sortOrder = 'desc', search, status }: CustomerListParams = {},
 ) {
+  const searchParams = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+    sortOrder,
+  });
+
+  if (search) {
+    searchParams.set('search', search);
+  }
+
+  if (status) {
+    searchParams.set('status', status);
+  }
+
   return apiRequest<PaginatedResponse<OrderResource>>({
-    path: `/me/orders?page=${page}&pageSize=${pageSize}&sortOrder=${sortOrder}`,
+    path: `/me/orders?${searchParams.toString()}`,
     accessToken,
   });
 }

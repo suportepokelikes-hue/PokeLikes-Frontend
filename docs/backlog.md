@@ -2,6 +2,10 @@
 
 ## Latest Update
 
+- [x] `/app/payments` deixou de bloquear a criacao visual de PIX por falta de CPF/CNPJ; o formulario aparece sempre que nao existe PIX pendente e o erro fiscal especifico virou falha operacional generica
+- [x] `/app/orders` trocou o visual de dashboard por uma tela direta de historico: saiu hero, metricas e resumo redundante; entraram filtro por `status`, busca por `search` e tabela mais completa com foco em consulta
+- [x] a navegacao customer agora mostra `Pedidos` logo abaixo de `Servicos`, e `/app/orders` deixou de destacar a espera operacional em blocos dedicados; o usuario continua vendo status ativos, concluidos e eventuais cancelamentos diretamente na lista e no detalhe
+- [x] sidebar customer ficou mais limpa: o bloco com nome, email e badges saiu da lateral, `Encerrar sessao` foi mantido no rodape da navegacao e o atalho de `/app/profile` no topo agora mostra bolinha laranja quando `emailVerified` ainda esta pendente
 - [x] a area de afiliados do cliente foi pausada no frontend: `/app/affiliate` agora mostra apenas `Programa de afiliados` com destaque `Em breve`, sem carregar perfil, summary, comissoes ou PIX
 - [x] CTAs customer de afiliados foram neutralizados para nao incentivar operacao enquanto a rota permanece ativa no shell
 - [x] o CTA `Comprar` de `/app/services` agora abre `/app/new-order` com o servico preselecionado e `/app/services/[serviceId]` virou apenas redirecionamento de compatibilidade para o novo fluxo
@@ -163,6 +167,7 @@ Tasks:
 - [x] renderizar QR code por `brCodeBase64` com copia de `brCode` e refresh de status
 - [x] reduzir o ruido de UX em `/app/payments`, priorizando o PIX em aberto e removendo um redirecionamento desnecessario
 - [x] adaptar `/app/payments` para a exigencia de identidade fiscal real, com aviso preventivo, CTA para perfil e tratamento explicito de `USER_FISCAL_IDENTITY_REQUIRED`
+- [x] remover o bloqueio visual de CPF/CNPJ em `/app/payments`, preservando identidade fiscal apenas como dado de perfil
 
 ## Phase 4: Orders
 
@@ -367,6 +372,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar manualmente `/app/orders` com combinacoes de `status`, `search`, paginacao e `orderId` para confirmar que a tabela continua sendo a superficie principal e que o drawer abre/fecha preservando query string
 - validar manualmente `/app/affiliate`, `/app/profile` e qualquer entrada do shell customer para confirmar que o cliente so encontra a mensagem `Em breve` e que nao ha fluxo operacional residual de afiliados
 - validar manualmente `/app/new-order` com servico saudavel, servico bloqueado, quantidade fora da faixa e `?aff=` ativo para confirmar desabilitacao de envio e atribuicao correta do codigo de afiliado
 - validar manualmente o shell customer em desktop/mobile nas rotas `/app/services`, `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` para confirmar o comportamento do novo atalho de carteira/perfil e o fallback de saldo indisponivel
@@ -394,7 +400,7 @@ Na proxima sessao do Codex:
 - validar por E2E a diferenca de UX entre servico compravel, servico degradado compravel e servico com checkout bloqueado por availability
 - cobrir em E2E a jornada `?aff= -> catalogo -> pedido`
 - cobrir em E2E o drawer de affiliate settings em `/admin/catalog`
-- cobrir em E2E o bloqueio de PIX sem CPF/CNPJ e a retomada do fluxo depois do preenchimento do perfil
+- cobrir em E2E a geracao de PIX em `/app/payments` sem CPF/CNPJ preenchido no perfil
 - decidir se a V2 vai precisar de expiracao automatica do `affiliateCode` armazenado no navegador
 - cobrir por teste de UI a limpeza manual do `affiliateCode` e a degradacao parcial de `/app/affiliate`
 - resincronizar `docs/api/openapi.yaml` com `docs/contracts/backend-openapi.yaml`, especialmente na parte financeira de afiliados

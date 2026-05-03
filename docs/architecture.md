@@ -122,14 +122,14 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 ### PIX e wallet
 
 - `/app/wallet` mostra saldo e extrato
-- `/app/payments` carrega perfil, wallet e pagamentos
+- `/app/payments` carrega wallet e pagamentos
 - criacao de PIX usa `POST /me/payments/pix`
-- quando falta CPF/CNPJ, a tela bloqueia preventivamente a criacao e aponta para `/app/profile?edit=1`
+- `/app/payments` nao trata CPF/CNPJ como requisito visual para criar PIX; o formulario permanece disponivel sempre que nao houver PIX pendente
 - o drawer de pagamento mostra QR code via `brCodeBase64`, copia de `brCode` e refresh enquanto o status estiver pendente
 
 ### Pedidos
 
-- `/app/orders` lista pedidos do cliente
+- `/app/orders` funciona como historico direto de pedidos, com busca por query string (`search`), filtro por `status`, paginacao e tabela como superficie principal
 - o detalhe em drawer busca `GET /me/orders/{orderId}`
 - status `queued_supplier_balance` recebe leitura operacional dedicada, sem tratar como cancelamento
 

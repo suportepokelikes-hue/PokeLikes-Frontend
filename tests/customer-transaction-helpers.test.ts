@@ -95,10 +95,8 @@ test('mapTransactionFormError preserves backend message and fallback', () => {
   assert.deepEqual(
     mapTransactionFormError(new ApiClientError('Fiscal identity missing', 422, 'USER_FISCAL_IDENTITY_REQUIRED'), 'fallback'),
     {
-      status: 'blocked',
-      message: 'Voce precisa informar um CPF ou CNPJ valido no perfil antes de gerar PIX.',
-      actionHref: '/app/profile?edit=1',
-      actionLabel: 'Completar CPF/CNPJ',
+      status: 'error',
+      message: 'Nao foi possivel gerar o PIX agora. Tente novamente em instantes.',
     },
   );
 

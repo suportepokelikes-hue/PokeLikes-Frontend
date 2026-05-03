@@ -53,7 +53,7 @@
 - `/app/payments`
   - listagem
   - criacao de PIX
-  - bloqueio preventivo quando falta CPF/CNPJ
+  - formulario de PIX disponivel sempre que nao houver cobranca pendente
   - drawer de detalhe por `?paymentId=`
 - `/app/payments/[paymentId]`
   - apenas redirect para `/app/payments?paymentId=...`

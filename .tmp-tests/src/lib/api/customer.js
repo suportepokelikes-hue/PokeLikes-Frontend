@@ -90,9 +90,20 @@ function listCustomerPayments({ accessToken }, { page = 1, pageSize = 5, sortOrd
         accessToken,
     });
 }
-function listCustomerOrders({ accessToken }, { page = 1, pageSize = 5, sortOrder = 'desc' } = {}) {
+function listCustomerOrders({ accessToken }, { page = 1, pageSize = 5, sortOrder = 'desc', search, status } = {}) {
+    const searchParams = new URLSearchParams({
+        page: String(page),
+        pageSize: String(pageSize),
+        sortOrder,
+    });
+    if (search) {
+        searchParams.set('search', search);
+    }
+    if (status) {
+        searchParams.set('status', status);
+    }
     return (0, http_1.apiRequest)({
-        path: `/me/orders?page=${page}&pageSize=${pageSize}&sortOrder=${sortOrder}`,
+        path: `/me/orders?${searchParams.toString()}`,
         accessToken,
     });
 }
