@@ -331,8 +331,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentResource'
-        '422':
-          description: Missing fiscal identity for PIX
+        '502':
+          description: Payment provider configuration or upstream error
           content:
             application/json:
               schema:

@@ -92,14 +92,6 @@ test('mapTransactionFormError preserves backend message and fallback', () => {
     message: 'Saldo insuficiente',
   });
 
-  assert.deepEqual(
-    mapTransactionFormError(new ApiClientError('Fiscal identity missing', 422, 'USER_FISCAL_IDENTITY_REQUIRED'), 'fallback'),
-    {
-      status: 'error',
-      message: 'Nao foi possivel concluir essa operacao agora. Tente novamente em instantes.',
-    },
-  );
-
   assert.deepEqual(mapTransactionFormError(new Error('boom'), 'fallback'), {
     status: 'error',
     message: 'fallback',

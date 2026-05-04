@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "tsc -p tsconfig.tests.json && node --test .tmp-tests/tests/*.test.js",
+    "test": "tsc -p tsconfig.tests.json && node scripts/rewrite-test-aliases.mjs && node --test .tmp-tests/tests/*.test.js",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:list": "playwright test --list"

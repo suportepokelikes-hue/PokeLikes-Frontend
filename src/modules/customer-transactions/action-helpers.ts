@@ -96,13 +96,6 @@ export function parseCreateOrderPayload(formData: FormData): { value: CreateOrde
 
 export function mapTransactionFormError(error: unknown, fallbackMessage: string): TransactionFormState {
   if (error instanceof ApiClientError) {
-    if (error.code === 'USER_FISCAL_IDENTITY_REQUIRED') {
-      return {
-        status: 'error',
-        message: 'Nao foi possivel concluir essa operacao agora. Tente novamente em instantes.',
-      };
-    }
-
     return {
       status: 'error',
       message: error.message || fallbackMessage,
