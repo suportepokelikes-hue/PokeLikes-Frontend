@@ -99,7 +99,7 @@ export function mapTransactionFormError(error: unknown, fallbackMessage: string)
     if (error.code === 'USER_FISCAL_IDENTITY_REQUIRED') {
       return {
         status: 'error',
-        message: 'Nao foi possivel gerar o PIX agora. Tente novamente em instantes.',
+        message: 'Nao foi possivel concluir essa operacao agora. Tente novamente em instantes.',
       };
     }
 

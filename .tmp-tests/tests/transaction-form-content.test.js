@@ -50,7 +50,7 @@ const transaction_form_content_1 = require("../src/modules/customer-transactions
         actionLabel: null,
     });
 });
-(0, node_test_1.default)('getTransactionFormView exposes blocked CTA for fiscal identity requirements', () => {
+(0, node_test_1.default)('getTransactionFormView exposes generic blocked CTA content', () => {
     const blocked = (0, transaction_form_content_1.getTransactionFormView)({
         title: 'Criar PIX',
         description: 'Fluxo do cliente.',
@@ -58,14 +58,14 @@ const transaction_form_content_1 = require("../src/modules/customer-transactions
         submitLabel: 'Gerar PIX',
     }, {
         status: 'blocked',
-        message: 'Voce precisa completar o perfil.',
-        actionHref: '/app/profile?edit=1',
-        actionLabel: 'Completar CPF/CNPJ',
+        message: 'A operacao esta indisponivel no momento.',
+        actionHref: '/app/payments',
+        actionLabel: 'Tentar novamente',
     });
     strict_1.default.deepEqual(blocked.feedback, {
         tone: 'blocked',
-        message: 'Voce precisa completar o perfil.',
-        actionHref: '/app/profile?edit=1',
-        actionLabel: 'Completar CPF/CNPJ',
+        message: 'A operacao esta indisponivel no momento.',
+        actionHref: '/app/payments',
+        actionLabel: 'Tentar novamente',
     });
 });

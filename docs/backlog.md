@@ -2,6 +2,8 @@
 
 ## Latest Update
 
+- [x] `/app/profile` deixou de apresentar CPF/CNPJ como requisito para PIX; o CTA financeiro agora leva direto para gerar PIX quando o email nao esta pendente, e o drawer de edicao edita apenas nome e telefone
+- [x] o pos-login padrao do customer agora abre `/app/new-order`; sem `returnTo`, login, cadastro e `/app` deixam de cair em `/app/services`
 - [x] `/app/payments` deixou de bloquear a criacao visual de PIX por falta de CPF/CNPJ; o formulario aparece sempre que nao existe PIX pendente e o erro fiscal especifico virou falha operacional generica
 - [x] `/app/orders` trocou o visual de dashboard por uma tela direta de historico: saiu hero, metricas e resumo redundante; entraram filtro por `status`, busca por `search` e tabela mais completa com foco em consulta
 - [x] a navegacao customer agora mostra `Pedidos` logo abaixo de `Servicos`, e `/app/orders` deixou de destacar a espera operacional em blocos dedicados; o usuario continua vendo status ativos, concluidos e eventuais cancelamentos diretamente na lista e no detalhe
@@ -68,7 +70,7 @@
 - [x] Onda 3B do redesign concluida nas paginas internas principais do cliente: `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate`
 - [x] profile, wallet, payments, orders e affiliate agora herdam a base premium da Pokelike com mais foco em status, contexto e proximas acoes
 - [x] os drawers e estados criticos de pagamentos e pedidos foram preservados, mas ganharam hierarquia visual mais forte
-- [x] referral, fluxo de afiliados e identidade fiscal do cliente passaram a ter apresentacao mais clara e mais acionavel
+- [x] referral e fluxo de afiliados do cliente passaram a ter apresentacao mais clara e mais acionavel
 - [x] Onda 3A do redesign concluida no shell autenticado do cliente e no dashboard `/app`
 - [x] a area interna do cliente ganhou sidebar/topbar mais premium, com branding Pokelike, estado ativo mais forte e melhor leitura de contexto
 - [x] o dashboard `/app` foi refeito como painel central com prioridade atual, atalhos, metricas, referral/afiliados e tabelas recentes
@@ -166,8 +168,8 @@ Tasks:
 - [x] detalhe do pagamento PIX
 - [x] renderizar QR code por `brCodeBase64` com copia de `brCode` e refresh de status
 - [x] reduzir o ruido de UX em `/app/payments`, priorizando o PIX em aberto e removendo um redirecionamento desnecessario
-- [x] adaptar `/app/payments` para a exigencia de identidade fiscal real, com aviso preventivo, CTA para perfil e tratamento explicito de `USER_FISCAL_IDENTITY_REQUIRED`
-- [x] remover o bloqueio visual de CPF/CNPJ em `/app/payments`, preservando identidade fiscal apenas como dado de perfil
+- [x] substituir em `/app/payments` qualquer exigencia visual de identidade fiscal por falha operacional generica quando o backend retornar bloqueio inesperado
+- [x] remover o bloqueio visual de CPF/CNPJ em `/app/payments`, preservando dados fiscais apenas no contrato global quando vierem da API
 
 ## Phase 4: Orders
 
@@ -230,7 +232,7 @@ Tasks:
 - [x] criar `/app/affiliate` com tratamento de `AffiliateProfile = null`, apply, status do perfil, summary, listagem das comissoes do usuario e entrada dedicada no shell do cliente
 - [x] preparar o drawer de edicao em `/app/profile` com campos de nome/telefone, email somente leitura e bloqueio isolado enquanto `PATCH /me` seguir sem schema formal
 - [x] habilitar edicao real de perfil com `PATCH /me`, feedback inline e retorno para a leitura atualizada
-- [x] expor `taxId` e `fiscalProfile` no perfil do cliente, com CTA explicito quando faltar CPF/CNPJ para PIX
+- [x] manter `taxId` e `fiscalProfile` apenas como dados de contrato global, sem exigir CPF/CNPJ no perfil do cliente para gerar PIX
 
 ## Affiliate V1 Checkpoint
 

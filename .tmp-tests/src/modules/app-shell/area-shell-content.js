@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAreaShellView = getAreaShellView;
 exports.isCurrentPath = isCurrentPath;
-const format_1 = require("@/lib/format");
+const format_1 = require("../../lib/format");
 const areaConfig = {
     customer: {
         label: 'Area cliente',

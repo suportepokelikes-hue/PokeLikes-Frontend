@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CircleUserRound, CreditCard, MailCheck, ShieldCheck, Wallet } from 'lucide-react';
+import { CircleUserRound, CreditCard, MailCheck, Wallet } from 'lucide-react';
 
 import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { ErrorState } from '@/components/ui/error-state';
@@ -10,13 +10,6 @@ import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
 import { formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
-import {
-  formatTaxIdForDisplay,
-  getFiscalIdentityLabel,
-  getUserTaxId,
-  getUserTaxIdType,
-  hasUserFiscalIdentity,
-} from './customer-fiscal-profile';
 import { CustomerProfileEditForm } from './customer-profile-edit-form';
 import { ReferralCard } from './referral-card';
 
@@ -39,10 +32,6 @@ export async function CustomerProfilePage({
     ]);
     const returnTo = '/app/profile';
     const editPath = '/app/profile?edit=1';
-    const hasFiscalIdentity = hasUserFiscalIdentity(profile);
-    const taxId = getUserTaxId(profile);
-    const taxIdType = getUserTaxIdType(profile);
-    const fiscalIdentityLabel = getFiscalIdentityLabel(profile);
 
     return (
       <main className="page page-customer">
@@ -103,11 +92,6 @@ export async function CustomerProfilePage({
                   <MailCheck size={16} strokeWidth={2.15} aria-hidden="true" />
                   Verificar email
                 </Link>
-              ) : !hasFiscalIdentity ? (
-                <Link href={editPath} className="primary-action">
-                  <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
-                  Completar CPF/CNPJ
-                </Link>
               ) : (
                 <Link href="/app/payments" className="primary-action">
                   <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
@@ -128,13 +112,6 @@ export async function CustomerProfilePage({
             meta={profile.email}
             icon={MailCheck}
             tone={profile.emailVerified ? 'success' : 'warning'}
-          />
-          <CustomerMetricCard
-            label="Identidade fiscal"
-            value={hasFiscalIdentity ? formatTaxIdForDisplay(taxId) : 'Pendente'}
-            meta={hasFiscalIdentity ? 'PIX liberado' : 'Libere o PIX'}
-            icon={ShieldCheck}
-            tone={hasFiscalIdentity ? 'info' : 'warning'}
           />
           <CustomerMetricCard
             label="Saldo"
@@ -198,27 +175,27 @@ export async function CustomerProfilePage({
           </CustomerSectionCard>
 
           <CustomerSectionCard
-            title={hasFiscalIdentity ? 'PIX liberado' : 'CPF/CNPJ pendente'}
+            title="Recarga PIX"
             meta={
               <StatusBadge
-                label={hasFiscalIdentity ? 'pronto para pix' : 'complete cpf/cnpj'}
-                tone={hasFiscalIdentity ? 'success' : 'warning'}
+                label="disponivel"
+                tone="success"
               />
             }
             actions={
-              <Link href={hasFiscalIdentity ? '/app/payments' : editPath} className="secondary-action">
-                {hasFiscalIdentity ? 'Ir para PIX' : 'Atualizar perfil'}
+              <Link href="/app/payments" className="secondary-action">
+                Gerar PIX
               </Link>
             }
           >
             <div className="customer-dashboard-inline-stats">
               <div>
-                <span>{fiscalIdentityLabel}</span>
-                <strong>{formatTaxIdForDisplay(taxId)}</strong>
+                <span>Carteira</span>
+                <strong>{formatMoney(wallet.availableBalance)}</strong>
               </div>
               <div>
                 <span>Recarga PIX</span>
-                <strong>{hasFiscalIdentity ? 'Liberada' : 'Bloqueada'}</strong>
+                <strong>Disponivel</strong>
               </div>
             </div>
           </CustomerSectionCard>
@@ -243,10 +220,6 @@ export async function CustomerProfilePage({
                     <StatusBadge
                       label={profile.emailVerified ? 'email verificado' : 'email pendente'}
                       tone={profile.emailVerified ? 'success' : 'warning'}
-                    />
-                    <StatusBadge
-                      label={hasFiscalIdentity ? 'PIX liberado' : 'CPF/CNPJ pendente'}
-                      tone={hasFiscalIdentity ? 'success' : 'warning'}
                     />
                   </div>
                 </div>

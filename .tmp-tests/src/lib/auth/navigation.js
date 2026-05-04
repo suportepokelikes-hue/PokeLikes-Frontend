@@ -18,7 +18,7 @@ function getPostAuthRedirectPath(role, returnTo) {
         return getDefaultAreaPath(role);
     }
     if (role === 'customer' && normalized.startsWith('/admin')) {
-        return '/app/services';
+        return '/app/new-order';
     }
     if (role === 'admin' && normalized.startsWith('/app')) {
         return '/admin';
@@ -98,7 +98,7 @@ function buildAuthEntryPath(pathname, options) {
     return query ? `${pathname}?${query}` : pathname;
 }
 function getDefaultAreaPath(role) {
-    return role === 'admin' ? '/admin' : '/app/services';
+    return role === 'admin' ? '/admin' : '/app/new-order';
 }
 function readSingle(value) {
     return Array.isArray(value) ? value[0] : value;

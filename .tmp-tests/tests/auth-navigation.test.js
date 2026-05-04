@@ -23,7 +23,8 @@ const navigation_1 = require("../src/lib/auth/navigation");
     strict_1.default.equal((0, navigation_1.normalizeReferralCode)('   '), null);
 });
 (0, node_test_1.default)('getPostAuthRedirectPath prevents crossing protected areas', () => {
-    strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('customer', '/admin/users/123'), '/app');
+    strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('customer', '/admin/users/123'), '/app/new-order');
+    strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('customer'), '/app/new-order');
     strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('admin', '/app/orders/1'), '/admin');
     strict_1.default.equal((0, navigation_1.getPostAuthRedirectPath)('admin', '/admin/catalog/10'), '/admin/catalog/10');
 });

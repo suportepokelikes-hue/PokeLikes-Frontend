@@ -49,7 +49,7 @@ export function TransactionForm({
         {view.feedback ? (
           view.feedback.tone === 'blocked' ? (
             <div className="auth-notice auth-notice-warning" role="alert" aria-live="polite">
-              <strong>CPF/CNPJ necessario para PIX</strong>
+              <strong>Operacao indisponivel agora</strong>
               <p>{view.feedback.message}</p>
               {view.feedback.actionHref && view.feedback.actionLabel ? (
                 <a href={view.feedback.actionHref} className="secondary-action">

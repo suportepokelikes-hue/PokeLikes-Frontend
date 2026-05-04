@@ -30,7 +30,8 @@ test('auth entry paths preserve a normalized referral code when present', () => 
 });
 
 test('getPostAuthRedirectPath prevents crossing protected areas', () => {
-  assert.equal(getPostAuthRedirectPath('customer', '/admin/users/123'), '/app');
+  assert.equal(getPostAuthRedirectPath('customer', '/admin/users/123'), '/app/new-order');
+  assert.equal(getPostAuthRedirectPath('customer'), '/app/new-order');
   assert.equal(getPostAuthRedirectPath('admin', '/app/orders/1'), '/admin');
   assert.equal(getPostAuthRedirectPath('admin', '/admin/catalog/10'), '/admin/catalog/10');
 });

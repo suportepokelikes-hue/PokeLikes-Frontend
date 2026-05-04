@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default async function CustomerPage() {
-  redirect('/app/services');
+  redirect('/app/new-order');
 }

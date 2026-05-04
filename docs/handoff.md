@@ -61,7 +61,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 
 ### Cliente
 
-- `/app` agora so redireciona para `/app/services`
+- `/app` agora so redireciona para `/app/new-order`
 - catalogo interno em `/app/services` e detalhe em `/app/services/[serviceId]`
 - `/app/new-order` oferece criacao rapida de pedido em tela unica, com filtro local de categoria/servico, resumo inline e envio pelo mesmo `createOrderAction`
 - o botao `Comprar` da lista de `/app/services` agora entra direto em `/app/new-order` com `serviceId` e `category` preselecionados; `/app/services/[serviceId]` ficou apenas como redirect de compatibilidade

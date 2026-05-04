@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { UserSummary, WalletSummary } from '@/lib/api/contracts';
-import { formatMoney } from '@/lib/format';
+import type { UserSummary, WalletSummary } from '../../lib/api/contracts';
+import { formatMoney } from '../../lib/format';
 
 export type AreaShellArea = 'customer' | 'admin';
 

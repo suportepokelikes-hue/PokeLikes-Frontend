@@ -263,7 +263,7 @@ export function CustomerNewOrderForm({
           {state.status !== 'idle' ? (
             state.status === 'blocked' ? (
               <div className="auth-notice auth-notice-warning" role="alert" aria-live="polite">
-                <strong>CPF/CNPJ necessario para concluir</strong>
+                <strong>Pedido indisponivel agora</strong>
                 <p>{state.message}</p>
                 {state.actionHref && state.actionLabel ? (
                   <a href={state.actionHref} className="secondary-action">

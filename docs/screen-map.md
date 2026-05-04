@@ -26,7 +26,7 @@
 ## Customer
 
 - `/app`
-  - redirect para `/app/services`
+  - redirect para `/app/new-order`
 - `/app/services`
   - catalogo interno do cliente
   - lista vertical com filtros de busca, rede social, categoria e tipo

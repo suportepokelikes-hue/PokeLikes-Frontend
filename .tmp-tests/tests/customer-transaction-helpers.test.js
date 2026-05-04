@@ -78,7 +78,7 @@ const action_helpers_1 = require("../src/modules/customer-transactions/action-he
     });
     strict_1.default.deepEqual((0, action_helpers_1.mapTransactionFormError)(new http_1.ApiClientError('Fiscal identity missing', 422, 'USER_FISCAL_IDENTITY_REQUIRED'), 'fallback'), {
         status: 'error',
-        message: 'Nao foi possivel gerar o PIX agora. Tente novamente em instantes.',
+        message: 'Nao foi possivel concluir essa operacao agora. Tente novamente em instantes.',
     });
     strict_1.default.deepEqual((0, action_helpers_1.mapTransactionFormError)(new Error('boom'), 'fallback'), {
         status: 'error',

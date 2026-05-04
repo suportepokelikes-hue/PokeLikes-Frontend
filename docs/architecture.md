@@ -34,7 +34,7 @@ O frontend nao deve inventar payloads fora do contrato validado.
 - shell autenticado em `/app`
 - catalogo interno em `/app/services` e `/app/services/[serviceId]`
 - criacao rapida de pedido em `/app/new-order`, reaproveitando `createOrderAction` em uma unica tela com filtro local de categoria/servico e preservacao de `?aff=`
-- `/app` agora funciona apenas como redirecionamento para `/app/services`
+- `/app` agora funciona apenas como redirecionamento para `/app/new-order`
 - perfil, referral e rota pausada de afiliados
 - wallet, PIX e pedidos
 
@@ -80,6 +80,7 @@ As rotas filhas abaixo existem apenas como redirecionamento para esses fluxos:
 - `src/modules/auth/actions.ts` centraliza login, cadastro, logout, Google auth por `POST /auth/google` e request de verificacao de email
 
 `/login` e `/register` aceitam `returnTo` seguro. `normalizeReturnTo` bloqueia retorno para `/login?...` e `/register?...` para evitar loop de auth. O login/cadastro com Google usa Google Identity Services no client, exige `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, reaproveita os mesmos cookies HTTP-only de sessao e respeita o mesmo `getPostAuthRedirectPath` do fluxo por email/senha.
+Sem `returnTo`, o customer autenticado cai em `/app/new-order` e o admin em `/admin`.
 
 ## API Boundary
 
@@ -113,7 +114,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 ### Perfil e verify-email
 
 - `/app/profile` consome `GET /me`, `GET /me/referral` e `GET /me/wallet`
-- o drawer de edicao salva `name`, `phone` e `taxId` por `PATCH /me`
+- o drawer de edicao salva `name` e `phone` por `PATCH /me`; dados fiscais podem vir no contrato global, mas nao sao editados na UI do cliente
 - `email` continua readonly na UI atual
 - request de verificacao de email pode ser feito a partir da conta
 - fora de producao, `previewToken` pode aparecer para desenvolvimento
@@ -222,7 +223,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora herdam a mesma linguagem premium do shell e do dashboard, com foco em leitura rapida, status e proximas acoes
 - pagamentos e pedidos mantiveram o modelo atual de listagem + drawer; o redesign ficou concentrado na hierarquia visual, nos blocos de contexto e na leitura de estados financeiros/transacionais
-- perfil continua priorizando status da conta, identidade fiscal e referral; `/app/affiliate` ficou reduzida a uma tela de pausa sem reabrir escopo de email editavel, limpeza explicita de telefone ou mudancas contratuais
+- perfil continua priorizando status da conta, saldo, PIX e referral; `/app/affiliate` ficou reduzida a uma tela de pausa sem reabrir escopo de email editavel, limpeza explicita de telefone ou mudancas contratuais
 
 ## Public Shell
 

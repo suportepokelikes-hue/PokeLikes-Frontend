@@ -62,7 +62,7 @@ test('getTransactionFormView builds fallback error when action returns no messag
   });
 });
 
-test('getTransactionFormView exposes blocked CTA for fiscal identity requirements', () => {
+test('getTransactionFormView exposes generic blocked CTA content', () => {
   const blocked = getTransactionFormView(
     {
       title: 'Criar PIX',
@@ -72,16 +72,16 @@ test('getTransactionFormView exposes blocked CTA for fiscal identity requirement
     },
     {
       status: 'blocked',
-      message: 'Voce precisa completar o perfil.',
-      actionHref: '/app/profile?edit=1',
-      actionLabel: 'Completar CPF/CNPJ',
+      message: 'A operacao esta indisponivel no momento.',
+      actionHref: '/app/payments',
+      actionLabel: 'Tentar novamente',
     },
   );
 
   assert.deepEqual(blocked.feedback, {
     tone: 'blocked',
-    message: 'Voce precisa completar o perfil.',
-    actionHref: '/app/profile?edit=1',
-    actionLabel: 'Completar CPF/CNPJ',
+    message: 'A operacao esta indisponivel no momento.',
+    actionHref: '/app/payments',
+    actionLabel: 'Tentar novamente',
   });
 });

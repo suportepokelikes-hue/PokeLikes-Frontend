@@ -1,6 +1,5 @@
 import type { UpdateCurrentUserProfileRequest } from '../../lib/api/contracts';
 import { ApiClientError } from '../../lib/api/http';
-import { isValidTaxIdInput } from './customer-fiscal-profile';
 
 export type CustomerProfileEditState =
   | {
@@ -12,7 +11,7 @@ export type CustomerProfileEditState =
       message: string;
     };
 
-export type CustomerProfileEditDraft = UpdateCurrentUserProfileRequest & {
+export type CustomerProfileEditDraft = Pick<UpdateCurrentUserProfileRequest, 'name' | 'phone'> & {
   name: string;
 };
 
@@ -23,7 +22,7 @@ export const initialCustomerProfileEditState: CustomerProfileEditState = {
 export const customerProfileEditContract = {
   endpoint: 'PATCH /me',
   isAvailable: true,
-  editableFields: ['name', 'phone', 'taxId'],
+  editableFields: ['name', 'phone'],
   readonlyFields: ['email'],
 } as const;
 
@@ -32,7 +31,6 @@ export function parseCustomerProfileEditDraft(
 ): { value: CustomerProfileEditDraft } | { error: CustomerProfileEditState } {
   const name = readTrimmedString(formData, 'name');
   const phone = readTrimmedString(formData, 'phone');
-  const taxId = readTrimmedString(formData, 'taxId');
 
   if (!name) {
     return {
@@ -43,20 +41,10 @@ export function parseCustomerProfileEditDraft(
     };
   }
 
-  if (taxId && !isValidTaxIdInput(taxId)) {
-    return {
-      error: {
-        status: 'error',
-        message: 'Informe um CPF ou CNPJ valido para liberar a geracao de PIX.',
-      },
-    };
-  }
-
   return {
     value: {
       name,
       ...(phone ? { phone } : {}),
-      ...(taxId ? { taxId } : {}),
     },
   };
 }

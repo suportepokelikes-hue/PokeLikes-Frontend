@@ -21,7 +21,6 @@ test('customer profile edit parser keeps only supported editable fields', () => 
   assert.deepEqual(parsed.value, {
     name: 'Maria Souza',
     phone: '(31) 99999-0000',
-    taxId: '123.456.789-09',
   });
 });
 
@@ -40,19 +39,18 @@ test('customer profile edit parser requires a visible account name', () => {
 test('customer profile edit contract exposes the supported editable fields', () => {
   assert.equal(customerProfileEditContract.endpoint, 'PATCH /me');
   assert.equal(customerProfileEditContract.isAvailable, true);
-  assert.deepEqual(customerProfileEditContract.editableFields, ['name', 'phone', 'taxId']);
+  assert.deepEqual(customerProfileEditContract.editableFields, ['name', 'phone']);
   assert.deepEqual(customerProfileEditContract.readonlyFields, ['email']);
 });
 
-test('customer profile edit parser rejects invalid tax ids before sending to backend', () => {
+test('customer profile edit parser ignores tax id input from stale forms', () => {
   const formData = new FormData();
   formData.set('name', 'Maria Souza');
   formData.set('taxId', '12345');
 
   assert.deepEqual(parseCustomerProfileEditDraft(formData), {
-    error: {
-      status: 'error',
-      message: 'Informe um CPF ou CNPJ valido para liberar a geracao de PIX.',
+    value: {
+      name: 'Maria Souza',
     },
   });
 });

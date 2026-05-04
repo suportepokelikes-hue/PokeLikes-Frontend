@@ -96,7 +96,7 @@ test('mapTransactionFormError preserves backend message and fallback', () => {
     mapTransactionFormError(new ApiClientError('Fiscal identity missing', 422, 'USER_FISCAL_IDENTITY_REQUIRED'), 'fallback'),
     {
       status: 'error',
-      message: 'Nao foi possivel gerar o PIX agora. Tente novamente em instantes.',
+      message: 'Nao foi possivel concluir essa operacao agora. Tente novamente em instantes.',
     },
   );
 
