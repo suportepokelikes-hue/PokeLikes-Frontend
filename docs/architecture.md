@@ -76,7 +76,7 @@ As rotas filhas abaixo existem apenas como redirecionamento para esses fluxos:
 
 - `src/lib/auth/cookies.ts` le sessao do servidor
 - `src/lib/auth/guards.ts` separa acesso publico, cliente e admin
-- `src/middleware.ts` protege `/app` e `/admin`, tenta refresh quando houver `refreshToken` e preserva `returnTo`
+- `src/middleware.ts` protege `/app` e `/admin`, tenta refresh quando houver `refreshToken`, renova access token JWT expirado antes do render e preserva `returnTo`
 - `src/modules/auth/actions.ts` centraliza login, cadastro, logout, Google auth por `POST /auth/google` e request de verificacao de email
 
 `/login` e `/register` aceitam `returnTo` seguro. `normalizeReturnTo` bloqueia retorno para `/login?...` e `/register?...` para evitar loop de auth. O login/cadastro com Google usa Google Identity Services no client, exige `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, reaproveita os mesmos cookies HTTP-only de sessao e respeita o mesmo `getPostAuthRedirectPath` do fluxo por email/senha.
@@ -207,7 +207,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 ## Admin Shell And Dashboard
 
 - o shell administrativo em `/admin` agora usa o mesmo eixo premium da Pokelike, mas com acabamento mais sobrio e mais denso do que a area publica e a area do cliente
-- a navegacao do admin preserva as rotas e o comportamento atual, mas ganhou metadados por modulo, estado ativo mais forte e branding proprio em `Pokelike Ops`
+- a navegacao do admin preserva as rotas e o comportamento atual, mas ganhou metadados por modulo, estado ativo mais forte, branding proprio em `Pokelike Ops` e logout fixo no rodape da sidebar
 - o dashboard `/admin` foi reorganizado como central operacional: prioridades, metricas, atalhos, alertas e saude de fornecedores aparecem em blocos compactos e orientados a acao
 - wrappers reutilizaveis do admin foram introduzidos em `src/components/ui/admin-surfaces.tsx` para apoiar as proximas ondas dos modulos administrativos
 - a base visual do admin agora tambem reforca tabela, toolbar e drawer sem remover filtros, mutacoes, densidade ou o modelo atual de listagem + sideover

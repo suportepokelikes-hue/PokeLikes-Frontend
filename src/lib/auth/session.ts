@@ -116,6 +116,32 @@ export function toSessionCookieValues(session: AuthSessionResponse) {
   } as const;
 }
 
+export function isAccessTokenExpired(accessToken: string, skewSeconds = 30): boolean {
+  const expiresAt = getJwtExpiration(accessToken);
+
+  if (expiresAt === null) {
+    return false;
+  }
+
+  return expiresAt <= Date.now() + skewSeconds * 1000;
+}
+
+function getJwtExpiration(accessToken: string): number | null {
+  const [, payload] = accessToken.split('.');
+
+  if (!payload) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(decodeBase64Url(payload)) as { exp?: unknown };
+
+    return typeof parsed.exp === 'number' ? parsed.exp * 1000 : null;
+  } catch {
+    return null;
+  }
+}
+
 function isUserRole(value: unknown): value is UserRole {
   return value === 'customer' || value === 'admin';
 }

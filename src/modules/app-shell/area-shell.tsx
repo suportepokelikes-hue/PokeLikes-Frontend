@@ -124,11 +124,7 @@ export function AreaShell({ area, user, title, walletSummary, children }: AreaSh
           </nav>
         </div>
 
-        {area === 'customer' ? (
-          <div className="area-sidebar-footer">
-            <LogoutButton label="Encerrar sessao" />
-          </div>
-        ) : (
+        {area === 'admin' ? (
           <div className="account-badge">
             <div className="account-badge-copy">
               <strong>{view.userName}</strong>
@@ -138,9 +134,12 @@ export function AreaShell({ area, user, title, walletSummary, children }: AreaSh
               <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
               <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
             </div>
-            <LogoutButton label="Encerrar sessao" />
           </div>
-        )}
+        ) : null}
+
+        <div className="area-sidebar-footer">
+          <LogoutButton label="Encerrar sessao" />
+        </div>
       </aside>
 
       <div className="area-main">

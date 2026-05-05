@@ -25,6 +25,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `docs/contracts/backend-openapi.yaml` continua sendo a fonte contratual operacional
 - `docs/api/openapi.yaml` continua auxiliar e nao deve guiar payloads divergentes
 - `src/lib/api` e a fronteira unica com o backend
+- o middleware de `/app` e `/admin` detecta access token JWT expirado, tenta `POST /auth/refresh` antes do render e redireciona para `/login?reason=expired` limpando cookies quando o refresh falha
 - `/login` e `/register` agora tambem oferecem `Continuar com Google` via Google Identity Services; o frontend envia `idToken` para `POST /auth/google`, grava os mesmos cookies HTTP-only do fluxo atual e preserva `referralCode` no cadastro
 - o catalogo em `/catalog/services` e `/catalog/services/{serviceId}` agora deve ser tratado como endpoint autenticado quando usado pelas superficies internas; `/app/services` e o fallback do admin ja enviam `Bearer`
 - `src/modules` concentra a maior parte da logica por dominio
@@ -43,6 +44,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - pagamentos e pedidos continuam usando drawers e redirects atuais; a mudanca foi de hierarquia visual, contexto e clareza
 - profile e referral seguem operacionais; afiliados do cliente ficaram temporariamente sem operacao exposta
 - o shell administrativo e o dashboard `/admin` agora tambem foram redesenhados para a identidade Pokelike, mas com tom mais sobrio e foco operacional
+- a sidebar administrativa tambem mostra `Encerrar sessao` no rodape; a lista de modulos pode rolar para manter a acao de logout acessivel
 - `src/components/ui/admin-surfaces.tsx` passa a concentrar os wrappers visuais reutilizaveis do admin
 - o dashboard administrativo agora funciona como central de operacao, priorizando alertas, fila, pagamentos e saude de fornecedores antes da navegacao secundaria
 - os modulos operacionais do admin agora tambem herdaram essa base: listas, filtros, tabelas, drawers e detalhes ficaram mais consistentes sem mudar fluxos reais

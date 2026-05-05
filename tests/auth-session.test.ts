@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   createGuestSession,
   deserializeUser,
+  isAccessTokenExpired,
   readSession,
   serializeUser,
   toSessionCookieValues,
@@ -88,3 +89,17 @@ test('toSessionCookieValues prepares cookie payloads from auth session', () => {
   assert.equal(values.refreshToken, 'refresh');
   assert.deepEqual(deserializeUser(values.user), sampleUser);
 });
+
+test('isAccessTokenExpired reads JWT exp defensively', () => {
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const expiredToken = createJwt({ exp: nowSeconds - 60 });
+  const validToken = createJwt({ exp: nowSeconds + 60 });
+
+  assert.equal(isAccessTokenExpired(expiredToken, 0), true);
+  assert.equal(isAccessTokenExpired(validToken, 0), false);
+  assert.equal(isAccessTokenExpired('opaque-token', 0), false);
+});
+
+function createJwt(payload: object) {
+  return ['header', Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url'), 'signature'].join('.');
+}
