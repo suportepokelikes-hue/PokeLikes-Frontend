@@ -121,7 +121,11 @@ export function getAreaShellView(options: {
             ariaLabel: user.emailVerified ? 'Abrir perfil' : 'Abrir perfil, email pendente',
             hasNotification: !user.emailVerified,
           }
-        : null,
+        : {
+            href: `/admin/users?editUserId=${encodeURIComponent(user.id)}`,
+            label: 'Abrir perfil',
+            ariaLabel: 'Abrir meu perfil',
+          },
     children,
   };
 }

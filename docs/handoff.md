@@ -44,7 +44,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - pagamentos e pedidos continuam usando drawers e redirects atuais; a mudanca foi de hierarquia visual, contexto e clareza
 - profile e referral seguem operacionais; afiliados do cliente ficaram temporariamente sem operacao exposta
 - o shell administrativo e o dashboard `/admin` agora tambem foram redesenhados para a identidade Pokelike, mas com tom mais sobrio e foco operacional
-- a sidebar administrativa tambem mostra `Encerrar sessao` no rodape; a lista de modulos pode rolar para manter a acao de logout acessivel
+- a sidebar administrativa tambem mostra `Encerrar sessao` no rodape, sem card de perfil/status; a lista de modulos pode rolar e o topo direito abre o drawer do proprio usuario admin em `/admin/users?editUserId=...`
 - `src/components/ui/admin-surfaces.tsx` passa a concentrar os wrappers visuais reutilizaveis do admin
 - o dashboard administrativo agora funciona como central de operacao, priorizando alertas, fila, pagamentos e saude de fornecedores antes da navegacao secundaria
 - os modulos operacionais do admin agora tambem herdaram essa base: listas, filtros, tabelas, drawers e detalhes ficaram mais consistentes sem mudar fluxos reais

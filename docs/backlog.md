@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] sidebar admin ficou alinhada a area do cliente: saiu o card com nome/status/email, `Encerrar sessao` permanece no rodape e o topo direito ganhou atalho de perfil para o drawer do proprio usuario admin
 - [x] sidebar admin voltou a exibir `Encerrar sessao` no rodape como a area do cliente; o middleware agora renova access token expirado antes do render e redireciona para login quando a renovacao falha
 - [x] `/app/profile` deixou de apresentar CPF/CNPJ como requisito para PIX; o CTA financeiro agora leva direto para gerar PIX quando o email nao esta pendente, e o drawer de edicao edita apenas nome e telefone
 - [x] o pos-login padrao do customer agora abre `/app/new-order`; sem `returnTo`, login, cadastro e `/app` deixam de cair em `/app/services`
