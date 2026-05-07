@@ -6357,6 +6357,10 @@ textarea:focus-visible {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
+.landing-v2-mobile-only {
+  display: none;
+}
+
 .landing-v2-primary {
   background: #f8c617;
   color: #151515;
@@ -6786,6 +6790,24 @@ textarea:focus-visible {
   .landing-v2-primary,
   .landing-v2-secondary {
     width: 100%;
+  }
+
+  .landing-v2-mobile-only {
+    display: inline-flex;
+  }
+
+  .landing-v2-hero-actions,
+  .landing-v2-final-actions {
+    flex-wrap: nowrap;
+  }
+
+  .landing-v2-hero-actions .landing-v2-primary,
+  .landing-v2-hero-actions .landing-v2-secondary,
+  .landing-v2-final-actions .landing-v2-primary,
+  .landing-v2-final-actions .landing-v2-secondary {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
   }
 
   .landing-v2-trust-row span {

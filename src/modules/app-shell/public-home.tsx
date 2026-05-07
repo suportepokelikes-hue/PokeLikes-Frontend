@@ -166,6 +166,11 @@ export function PublicHome({ session }: PublicHomeProps) {
                 <Link href={accountHref} className="landing-v2-primary">
                   {accountLabel}
                 </Link>
+                {session.status !== 'authenticated' ? (
+                  <Link href="/login" className="landing-v2-secondary landing-v2-mobile-only">
+                    Entrar
+                  </Link>
+                ) : null}
               </div>
 
               <div className="landing-v2-trust-row">
@@ -336,6 +341,11 @@ export function PublicHome({ session }: PublicHomeProps) {
             <Link href={accountHref} className="landing-v2-primary">
               {accountLabel}
             </Link>
+            {session.status !== 'authenticated' ? (
+              <Link href="/login" className="landing-v2-secondary landing-v2-mobile-only">
+                Entrar
+              </Link>
+            ) : null}
           </div>
         </section>
       </main>
