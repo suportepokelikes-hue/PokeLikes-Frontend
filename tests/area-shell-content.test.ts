@@ -36,6 +36,9 @@ test('getAreaShellView marks the current admin link and exposes user meta', () =
   assert.equal(view.children, 'conteudo');
   assert.equal(view.links.find((link) => link.href === '/admin/orders')?.isCurrent, true);
   assert.equal(view.links.find((link) => link.href === '/admin/users')?.isCurrent, false);
+  assert.equal(view.profileShortcut?.href, '/admin/users?editUserId=7');
+  assert.equal(view.profileShortcut?.ariaLabel, 'Abrir meu perfil');
+  assert.equal(view.profileShortcut?.hasNotification, undefined);
 });
 
 test('getAreaShellView includes the affiliate route in the customer shell', () => {

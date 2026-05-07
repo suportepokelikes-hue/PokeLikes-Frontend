@@ -24,7 +24,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import type { UserSummary, WalletSummary } from '@/lib/api/contracts';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { LogoutButton } from '@/modules/auth/logout-button';
 import { getAreaShellView, type AreaShellArea } from './area-shell-content';
 
@@ -123,19 +122,6 @@ export function AreaShell({ area, user, title, walletSummary, children }: AreaSh
             })}
           </nav>
         </div>
-
-        {area === 'admin' ? (
-          <div className="account-badge">
-            <div className="account-badge-copy">
-              <strong>{view.userName}</strong>
-              <span>{view.userMeta}</span>
-            </div>
-            <div className="account-badge-statuses">
-              <StatusBadge label={user.status} tone={user.status === 'active' ? 'success' : 'warning'} />
-              <StatusBadge label={user.emailVerified ? 'email verificado' : 'email pendente'} tone={user.emailVerified ? 'info' : 'warning'} />
-            </div>
-          </div>
-        ) : null}
 
         <div className="area-sidebar-footer">
           <LogoutButton label="Encerrar sessao" />
