@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] sidebar admin recebeu ajuste de layout para manter `Encerrar sessao` fora da area rolavel e scrollbar estilizado na navegacao lateral
 - [x] catalogo admin passou a ler `rateInfo`, mostrando rate original com moeda, conversao estimada para BRL quando existir e margem visual apenas sobre BRL convertido
 - [x] catalogo admin passou a destacar o rate original do fornecedor, aceitar `estimatedDeliveryTime` na criacao/edicao e exibir o tempo estimado no catalogo do cliente
 - [x] sidebar admin ficou alinhada a area do cliente: saiu o card com nome/status/email, `Encerrar sessao` permanece no rodape e o topo direito ganhou atalho de perfil para o drawer do proprio usuario admin
