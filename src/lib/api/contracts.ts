@@ -270,6 +270,7 @@ export type CatalogSupplierServiceReference = {
   category?: string | null;
   type?: string | null;
   rate?: string | null;
+  estimatedDeliveryTime?: string | null;
   refill?: boolean | null;
   cancel?: boolean | null;
   providerStatus?: ProviderStatusSummaryResource | null;
@@ -279,6 +280,7 @@ export type CatalogServiceResource = {
   id: string;
   name: string;
   description: string | null;
+  estimatedDeliveryTime?: string | null;
   publicPrice: Money;
   status: string;
   sortOrder: number;
@@ -297,6 +299,7 @@ export type CatalogServiceStatus = 'active' | 'inactive';
 export type AdminCatalogServiceUpsertRequest = {
   name: string;
   description?: string | null;
+  estimatedDeliveryTime?: string | null;
   publicPrice: string;
   status?: CatalogServiceStatus;
   sortOrder?: number;
@@ -313,6 +316,7 @@ export type AdminCatalogServiceUpsertRequest = {
 export type AdminCatalogServiceUpdateRequest = {
   name?: string;
   description?: string | null;
+  estimatedDeliveryTime?: string | null;
   publicPrice?: string;
   status?: CatalogServiceStatus;
   sortOrder?: number;
@@ -498,6 +502,7 @@ export type SupplierServiceResource = {
   category: string;
   type: string;
   rate: string;
+  estimatedDeliveryTime: string | null;
   min: number;
   max: number;
   refill: boolean;

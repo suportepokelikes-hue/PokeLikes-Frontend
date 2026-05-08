@@ -27,6 +27,7 @@ test('catalog create parser builds a valid payload from supported fields', () =>
   formData.set('maxQuantity', '5000');
   formData.set('supplierServiceId', '123');
   formData.set('supplierName', 'main-supplier');
+  formData.set('estimatedDeliveryTime', '1 a 3 dias');
   formData.set('metadata', '{"speed":"fast"}');
 
   const parsed = parseCatalogCreatePayload(formData);
@@ -42,6 +43,7 @@ test('catalog create parser builds a valid payload from supported fields', () =>
     maxQuantity: 5000,
     supplierServiceId: 123,
     supplierName: 'main-supplier',
+    estimatedDeliveryTime: '1 a 3 dias',
     metadata: { speed: 'fast' },
   });
 });
@@ -117,6 +119,7 @@ test('catalog create parser rejects invalid ranges and malformed metadata', () =
 test('catalog update parser supports explicit clearing of nullable fields', () => {
   const formData = new FormData();
   formData.set('clearDescription', 'true');
+  formData.set('clearEstimatedDeliveryTime', 'true');
   formData.set('clearMetadata', 'true');
   formData.set('status', 'inactive');
 
@@ -125,6 +128,7 @@ test('catalog update parser supports explicit clearing of nullable fields', () =
   assert.ok('value' in parsed);
   assert.deepEqual(parsed.value, {
     description: null,
+    estimatedDeliveryTime: null,
     metadata: null,
     status: 'inactive',
   });

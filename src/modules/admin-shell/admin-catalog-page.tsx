@@ -218,10 +218,13 @@ export async function AdminCatalogPage({
                       </td>
                       <td>
                         <div className="stack-list">
-                          <strong>Rate {service.rate}</strong>
+                          <strong>Fornecedor: rate {service.rate}</strong>
                           <span className="panel-meta">
-                            {service.min} - {service.max}
+                            Faixa: {service.min} - {service.max}
                           </span>
+                          {service.estimatedDeliveryTime ? (
+                            <span className="panel-meta">Tempo: {service.estimatedDeliveryTime}</span>
+                          ) : null}
                         </div>
                       </td>
                       <td>
@@ -623,6 +626,8 @@ function buildCreateDraftPath(
     name: string;
     category: string;
     type: string;
+    rate: string;
+    estimatedDeliveryTime?: string | null;
     min: number;
     max: number;
   },
@@ -673,6 +678,8 @@ function resolveCatalogCreationDraft(
     name: string;
     category: string;
     type: string;
+    rate: string;
+    estimatedDeliveryTime?: string | null;
     min: number;
     max: number;
   }>,
@@ -693,6 +700,8 @@ function resolveCatalogCreationDraft(
     name: service.name,
     category: service.category,
     type: service.type,
+    rate: service.rate,
+    estimatedDeliveryTime: service.estimatedDeliveryTime,
     minQuantity: service.min,
     maxQuantity: service.max,
   };

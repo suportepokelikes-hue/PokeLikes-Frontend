@@ -26,6 +26,8 @@ export type AdminCatalogCreationDraft = {
   name: string;
   category: string;
   type: string;
+  rate?: string | null;
+  estimatedDeliveryTime?: string | null;
   minQuantity: number;
   maxQuantity: number;
 };
@@ -139,6 +141,8 @@ export function parseAdminCatalogCreationDraft(searchParams: Record<string, Sear
   const name = readString(searchParams.createName);
   const category = readString(searchParams.createCategory);
   const type = readString(searchParams.createType);
+  const rate = readString(searchParams.createRate);
+  const estimatedDeliveryTime = readString(searchParams.createEstimatedDeliveryTime);
   const minQuantity = readPositiveInt(searchParams.createMinQuantity);
   const maxQuantity = readPositiveInt(searchParams.createMaxQuantity);
 
@@ -152,6 +156,8 @@ export function parseAdminCatalogCreationDraft(searchParams: Record<string, Sear
     name,
     category,
     type,
+    rate,
+    estimatedDeliveryTime,
     minQuantity,
     maxQuantity,
   };

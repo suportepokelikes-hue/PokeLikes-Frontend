@@ -263,6 +263,7 @@ function CatalogCard({
 }) {
   const availabilityView = getCatalogAvailabilityView(service);
   const serviceSummary = summarizeCopy(service.description || availabilityView.cardDescription, 112);
+  const estimatedDeliveryTime = getEstimatedDeliveryTime(service);
 
   return (
     <Link href={appendAffiliateCodeToPath(detailHref, affiliateCodeFromUrl)} className={`catalog-card catalog-card-${availabilityView.state}`}>
@@ -302,6 +303,12 @@ function CatalogCard({
           <dt>Compra</dt>
           <dd>{availabilityView.purchaseLabel}</dd>
         </div>
+        {estimatedDeliveryTime ? (
+          <div>
+            <dt>Tempo estimado</dt>
+            <dd>{estimatedDeliveryTime}</dd>
+          </div>
+        ) : null}
       </dl>
 
       <div className="catalog-card-foot">
@@ -323,6 +330,7 @@ function CatalogListItem({
 }) {
   const availabilityView = getCatalogAvailabilityView(service);
   const serviceSummary = summarizeCopy(service.description || availabilityView.cardDescription, 160);
+  const estimatedDeliveryTime = getEstimatedDeliveryTime(service);
 
   return (
     <article className={`catalog-list-item catalog-list-item-${availabilityView.state}`}>
@@ -361,6 +369,12 @@ function CatalogListItem({
             <dt>Disponibilidade</dt>
             <dd>{availabilityView.purchaseLabel}</dd>
           </div>
+          {estimatedDeliveryTime ? (
+            <div>
+              <dt>Tempo estimado</dt>
+              <dd>{estimatedDeliveryTime}</dd>
+            </div>
+          ) : null}
         </dl>
       </div>
 
@@ -463,6 +477,10 @@ function summarizeCopy(value: string, maxLength: number) {
   }
 
   return `${compact.slice(0, Math.max(maxLength - 1, 1)).trimEnd()}...`;
+}
+
+function getEstimatedDeliveryTime(service: CatalogServiceResource) {
+  return service.estimatedDeliveryTime?.trim() || null;
 }
 
 function getErrorMessage(error: unknown, fallback: string) {

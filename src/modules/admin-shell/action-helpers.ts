@@ -109,6 +109,7 @@ export function parseCatalogCreatePayload(formData: FormData):
       maxQuantity: value.maxQuantity as number,
       supplierServiceId: value.supplierServiceId as number,
       ...(value.description !== undefined ? { description: value.description } : {}),
+      ...(value.estimatedDeliveryTime !== undefined ? { estimatedDeliveryTime: value.estimatedDeliveryTime } : {}),
       ...(value.status !== undefined ? { status: value.status } : {}),
       ...(value.sortOrder !== undefined ? { sortOrder: value.sortOrder } : {}),
       ...(value.supplierName !== undefined ? { supplierName: value.supplierName } : {}),
@@ -265,6 +266,8 @@ function parseCatalogFields(
   const type = readOptionalString(formData, 'type');
   const supplierName = readOptionalString(formData, 'supplierName');
   const description = readOptionalString(formData, 'description');
+  const estimatedDeliveryTime = readOptionalString(formData, 'estimatedDeliveryTime');
+  const clearEstimatedDeliveryTime = readRequiredString(formData, 'clearEstimatedDeliveryTime') === 'true';
   const clearDescription = readRequiredString(formData, 'clearDescription') === 'true';
   const clearMetadata = readRequiredString(formData, 'clearMetadata') === 'true';
   const status = readCatalogStatus(formData);
@@ -337,6 +340,7 @@ function parseCatalogFields(
     ...(supplierName ? { supplierName } : {}),
     ...(supplierServiceId !== undefined ? { supplierServiceId } : {}),
     ...(clearDescription ? { description: null } : description ? { description } : {}),
+    ...(estimatedDeliveryTime ? { estimatedDeliveryTime } : clearEstimatedDeliveryTime ? { estimatedDeliveryTime: null } : {}),
     ...(clearMetadata ? { metadata: null } : metadata.value !== undefined ? { metadata: metadata.value } : {}),
   };
 

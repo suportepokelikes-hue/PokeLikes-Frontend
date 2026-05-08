@@ -2627,6 +2627,10 @@ components:
         description:
           type: string
           nullable: true
+        estimatedDeliveryTime:
+          type: string
+          nullable: true
+          description: Optional platform-managed delivery/execution time text shown in the catalog. It may be filled manually by admins; no value is invented when absent.
         publicPrice:
           $ref: '#/components/schemas/Money'
         status:
@@ -2650,7 +2654,7 @@ components:
         supplierService:
           $ref: '#/components/schemas/CatalogSupplierServiceReference'
       required:
-        [id, name, description, publicPrice, status, sortOrder, socialNetwork, category, type, minQuantity, maxQuantity, availability, metadata, supplierService]
+        [id, name, description, estimatedDeliveryTime, publicPrice, status, sortOrder, socialNetwork, category, type, minQuantity, maxQuantity, availability, metadata, supplierService]
     AdminCatalogServiceResource:
       allOf:
         - $ref: '#/components/schemas/CatalogServiceResource'
@@ -2671,6 +2675,10 @@ components:
         description:
           type: string
           nullable: true
+        estimatedDeliveryTime:
+          type: string
+          nullable: true
+          description: Optional delivery/execution time text managed by the platform catalog.
         publicPrice:
           type: string
         status:
@@ -2704,6 +2712,10 @@ components:
         description:
           type: string
           nullable: true
+        estimatedDeliveryTime:
+          type: string
+          nullable: true
+          description: Optional delivery/execution time text managed by the platform catalog. Send `null` or an empty string to clear it.
         publicPrice:
           type: string
         status:
@@ -2912,6 +2924,11 @@ components:
           type: string
         rate:
           type: string
+          description: Original supplier rate as returned by the supplier service list. Supplier currency is not guaranteed by the services API and no automatic currency conversion is applied.
+        estimatedDeliveryTime:
+          type: string
+          nullable: true
+          description: Best-effort delivery/execution time extracted from the stored supplier raw payload when a known time-like field is present; otherwise `null`.
         min:
           type: integer
         max:
@@ -2926,7 +2943,7 @@ components:
           type: string
           format: date-time
       required:
-        [id, supplierName, supplierServiceId, name, category, type, rate, min, max, refill, cancel, isActiveAtSupplier, syncedAt]
+        [id, supplierName, supplierServiceId, name, category, type, rate, estimatedDeliveryTime, min, max, refill, cancel, isActiveAtSupplier, syncedAt]
     SupplierProviderStatusResource:
       type: object
       properties:

@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] catalogo admin passou a destacar o rate original do fornecedor, aceitar `estimatedDeliveryTime` na criacao/edicao e exibir o tempo estimado no catalogo do cliente
 - [x] sidebar admin ficou alinhada a area do cliente: saiu o card com nome/status/email, `Encerrar sessao` permanece no rodape e o topo direito ganhou atalho de perfil para o drawer do proprio usuario admin
 - [x] sidebar admin voltou a exibir `Encerrar sessao` no rodape como a area do cliente; o middleware agora renova access token expirado antes do render e redireciona para login quando a renovacao falha
 - [x] `/app/profile` deixou de apresentar CPF/CNPJ como requisito para PIX; o CTA financeiro agora leva direto para gerar PIX quando o email nao esta pendente, e o drawer de edicao edita apenas nome e telefone
@@ -376,6 +377,7 @@ Tasks:
 
 Na proxima sessao do Codex:
 
+- validar manualmente `/admin/catalog` criando e editando um servico com `estimatedDeliveryTime`, confirmando que o tempo aparece em `/app/services`
 - validar manualmente `/app/orders` com combinacoes de `status`, `search`, paginacao e `orderId` para confirmar que a tabela continua sendo a superficie principal e que o drawer abre/fecha preservando query string
 - validar manualmente `/app/affiliate`, `/app/profile` e qualquer entrada do shell customer para confirmar que o cliente so encontra a mensagem `Em breve` e que nao ha fluxo operacional residual de afiliados
 - validar manualmente `/app/new-order` com servico saudavel, servico bloqueado, quantidade fora da faixa e `?aff=` ativo para confirmar desabilitacao de envio e atribuicao correta do codigo de afiliado
