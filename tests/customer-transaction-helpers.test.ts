@@ -26,6 +26,38 @@ test('parseCreatePixPayload requires amount', () => {
   });
 });
 
+test('parseCreatePixPayload validates pix amount range', () => {
+  const belowMin = new FormData();
+  belowMin.set('amount', '19.99');
+  assert.deepEqual(parseCreatePixPayload(belowMin), {
+    error: {
+      status: 'error',
+      message: 'Informe um valor entre R$ 20,00 e R$ 1.000,00 para gerar a cobranca PIX.',
+    },
+  });
+
+  const min = new FormData();
+  min.set('amount', '20');
+  assert.deepEqual(parseCreatePixPayload(min), {
+    value: { amount: '20' },
+  });
+
+  const max = new FormData();
+  max.set('amount', '1000');
+  assert.deepEqual(parseCreatePixPayload(max), {
+    value: { amount: '1000' },
+  });
+
+  const aboveMax = new FormData();
+  aboveMax.set('amount', '1000.01');
+  assert.deepEqual(parseCreatePixPayload(aboveMax), {
+    error: {
+      status: 'error',
+      message: 'Informe um valor entre R$ 20,00 e R$ 1.000,00 para gerar a cobranca PIX.',
+    },
+  });
+});
+
 test('parseCreateOrderPayload builds supported optional fields', () => {
   const formData = new FormData();
   formData.set('catalogServiceId', '10');

@@ -109,13 +109,14 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
             ) : (
               <TransactionForm
                 title="Gerar PIX"
-                description="Informe o valor e gere seu codigo PIX."
+                description="Informe um valor entre R$ 20,00 e R$ 1.000,00 para gerar seu PIX."
                 action={createPixPaymentAction}
                 initialState={initialTransactionFormState}
                 submitLabel="Gerar PIX"
                 returnTo="/app/payments"
               >
-                <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={1} placeholder="0,00" />
+                <TransactionField label="Valor" name="amount" type="number" required step={0.01} min={20} max={1000} placeholder="20,00" />
+                <p className="panel-meta">Recargas via PIX de R$ 20,00 a R$ 1.000,00.</p>
               </TransactionForm>
             )}
           </div>

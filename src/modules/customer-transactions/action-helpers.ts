@@ -2,6 +2,9 @@ import { ApiClientError } from '../../lib/api/http';
 import type { CreateOrderRequest } from '../../lib/api/contracts';
 import type { TransactionFormState } from './types';
 
+const PIX_MIN_AMOUNT = 20;
+const PIX_MAX_AMOUNT = 1000;
+
 export function readRequiredString(formData: FormData, key: string): string {
   const value = formData.get(key);
 
@@ -35,6 +38,7 @@ export function readOptionalStringArray(formData: FormData, key: string) {
 
 export function parseCreatePixPayload(formData: FormData): { value: { amount: string } } | { error: TransactionFormState } {
   const amount = readRequiredString(formData, 'amount');
+  const normalizedAmount = amount.replace(',', '.');
 
   if (!amount) {
     return {
@@ -45,8 +49,28 @@ export function parseCreatePixPayload(formData: FormData): { value: { amount: st
     };
   }
 
+  if (!/^\d+(\.\d{1,2})?$/.test(normalizedAmount)) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Informe um valor valido para gerar a cobranca PIX.',
+      },
+    };
+  }
+
+  const parsedAmount = Number.parseFloat(normalizedAmount);
+
+  if (!Number.isFinite(parsedAmount) || parsedAmount < PIX_MIN_AMOUNT || parsedAmount > PIX_MAX_AMOUNT) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Informe um valor entre R$ 20,00 e R$ 1.000,00 para gerar a cobranca PIX.',
+      },
+    };
+  }
+
   return {
-    value: { amount },
+    value: { amount: normalizedAmount },
   };
 }
 

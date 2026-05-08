@@ -2429,7 +2429,12 @@ components:
         amount:
           oneOf:
             - type: string
+              description: PIX wallet top-up amount. Accepted range is BRL 20.00 to BRL 1,000.00 with at most 2 decimal places.
             - type: number
+              minimum: 20
+              maximum: 1000
+              description: PIX wallet top-up amount. Accepted range is BRL 20.00 to BRL 1,000.00 with at most 2 decimal places.
+          description: PIX wallet top-up amount. Accepted range is BRL 20.00 to BRL 1,000.00 with at most 2 decimal places.
       required: [amount]
     PaymentResource:
       type: object

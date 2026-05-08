@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] recarga PIX em `/app/payments` foi alinhada ao limite atual do backend: orienta R$ 20,00 a R$ 1.000,00, aplica min/max no campo e valida a faixa no helper antes de chamar a API
 - [x] sidebar admin recebeu ajuste de layout para manter `Encerrar sessao` fora da area rolavel e scrollbar estilizado na navegacao lateral
 - [x] catalogo admin passou a ler `rateInfo`, mostrando rate original com moeda, conversao estimada para BRL quando existir e margem visual apenas sobre BRL convertido
 - [x] catalogo admin passou a destacar o rate original do fornecedor, aceitar `estimatedDeliveryTime` na criacao/edicao e exibir o tempo estimado no catalogo do cliente
