@@ -96,6 +96,16 @@ export type Money = {
   currency: string;
 };
 
+export type SupplierRateInfo = {
+  originalAmount: string;
+  originalCurrency: string;
+  convertedToBrl: {
+    amount: string;
+    currency: 'BRL';
+    conversionRate: string;
+  } | null;
+};
+
 export type ReferralRewardStatus =
   | 'not_referred'
   | 'pending_email_verification'
@@ -270,6 +280,7 @@ export type CatalogSupplierServiceReference = {
   category?: string | null;
   type?: string | null;
   rate?: string | null;
+  rateInfo?: SupplierRateInfo | null;
   estimatedDeliveryTime?: string | null;
   refill?: boolean | null;
   cancel?: boolean | null;
@@ -502,6 +513,7 @@ export type SupplierServiceResource = {
   category: string;
   type: string;
   rate: string;
+  rateInfo?: SupplierRateInfo | null;
   estimatedDeliveryTime: string | null;
   min: number;
   max: number;

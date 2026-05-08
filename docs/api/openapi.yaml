@@ -2670,6 +2670,11 @@ components:
           type: string
           nullable: true
           description: Original supplier rate as returned by the supplier service list. Supplier currency is not guaranteed by the services API and no automatic currency conversion is applied.
+        rateInfo:
+          oneOf:
+            - $ref: '#/components/schemas/SupplierRateInfo'
+            - type: 'null'
+          description: Admin-only supplier rate metadata when the supplier reference is expanded in admin responses. Public catalog responses do not expose supplier cost details.
         refill:
           type: boolean
           nullable: true
@@ -2971,6 +2976,33 @@ components:
         currency:
           type: string
       required: [supplierName, balance, currency]
+    SupplierRateInfo:
+      type: object
+      properties:
+        originalAmount:
+          type: string
+          description: Original supplier rate amount with 5 decimal places, without currency conversion.
+        originalCurrency:
+          type: string
+          enum: [BRL, INR, UNKNOWN]
+          description: Currency inferred from the supplier. `instabarato` uses BRL; `cheapsmmglobal` uses INR.
+        convertedToBrl:
+          oneOf:
+            - type: object
+              properties:
+                amount:
+                  type: string
+                  description: Derived BRL amount with 5 decimal places for admin visual margin review only.
+                currency:
+                  type: string
+                  enum: [BRL]
+                conversionRate:
+                  type: string
+                  description: Conversion rate used by the backend. `instabarato` returns `1.00000`; `cheapsmmglobal` uses `CHEAP_SMM_GLOBAL_INR_TO_BRL_RATE` when configured.
+              required: [amount, currency, conversionRate]
+            - type: 'null'
+          description: Null when the supplier currency is unknown or when the Cheap SMM Global INR to BRL env rate is absent/invalid.
+      required: [originalAmount, originalCurrency, convertedToBrl]
     SupplierServiceResource:
       type: object
       properties:
@@ -2989,6 +3021,8 @@ components:
         rate:
           type: string
           description: Original supplier rate as returned by the supplier service list. Supplier currency is not guaranteed by the services API and no automatic currency conversion is applied.
+        rateInfo:
+          $ref: '#/components/schemas/SupplierRateInfo'
         estimatedDeliveryTime:
           type: string
           nullable: true
@@ -3007,7 +3041,7 @@ components:
           type: string
           format: date-time
       required:
-        [id, supplierName, supplierServiceId, name, category, type, rate, estimatedDeliveryTime, min, max, refill, cancel, isActiveAtSupplier, syncedAt]
+        [id, supplierName, supplierServiceId, name, category, type, rate, rateInfo, estimatedDeliveryTime, min, max, refill, cancel, isActiveAtSupplier, syncedAt]
     SupplierProviderStatusResource:
       type: object
       properties:

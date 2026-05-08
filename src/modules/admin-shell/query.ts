@@ -1,3 +1,5 @@
+import type { SupplierRateInfo } from '@/lib/api/contracts';
+
 type SearchParamValue = string | string[] | undefined;
 
 export type AdminBaseListParams = {
@@ -27,6 +29,7 @@ export type AdminCatalogCreationDraft = {
   category: string;
   type: string;
   rate?: string | null;
+  rateInfo?: SupplierRateInfo | null;
   estimatedDeliveryTime?: string | null;
   minQuantity: number;
   maxQuantity: number;

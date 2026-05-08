@@ -1,6 +1,13 @@
 import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
 import type { AdminActionState } from '@/modules/admin-shell/actions';
+import {
+  buildEstimatedMarginText,
+  formatSupplierOriginalRate,
+  getSupplierRateBrlAmount,
+  getSupplierRateBrlText,
+  getSupplierRateConversionWarning,
+} from '@/modules/admin-shell/catalog-rate-info';
 import type { AdminCatalogCreationDraft } from '@/modules/admin-shell/query';
 
 type CatalogAction = (state: AdminActionState, formData: FormData) => Promise<AdminActionState>;
@@ -35,6 +42,7 @@ export function AdminCatalogMutationForm({
         supplierName: service.supplierService.supplierName,
         supplierServiceId: service.supplierService.supplierServiceId,
         rate: service.supplierService.rate,
+        rateInfo: service.supplierService.rateInfo,
         supplierEstimatedDeliveryTime: service.supplierService.estimatedDeliveryTime,
         estimatedDeliveryTime: service.estimatedDeliveryTime,
         category: service.category,
@@ -43,15 +51,18 @@ export function AdminCatalogMutationForm({
         maxQuantity: service.maxQuantity,
       }
     : creationDraft;
-  const inheritedRate = inheritedService?.rate;
   const inheritedDeliveryTime = inheritedService
     ? 'supplierEstimatedDeliveryTime' in inheritedService
       ? inheritedService.supplierEstimatedDeliveryTime
       : inheritedService.estimatedDeliveryTime
     : undefined;
+  const originalRateText = inheritedService ? formatSupplierOriginalRate(inheritedService) : null;
+  const rateBrlText = inheritedService ? getSupplierRateBrlText(inheritedService) : null;
+  const rateConversionWarning = inheritedService ? getSupplierRateConversionWarning(inheritedService) : null;
+  const supplierRateBrl = inheritedService ? getSupplierRateBrlAmount(inheritedService) : null;
   const estimatedDeliveryTimeDefault =
     service?.estimatedDeliveryTime ?? service?.supplierService.estimatedDeliveryTime ?? creationDraft?.estimatedDeliveryTime ?? '';
-  const marginText = buildMarginText(service?.publicPrice.amount, inheritedRate);
+  const marginText = buildEstimatedMarginText(service?.publicPrice.amount, supplierRateBrl);
 
   if (isCreate && !creationDraft) {
     return (
@@ -104,10 +115,22 @@ export function AdminCatalogMutationForm({
                 <dt>SID</dt>
                 <dd>{inheritedService.supplierServiceId}</dd>
               </div>
-              {inheritedRate ? (
+              {originalRateText ? (
                 <div>
                   <dt>Rate original do fornecedor</dt>
-                  <dd>{inheritedRate}</dd>
+                  <dd>{originalRateText}</dd>
+                </div>
+              ) : null}
+              {rateBrlText ? (
+                <div>
+                  <dt>Rate estimado em BRL</dt>
+                  <dd>{rateBrlText}</dd>
+                </div>
+              ) : null}
+              {rateConversionWarning ? (
+                <div>
+                  <dt>Conversao</dt>
+                  <dd>{rateConversionWarning}</dd>
                 </div>
               ) : null}
               <div>
@@ -157,10 +180,13 @@ export function AdminCatalogMutationForm({
         <label className="admin-user-field">
           <span>Preco publico</span>
           <input type="text" name="publicPrice" defaultValue={service?.publicPrice.amount ?? ''} placeholder="12.90" />
-          {inheritedRate ? (
+          {originalRateText ? (
             <small className="panel-meta">
-              Rate do fornecedor: {inheritedRate}
-              {marginText ? ` - ${marginText}` : ' - use esse valor para calcular sua margem'}
+              Rate original do fornecedor: {originalRateText}
+              {rateBrlText ? ` - Rate estimado em BRL: ${rateBrlText}` : ''}
+              {marginText
+                ? ` - ${marginText}`
+                : ` - ${rateConversionWarning ?? 'sem rate convertido para BRL'}; calcule a margem manualmente`}
             </small>
           ) : null}
         </label>
@@ -197,47 +223,5 @@ export function AdminCatalogMutationForm({
       </div>
     </AdminActionForm>
   );
-}
-
-function buildMarginText(publicPrice: string | undefined, supplierRate: string | null | undefined) {
-  if (!publicPrice || !supplierRate) {
-    return null;
-  }
-
-  const publicValue = parseDecimal(publicPrice);
-  const supplierValue = parseDecimal(supplierRate);
-
-  if (publicValue === null || supplierValue === null) {
-    return null;
-  }
-
-  const margin = publicValue - supplierValue;
-  const percent = supplierValue > 0 ? (margin / supplierValue) * 100 : null;
-  const formattedMargin = new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 5,
-  }).format(margin);
-
-  if (percent === null || !Number.isFinite(percent)) {
-    return `margem estimada: ${formattedMargin}`;
-  }
-
-  const formattedPercent = new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(percent);
-
-  return `margem estimada: ${formattedMargin} (${formattedPercent}%)`;
-}
-
-function parseDecimal(value: string) {
-  const normalized = value.replace(',', '.').trim();
-
-  if (!/^-?\d+(\.\d+)?$/.test(normalized)) {
-    return null;
-  }
-
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
 }
 

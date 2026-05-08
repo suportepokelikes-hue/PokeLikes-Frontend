@@ -14,7 +14,7 @@ import {
   listSupplierProviders,
   listSupplierServices,
 } from '@/lib/api/admin';
-import type { AdminCatalogAffiliateSettingsResource, CatalogServiceResource } from '@/lib/api/contracts';
+import type { AdminCatalogAffiliateSettingsResource, CatalogServiceResource, SupplierRateInfo } from '@/lib/api/contracts';
 import { getCatalogService } from '@/lib/api/catalog';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
@@ -27,6 +27,11 @@ import {
 import { AdminCatalogAffiliateSettingsForm } from '@/modules/admin-shell/admin-catalog-affiliate-settings-form';
 import { AdminCatalogMutationForm } from '@/modules/admin-shell/admin-catalog-mutation-form';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
+import {
+  formatSupplierOriginalRate,
+  getSupplierRateBrlText,
+  getSupplierRateConversionWarning,
+} from '@/modules/admin-shell/catalog-rate-info';
 import {
   AdminFilterBar,
   AdminSummaryCard,
@@ -199,6 +204,8 @@ export async function AdminCatalogPage({
                 {supplierServices.items.map((service) => {
                   const isSelected = creationDraft?.supplierServiceId === service.supplierServiceId;
                   const isActiveCreateTarget = resolvedCreationDraft?.supplierServiceId === service.supplierServiceId;
+                  const rateBrlText = getSupplierRateBrlText(service);
+                  const rateConversionWarning = getSupplierRateConversionWarning(service);
 
                   return (
                     <tr key={service.id}>
@@ -218,7 +225,11 @@ export async function AdminCatalogPage({
                       </td>
                       <td>
                         <div className="stack-list">
-                          <strong>Fornecedor: rate {service.rate}</strong>
+                          <strong>Rate original: {formatSupplierOriginalRate(service)}</strong>
+                          {rateBrlText ? (
+                            <span className="panel-meta">Estimado em BRL: {rateBrlText}</span>
+                          ) : null}
+                          {rateConversionWarning ? <span className="panel-meta">{rateConversionWarning}</span> : null}
                           <span className="panel-meta">
                             Faixa: {service.min} - {service.max}
                           </span>
@@ -627,6 +638,7 @@ function buildCreateDraftPath(
     category: string;
     type: string;
     rate: string;
+    rateInfo?: SupplierRateInfo | null;
     estimatedDeliveryTime?: string | null;
     min: number;
     max: number;
@@ -679,6 +691,7 @@ function resolveCatalogCreationDraft(
     category: string;
     type: string;
     rate: string;
+    rateInfo?: SupplierRateInfo | null;
     estimatedDeliveryTime?: string | null;
     min: number;
     max: number;
@@ -701,6 +714,7 @@ function resolveCatalogCreationDraft(
     category: service.category,
     type: service.type,
     rate: service.rate,
+    rateInfo: service.rateInfo,
     estimatedDeliveryTime: service.estimatedDeliveryTime,
     minQuantity: service.min,
     maxQuantity: service.max,
