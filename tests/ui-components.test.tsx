@@ -62,6 +62,7 @@ test('StatusBadge and PageHeader expose the expected semantic content', () => {
   );
 
   assert.match(fullHeaderHtml, /Admin \/ testes/);
-  assert.doesNotMatch(fullHeaderHtml, /Descricao do cabecalho\./);
+  assert.match(fullHeaderHtml, /Descricao do cabecalho\./);
+  assert.match(fullHeaderHtml, /section-header-description/);
   assert.match(fullHeaderHtml, /href="\/admin"/);
 });

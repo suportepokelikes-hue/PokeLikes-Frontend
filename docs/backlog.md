@@ -2,6 +2,11 @@
 
 ## Latest Update
 
+- [x] telas admin densas de catalogo/pedidos foram compactadas com cards e linhas de tabela menores, actions de tabela mais enxutas, descricoes de `AdminSectionCard` renderizadas e truncamento seguro para IDs, emails, fornecedores e nomes longos
+- [x] `/app/services` e `/app/new-order` foram compactados para mobile com line-clamp em servicos/descricoes, filtros mais previsiveis e select de servico protegido contra nomes longos sem mexer em preco, afiliado ou envio
+- [x] drawers/slide-overs ganharam largura mais confortavel, scroll interno previsivel, quebra segura de titulos/IDs/links/codigo PIX e densidade melhor em mobile sem mudar rotas ou fluxos
+- [x] headers, actions de pagina e toolbars de filtros passaram a renderizar descricao e empilhar de forma mais previsivel em telas pequenas, preservando query params e fluxos atuais
+- [x] tabelas compartilhadas ganharam scroll lateral confortavel, largura minima por densidade, quebra segura de IDs/links/servicos/datas e padding reduzido em mobile sem trocar a superficie para cards
 - [x] recarga PIX em `/app/payments` foi alinhada ao limite atual do backend: orienta R$ 20,00 a R$ 1.000,00, aplica min/max no campo e valida a faixa no helper antes de chamar a API
 - [x] sidebar admin recebeu ajuste de layout para manter `Encerrar sessao` fora da area rolavel e scrollbar estilizado na navegacao lateral
 - [x] catalogo admin passou a ler `rateInfo`, mostrando rate original com moeda, conversao estimada para BRL quando existir e margem visual apenas sobre BRL convertido
@@ -419,3 +424,4 @@ Na proxima sessao do Codex:
 - revisar se a proxima iteracao da conta vai precisar de politica dedicada para troca de email ou remocao explicita de telefone
 
 - [x] ajustar a semantica de pedidos e alertas para o fluxo operacional atual de saldo do fornecedor
+- [x] compactar tabelas/cards administrativos de catalogo e pedidos, preservando fluxo operacional e melhorando truncamento de textos longos

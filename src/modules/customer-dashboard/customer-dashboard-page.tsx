@@ -194,7 +194,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             {payments.items.length === 0 ? (
               <EmptyState title="Nenhum pagamento encontrado" description="Gere um PIX para adicionar saldo." />
             ) : (
-              <DataTable columns={['ID', 'Valor', 'Status', 'Criado em']}>
+              <DataTable columns={['ID', 'Valor', 'Status', 'Criado em']} minWidth="42rem">
                 {payments.items.map((payment) => (
                   <tr key={payment.id}>
                     <td>{payment.id}</td>
@@ -220,7 +220,7 @@ export async function CustomerDashboardPage({ session }: CustomerDashboardPagePr
             {orders.items.length === 0 ? (
               <EmptyState title="Nenhum pedido encontrado" description="Escolha um servico no catalogo para comecar." />
             ) : (
-              <DataTable columns={['ID', 'Servico', 'Status', 'Atualizado em']}>
+              <DataTable columns={['ID', 'Servico', 'Status', 'Atualizado em']} minWidth="46rem">
                 {orders.items.map((order) => {
                   const statusView = getOrderStatusView(order.status);
 

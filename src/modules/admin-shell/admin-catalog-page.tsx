@@ -200,7 +200,7 @@ export async function AdminCatalogPage({
             <EmptyState title="Nenhum servico sincronizado encontrado" description="Ajuste os filtros." />
           ) : (
             <>
-              <DataTable columns={['Origem', 'Servico', 'Operacao', 'Flags', 'Acao']}>
+              <DataTable columns={['Origem', 'Servico', 'Operacao', 'Flags', 'Acao']} minWidth="74rem">
                 {supplierServices.items.map((service) => {
                   const isSelected = creationDraft?.supplierServiceId === service.supplierServiceId;
                   const isActiveCreateTarget = resolvedCreationDraft?.supplierServiceId === service.supplierServiceId;
@@ -211,14 +211,16 @@ export async function AdminCatalogPage({
                     <tr key={service.id}>
                       <td>
                         <div className="stack-list">
-                          <strong>{service.supplierName}</strong>
-                          <span className="panel-meta">SID {service.supplierServiceId}</span>
+                          <strong title={service.supplierName}>{service.supplierName}</strong>
+                          <span className="panel-meta" title={`SID ${service.supplierServiceId}`}>
+                            SID {service.supplierServiceId}
+                          </span>
                         </div>
                       </td>
                       <td>
                         <div className="stack-list">
-                          <strong>{service.name}</strong>
-                          <span className="panel-meta">
+                          <strong title={service.name}>{service.name}</strong>
+                          <span className="panel-meta" title={`${service.category} / ${service.type}`}>
                             {service.category} / {service.type}
                           </span>
                         </div>
@@ -230,11 +232,13 @@ export async function AdminCatalogPage({
                             <span className="panel-meta">Estimado em BRL: {rateBrlText}</span>
                           ) : null}
                           {rateConversionWarning ? <span className="panel-meta">{rateConversionWarning}</span> : null}
-                          <span className="panel-meta">
+                          <span className="panel-meta" title={`Faixa: ${service.min} - ${service.max}`}>
                             Faixa: {service.min} - {service.max}
                           </span>
                           {service.estimatedDeliveryTime ? (
-                            <span className="panel-meta">Tempo: {service.estimatedDeliveryTime}</span>
+                            <span className="panel-meta" title={`Tempo: ${service.estimatedDeliveryTime}`}>
+                              Tempo: {service.estimatedDeliveryTime}
+                            </span>
                           ) : null}
                         </div>
                       </td>
@@ -291,7 +295,7 @@ export async function AdminCatalogPage({
               title="Publicados"
               meta={<span className="panel-meta">{catalog.totalItems} itens</span>}
             >
-              <DataTable columns={['Servico', 'Operacao publica', 'Disponibilidade', 'Afiliados', 'Origem', 'Acoes']}>
+              <DataTable columns={['Servico', 'Operacao publica', 'Disponibilidade', 'Afiliados', 'Origem', 'Acoes']} minWidth="82rem">
                 {visibleCatalogItems.map((service) => {
                   const affiliateSettings = affiliateSettingsByServiceId.get(service.id);
 
@@ -300,11 +304,13 @@ export async function AdminCatalogPage({
                       <tr>
                         <td>
                           <div className="stack-list">
-                            <strong>{service.name}</strong>
-                            <span className="panel-meta">
+                            <strong title={service.name}>{service.name}</strong>
+                            <span className="panel-meta" title={`${service.socialNetwork} / ${service.category} / ${service.type}`}>
                               {service.socialNetwork} / {service.category} / {service.type}
                             </span>
-                            <span className="panel-meta">ID {service.id}</span>
+                            <span className="panel-meta" title={`ID ${service.id}`}>
+                              ID {service.id}
+                            </span>
                           </div>
                         </td>
                         <td>
@@ -320,8 +326,10 @@ export async function AdminCatalogPage({
                         <td>{renderCatalogAffiliateState(affiliateSettings, affiliateSettingsError)}</td>
                         <td>
                           <div className="stack-list">
-                            <strong>{service.supplierService.supplierName}</strong>
-                            <span className="panel-meta">SID {service.supplierService.supplierServiceId}</span>
+                            <strong title={service.supplierService.supplierName}>{service.supplierService.supplierName}</strong>
+                            <span className="panel-meta" title={`SID ${service.supplierService.supplierServiceId}`}>
+                              SID {service.supplierService.supplierServiceId}
+                            </span>
                             {service.supplierService.providerStatus ? (
                               <StatusBadge
                                 label={service.supplierService.providerStatus.providerStatus}

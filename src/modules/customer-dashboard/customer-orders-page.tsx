@@ -146,6 +146,7 @@ export async function CustomerOrdersPage({ session, activeOrderId, page, status,
           ) : (
             <DataTable
               columns={['ID', 'Data', 'Link', 'Servico', 'Quantidade', 'Valor', ...(showRemainsColumn ? ['Restam'] : []), 'Status']}
+              minWidth={showRemainsColumn ? '76rem' : '70rem'}
             >
               {orders.items.map((order) => {
                 const statusView = getOrderStatusView(order.status);

@@ -32,6 +32,7 @@ type AdminQuickLinkCardProps = {
 export function AdminSectionCard({
   eyebrow,
   title,
+  description,
   meta,
   actions,
   children,
@@ -43,6 +44,7 @@ export function AdminSectionCard({
         <div className="admin-section-card-copy">
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
           <h2>{title}</h2>
+          {description ? <p className="admin-section-card-description">{description}</p> : null}
         </div>
         {meta || actions ? (
           <div className="admin-section-card-meta">

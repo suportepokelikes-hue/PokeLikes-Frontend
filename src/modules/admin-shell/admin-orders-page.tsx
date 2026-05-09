@@ -109,7 +109,7 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
             description="Status, fornecedor e sync por item."
             meta={<span className="panel-meta">{orders.totalItems} registros</span>}
           >
-            <DataTable columns={['Pedido', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']}>
+            <DataTable columns={['Pedido', 'Servico', 'Status', 'Fornecedor', 'Cobranca', 'Acao']} minWidth="76rem">
               {orders.items.map((order) => {
                 const statusView = getOrderStatusView(order.status);
 
@@ -117,13 +117,17 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
                   <tr key={order.id}>
                     <td>
                       <div className="stack-list">
-                        <strong>{order.id}</strong>
-                        <span className="panel-meta">{order.user?.email || '-'}</span>
+                        <strong title={order.id}>{order.id}</strong>
+                        <span className="panel-meta" title={order.user?.email || '-'}>
+                          {order.user?.email || '-'}
+                        </span>
                       </div>
                     </td>
                     <td>
                       <div className="stack-list">
-                        <strong>{order.catalogService?.name || 'Servico nao associado'}</strong>
+                        <strong title={order.catalogService?.name || 'Servico nao associado'}>
+                          {order.catalogService?.name || 'Servico nao associado'}
+                        </strong>
                         <span className="panel-meta">{order.quantity} item(ns)</span>
                       </div>
                     </td>
@@ -132,8 +136,10 @@ export async function AdminOrdersPage({ session, filters }: AdminOrdersPageProps
                     </td>
                     <td>
                       <div className="stack-list">
-                        <strong>{order.supplier.provider}</strong>
-                        <span className="panel-meta">{order.supplier.apiOrderId ?? 'Sem ID'}</span>
+                        <strong title={order.supplier.provider}>{order.supplier.provider}</strong>
+                        <span className="panel-meta" title={String(order.supplier.apiOrderId ?? 'Sem ID')}>
+                          {order.supplier.apiOrderId ?? 'Sem ID'}
+                        </span>
                       </div>
                     </td>
                     <td>{formatMoney(order.customerCharge)}</td>

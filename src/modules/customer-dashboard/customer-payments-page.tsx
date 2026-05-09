@@ -178,7 +178,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
             title="Historico de pagamentos"
             meta={<span className="panel-meta">{payments.totalItems} registro(s)</span>}
           >
-            <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']}>
+            <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']} minWidth="44rem">
               {payments.items.map((payment) => (
                 <tr key={payment.id}>
                   <td>

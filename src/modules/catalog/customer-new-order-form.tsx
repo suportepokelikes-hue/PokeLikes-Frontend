@@ -160,7 +160,7 @@ export function CustomerNewOrderForm({
               >
                 {filteredServices.length === 0 ? <option value="">Nenhum servico encontrado</option> : null}
                 {filteredServices.map((service) => (
-                  <option key={service.id} value={service.id}>
+                  <option key={service.id} value={service.id} title={service.name}>
                     {service.name}
                   </option>
                 ))}
@@ -177,7 +177,7 @@ export function CustomerNewOrderForm({
               <dl className="new-order-product-grid">
                 <div>
                   <dt>Nome</dt>
-                  <dd>{selectedService.name}</dd>
+                  <dd title={selectedService.name}>{selectedService.name}</dd>
                 </div>
                 <div>
                   <dt>Preco por 1000</dt>
@@ -185,7 +185,9 @@ export function CustomerNewOrderForm({
                 </div>
                 <div>
                   <dt>Descricao</dt>
-                  <dd>{selectedService.description?.trim() || availabilityView?.cardDescription || '-'}</dd>
+                  <dd title={selectedService.description?.trim() || availabilityView?.cardDescription || '-'}>
+                    {selectedService.description?.trim() || availabilityView?.cardDescription || '-'}
+                  </dd>
                 </div>
                 <div>
                   <dt>Rede social</dt>

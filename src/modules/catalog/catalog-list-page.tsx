@@ -337,8 +337,8 @@ function CatalogListItem({
       <div className="catalog-list-item-main">
         <div className="catalog-list-item-head">
           <div className="catalog-list-item-title">
-            <h2>{service.name}</h2>
-            {serviceSummary ? <p>{serviceSummary}</p> : null}
+            <h2 title={service.name}>{service.name}</h2>
+            {serviceSummary ? <p title={service.description ?? availabilityView.cardDescription}>{serviceSummary}</p> : null}
           </div>
           <div className="catalog-list-item-status">
             <StatusBadge label={availabilityView.badgeLabel} tone={availabilityView.badgeTone} />

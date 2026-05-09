@@ -126,7 +126,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
             title="Movimentacoes"
             meta={<span className="panel-meta">{transactions.totalItems} registro(s)</span>}
           >
-            <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']}>
+            <DataTable columns={['ID', 'Tipo', 'Direcao', 'Valor', 'Criado em']} minWidth="52rem">
               {transactions.items.map((transaction) => (
                 <tr key={transaction.id}>
                   <td>{transaction.id}</td>
