@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { ArrowDownLeft, ArrowUpRight, CreditCard, Landmark, Wallet } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 
-import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
+import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -22,10 +22,6 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
       getWalletSummary({ accessToken: session.accessToken }),
       listWalletTransactions({ accessToken: session.accessToken }),
     ]);
-    const credits = transactions.items.filter((transaction) => transaction.direction === 'credit');
-    const debits = transactions.items.filter((transaction) => transaction.direction === 'debit');
-    const latestTransaction = transactions.items[0] ?? null;
-
     return (
       <main className="page page-customer">
         <PageHeader
@@ -52,66 +48,15 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
                 <h2>{formatMoney(wallet.availableBalance)}</h2>
                 <p>Saldo disponivel.</p>
               </div>
-              <StatusBadge label="disponivel" tone="success" />
-            </div>
-
-            <div className="customer-dashboard-balance-row">
-              <div className="customer-dashboard-snapshot">
-                <div>
-                  <span>Entradas</span>
-                  <strong>{credits.length}</strong>
-                </div>
-                <div>
-                  <span>Saidas</span>
-                  <strong>{debits.length}</strong>
-                </div>
-                <div>
-                  <span>Lancamentos</span>
-                  <strong>{transactions.totalItems}</strong>
-                </div>
-              </div>
             </div>
 
             <div className="customer-dashboard-command-actions">
               <Link href="/app/payments" className="primary-action">
                 <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
-                Gerar PIX
-              </Link>
-              <Link href="/app/services" className="secondary-action">
-                <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-                Fazer pedido
+                Adicionar saldo
               </Link>
             </div>
           </article>
-        </section>
-
-        <section className="customer-dashboard-metrics">
-          <CustomerMetricCard
-            label="Saldo disponivel"
-            value={formatMoney(wallet.availableBalance)}
-            icon={Landmark}
-            tone="accent"
-          />
-          <CustomerMetricCard
-            label="Entradas"
-            value={String(credits.length)}
-            meta="Creditos"
-            icon={ArrowDownLeft}
-            tone="success"
-          />
-          <CustomerMetricCard
-            label="Saidas"
-            value={String(debits.length)}
-            meta="Debitos"
-            icon={ArrowUpRight}
-            tone="warning"
-          />
-          <CustomerMetricCard
-            label="Ultimo movimento"
-            value={latestTransaction ? formatDateTime(latestTransaction.createdAt) : 'Sem extrato'}
-            icon={Wallet}
-            tone="default"
-          />
         </section>
 
         {transactions.items.length === 0 ? (
@@ -119,7 +64,7 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
             title="Sua carteira ainda nao tem movimentacoes"
             description="Gere um PIX para começar."
             actionHref="/app/payments"
-            actionLabel="Gerar PIX"
+            actionLabel="Adicionar saldo"
           />
         ) : (
           <CustomerSectionCard
