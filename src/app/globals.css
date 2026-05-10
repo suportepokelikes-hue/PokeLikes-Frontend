@@ -4269,6 +4269,10 @@ textarea:focus-visible {
   gap: 1rem;
 }
 
+.customer-referral-card .referral-summary-grid {
+  grid-template-columns: 1fr;
+}
+
 .customer-referral-reward-card {
   background:
     radial-gradient(circle at top right, rgba(255, 210, 51, 0.1), transparent 10rem),

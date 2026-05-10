@@ -12,6 +12,7 @@ type ReferralClientActionsProps = {
   referralCode: string;
   referralLink: string;
   emailVerified: boolean;
+  showVerification?: boolean;
 };
 
 type CopyTarget = 'code' | 'link' | null;
@@ -20,6 +21,7 @@ export function ReferralClientActions({
   referralCode,
   referralLink,
   emailVerified,
+  showVerification = true,
 }: ReferralClientActionsProps) {
   const [copiedTarget, setCopiedTarget] = useState<CopyTarget>(null);
   const [requestState, requestFormAction] = useActionState(
@@ -59,7 +61,7 @@ export function ReferralClientActions({
         </button>
       </div>
 
-      {!emailVerified ? (
+      {showVerification && !emailVerified ? (
         <div className="referral-request-shell">
           <form action={requestFormAction}>
             <RequestVerificationButton />

@@ -9,11 +9,20 @@ export default async function CustomerProfileRoute({ searchParams }: CustomerPro
   const resolvedSearchParams = await searchParams;
   const rawEdit = readSingle(resolvedSearchParams.edit);
   const rawUpdated = readSingle(resolvedSearchParams.updated);
+  const rawReferralInfo = readSingle(resolvedSearchParams.referralInfo);
   const isEditOpen = rawEdit === '1';
   const profileUpdated = rawUpdated === '1';
-  const session = await requireCustomerSession(isEditOpen ? '/app/profile?edit=1' : '/app/profile');
+  const isReferralInfoOpen = rawReferralInfo === '1';
+  const session = await requireCustomerSession(isEditOpen ? '/app/profile?edit=1' : isReferralInfoOpen ? '/app/profile?referralInfo=1' : '/app/profile');
 
-  return <CustomerProfilePage session={session} isEditOpen={isEditOpen} profileUpdated={profileUpdated} />;
+  return (
+    <CustomerProfilePage
+      session={session}
+      isEditOpen={isEditOpen}
+      isReferralInfoOpen={isReferralInfoOpen}
+      profileUpdated={profileUpdated}
+    />
+  );
 }
 
 function readSingle(value?: string | string[]) {

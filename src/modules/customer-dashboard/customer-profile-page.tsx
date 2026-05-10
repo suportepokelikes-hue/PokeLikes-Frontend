@@ -16,12 +16,14 @@ import { ReferralCard } from './referral-card';
 type CustomerProfilePageProps = {
   session: Extract<SessionState, { status: 'authenticated' }>;
   isEditOpen?: boolean;
+  isReferralInfoOpen?: boolean;
   profileUpdated?: boolean;
 };
 
 export async function CustomerProfilePage({
   session,
   isEditOpen = false,
+  isReferralInfoOpen = false,
   profileUpdated = false,
 }: CustomerProfilePageProps) {
   try {
@@ -174,34 +176,9 @@ export async function CustomerProfilePage({
             </dl>
           </CustomerSectionCard>
 
-          <CustomerSectionCard
-            title="Recarga PIX"
-            meta={
-              <StatusBadge
-                label="disponivel"
-                tone="success"
-              />
-            }
-            actions={
-              <Link href="/app/payments" className="secondary-action">
-                Gerar PIX
-              </Link>
-            }
-          >
-            <div className="customer-dashboard-inline-stats">
-              <div>
-                <span>Carteira</span>
-                <strong>{formatMoney(wallet.availableBalance)}</strong>
-              </div>
-              <div>
-                <span>Recarga PIX</span>
-                <strong>Disponivel</strong>
-              </div>
-            </div>
-          </CustomerSectionCard>
         </section>
 
-        <ReferralCard referral={referral} />
+        <ReferralCard referral={referral} detailsHref="/app/profile?referralInfo=1" />
 
         {isEditOpen ? (
           <AdminSlideOver
@@ -225,6 +202,58 @@ export async function CustomerProfilePage({
                 </div>
                 <CustomerProfileEditForm profile={profile} />
               </article>
+            </section>
+          </AdminSlideOver>
+        ) : null}
+
+        {isReferralInfoOpen ? (
+          <AdminSlideOver
+            eyebrow="Indicacoes"
+            title="Como funciona"
+            description="Resumo das regras do seu link de convite."
+            closeHref={returnTo}
+          >
+            <section className="admin-drawer-stack">
+              <CustomerSectionCard title="Logica do convite">
+                <p className="section-copy">
+                  Compartilhe seu codigo ou link. Quando uma pessoa convidada cria a conta e faz uma recarga elegivel, o
+                  bonus e aplicado conforme as regras atuais da plataforma.
+                </p>
+              </CustomerSectionCard>
+
+              <CustomerSectionCard title="Regras atuais">
+                <div className="customer-dashboard-inline-stats">
+                  <div>
+                    <span>Recarga minima</span>
+                    <strong>{formatMoney(referral.rewardRules.minimumTopupAmount)}</strong>
+                  </div>
+                  <div>
+                    <span>Bonus do convidado</span>
+                    <strong>{formatMoney(referral.rewardRules.referredBonusAmount)}</strong>
+                  </div>
+                  <div>
+                    <span>Seu bonus</span>
+                    <strong>{formatMoney(referral.rewardRules.referrerBonusAmount)}</strong>
+                  </div>
+                </div>
+              </CustomerSectionCard>
+
+              <CustomerSectionCard title="Acompanhamento">
+                <div className="customer-dashboard-inline-stats">
+                  <div>
+                    <span>Convidados totais</span>
+                    <strong>{referral.summary.invitedUsers}</strong>
+                  </div>
+                  <div>
+                    <span>Convidados validos</span>
+                    <strong>{referral.summary.rewardedUsers}</strong>
+                  </div>
+                  <div>
+                    <span>Total ganho</span>
+                    <strong>{formatMoney(referral.summary.earnedAmount)}</strong>
+                  </div>
+                </div>
+              </CustomerSectionCard>
             </section>
           </AdminSlideOver>
         ) : null}
