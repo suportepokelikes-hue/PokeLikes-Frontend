@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { CreditCard } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, CreditCard } from 'lucide-react';
 
-import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
+import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -22,6 +22,9 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
       getWalletSummary({ accessToken: session.accessToken }),
       listWalletTransactions({ accessToken: session.accessToken }),
     ]);
+    const credits = transactions.items.filter((transaction) => transaction.direction === 'credit');
+    const debits = transactions.items.filter((transaction) => transaction.direction === 'debit');
+
     return (
       <main className="page page-customer">
         <PageHeader
@@ -57,6 +60,23 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
               </Link>
             </div>
           </article>
+        </section>
+
+        <section className="customer-dashboard-metrics">
+          <CustomerMetricCard
+            label="Entradas"
+            value={String(credits.length)}
+            meta="Creditos"
+            icon={ArrowDownLeft}
+            tone="success"
+          />
+          <CustomerMetricCard
+            label="Saidas"
+            value={String(debits.length)}
+            meta="Debitos"
+            icon={ArrowUpRight}
+            tone="warning"
+          />
         </section>
 
         {transactions.items.length === 0 ? (

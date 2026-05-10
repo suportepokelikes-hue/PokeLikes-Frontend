@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] Carteira voltou a exibir os cards de Entradas e Saidas para equilibrar a tela sem reintroduzir saldo duplicado, lancamentos ou atalhos redundantes
 - [x] pagina de Carteira foi enxugada removendo badge de disponibilidade, atalho de pedido, resumo de lancamentos e cards redundantes de saldo/creditos/debitos
 - [x] shell do cliente ganhou padding superior entre navbar e conteudo em todas as paginas de usuario, mantendo compactacao no mobile
 - [x] drawer de PIX em `/app/payments` passou a mostrar apenas uma previa curta do codigo copia-e-cola, mantendo os botoes abaixo e a copia do BR Code completo
