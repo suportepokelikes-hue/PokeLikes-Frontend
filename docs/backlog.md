@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] componentes principais receberam um azul mais claro e sombra mais suave para reduzir a sensacao visual pesada sem alterar fundo geral ou sidebar
 - [x] Perfil removeu a secao de Recarga PIX e compactou Indicacoes para codigo/link, copia, convidados validos, total ganho e drawer explicativo
 - [x] tela de Pagamentos passou a esconder IDs tecnicos, usar numeracao amigavel na tabela e remover badge "pix liberado" e saldo do PIX pendente
 - [x] filtros do historico de pedidos do cliente trocaram pílulas de status por select compacto com busca logo abaixo, preservando query params

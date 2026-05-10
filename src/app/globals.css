@@ -10,11 +10,11 @@
   --surface-variant: #131a33;
   --surface-glass: rgba(17, 20, 36, 0.78);
   --surface-elevated: rgba(23, 29, 49, 0.92);
-  --component-blue-surface: linear-gradient(180deg, rgba(24, 36, 65, 0.98), rgba(13, 19, 36, 1));
-  --component-blue-surface-soft: linear-gradient(180deg, rgba(29, 42, 73, 0.96), rgba(15, 22, 41, 1));
-  --component-blue-field: rgba(31, 45, 78, 0.96);
-  --component-blue-field-hover: rgba(35, 51, 87, 0.98);
-  --component-blue-border: rgba(115, 151, 221, 0.22);
+  --component-blue-surface: linear-gradient(180deg, rgba(33, 48, 84, 0.98), rgba(20, 30, 56, 1));
+  --component-blue-surface-soft: linear-gradient(180deg, rgba(39, 56, 96, 0.96), rgba(23, 34, 63, 1));
+  --component-blue-field: rgba(42, 59, 100, 0.96);
+  --component-blue-field-hover: rgba(48, 68, 113, 0.98);
+  --component-blue-border: rgba(137, 169, 230, 0.28);
   --ink: #f5f7ff;
   --muted: #aab4d0;
   --outline: #7884ad;
@@ -7547,7 +7547,7 @@ textarea:focus-visible {
 .page .stack-item {
   background: var(--component-blue-surface);
   border-color: var(--component-blue-border);
-  box-shadow: 0 18px 42px rgba(4, 8, 18, 0.26);
+  box-shadow: 0 14px 34px rgba(4, 8, 18, 0.2);
 }
 
 .page .customer-metric-card,
