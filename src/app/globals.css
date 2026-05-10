@@ -10,6 +10,11 @@
   --surface-variant: #131a33;
   --surface-glass: rgba(17, 20, 36, 0.78);
   --surface-elevated: rgba(23, 29, 49, 0.92);
+  --component-blue-surface: linear-gradient(180deg, rgba(24, 36, 65, 0.98), rgba(13, 19, 36, 1));
+  --component-blue-surface-soft: linear-gradient(180deg, rgba(29, 42, 73, 0.96), rgba(15, 22, 41, 1));
+  --component-blue-field: rgba(31, 45, 78, 0.96);
+  --component-blue-field-hover: rgba(35, 51, 87, 0.98);
+  --component-blue-border: rgba(115, 151, 221, 0.22);
   --ink: #f5f7ff;
   --muted: #aab4d0;
   --outline: #7884ad;
@@ -7481,4 +7486,111 @@ textarea:focus-visible {
     min-height: 1.95rem;
     padding-inline: 0.55rem;
   }
+}
+
+/* Shared page component blue surface */
+.page .section-header,
+.page .hero,
+.page .auth-card,
+.page .auth-surface,
+.page .feedback-panel,
+.page .customer-section-card,
+.page .customer-metric-card,
+.page .customer-quick-action,
+.page .admin-section-card,
+.page .admin-metric-card,
+.page .admin-quick-link,
+.page .table-shell,
+.page .detail-card,
+.page .catalog-card,
+.page .catalog-list-item,
+.page .stat-card,
+.page .admin-inline-panel,
+.page .admin-user-static,
+.page .admin-user-toggle,
+.page .admin-form-note,
+.page .pagination-panel,
+.page .new-order-form,
+.page .payment-qr-shell,
+.page .order-timeline-item,
+.page .alert-context-grid div,
+.page .admin-callout-grid > div,
+.page .stack-item {
+  background: var(--component-blue-surface);
+  border-color: var(--component-blue-border);
+  box-shadow: 0 18px 42px rgba(4, 8, 18, 0.26);
+}
+
+.page .customer-metric-card,
+.page .admin-metric-card,
+.page .customer-quick-action,
+.page .admin-quick-link,
+.page .catalog-card,
+.page .catalog-list-item,
+.page .detail-note,
+.page .new-order-description-card,
+.page .availability-callout,
+.page .admin-inline-panel {
+  background: var(--component-blue-surface-soft);
+}
+
+.page .new-order-estimate-card {
+  background: linear-gradient(180deg, rgba(36, 45, 65, 0.98), rgba(21, 25, 35, 1));
+}
+
+.page .table-shell {
+  scrollbar-color: rgba(115, 151, 221, 0.58) rgba(13, 19, 36, 0.86);
+}
+
+.page .data-table th {
+  background: rgba(31, 45, 78, 0.96);
+}
+
+.page .data-table tbody tr:nth-child(even) td {
+  background: rgba(31, 45, 78, 0.34);
+}
+
+.page-admin .data-table tbody tr:nth-child(even) td {
+  background: rgba(31, 45, 78, 0.42);
+}
+
+.page .toolbar-input,
+.page .transaction-input,
+.page .auth-field input,
+.page .auth-field select,
+.page .auth-field textarea,
+.page .admin-user-field input,
+.page .admin-user-field select,
+.page .admin-catalog-textarea {
+  background: var(--component-blue-field);
+  border-color: var(--component-blue-border);
+}
+
+.page .toolbar-input:hover,
+.page .transaction-input:hover,
+.page .auth-field input:hover,
+.page .auth-field select:hover,
+.page .auth-field textarea:hover,
+.page .admin-user-field input:hover,
+.page .admin-user-field select:hover,
+.page .admin-catalog-textarea:hover {
+  background: var(--component-blue-field-hover);
+  border-color: rgba(115, 151, 221, 0.34);
+}
+
+.page .toolbar-input:focus,
+.page .transaction-input:focus,
+.page .auth-field input:focus,
+.page .auth-field select:focus,
+.page .auth-field textarea:focus,
+.page .admin-user-field input:focus,
+.page .admin-user-field select:focus,
+.page .admin-catalog-textarea:focus {
+  box-shadow: inset 0 0 0 1px rgba(73, 163, 255, 0.36), 0 0 0 3px rgba(73, 163, 255, 0.16);
+}
+
+.page .code-block,
+.page .payment-pix-code {
+  background: rgba(31, 45, 78, 0.74);
+  border-color: var(--component-blue-border);
 }

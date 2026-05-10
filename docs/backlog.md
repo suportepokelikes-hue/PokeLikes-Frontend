@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] superficies principais das paginas passaram a usar o mesmo azul do formulario de Novo Pedido em cards, tabelas, headers, paineis e campos, mantendo fundo da pagina e sidebar sem alteracao
 - [x] telas admin densas de catalogo/pedidos foram compactadas com cards e linhas de tabela menores, actions de tabela mais enxutas, descricoes de `AdminSectionCard` renderizadas e truncamento seguro para IDs, emails, fornecedores e nomes longos
 - [x] `/app/services` e `/app/new-order` foram compactados para mobile com line-clamp em servicos/descricoes, filtros mais previsiveis e select de servico protegido contra nomes longos sem mexer em preco, afiliado ou envio
 - [x] drawers/slide-overs ganharam largura mais confortavel, scroll interno previsivel, quebra segura de titulos/IDs/links/codigo PIX e densidade melhor em mobile sem mudar rotas ou fluxos
