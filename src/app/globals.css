@@ -7667,6 +7667,12 @@ textarea:focus-visible {
   }
 }
 
+@media (max-width: 768px) {
+  .area-shell-customer .page-customer > .section-header {
+    display: none;
+  }
+}
+
 @media (max-width: 380px) {
   .area-header {
     padding-inline: 0.75rem;

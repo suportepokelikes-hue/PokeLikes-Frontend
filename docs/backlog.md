@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] headers internos `section-header` das paginas do cliente foram removidos no mobile para reduzir scroll, mantendo o titulo principal no topo do shell
 - [x] header autenticado no mobile passou a manter atalhos de carteira/perfil na mesma linha, sem quebra visual nem espaco vazio em telas estreitas
 - [x] superficies principais das paginas passaram a usar o mesmo azul do formulario de Novo Pedido em cards, tabelas, headers, paineis e campos, mantendo fundo da pagina e sidebar sem alteracao
 - [x] telas admin densas de catalogo/pedidos foram compactadas com cards e linhas de tabela menores, actions de tabela mais enxutas, descricoes de `AdminSectionCard` renderizadas e truncamento seguro para IDs, emails, fornecedores e nomes longos
