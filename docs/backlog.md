@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] drawer de PIX em `/app/payments` passou a mostrar apenas uma previa curta do codigo copia-e-cola, mantendo os botoes abaixo e a copia do BR Code completo
 - [x] headers internos `section-header` das paginas do cliente foram removidos no mobile para reduzir scroll, mantendo o titulo principal no topo do shell
 - [x] header autenticado no mobile passou a manter atalhos de carteira/perfil na mesma linha, sem quebra visual nem espaco vazio em telas estreitas
 - [x] superficies principais das paginas passaram a usar o mesmo azul do formulario de Novo Pedido em cards, tabelas, headers, paineis e campos, mantendo fundo da pagina e sidebar sem alteracao

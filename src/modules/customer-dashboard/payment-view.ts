@@ -66,6 +66,20 @@ export function getPaymentQrImageSrc(brCodeBase64: string | null): string | null
   return `data:image/png;base64,${brCodeBase64}`;
 }
 
+export function getPaymentBrCodePreview(brCode: string | null, visibleLength = 36): string {
+  if (!brCode) {
+    return 'Codigo ainda indisponivel.';
+  }
+
+  const normalized = brCode.trim();
+
+  if (normalized.length <= visibleLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, visibleLength)}...`;
+}
+
 export function getPaymentShortId(paymentId: string): string {
   const normalized = paymentId.trim();
 

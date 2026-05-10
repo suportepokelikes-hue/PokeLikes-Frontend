@@ -4047,6 +4047,12 @@ textarea:focus-visible {
   gap: 0.75rem;
 }
 
+.payment-pix-code-preview {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .payment-pix-actions .secondary-action,
 .payment-pix-actions .referral-copy-button {
   min-height: 2.8rem;

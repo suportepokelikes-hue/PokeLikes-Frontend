@@ -15,7 +15,7 @@ import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
 import { PaymentPixActions } from '@/modules/customer-dashboard/payment-pix-actions';
-import { getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
+import { getPaymentBrCodePreview, getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
 import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
@@ -250,7 +250,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
               </CustomerSectionCard>
 
               <CustomerSectionCard title="Codigo PIX">
-                <p className="code-block">{activePayment.brCode || 'Codigo ainda indisponivel.'}</p>
+                <p className="code-block payment-pix-code-preview">{getPaymentBrCodePreview(activePayment.brCode)}</p>
                 <PaymentPixActions brCode={activePayment.brCode} autoRefresh={Boolean(activePaymentStatus?.autoRefresh)} />
               </CustomerSectionCard>
             </section>

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '../src/modules/customer-dashboard/payment-view';
+import { getPaymentBrCodePreview, getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '../src/modules/customer-dashboard/payment-view';
 
 test('getPaymentStatusView maps backend statuses into customer-facing PIX states', () => {
   assert.deepEqual(getPaymentStatusView('pending'), {
@@ -27,4 +27,10 @@ test('getPaymentQrImageSrc normalizes raw base64 into a usable image src', () =>
 test('getPaymentShortId shortens long ids and preserves short ones', () => {
   assert.equal(getPaymentShortId('1234567890'), '1234567890');
   assert.equal(getPaymentShortId('pay_1234567890abcd'), 'pay_12...abcd');
+});
+
+test('getPaymentBrCodePreview shows only the first characters of long PIX codes', () => {
+  assert.equal(getPaymentBrCodePreview(null), 'Codigo ainda indisponivel.');
+  assert.equal(getPaymentBrCodePreview('  abc123  '), 'abc123');
+  assert.equal(getPaymentBrCodePreview('00020126330014br.gov.bcb.pix0111customer-key520400005303986', 12), '000201263300...');
 });
