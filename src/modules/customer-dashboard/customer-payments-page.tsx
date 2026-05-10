@@ -15,7 +15,7 @@ import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import { PaginationSummary, buildPathWithSearch } from '@/modules/admin-shell/shared';
 import { PaymentPixActions } from '@/modules/customer-dashboard/payment-pix-actions';
-import { getPaymentBrCodePreview, getPaymentQrImageSrc, getPaymentShortId, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
+import { getPaymentBrCodePreview, getPaymentQrImageSrc, getPaymentStatusView } from '@/modules/customer-dashboard/payment-view';
 import { createPixPaymentAction } from '@/modules/customer-transactions/actions';
 import { TransactionField, TransactionForm } from '@/modules/customer-transactions/transaction-form';
 import { initialTransactionFormState } from '@/modules/customer-transactions/types';
@@ -93,16 +93,8 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
               >
                 <div className="customer-dashboard-inline-stats">
                   <div>
-                    <span>ID</span>
-                    <strong>{getPaymentShortId(latestPendingPayment.id)}</strong>
-                  </div>
-                  <div>
                     <span>Expira</span>
                     <strong>{formatDateTime(latestPendingPayment.expiresAt)}</strong>
-                  </div>
-                  <div>
-                    <span>Saldo</span>
-                    <strong>{formatMoney(wallet.availableBalance)}</strong>
                   </div>
                 </div>
               </CustomerSectionCard>
@@ -123,10 +115,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
 
           <div className="customer-dashboard-side">
             {latestPendingPayment ? (
-              <CustomerSectionCard
-                title="Nova recarga"
-                meta={<StatusBadge label="pix liberado" tone="success" />}
-              >
+              <CustomerSectionCard title="Nova recarga">
                 <div className="customer-dashboard-inline-stats">
                   <div>
                     <span>Saldo</span>
@@ -179,7 +168,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
             meta={<span className="panel-meta">{payments.totalItems} registro(s)</span>}
           >
             <DataTable columns={['Pagamento', 'Valor', 'Status', 'Atualizado']} minWidth="44rem">
-              {payments.items.map((payment) => (
+              {payments.items.map((payment, index) => (
                 <tr key={payment.id}>
                   <td>
                     <Link
@@ -189,7 +178,7 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
                       })}
                       className="table-link"
                     >
-                      PIX {getPaymentShortId(payment.id)}
+                      PIX #{getPaymentDisplayNumber(payments.page, payments.pageSize, index)}
                     </Link>
                   </td>
                   <td>{formatMoney(payment.amount)}</td>
@@ -224,10 +213,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
                 meta={<StatusBadge label={activePaymentStatus?.badgeLabel ?? activePayment.status} tone={activePaymentStatus?.tone ?? 'neutral'} />}
               >
                 <div className="customer-dashboard-inline-stats">
-                  <div>
-                    <span>ID</span>
-                    <strong>{activePayment.id}</strong>
-                  </div>
                   <div>
                     <span>Valor</span>
                     <strong>{formatMoney(activePayment.amount)}</strong>
@@ -280,4 +265,8 @@ function getPaymentTimelineDate(payment: PaymentResource) {
   }
 
   return payment.updatedAt;
+}
+
+function getPaymentDisplayNumber(page: number, pageSize: number, index: number) {
+  return (Math.max(page, 1) - 1) * pageSize + index + 1;
 }
