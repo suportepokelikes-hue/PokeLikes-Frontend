@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] shell do cliente ganhou padding superior entre navbar e conteudo em todas as paginas de usuario, mantendo compactacao no mobile
 - [x] drawer de PIX em `/app/payments` passou a mostrar apenas uma previa curta do codigo copia-e-cola, mantendo os botoes abaixo e a copia do BR Code completo
 - [x] headers internos `section-header` das paginas do cliente foram removidos no mobile para reduzir scroll, mantendo o titulo principal no topo do shell
 - [x] header autenticado no mobile passou a manter atalhos de carteira/perfil na mesma linha, sem quebra visual nem espaco vazio em telas estreitas
