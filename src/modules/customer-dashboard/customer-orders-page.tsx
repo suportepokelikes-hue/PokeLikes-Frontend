@@ -87,28 +87,18 @@ export async function CustomerOrdersPage({ session, activeOrderId, page, status,
           meta={<span className="panel-meta">{orders.totalItems} registro(s)</span>}
         >
           <div className="customer-orders-filters">
-            <nav className="customer-orders-status-bar" aria-label="Filtrar pedidos por status">
-              {ORDER_STATUS_FILTERS.map((filter) => {
-                const href = buildPathWithSearch('/app/orders', {
-                  status: filter.value,
-                  search,
-                });
-                const isActive = (filter.value ?? undefined) === status;
+            <form action="/app/orders" className="customer-orders-filter-form">
+              <label className="toolbar-field customer-orders-status-field">
+                <span>Status</span>
+                <select name="status" defaultValue={status ?? ''} className="toolbar-input">
+                  {ORDER_STATUS_FILTERS.map((filter) => (
+                    <option key={filter.value ?? 'all'} value={filter.value ?? ''}>
+                      {filter.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-                return (
-                  <Link
-                    key={filter.value ?? 'all'}
-                    href={href}
-                    className={`customer-orders-status-pill${isActive ? ' is-active' : ''}`}
-                  >
-                    {filter.label}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <form action="/app/orders" className="toolbar customer-orders-toolbar">
-              {status ? <input type="hidden" name="status" value={status} /> : null}
               <label className="toolbar-field customer-orders-search-field">
                 <span>Buscar</span>
                 <input
@@ -119,6 +109,7 @@ export async function CustomerOrdersPage({ session, activeOrderId, page, status,
                   className="toolbar-input"
                 />
               </label>
+
               <div className="customer-orders-toolbar-actions">
                 <button type="submit" className="primary-action">
                   Buscar

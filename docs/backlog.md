@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] filtros do historico de pedidos do cliente trocaram pílulas de status por select compacto com busca logo abaixo, preservando query params
 - [x] Carteira voltou a exibir os cards de Entradas e Saidas para equilibrar a tela sem reintroduzir saldo duplicado, lancamentos ou atalhos redundantes
 - [x] pagina de Carteira foi enxugada removendo badge de disponibilidade, atalho de pedido, resumo de lancamentos e cards redundantes de saldo/creditos/debitos
 - [x] shell do cliente ganhou padding superior entre navbar e conteudo em todas as paginas de usuario, mantendo compactacao no mobile
