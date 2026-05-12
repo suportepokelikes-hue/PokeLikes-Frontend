@@ -53,6 +53,7 @@ const areaConfig = {
       { href: '/app/affiliate', label: 'Afiliados', icon: 'affiliate' },
       { href: '/app/wallet', label: 'Carteira', icon: 'wallet' },
       { href: '/app/payments', label: 'Pagamentos', icon: 'payments' },
+      { href: '/app/support', label: 'Suporte', icon: 'support' },
     ],
     sections: [{ href: '/app/profile', label: 'Perfil' }],
   },

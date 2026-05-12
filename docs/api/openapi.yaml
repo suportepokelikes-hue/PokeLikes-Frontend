@@ -20,6 +20,7 @@ tags:
   - name: Catalog
   - name: Supplier
   - name: Orders
+  - name: Support
   - name: Dashboard
   - name: Alerts
   - name: Audits
@@ -665,6 +666,102 @@ paths:
                 $ref: '#/components/schemas/OrderResource'
         '404':
           $ref: '#/components/responses/NotFoundError'
+  /me/support/tickets:
+    post:
+      tags: [Support]
+      summary: Create support ticket
+      description: Creates a ticket for the authenticated customer and stores the first customer message.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupportTicketRequest'
+      responses:
+        '201':
+          description: Support ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      tags: [Support]
+      summary: Current user support tickets
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, waiting_customer, closed]
+      responses:
+        '200':
+          description: Paginated support ticket list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupportTicketsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /me/support/tickets/{ticketId}:
+    get:
+      tags: [Support]
+      summary: Current user support ticket detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SupportTicketId'
+      responses:
+        '200':
+          description: Support ticket detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /me/support/tickets/{ticketId}/messages:
+    post:
+      tags: [Support]
+      summary: Reply to current user support ticket
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SupportTicketId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupportTicketMessageRequest'
+      responses:
+        '201':
+          description: Support ticket updated with customer message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportTicketResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
   /admin/dashboard/summary:
     get:
       tags: [Dashboard]
@@ -1272,6 +1369,111 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SyncOrdersResponse'
+  /admin/support/tickets:
+    get:
+      tags: [Support]
+      summary: Admin support ticket list
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/SortOrder'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, waiting_customer, closed]
+        - name: userId
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Paginated admin support ticket list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminSupportTicketsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+  /admin/support/tickets/{ticketId}:
+    get:
+      tags: [Support]
+      summary: Admin support ticket detail
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SupportTicketId'
+      responses:
+        '200':
+          description: Admin support ticket detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSupportTicketResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /admin/support/tickets/{ticketId}/messages:
+    post:
+      tags: [Support]
+      summary: Admin reply to support ticket
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SupportTicketId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSupportTicketMessageRequest'
+      responses:
+        '201':
+          description: Support ticket updated with admin message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSupportTicketResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /admin/support/tickets/{ticketId}/close:
+    post:
+      tags: [Support]
+      summary: Close support ticket
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SupportTicketId'
+      responses:
+        '200':
+          description: Support ticket closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSupportTicketResource'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /admin/wallets/{userId}/adjustments:
     post:
       tags: [Wallet]
@@ -1767,6 +1969,12 @@ components:
         minimum: 1
     OrderId:
       name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+    SupportTicketId:
+      name: ticketId
       in: path
       required: true
       schema:
@@ -2860,6 +3068,25 @@ components:
           type: string
           description: Optional affiliate public code. Invalid codes do not block checkout.
       required: [catalogServiceId, link]
+    CreateSupportTicketRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        subject:
+          type: string
+          maxLength: 160
+        message:
+          type: string
+          maxLength: 5000
+      required: [subject, message]
+    CreateSupportTicketMessageRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+          maxLength: 5000
+      required: [message]
     CatalogServiceReference:
       type: object
       properties:
@@ -2971,6 +3198,72 @@ components:
                 - $ref: '#/components/schemas/UserReference'
                 - type: 'null'
           required: [user]
+    SupportTicketMessageResource:
+      type: object
+      properties:
+        id:
+          type: string
+        ticketId:
+          type: string
+        senderUserId:
+          type: string
+        senderRole:
+          type: string
+          enum: [customer, admin]
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, ticketId, senderUserId, senderRole, message, createdAt]
+    SupportTicketResource:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+          enum: [open, waiting_customer, closed]
+        lastMessageAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+        closedByAdminId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportTicketMessageResource'
+      required:
+        [id, userId, subject, status, lastMessageAt, closedAt, closedByAdminId, createdAt, updatedAt]
+    AdminSupportTicketResource:
+      allOf:
+        - $ref: '#/components/schemas/SupportTicketResource'
+        - type: object
+          properties:
+            user:
+              oneOf:
+                - $ref: '#/components/schemas/UserReference'
+                - type: 'null'
+            closedByAdmin:
+              oneOf:
+                - $ref: '#/components/schemas/UserReference'
+                - type: 'null'
+          required: [user, closedByAdmin]
     SupplierBalanceResource:
       type: object
       properties:
@@ -3475,6 +3768,38 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminOrderResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedSupportTicketsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportTicketResource'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+      required: [items, page, pageSize, totalItems, totalPages]
+    PaginatedAdminSupportTicketsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminSupportTicketResource'
         page:
           type: integer
         pageSize:

@@ -22,6 +22,7 @@ Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para 
 - `/app/wallet` com saldo e extrato
 - `/app/payments` com criacao de PIX, QR code, copia do codigo e detalhe em drawer
 - `/app/orders` com listagem e detalhe em drawer
+- `/app/support` com abertura de tickets, listagem e conversa em detalhe dedicado
 
 ### Admin
 

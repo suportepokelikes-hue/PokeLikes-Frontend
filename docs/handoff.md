@@ -42,6 +42,8 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - `/app/profile`, `/app/wallet`, `/app/payments`, `/app/orders` e `/app/affiliate` agora tambem foram redesenhados com a mesma base premium, mas `/app/affiliate` foi pausada no frontend e hoje mostra apenas `Em breve`
 - `/app/orders` deixou de funcionar como mini-dashboard e agora prioriza historico de consulta: filtros por `status`, busca por `search`, tabela mais direta e drawer preservado por `orderId`
 - pagamentos e pedidos continuam usando drawers e redirects atuais; a mudanca foi de hierarquia visual, contexto e clareza
+- `/app/support` foi adicionado como superficie autenticada do cliente para abrir tickets e listar atendimentos
+- `/app/support/[ticketId]` usa detalhe dedicado com chat, resposta do cliente e bloqueio de envio quando o ticket esta fechado
 - profile e referral seguem operacionais; afiliados do cliente ficaram temporariamente sem operacao exposta
 - o shell administrativo e o dashboard `/admin` agora tambem foram redesenhados para a identidade Pokelike, mas com tom mais sobrio e foco operacional
 - a sidebar administrativa tambem mostra `Encerrar sessao` no rodape, sem card de perfil/status; a lista de modulos pode rolar e o topo direito abre o drawer do proprio usuario admin em `/admin/users?editUserId=...`
@@ -74,6 +76,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - wallet em `/app/wallet`
 - PIX em `/app/payments`
 - pedidos em `/app/orders`
+- suporte em `/app/support` e conversa em `/app/support/[ticketId]`
 
 ### Admin
 
@@ -103,6 +106,8 @@ Isso nao e drift acidental. Faz parte do desenho atual das jornadas.
 - `affiliateCode` persistido por `?aff=` ainda nao tem expiracao automatica, mas a UI ja permite limpeza manual explicita
 - payout admin de afiliados segue `affiliateProfileId`, `commissionIds` e `notes`; a UI registra a solicitacao inicial, mostra chave PIX, auditoria Asaas, motivo/status e timestamps reais, permite `requested -> processing` para disparar PIX real e oferece refresh do provider em `processing`; a wallet interna nao participa
 - afiliados admin nao possuem acao dedicada de reativacao
+- suporte do cliente nao possui upload real de anexos na V1; o botao fica apenas como indicacao visual desabilitada
+- `docs/contracts/backend-openapi.yaml` ainda nao lista os endpoints de suporte, apesar da UI consumir o modulo informado como existente na API V1
 
 ## Proximo passo recomendado
 

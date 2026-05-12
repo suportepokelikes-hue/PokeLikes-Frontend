@@ -3,9 +3,12 @@ import assert from 'node:assert/strict';
 
 import {
   applyToAffiliateProgram,
+  createCustomerSupportTicket,
+  createCustomerSupportTicketMessage,
   getCustomerAffiliatePix,
   getCustomerAffiliateProfile,
   getCustomerAffiliateSummary,
+  getCustomerSupportTicketDetail,
   createCustomerOrder,
   createPixPayment,
   listCustomerAffiliateCommissions,
@@ -16,6 +19,7 @@ import {
   getWalletSummary,
   listCustomerOrders,
   listCustomerPayments,
+  listCustomerSupportTickets,
   listWalletTransactions,
   updateCustomerAffiliatePix,
   updateCustomerProfile,
@@ -58,6 +62,20 @@ test('customer api functions target the expected endpoints and methods', async (
       { catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' },
     );
     await getCustomerOrderDetail({ accessToken: 'token' }, 'ord-1');
+    await listCustomerSupportTickets(
+      { accessToken: 'token' },
+      { page: 2, pageSize: 8, sortOrder: 'asc', search: 'pedido', status: 'waiting_customer' },
+    );
+    await createCustomerSupportTicket(
+      { accessToken: 'token' },
+      { subject: 'Ajuda no pedido', message: 'Meu pedido parou.' },
+    );
+    await getCustomerSupportTicketDetail({ accessToken: 'token' }, 'tick-1');
+    await createCustomerSupportTicketMessage(
+      { accessToken: 'token' },
+      'tick-1',
+      { message: 'Consegui enviar mais detalhes.' },
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }
@@ -85,6 +103,13 @@ test('customer api functions target the expected endpoints and methods', async (
       { url: 'http://localhost:3001/v1/me/payments/pay-1', method: 'GET' },
       { url: 'http://localhost:3001/v1/me/orders', method: 'POST' },
       { url: 'http://localhost:3001/v1/me/orders/ord-1', method: 'GET' },
+      {
+        url: 'http://localhost:3001/v1/me/support/tickets?page=2&pageSize=8&sortOrder=asc&search=pedido&status=waiting_customer',
+        method: 'GET',
+      },
+      { url: 'http://localhost:3001/v1/me/support/tickets', method: 'POST' },
+      { url: 'http://localhost:3001/v1/me/support/tickets/tick-1', method: 'GET' },
+      { url: 'http://localhost:3001/v1/me/support/tickets/tick-1/messages', method: 'POST' },
     ],
   );
 
@@ -92,6 +117,8 @@ test('customer api functions target the expected endpoints and methods', async (
   const affiliatePixUpdateRequest = requests[6];
   const pixRequest = requests[13];
   const orderRequest = requests[15];
+  const supportTicketRequest = requests[18];
+  const supportMessageRequest = requests[20];
 
   assert.equal(
     updateProfileRequest.init?.body,
@@ -104,6 +131,11 @@ test('customer api functions target the expected endpoints and methods', async (
     orderRequest.init?.body,
     JSON.stringify({ catalogServiceId: 7, link: 'https://instagram.com/perfil', quantity: 100, affiliateCode: 'AFILIA30' }),
   );
+  assert.equal(
+    supportTicketRequest.init?.body,
+    JSON.stringify({ subject: 'Ajuda no pedido', message: 'Meu pedido parou.' }),
+  );
+  assert.equal(supportMessageRequest.init?.body, JSON.stringify({ message: 'Consegui enviar mais detalhes.' }));
 });
 
 test('customer affiliate api normalizes current backend aliases for profile, summary and commissions', async () => {

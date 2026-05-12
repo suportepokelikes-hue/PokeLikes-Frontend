@@ -421,6 +421,39 @@ export type OrderResource = {
   events?: OrderEventResource[];
 };
 
+export type SupportTicketStatus = 'open' | 'waiting_customer' | 'closed';
+
+export type SupportTicketMessageResource = {
+  id: string;
+  ticketId: string;
+  senderUserId: string;
+  senderRole: UserRole;
+  message: string;
+  createdAt: string;
+};
+
+export type SupportTicketResource = {
+  id: string;
+  userId: string;
+  subject: string;
+  status: SupportTicketStatus;
+  lastMessageAt: string;
+  closedAt: string | null;
+  closedByAdminId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  messages?: SupportTicketMessageResource[];
+};
+
+export type CreateSupportTicketRequest = {
+  subject: string;
+  message: string;
+};
+
+export type CreateSupportTicketMessageRequest = {
+  message: string;
+};
+
 export type AdminOrderResource = OrderResource & {
   user: UserReference | null;
 };

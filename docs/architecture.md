@@ -37,6 +37,7 @@ O frontend nao deve inventar payloads fora do contrato validado.
 - `/app` agora funciona apenas como redirecionamento para `/app/new-order`
 - perfil, referral e rota pausada de afiliados
 - wallet, PIX e pedidos
+- suporte em `/app/support`, com abertura de tickets e detalhe dedicado de conversa
 
 ### Admin
 
@@ -69,6 +70,7 @@ As rotas filhas abaixo existem apenas como redirecionamento para esses fluxos:
 
 ### Rotas com detalhe dedicado
 
+- `/app/support/[ticketId]`
 - `/admin/payments/[paymentId]`
 - `/admin/orders/[orderId]`
 
@@ -133,6 +135,14 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/app/orders` funciona como historico direto de pedidos, com busca por query string (`search`), filtro por `status`, paginacao e tabela como superficie principal
 - o detalhe em drawer busca `GET /me/orders/{orderId}`
 - status `queued_supplier_balance` recebe leitura operacional dedicada, sem tratar como cancelamento
+
+### Suporte
+
+- `/app/support` lista tickets do usuario, permite abrir um novo ticket por `POST /me/support/tickets` e filtra por `status`/`search`
+- `/app/support/[ticketId]` usa detalhe dedicado para conversa, lendo `GET /me/support/tickets/{ticketId}` e respondendo por `POST /me/support/tickets/{ticketId}/messages`
+- mensagens do cliente e do suporte ficam em lados diferentes no chat
+- ticket `closed` bloqueia o formulario de resposta e mostra aviso explicito de atendimento encerrado
+- upload de anexos ainda nao existe; o botao visual fica desabilitado como `Em breve`
 
 ### Afiliados do cliente
 
@@ -241,6 +251,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - o payout admin segue o contrato atual do backend com `affiliateProfileId`, `commissionIds`, `notes`, `pixKey`, campos de provider/auditoria Asaas, `statusReason` e timestamps de ciclo; a wallet interna nao participa do fluxo; a selecao guiada no admin apenas preenche o mesmo formulario contratual
 - o `affiliateCode` salvo por `?aff=` ainda nao tem politica automatica de expiracao, mas a UI permite limpeza manual explicita
 - o admin nao expoe acao dedicada para reativar afiliado suspenso
+- os endpoints de suporte do cliente foram integrados pela API real informada para V1, mas `docs/contracts/backend-openapi.yaml` ainda precisa ser resincronizado para incluir o modulo Support
 
 ## Testing Baseline
 

@@ -62,6 +62,16 @@
   - drawer de detalhe por `?orderId=`
 - `/app/orders/[orderId]`
   - apenas redirect para `/app/orders?orderId=...`
+- `/app/support`
+  - listagem de tickets do cliente
+  - abertura de ticket com assunto e mensagem inicial
+  - filtros por `status` e `search`
+  - botao visual de anexo desabilitado como `Em breve`
+- `/app/support/[ticketId]`
+  - detalhe dedicado de ticket
+  - conversa em formato chat
+  - resposta do cliente enquanto o ticket nao estiver `closed`
+  - aviso de ticket fechado e envio bloqueado quando `status=closed`
 
 ## Admin
 

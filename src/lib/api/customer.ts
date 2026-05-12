@@ -4,10 +4,14 @@ import type {
   AffiliateSummaryResponse,
   CreateOrderRequest,
   CreatePixPaymentRequest,
+  CreateSupportTicketMessageRequest,
+  CreateSupportTicketRequest,
   OrderResource,
   PaginatedResponse,
   PaymentResource,
   ReferralSummaryResponse,
+  SupportTicketResource,
+  SupportTicketStatus,
   UpdateAffiliatePixRequest,
   UpdateCurrentUserProfileRequest,
   UserSummary,
@@ -32,6 +36,10 @@ type CustomerListParams = {
   sortOrder?: 'asc' | 'desc';
   search?: string;
   status?: string;
+};
+
+type CustomerSupportTicketsListParams = Omit<CustomerListParams, 'status'> & {
+  status?: SupportTicketStatus;
 };
 
 export function getWalletSummary({ accessToken }: AuthOptions) {
@@ -179,5 +187,58 @@ export function getCustomerOrderDetail({ accessToken }: AuthOptions, orderId: st
   return apiRequest<OrderResource>({
     path: `/me/orders/${orderId}`,
     accessToken,
+  });
+}
+
+export function listCustomerSupportTickets(
+  { accessToken }: AuthOptions,
+  { page = 1, pageSize = 10, sortOrder = 'desc', search, status }: CustomerSupportTicketsListParams = {},
+) {
+  const searchParams = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+    sortOrder,
+  });
+
+  if (search) {
+    searchParams.set('search', search);
+  }
+
+  if (status) {
+    searchParams.set('status', status);
+  }
+
+  return apiRequest<PaginatedResponse<SupportTicketResource>>({
+    path: `/me/support/tickets?${searchParams.toString()}`,
+    accessToken,
+  });
+}
+
+export function createCustomerSupportTicket({ accessToken }: AuthOptions, payload: CreateSupportTicketRequest) {
+  return apiRequest<SupportTicketResource>({
+    path: '/me/support/tickets',
+    method: 'POST',
+    accessToken,
+    body: payload,
+  });
+}
+
+export function getCustomerSupportTicketDetail({ accessToken }: AuthOptions, ticketId: string) {
+  return apiRequest<SupportTicketResource>({
+    path: `/me/support/tickets/${ticketId}`,
+    accessToken,
+  });
+}
+
+export function createCustomerSupportTicketMessage(
+  { accessToken }: AuthOptions,
+  ticketId: string,
+  payload: CreateSupportTicketMessageRequest,
+) {
+  return apiRequest<SupportTicketResource>({
+    path: `/me/support/tickets/${ticketId}/messages`,
+    method: 'POST',
+    accessToken,
+    body: payload,
   });
 }

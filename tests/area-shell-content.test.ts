@@ -63,6 +63,7 @@ test('getAreaShellView includes the affiliate route in the customer shell', () =
 
   assert.equal(customerView.links.find((link) => link.href === '/app/affiliate')?.isCurrent, true);
   assert.equal(customerView.links.some((link) => link.href === '/app/new-order'), true);
+  assert.equal(customerView.links.some((link) => link.href === '/app/support'), true);
   assert.equal(customerView.links.some((link) => link.href === '/app/profile'), false);
   assert.equal(customerView.walletShortcut?.href, '/app/wallet');
   assert.equal(customerView.walletShortcut?.label, 'R$\u00a010,00');

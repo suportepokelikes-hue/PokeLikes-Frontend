@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] primeira versao de `/app/support` entregue para cliente abrir tickets, listar atendimentos e conversar em detalhe dedicado, com resposta bloqueada quando o ticket esta fechado
 - [x] componentes principais receberam um azul mais claro e sombra mais suave para reduzir a sensacao visual pesada sem alterar fundo geral ou sidebar
 - [x] Perfil removeu a secao de Recarga PIX e compactou Indicacoes para codigo/link, copia, convidados validos, total ganho e drawer explicativo
 - [x] tela de Pagamentos passou a esconder IDs tecnicos, usar numeracao amigavel na tabela e remover badge "pix liberado" e saldo do PIX pendente
@@ -128,6 +129,7 @@ Ja existe:
 - design system reutilizavel em `src/components/ui`
 - catalogo publico real
 - dashboards e listas iniciais reais para cliente e admin
+- suporte do cliente com abertura de ticket, listagem e conversa em detalhe dedicado
 
 ## Recommended Execution Order
 
@@ -392,10 +394,24 @@ Tasks:
 - [x] cobrir fluxos principais de afiliados: `?aff=`, `/app/affiliate`, payout guiado por comissoes e refresh/processamento admin
 - [ ] ampliar cobertura E2E para operacoes admin e cenarios negativos
 
+## Phase 12: Customer Support
+
+Tasks:
+
+- [x] adicionar contratos TypeScript para tickets e mensagens de suporte
+- [x] integrar endpoints do cliente em `src/lib/api/customer.ts`
+- [x] adicionar `Suporte` na navegacao autenticada do cliente
+- [x] criar `/app/support` com abertura de ticket, filtro/listagem e botao de anexo desabilitado
+- [x] criar `/app/support/[ticketId]` com conversa em chat e bloqueio de resposta quando fechado
+- [ ] resincronizar `docs/contracts/backend-openapi.yaml` com o modulo Support quando o contrato oficial for atualizado
+- [ ] validar manualmente a jornada completa contra o backend em staging
+
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
+- validar `/app/support` criando ticket, respondendo uma conversa aberta e tentando responder ticket fechado
+- resincronizar `docs/contracts/backend-openapi.yaml` para incluir Support, pois a UI ja consome os endpoints informados da V1
 - validar manualmente `/admin/catalog` com servicos `instabarato` e `cheapsmmglobal`, conferindo `rateInfo.convertedToBrl` e ausencia de custo do fornecedor em `/app/services`
 - validar manualmente `/admin/catalog` criando e editando um servico com `estimatedDeliveryTime`, confirmando que o tempo aparece em `/app/services`
 - validar manualmente `/app/orders` com combinacoes de `status`, `search`, paginacao e `orderId` para confirmar que a tabela continua sendo a superficie principal e que o drawer abre/fecha preservando query string
