@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Lock, MessageCircle, UserRound } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
-import { AdminMetricCard, AdminSectionCard } from '@/components/ui/admin-surfaces';
+import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -41,7 +41,6 @@ export async function AdminSupportDetailPage({ session, ticketId }: AdminSupport
         <PageHeader
           eyebrow="Admin / suporte / ticket"
           title={ticket.subject}
-          description="Conversa com o cliente, contexto do atendimento e fechamento operacional."
           actions={
             <>
               <Link href="/admin/support" className="secondary-action">
@@ -62,15 +61,9 @@ export async function AdminSupportDetailPage({ session, ticketId }: AdminSupport
           }
         />
 
-        <section className="metric-list">
-          <AdminMetricCard label="Status" value={statusView.label} icon={MessageCircle} tone={resolveMetricTone(statusView.tone)} />
-          <AdminMetricCard label="Cliente" value={ticket.user?.name || 'Nao associado'} icon={UserRound} tone="info" />
-          <AdminMetricCard label="Ultima mensagem" value={formatDateTime(ticket.lastMessageAt || ticket.updatedAt)} icon={MessageCircle} tone="accent" />
-        </section>
-
-        <section className="detail-grid">
-          <AdminSectionCard eyebrow="Ticket" title="Dados do atendimento" description="Cliente, datas e identificadores do ticket.">
-            <dl className="detail-list">
+        <section className="detail-grid admin-support-detail-grid">
+          <AdminSectionCard title="Ticket" className="detail-card-wide admin-support-info-card">
+            <dl className="detail-list admin-support-info-list">
               <div>
                 <dt>Cliente</dt>
                 <dd>{ticket.user?.name || 'Cliente nao associado'}</dd>
@@ -95,17 +88,17 @@ export async function AdminSupportDetailPage({ session, ticketId }: AdminSupport
                 <dt>Atualizado em</dt>
                 <dd>{formatDateTime(ticket.updatedAt)}</dd>
               </div>
-              <div>
-                <dt>Fechado em</dt>
-                <dd>{formatDateTime(ticket.closedAt)}</dd>
-              </div>
+              {ticket.closedAt ? (
+                <div>
+                  <dt>Fechado em</dt>
+                  <dd>{formatDateTime(ticket.closedAt)}</dd>
+                </div>
+              ) : null}
             </dl>
           </AdminSectionCard>
 
           <AdminSectionCard
-            eyebrow="Conversa"
-            title="Mensagens"
-            description="Historico em ordem cronologica, separando cliente e admin."
+            title="Conversa"
             className="detail-card-wide admin-support-chat-card"
           >
             {messages.length === 0 ? (
@@ -120,12 +113,7 @@ export async function AdminSupportDetailPage({ session, ticketId }: AdminSupport
           </AdminSectionCard>
 
           {statusView.canReply ? (
-            <AdminSectionCard
-              eyebrow="Resposta"
-              title="Responder cliente"
-              description="Envie uma resposta visivel ao cliente na conversa deste ticket."
-              className="detail-card-wide"
-            >
+            <section className="admin-section-card detail-card-wide admin-support-reply-card">
               <AdminActionForm
                 action={createAdminSupportTicketMessageAction}
                 submitLabel="Enviar resposta"
@@ -146,13 +134,13 @@ export async function AdminSupportDetailPage({ session, ticketId }: AdminSupport
                   />
                 </label>
               </AdminActionForm>
-            </AdminSectionCard>
+            </section>
           ) : (
-            <section className="auth-notice auth-notice-warning support-closed-notice detail-card-wide" role="status">
+            <section className="auth-notice auth-notice-warning support-closed-notice admin-support-closed-notice detail-card-wide" role="status">
               <Lock size={17} strokeWidth={2.1} aria-hidden="true" />
               <div>
                 <strong>Ticket fechado</strong>
-                <p>Este atendimento foi encerrado. Resposta e fechamento ficam bloqueados nesse estado.</p>
+                <p>Resposta e fechamento ficam bloqueados nesse estado.</p>
               </div>
             </section>
           )}
@@ -190,12 +178,4 @@ function AdminSupportChatMessage({ message }: { message: SupportTicketMessageRes
       <p>{message.message}</p>
     </article>
   );
-}
-
-function resolveMetricTone(tone: 'neutral' | 'info' | 'success' | 'warning' | 'danger') {
-  if (tone === 'neutral' || tone === 'info') {
-    return 'default';
-  }
-
-  return tone;
 }

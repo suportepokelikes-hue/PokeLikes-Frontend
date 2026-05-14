@@ -2,6 +2,12 @@
 
 ## Latest Update
 
+- [x] mobile de `/admin/support` ganhou padding/gap no breadcrumb e titulo para nao encostar no form de busca
+- [x] mobile de `/admin/support` voltou a exibir breadcrumb `Admin / suporte` e titulo `Tickets` maior sem reabrir altura excessiva do header
+- [x] corrigido excesso de altura do header mobile de `/admin/support`, removendo flex-basis herdado do copy/actions e deixando o bloco depender apenas do conteudo real
+- [x] mobile de `/admin/support` voltou a mostrar somente o titulo `Tickets`, manteve breadcrumb oculto, compactou o padding do header e corrigiu estouro lateral do form no desktop
+- [x] mobile de `/admin/support` ficou mais direto: header esconde titulo/breadcrumb, form de busca foi compactado e cards numericos aparecem apenas no desktop
+- [x] admin suporte foi compactado: lista e detalhe perderam copy redundante, filtros/header ficaram mais baixos, detalhe removeu cards-resumo e passou a priorizar ticket, conversa e resposta
 - [x] suporte do cliente ganhou mais respiro abaixo dos titulos `Abrir ticket`, `Como agilizar` e `Seus tickets`
 - [x] suporte do cliente recebeu ajuste fino: dicas de `Como agilizar` agora empilham no desktop com mais respiro, filtro de tickets ficou em duas colunas no desktop e a badge redundante `sem upload` saiu
 - [x] headers internos `section-header` das paginas do cliente foram removidos do codigo tambem no desktop, mantendo CTAs essenciais dentro dos cards quando necessario

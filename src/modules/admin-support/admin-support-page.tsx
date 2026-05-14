@@ -33,7 +33,6 @@ export async function AdminSupportPage({ session, filters }: AdminSupportPagePro
         <PageHeader
           eyebrow="Admin / suporte"
           title="Tickets"
-          description="Atendimento do cliente com leitura de prioridade, conversa e fechamento operacional."
           actions={
             <AdminFilterBar
               pathname="/admin/support"
@@ -77,8 +76,8 @@ export async function AdminSupportPage({ session, filters }: AdminSupportPagePro
           }
         />
 
-        <section className="metric-list">
-          <AdminSummaryCard label="Abertos" value={String(openCount)} meta="Prioridade da fila" tone="warning" />
+        <section className="metric-list admin-support-summary-grid">
+          <AdminSummaryCard label="Abertos" value={String(openCount)} tone="warning" />
           <AdminSummaryCard label="Aguardando cliente" value={String(waitingCustomerCount)} tone="accent" />
           <AdminSummaryCard label="Fechados" value={String(closedCount)} />
         </section>
@@ -89,7 +88,6 @@ export async function AdminSupportPage({ session, filters }: AdminSupportPagePro
           <AdminSectionCard
             eyebrow="Suporte"
             title="Fila de tickets"
-            description="Tickets abertos aparecem primeiro; dentro de cada estado, a lista prioriza a ultima atualizacao."
             meta={<span className="panel-meta">{tickets.totalItems} registros</span>}
           >
             <DataTable columns={['Assunto', 'Cliente', 'Status', 'Ultima atualizacao', 'Criado em', 'Acao']} minWidth="72rem">
