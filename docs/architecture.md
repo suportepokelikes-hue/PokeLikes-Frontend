@@ -42,7 +42,7 @@ O frontend nao deve inventar payloads fora do contrato validado.
 ### Admin
 
 - shell administrativo em `/admin`
-- modulos operacionais de usuarios, catalogo, pagamentos, pedidos, fornecedores, alertas, auditoria, transacoes e afiliados
+- modulos operacionais de usuarios, catalogo, pagamentos, pedidos, suporte, fornecedores, alertas, auditoria, transacoes e afiliados
 
 ## Route Model
 
@@ -73,6 +73,7 @@ As rotas filhas abaixo existem apenas como redirecionamento para esses fluxos:
 - `/app/support/[ticketId]`
 - `/admin/payments/[paymentId]`
 - `/admin/orders/[orderId]`
+- `/admin/support/[ticketId]`
 
 ## Auth And Session
 
@@ -174,6 +175,13 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - `/admin/orders` lista e sincroniza pedidos em lote e por item
 - `/admin/transactions` mostra ledger e aplica ajuste manual
 
+### Suporte admin
+
+- `/admin/support` lista tickets do cliente por `GET /admin/support/tickets`, com filtros por `status`, `search` e `userId`
+- a fila prioriza visualmente tickets `open`, depois `waiting_customer`, depois `closed`, usando `lastMessageAt`/`updatedAt` dentro de cada grupo
+- `/admin/support/[ticketId]` exibe detalhe dedicado, cliente, datas, chat, resposta por `POST /admin/support/tickets/{ticketId}/messages` e fechamento por `POST /admin/support/tickets/{ticketId}/close`
+- tickets `closed` bloqueiam resposta e fechamento no admin
+
 ### Operacao de fornecedor
 
 - `/admin/supplier` le providers, servicos sincronizados e logs
@@ -224,7 +232,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 ## Admin Operational Modules
 
-- `users`, `catalog`, `payments`, `orders`, `supplier`, `alerts`, `audits`, `transactions`, `affiliates`, `affiliate-commissions` e `affiliate-payouts` agora herdam a mesma linguagem visual administrativa
+- `users`, `catalog`, `payments`, `orders`, `support`, `supplier`, `alerts`, `audits`, `transactions`, `affiliates`, `affiliate-commissions` e `affiliate-payouts` agora herdam a mesma linguagem visual administrativa
 - as telas de lista passaram a usar seções operacionais mais claras ao redor de tabelas e paginação, sem abandonar os filtros por query string
 - drawers e formulários administrativos ganharam contexto curto, blocos internos mais legíveis e acabamento mais consistente para mutações reais
 - detalhes dedicados de pedidos e pagamentos agora seguem a mesma hierarquia visual do dashboard admin, com métricas, blocos contextuais e timeline/eventos mais claros
@@ -251,7 +259,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 - o payout admin segue o contrato atual do backend com `affiliateProfileId`, `commissionIds`, `notes`, `pixKey`, campos de provider/auditoria Asaas, `statusReason` e timestamps de ciclo; a wallet interna nao participa do fluxo; a selecao guiada no admin apenas preenche o mesmo formulario contratual
 - o `affiliateCode` salvo por `?aff=` ainda nao tem politica automatica de expiracao, mas a UI permite limpeza manual explicita
 - o admin nao expoe acao dedicada para reativar afiliado suspenso
-- os endpoints de suporte do cliente foram integrados pela API real informada para V1, mas `docs/contracts/backend-openapi.yaml` ainda precisa ser resincronizado para incluir o modulo Support
+- o modulo Support esta documentado em `docs/contracts/backend-openapi.yaml` para cliente e admin; upload real de anexos ainda nao existe na UI
 
 ## Testing Baseline
 

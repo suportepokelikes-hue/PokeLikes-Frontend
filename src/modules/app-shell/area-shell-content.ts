@@ -70,6 +70,7 @@ const areaConfig = {
       { href: '/admin/catalog', label: 'Catalogo', icon: 'catalog' },
       { href: '/admin/payments', label: 'Pagamentos', icon: 'payments' },
       { href: '/admin/orders', label: 'Pedidos', icon: 'orders' },
+      { href: '/admin/support', label: 'Tickets', icon: 'tickets' },
       { href: '/admin/supplier', label: 'Fornecedores', icon: 'suppliers' },
       { href: '/admin/alerts', label: 'Alertas', icon: 'alerts' },
       { href: '/admin/audits', label: 'Auditoria', icon: 'audits' },

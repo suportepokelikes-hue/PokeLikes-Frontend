@@ -31,6 +31,7 @@ Manter uma leitura curta e confiavel do estado atual do frontend Likes Uai para 
 - `/admin/catalog` com publicacao a partir de `SupplierService`, edicao do servico publicado e drawer de affiliate settings
 - `/admin/payments` com conciliacao em lote e por item
 - `/admin/orders` com sync em lote e por item
+- `/admin/support` com fila de tickets, conversa, resposta e fechamento
 - `/admin/supplier` com status de providers, servicos sincronizados e logs de sync
 - `/admin/alerts` com resolve real
 - `/admin/audits` como leitura

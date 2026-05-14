@@ -10,15 +10,7 @@ import {
 import { ApiClientError } from '@/lib/api/http';
 import { getServerSession } from '@/lib/auth/cookies';
 import { getLoginPath, normalizeReturnTo } from '@/lib/auth/navigation';
-
-export type SupportFormState = {
-  status: 'idle' | 'error';
-  message?: string;
-};
-
-export const initialSupportFormState: SupportFormState = {
-  status: 'idle',
-};
+import type { SupportFormState } from './form-state';
 
 export async function createSupportTicketAction(
   _: SupportFormState,
@@ -40,17 +32,20 @@ export async function createSupportTicketAction(
     return validationError;
   }
 
+  let ticketId: string;
+
   try {
     const ticket = await createCustomerSupportTicket(
       { accessToken: session.accessToken },
       { subject, message },
     );
-
-    revalidatePath('/app/support');
-    redirect(`/app/support/${encodeURIComponent(ticket.id)}`);
+    ticketId = ticket.id;
   } catch (error) {
     return mapSupportFormError(error, 'Nao foi possivel abrir o ticket agora.');
   }
+
+  revalidatePath('/app/support');
+  redirect(`/app/support/${encodeURIComponent(ticketId)}`);
 }
 
 export async function createSupportTicketMessageAction(
@@ -85,12 +80,12 @@ export async function createSupportTicketMessageAction(
       ticketId,
       { message },
     );
-
-    revalidatePath(returnTo);
-    redirect(returnTo);
   } catch (error) {
     return mapSupportFormError(error, 'Nao foi possivel enviar a mensagem agora.');
   }
+
+  revalidatePath(returnTo);
+  redirect(returnTo);
 }
 
 function validateTicketPayload(subject: string, message: string): SupportFormState | null {

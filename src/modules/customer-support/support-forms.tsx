@@ -7,9 +7,8 @@ import { useFormStatus } from 'react-dom';
 import {
   createSupportTicketAction,
   createSupportTicketMessageAction,
-  initialSupportFormState,
-  type SupportFormState,
 } from './actions';
+import { initialSupportFormState, type SupportFormState } from './form-state';
 
 type SupportTicketFormProps = {
   returnTo: string;

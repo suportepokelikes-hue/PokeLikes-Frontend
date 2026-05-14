@@ -7845,6 +7845,39 @@ textarea:focus-visible {
   margin: 0.25rem 0 0;
 }
 
+.admin-support-page,
+.admin-support-detail-page {
+  gap: 1rem;
+}
+
+.admin-support-chat-card {
+  min-width: 0;
+}
+
+.admin-support-message-customer {
+  justify-self: start;
+  border-color: rgba(73, 163, 255, 0.24);
+  background:
+    radial-gradient(circle at top left, rgba(73, 163, 255, 0.12), transparent 12rem),
+    rgba(18, 25, 46, 0.94);
+}
+
+.admin-support-message-admin {
+  justify-self: end;
+  border-color: rgba(255, 210, 51, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(255, 210, 51, 0.12), transparent 12rem),
+    rgba(39, 47, 78, 0.94);
+}
+
+.admin-support-reply-field {
+  width: 100%;
+}
+
+.admin-support-reply-field textarea {
+  min-height: 9rem;
+}
+
 @media (max-width: 980px) {
   .customer-support-grid {
     grid-template-columns: 1fr;

@@ -5,8 +5,10 @@ import { redirect } from 'next/navigation';
 
 import {
   approveAdminAffiliate,
+  closeAdminSupportTicket,
   createAdminAffiliatePayout,
   createAdminCatalogService,
+  createAdminSupportTicketMessage,
   createAdminWalletAdjustment,
   createAdminUser,
   reconcileAdminPayment,
@@ -410,6 +412,75 @@ export async function resolveAlertAction(_: AdminActionState, formData: FormData
   return {
     status: 'success',
     message: 'Alerta resolvido com sucesso.',
+  };
+}
+
+export async function createAdminSupportTicketMessageAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const ticketId = readRequiredString(formData, 'ticketId');
+  const message = readRequiredString(formData, 'message');
+
+  if (!ticketId) {
+    return {
+      status: 'error',
+      message: 'Informe um ticket valido para responder.',
+    };
+  }
+
+  if (!message) {
+    return {
+      status: 'error',
+      message: 'Escreva uma mensagem antes de responder.',
+    };
+  }
+
+  if (message.length > 5000) {
+    return {
+      status: 'error',
+      message: 'A mensagem deve ter ate 5000 caracteres.',
+    };
+  }
+
+  try {
+    await createAdminSupportTicketMessage(session.accessToken, ticketId, { message });
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel enviar a resposta agora.');
+  }
+
+  revalidatePath('/admin');
+  revalidatePath('/admin/support');
+  revalidatePath(`/admin/support/${ticketId}`);
+
+  return {
+    status: 'success',
+    message: 'Resposta enviada com sucesso.',
+  };
+}
+
+export async function closeAdminSupportTicketAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const ticketId = readRequiredString(formData, 'ticketId');
+
+  if (!ticketId) {
+    return {
+      status: 'error',
+      message: 'Informe um ticket valido para fechar.',
+    };
+  }
+
+  try {
+    await closeAdminSupportTicket(session.accessToken, ticketId);
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel fechar o ticket agora.');
+  }
+
+  revalidatePath('/admin');
+  revalidatePath('/admin/support');
+  revalidatePath(`/admin/support/${ticketId}`);
+
+  return {
+    status: 'success',
+    message: 'Ticket fechado com sucesso.',
   };
 }
 

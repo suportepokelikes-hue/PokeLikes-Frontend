@@ -2,11 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  closeAdminSupportTicket,
   createAdminAffiliatePayout,
+  createAdminSupportTicketMessage,
+  getAdminSupportTicketDetail,
   refreshAdminAffiliatePayout,
   listAdminCatalogAffiliateSettings,
   listAdminAffiliatePayouts,
   listAdminCatalogServices,
+  listAdminSupportTickets,
   updateAdminAffiliatePayoutStatus,
   updateAdminCatalogAffiliateSettings,
   updateAdminCatalogService,
@@ -125,6 +129,70 @@ test('admin catalog api functions keep catalog and affiliate settings aligned wi
       affiliateCommissionPercent: '12.5',
     }),
   );
+});
+
+test('admin support api functions target ticket endpoints and methods', async () => {
+  const originalFetch = globalThis.fetch;
+  const requests: Array<{ url: string; init?: RequestInit }> = [];
+
+  globalThis.fetch = (async (input, init) => {
+    requests.push({ url: String(input), init });
+
+    return new Response(
+      JSON.stringify({
+        id: 'ticket-1',
+        userId: 'user-1',
+        subject: 'Pedido parado',
+        status: 'open',
+        lastMessageAt: '2026-05-01T10:00:00.000Z',
+        closedAt: null,
+        closedByAdminId: null,
+        createdAt: '2026-05-01T09:00:00.000Z',
+        updatedAt: '2026-05-01T10:00:00.000Z',
+        messages: [],
+        user: { id: 'user-1', name: 'Cliente', email: 'cliente@example.com' },
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }) as typeof fetch;
+
+  try {
+    await listAdminSupportTickets('token-123', {
+      page: 2,
+      pageSize: 20,
+      sortOrder: 'asc',
+      status: 'waiting_customer',
+      userId: 'user-1',
+      search: 'pedido',
+    });
+    await getAdminSupportTicketDetail('token-123', 'ticket-1');
+    await createAdminSupportTicketMessage('token-123', 'ticket-1', { message: 'Vamos verificar.' });
+    await closeAdminSupportTicket('token-123', 'ticket-1');
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.deepEqual(
+    requests.map((request) => ({
+      url: request.url,
+      method: request.init?.method ?? 'GET',
+    })),
+    [
+      {
+        url: 'http://localhost:3001/v1/admin/support/tickets?page=2&pageSize=20&sortOrder=asc&status=waiting_customer&userId=user-1&search=pedido',
+        method: 'GET',
+      },
+      { url: 'http://localhost:3001/v1/admin/support/tickets/ticket-1', method: 'GET' },
+      { url: 'http://localhost:3001/v1/admin/support/tickets/ticket-1/messages', method: 'POST' },
+      { url: 'http://localhost:3001/v1/admin/support/tickets/ticket-1/close', method: 'POST' },
+    ],
+  );
+
+  assert.equal(new Headers(requests[0].init?.headers).get('Authorization'), 'Bearer token-123');
+  assert.equal(requests[2].init?.body, JSON.stringify({ message: 'Vamos verificar.' }));
 });
 
 test('admin affiliate payout api normalizes Asaas provider fields and sends payout mutations', async () => {

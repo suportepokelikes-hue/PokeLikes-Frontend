@@ -1,4 +1,4 @@
-import type { SupplierRateInfo } from '@/lib/api/contracts';
+import type { SupplierRateInfo, SupportTicketStatus } from '@/lib/api/contracts';
 
 type SearchParamValue = string | string[] | undefined;
 
@@ -45,6 +45,11 @@ export type AdminPaymentsListParams = AdminBaseListParams & {
 
 export type AdminOrdersListParams = AdminBaseListParams & {
   status?: string;
+  userId?: string;
+};
+
+export type AdminSupportTicketsListParams = AdminBaseListParams & {
+  status?: SupportTicketStatus;
   userId?: string;
 };
 
@@ -185,6 +190,14 @@ export function parseAdminOrdersParams(searchParams: Record<string, SearchParamV
   return {
     ...parseBaseListParams(searchParams),
     status: readString(searchParams.status),
+    userId: readString(searchParams.userId),
+  };
+}
+
+export function parseAdminSupportTicketsParams(searchParams: Record<string, SearchParamValue>): AdminSupportTicketsListParams {
+  return {
+    ...parseBaseListParams(searchParams),
+    status: readSupportTicketStatus(readString(searchParams.status)),
     userId: readString(searchParams.userId),
   };
 }
@@ -352,4 +365,12 @@ function readPositiveInt(value: SearchParamValue) {
 
   const parsed = Number.parseInt(stringValue, 10);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function readSupportTicketStatus(value: string | undefined): SupportTicketStatus | undefined {
+  if (value === 'open' || value === 'waiting_customer' || value === 'closed') {
+    return value;
+  }
+
+  return undefined;
 }

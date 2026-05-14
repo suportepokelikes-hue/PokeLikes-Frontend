@@ -51,6 +51,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - o dashboard administrativo agora funciona como central de operacao, priorizando alertas, fila, pagamentos e saude de fornecedores antes da navegacao secundaria
 - os modulos operacionais do admin agora tambem herdaram essa base: listas, filtros, tabelas, drawers e detalhes ficaram mais consistentes sem mudar fluxos reais
 - users, catalog, payments, orders, supplier, alerts, audits, transactions, affiliates, commissions e payouts ja podem ser tratados como superficies visuais estabilizadas do admin
+- `/admin/support` e `/admin/support/[ticketId]` foram adicionados para fila, conversa, resposta e fechamento de tickets do cliente
 
 ## Superficies importantes que um novo agente precisa conhecer
 
@@ -84,6 +85,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - catalogo com publicacao via `SupplierService`, edicao e affiliate settings em drawers
 - pagamentos com conciliacao
 - pedidos com sync
+- suporte com fila de tickets, chat, resposta e fechamento
 - fornecedores com refresh e sync
 - alertas com resolve
 - transacoes com ajuste manual
@@ -106,8 +108,8 @@ Isso nao e drift acidental. Faz parte do desenho atual das jornadas.
 - `affiliateCode` persistido por `?aff=` ainda nao tem expiracao automatica, mas a UI ja permite limpeza manual explicita
 - payout admin de afiliados segue `affiliateProfileId`, `commissionIds` e `notes`; a UI registra a solicitacao inicial, mostra chave PIX, auditoria Asaas, motivo/status e timestamps reais, permite `requested -> processing` para disparar PIX real e oferece refresh do provider em `processing`; a wallet interna nao participa
 - afiliados admin nao possuem acao dedicada de reativacao
-- suporte do cliente nao possui upload real de anexos na V1; o botao fica apenas como indicacao visual desabilitada
-- `docs/contracts/backend-openapi.yaml` ainda nao lista os endpoints de suporte, apesar da UI consumir o modulo informado como existente na API V1
+- suporte nao possui upload real de anexos na V1; o botao do cliente fica apenas como indicacao visual desabilitada
+- `docs/contracts/backend-openapi.yaml` ja lista o modulo Support para cliente e admin
 
 ## Proximo passo recomendado
 

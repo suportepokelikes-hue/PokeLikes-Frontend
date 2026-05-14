@@ -45,6 +45,7 @@ const navIcons: Record<string, LucideIcon> = {
   payments: CreditCard,
   orders: ReceiptText,
   support: Headphones,
+  tickets: Headphones,
   admin: Shield,
   users: Users,
   catalog: FolderKanban,

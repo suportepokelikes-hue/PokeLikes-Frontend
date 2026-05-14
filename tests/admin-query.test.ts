@@ -8,6 +8,7 @@ import {
   parseAdminAffiliatePayoutCreationDraft,
   parseAdminAffiliatePayoutsParams,
   parseAdminAffiliatesParams,
+  parseAdminSupportTicketsParams,
   parseAdminTransactionsParams,
   parseSupplierServicesParams,
 } from '../src/modules/admin-shell/query';
@@ -47,6 +48,29 @@ test('parseAdminTransactionsParams keeps only valid filter values', () => {
     dateTo: undefined,
     sortBy: undefined,
   });
+});
+
+test('parseAdminSupportTicketsParams keeps only supported support filters', () => {
+  const params = parseAdminSupportTicketsParams({
+    page: '2',
+    pageSize: '20',
+    status: 'waiting_customer',
+    search: '  pedido parado  ',
+    sortOrder: 'asc',
+    userId: 'user-1',
+  });
+
+  assert.deepEqual(params, {
+    page: 2,
+    pageSize: 20,
+    search: 'pedido parado',
+    sortBy: undefined,
+    sortOrder: 'asc',
+    status: 'waiting_customer',
+    userId: 'user-1',
+  });
+
+  assert.equal(parseAdminSupportTicketsParams({ status: 'invalid' }).status, undefined);
 });
 
 test('parseSupplierServicesParams isolates supplier paging namespace', () => {

@@ -3,7 +3,6 @@
 ## Primary Contract
 
 - `docs/contracts/backend-openapi.yaml`
-- suporte do cliente ja esta integrado no frontend pelos endpoints V1 informados, mas o contrato primario ainda precisa ser resincronizado para listar o modulo Support
 
 ## High-Value Endpoints For Initial UI
 
@@ -54,6 +53,10 @@
 - `GET /admin/orders/:id`
 - `POST /admin/orders/sync`
 - `POST /admin/orders/:id/sync`
+- `GET /admin/support/tickets`
+- `GET /admin/support/tickets/:ticketId`
+- `POST /admin/support/tickets/:ticketId/messages`
+- `POST /admin/support/tickets/:ticketId/close`
 - `GET /admin/supplier/providers`
 - `POST /admin/supplier/providers/refresh`
 - `GET /admin/supplier/services`

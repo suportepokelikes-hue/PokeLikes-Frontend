@@ -16,6 +16,8 @@ import type {
   AdminCatalogListParams,
   AdminOrdersListParams,
   AdminPaymentsListParams,
+  AdminSupportTicketResource,
+  AdminSupportTicketsListParams,
   AdminTransactionsListParams,
   AdminUpdateUserRequest,
   AdminUpdateAffiliatePayoutStatusRequest,
@@ -31,6 +33,7 @@ import type {
   AdminOrderResource,
   AdminPaymentResource,
   CatalogServiceResource,
+  CreateSupportTicketMessageRequest,
   DashboardSummaryResponse,
   PaginatedResponse,
   PaymentReconciliationResponse,
@@ -147,6 +150,41 @@ export function listAdminOrders(accessToken: string, params: AdminOrdersListPara
 export function getAdminOrderDetail(accessToken: string, orderId: string) {
   return apiRequest<AdminOrderResource>({
     path: `/admin/orders/${orderId}`,
+    accessToken,
+  });
+}
+
+export function listAdminSupportTickets(accessToken: string, params: AdminSupportTicketsListParams = {}) {
+  return apiRequest<PaginatedResponse<AdminSupportTicketResource>>({
+    path: buildAdminPath('/admin/support/tickets', { page: 1, pageSize: 10, sortOrder: 'desc', ...params }),
+    accessToken,
+  });
+}
+
+export function getAdminSupportTicketDetail(accessToken: string, ticketId: string) {
+  return apiRequest<AdminSupportTicketResource>({
+    path: `/admin/support/tickets/${ticketId}`,
+    accessToken,
+  });
+}
+
+export function createAdminSupportTicketMessage(
+  accessToken: string,
+  ticketId: string,
+  body: CreateSupportTicketMessageRequest,
+) {
+  return apiRequest<AdminSupportTicketResource>({
+    path: `/admin/support/tickets/${ticketId}/messages`,
+    method: 'POST',
+    accessToken,
+    body,
+  });
+}
+
+export function closeAdminSupportTicket(accessToken: string, ticketId: string) {
+  return apiRequest<AdminSupportTicketResource>({
+    path: `/admin/support/tickets/${ticketId}/close`,
+    method: 'POST',
     accessToken,
   });
 }

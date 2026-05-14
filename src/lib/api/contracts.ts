@@ -445,6 +445,11 @@ export type SupportTicketResource = {
   messages?: SupportTicketMessageResource[];
 };
 
+export type AdminSupportTicketResource = SupportTicketResource & {
+  user: UserReference | null;
+  closedByAdmin?: UserReference | null;
+};
+
 export type CreateSupportTicketRequest = {
   subject: string;
   message: string;
@@ -714,6 +719,15 @@ export type AdminOrdersListParams = {
   search?: string;
   sortOrder?: 'asc' | 'desc';
   status?: string;
+  userId?: string;
+};
+
+export type AdminSupportTicketsListParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+  status?: SupportTicketStatus;
   userId?: string;
 };
 

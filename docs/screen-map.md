@@ -111,6 +111,16 @@
   - listagem e sync
 - `/admin/orders/[orderId]`
   - detalhe dedicado
+- `/admin/support`
+  - fila de tickets do cliente
+  - filtros por `status`, `search` e `userId`
+  - priorizacao visual: `open`, `waiting_customer`, `closed`
+- `/admin/support/[ticketId]`
+  - detalhe dedicado de ticket
+  - conversa em formato chat
+  - resposta do admin enquanto o ticket nao estiver `closed`
+  - fechamento por acao dedicada
+  - resposta e fechamento bloqueados quando `status=closed`
 - `/admin/supplier`
   - providers, servicos sincronizados e logs
 - `/admin/alerts`

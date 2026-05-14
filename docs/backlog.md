@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] area admin de `/admin/support` entregue com fila filtravel, detalhe em chat, resposta do admin, fechamento de ticket e contrato OpenAPI Support sincronizado
 - [x] primeira versao de `/app/support` entregue para cliente abrir tickets, listar atendimentos e conversar em detalhe dedicado, com resposta bloqueada quando o ticket esta fechado
 - [x] componentes principais receberam um azul mais claro e sombra mais suave para reduzir a sensacao visual pesada sem alterar fundo geral ou sidebar
 - [x] Perfil removeu a secao de Recarga PIX e compactou Indicacoes para codigo/link, copia, convidados validos, total ganho e drawer explicativo
@@ -403,15 +404,27 @@ Tasks:
 - [x] adicionar `Suporte` na navegacao autenticada do cliente
 - [x] criar `/app/support` com abertura de ticket, filtro/listagem e botao de anexo desabilitado
 - [x] criar `/app/support/[ticketId]` com conversa em chat e bloqueio de resposta quando fechado
-- [ ] resincronizar `docs/contracts/backend-openapi.yaml` com o modulo Support quando o contrato oficial for atualizado
+- [x] resincronizar `docs/contracts/backend-openapi.yaml` com o modulo Support
 - [ ] validar manualmente a jornada completa contra o backend em staging
+
+## Phase 13: Admin Support
+
+Tasks:
+
+- [x] adicionar contratos admin para tickets de suporte
+- [x] integrar endpoints admin de suporte em `src/lib/api/admin.ts`
+- [x] adicionar `Tickets` na navegacao administrativa
+- [x] criar `/admin/support` com filtros, listagem e priorizacao visual por status
+- [x] criar `/admin/support/[ticketId]` com chat, resposta e fechamento
+- [x] bloquear resposta e fechamento quando o ticket estiver `closed`
+- [ ] validar manualmente a jornada admin contra o backend em staging
 
 ## Next Recommended Step
 
 Na proxima sessao do Codex:
 
+- validar `/admin/support` filtrando abertos, aguardando cliente e fechados, abrindo detalhe, respondendo e fechando ticket
 - validar `/app/support` criando ticket, respondendo uma conversa aberta e tentando responder ticket fechado
-- resincronizar `docs/contracts/backend-openapi.yaml` para incluir Support, pois a UI ja consome os endpoints informados da V1
 - validar manualmente `/admin/catalog` com servicos `instabarato` e `cheapsmmglobal`, conferindo `rateInfo.convertedToBrl` e ausencia de custo do fornecedor em `/app/services`
 - validar manualmente `/admin/catalog` criando e editando um servico com `estimatedDeliveryTime`, confirmando que o tempo aparece em `/app/services`
 - validar manualmente `/app/orders` com combinacoes de `status`, `search`, paginacao e `orderId` para confirmar que a tabela continua sendo a superficie principal e que o drawer abre/fecha preservando query string

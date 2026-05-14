@@ -101,4 +101,5 @@ test('getAreaShellView includes the affiliate route in the admin shell', () => {
   assert.equal(adminView.links.find((link) => link.href === '/admin/affiliate-payouts')?.isCurrent, true);
   assert.equal(adminView.links.find((link) => link.href === '/admin/affiliate-commissions')?.isCurrent, false);
   assert.equal(adminView.links.find((link) => link.href === '/admin/orders')?.isCurrent, false);
+  assert.equal(adminView.links.some((link) => link.href === '/admin/support'), true);
 });
