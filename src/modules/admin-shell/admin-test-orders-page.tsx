@@ -6,13 +6,14 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { AdminSectionCard } from '@/components/ui/admin-surfaces';
-import { listAdminCatalogServices } from '@/lib/api/admin';
+import { listAdminCatalogServices, listSupplierProviders } from '@/lib/api/admin';
 import { getCatalogService } from '@/lib/api/catalog';
-import type { CatalogServiceResource } from '@/lib/api/contracts';
+import type { CatalogServiceResource, SupplierProviderStatusResource } from '@/lib/api/contracts';
 import { ApiClientError } from '@/lib/api/http';
 import type { SessionState } from '@/lib/auth/session';
-import { formatMoney } from '@/lib/format';
+import { formatDateTime, formatMoney } from '@/lib/format';
 import { AdminTestOrderForm } from '@/modules/admin-shell/admin-test-order-form';
+import { AdminSlideOver } from '@/modules/admin-shell/admin-slide-over';
 import {
   formatSupplierOriginalRate,
   getSupplierRateBrlText,
@@ -21,11 +22,10 @@ import {
 import type { AdminCatalogListParams } from '@/modules/admin-shell/query';
 import {
   AdminFilterBar,
-  AdminSummaryCard,
   PaginationSummary,
   buildPathWithSearch,
   mapCatalogStatusTone,
-  renderCatalogAvailability,
+  mapProviderTone,
 } from '@/modules/admin-shell/shared';
 
 type AdminTestOrdersPageProps = {
@@ -36,7 +36,14 @@ type AdminTestOrdersPageProps = {
 
 export async function AdminTestOrdersPage({ session, filters, selectedServiceId }: AdminTestOrdersPageProps) {
   try {
-    const catalog = await listAdminCatalogServices(session.accessToken, filters);
+    const [catalog, providers] = await Promise.all([
+      listAdminCatalogServices(session.accessToken, filters),
+      listSupplierProviders(session.accessToken),
+    ]);
+    const closeDrawerHref = buildPathWithSearch('/admin/test-orders', {
+      ...filters,
+      pageSize: filters.pageSize ?? catalog.pageSize,
+    });
     const returnTo = buildPathWithSearch('/admin/test-orders', {
       ...filters,
       serviceId: selectedServiceId,
@@ -44,10 +51,7 @@ export async function AdminTestOrdersPage({ session, filters, selectedServiceId 
     });
     const selectedService = selectedServiceId
       ? await resolveCatalogService(selectedServiceId, catalog.items, session.accessToken)
-      : catalog.items[0] ?? null;
-    const activeCount = catalog.items.filter((service) => service.status === 'active').length;
-    const purchasableCount = catalog.items.filter((service) => service.availability.isPurchasable).length;
-    const withConvertedCostCount = catalog.items.filter((service) => service.supplierService.rateInfo?.convertedToBrl).length;
+      : null;
 
     return (
       <main className="page page-admin">
@@ -87,162 +91,182 @@ export async function AdminTestOrdersPage({ session, filters, selectedServiceId 
           }
         />
 
-        <section className="metric-list">
-          <AdminSummaryCard label="Publicados" value={String(catalog.totalItems)} meta="Catalogo admin" />
-          <AdminSummaryCard label="Ativos na pagina" value={String(activeCount)} tone="accent" />
-          <AdminSummaryCard label="Compraveis" value={String(purchasableCount)} tone="warning" />
-          <AdminSummaryCard label="Com custo BRL" value={String(withConvertedCostCount)} meta="Rate convertido" />
-        </section>
+        <AdminSectionCard
+          title="Saldo dos fornecedores"
+          description="Use esta leitura antes de disparar pedidos reais de teste."
+          meta={<span className="panel-meta">{providers.items.length} fornecedor(es)</span>}
+        >
+          {providers.items.length === 0 ? (
+            <EmptyState title="Nenhum saldo encontrado" description="Atualize fornecedores na area de fornecedores." />
+          ) : (
+            <DataTable columns={['Fornecedor', 'Saldo', 'Status', 'Atualizacao']} minWidth="56rem">
+              {providers.items.map((provider) => (
+                <tr key={provider.supplierName}>
+                  <td>
+                    <div className="stack-list">
+                      <strong>{provider.supplierName}</strong>
+                      <span className="panel-meta">{provider.isDefaultProvider ? 'Fornecedor default' : 'Fornecedor alternativo'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="stack-list">
+                      <strong>{formatSupplierBalance(provider)}</strong>
+                      {provider.minimumBalance ? <span className="panel-meta">Minimo: {provider.minimumBalance.amount}</span> : null}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="stack-list">
+                      <StatusBadge label={provider.operationalStatus} tone={mapProviderTone(provider.operationalStatus)} />
+                      <span className="panel-meta">{provider.isLowBalance ? 'baixo saldo' : provider.isAvailable ? 'disponivel' : 'indisponivel'}</span>
+                    </div>
+                  </td>
+                  <td>{formatDateTime(provider.lastCheckedAt ?? provider.updatedAt)}</td>
+                </tr>
+              ))}
+            </DataTable>
+          )}
+        </AdminSectionCard>
 
-        <section className="detail-grid">
-          <AdminSectionCard
-            title="Servicos publicados"
-            description="Busque e selecione um item do catalogo para abrir o formulario de teste."
-            meta={<span className="panel-meta">{catalog.totalItems} itens</span>}
-            className="detail-card-wide"
+        <AdminSectionCard
+          title="Servicos publicados"
+          description="Busque e selecione um item do catalogo para abrir o formulario de teste."
+          meta={<span className="panel-meta">{catalog.totalItems} itens</span>}
+        >
+          {catalog.items.length === 0 ? (
+            <EmptyState title="Nenhum servico publicado encontrado" description="Ajuste a busca ou confira o catalogo admin." />
+          ) : (
+            <>
+              <DataTable columns={['Servico', 'Operacao', 'Custo teste', 'Acao']} minWidth="68rem">
+                {catalog.items.map((service) => {
+                  const rateBrlText = getSupplierRateBrlText(service.supplierService);
+                  const rateConversionWarning = getSupplierRateConversionWarning(service.supplierService);
+
+                  return (
+                    <tr key={service.id}>
+                      <td>
+                        <div className="stack-list">
+                          <strong title={service.name}>{service.name}</strong>
+                          <span className="panel-meta" title={service.description ?? 'Sem descricao'}>
+                            {service.description || 'Sem descricao'}
+                          </span>
+                          <span className="panel-meta" title={`${service.socialNetwork} / ${service.category} / ${service.type}`}>
+                            {service.socialNetwork} / {service.category} / {service.type}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="stack-list">
+                          <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
+                          <span className="panel-meta">
+                            {service.minQuantity} - {service.maxQuantity}
+                          </span>
+                          {service.estimatedDeliveryTime ? <span className="panel-meta">{service.estimatedDeliveryTime}</span> : null}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="stack-list">
+                          <strong>{formatSupplierOriginalRate(service.supplierService)}</strong>
+                          {rateBrlText ? <span className="panel-meta">BRL estimado: {rateBrlText}</span> : null}
+                          {rateConversionWarning ? <span className="panel-meta">{rateConversionWarning}</span> : null}
+                        </div>
+                      </td>
+                      <td>
+                        <Link href={buildSelectServicePath(filters, service.id, catalog.page, catalog.pageSize)} className="table-link">
+                          Selecionar
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </DataTable>
+
+              <PaginationSummary
+                page={catalog.page}
+                pageSize={catalog.pageSize}
+                totalItems={catalog.totalItems}
+                totalPages={catalog.totalPages}
+                pathname="/admin/test-orders"
+                params={{ ...filters, pageSize: filters.pageSize ?? catalog.pageSize }}
+                label="servicos"
+              />
+            </>
+          )}
+        </AdminSectionCard>
+
+        {selectedService ? (
+          <AdminSlideOver
+            eyebrow="Pedido de teste"
+            title={selectedService.name}
+            description="Envio real ao fornecedor pelo custo original, sem carteira de cliente."
+            closeHref={closeDrawerHref}
           >
-            {catalog.items.length === 0 ? (
-              <EmptyState title="Nenhum servico publicado encontrado" description="Ajuste a busca ou confira o catalogo admin." />
-            ) : (
-              <>
-                <DataTable columns={['Servico', 'Operacao', 'Disponibilidade', 'Custo teste', 'Acao']} minWidth="78rem">
-                  {catalog.items.map((service) => {
-                    const isSelected = selectedService?.id === service.id;
-                    const rateBrlText = getSupplierRateBrlText(service.supplierService);
-                    const rateConversionWarning = getSupplierRateConversionWarning(service.supplierService);
-
-                    return (
-                      <tr key={service.id}>
-                        <td>
-                          <div className="stack-list">
-                            <strong title={service.name}>{service.name}</strong>
-                            <span className="panel-meta" title={service.description ?? 'Sem descricao'}>
-                              {service.description || 'Sem descricao'}
-                            </span>
-                            <span className="panel-meta" title={`${service.socialNetwork} / ${service.category} / ${service.type}`}>
-                              {service.socialNetwork} / {service.category} / {service.type}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="stack-list">
-                            <StatusBadge label={service.status} tone={mapCatalogStatusTone(service.status)} />
-                            <span className="panel-meta">
-                              {service.minQuantity} - {service.maxQuantity}
-                            </span>
-                            {service.estimatedDeliveryTime ? <span className="panel-meta">{service.estimatedDeliveryTime}</span> : null}
-                          </div>
-                        </td>
-                        <td>{renderCatalogAvailability(service)}</td>
-                        <td>
-                          <div className="stack-list">
-                            <strong>{formatSupplierOriginalRate(service.supplierService)}</strong>
-                            {rateBrlText ? <span className="panel-meta">BRL estimado: {rateBrlText}</span> : null}
-                            {rateConversionWarning ? <span className="panel-meta">{rateConversionWarning}</span> : null}
-                          </div>
-                        </td>
-                        <td>
-                          {isSelected ? (
-                            <StatusBadge label="Selecionado" tone="info" />
-                          ) : (
-                            <Link href={buildSelectServicePath(filters, service.id, catalog.page, catalog.pageSize)} className="table-link">
-                              Selecionar
-                            </Link>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </DataTable>
-
-                <PaginationSummary
-                  page={catalog.page}
-                  pageSize={catalog.pageSize}
-                  totalItems={catalog.totalItems}
-                  totalPages={catalog.totalPages}
-                  pathname="/admin/test-orders"
-                  params={{ ...filters, pageSize: filters.pageSize ?? catalog.pageSize, serviceId: selectedServiceId }}
-                  label="servicos"
-                />
-              </>
-            )}
-          </AdminSectionCard>
-
-          <AdminSectionCard
-            title="Pedido de teste"
-            description="O envio usa o custo original do fornecedor e nao movimenta carteira de cliente."
-          >
-            {selectedService ? (
-              <section className="admin-drawer-stack">
-                <article className="admin-inline-panel">
-                  <div className="panel-heading">
-                    <div>
-                      <p className="eyebrow">Servico selecionado</p>
-                      <h3>{selectedService.name}</h3>
-                    </div>
-                    <div className="feedback-actions">
-                      <StatusBadge label={selectedService.status} tone={mapCatalogStatusTone(selectedService.status)} />
-                      <StatusBadge
-                        label={selectedService.availability.isPurchasable ? 'compravel' : 'indisponivel'}
-                        tone={selectedService.availability.isPurchasable ? 'success' : 'danger'}
-                      />
-                    </div>
+            <section className="admin-drawer-stack">
+              <article className="admin-inline-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p className="eyebrow">Servico selecionado</p>
+                    <h3>{selectedService.name}</h3>
                   </div>
-
-                  <dl className="detail-list">
-                    <div>
-                      <dt>Descricao</dt>
-                      <dd>{selectedService.description || '-'}</dd>
-                    </div>
-                    <div>
-                      <dt>Rede social</dt>
-                      <dd>{selectedService.socialNetwork}</dd>
-                    </div>
-                    <div>
-                      <dt>Categoria</dt>
-                      <dd>{selectedService.category}</dd>
-                    </div>
-                    <div>
-                      <dt>Tipo</dt>
-                      <dd>{selectedService.type}</dd>
-                    </div>
-                    <div>
-                      <dt>Minimo / maximo</dt>
-                      <dd>
-                        {selectedService.minQuantity} - {selectedService.maxQuantity}
-                      </dd>
-                    </div>
-                    {selectedService.estimatedDeliveryTime ? (
-                      <div>
-                        <dt>Tempo estimado</dt>
-                        <dd>{selectedService.estimatedDeliveryTime}</dd>
-                      </div>
-                    ) : null}
-                    <div>
-                      <dt>Preco publico</dt>
-                      <dd>{formatMoney(selectedService.publicPrice)}</dd>
-                    </div>
-                    <div>
-                      <dt>Preco de teste</dt>
-                      <dd>{renderTestPrice(selectedService)}</dd>
-                    </div>
-                  </dl>
-                </article>
-
-                {!selectedService.availability.isPurchasable ? (
-                  <div className="auth-notice auth-notice-warning" role="status">
-                    <strong>Disponibilidade com atencao</strong>
-                    <p>O backend pode recusar o envio conforme o estado atual do fornecedor.</p>
+                  <div className="feedback-actions">
+                    <StatusBadge label={selectedService.status} tone={mapCatalogStatusTone(selectedService.status)} />
+                    <StatusBadge
+                      label={selectedService.availability.isPurchasable ? 'compravel' : 'indisponivel'}
+                      tone={selectedService.availability.isPurchasable ? 'success' : 'danger'}
+                    />
                   </div>
-                ) : null}
+                </div>
 
-                <AdminTestOrderForm service={selectedService} returnTo={returnTo} />
-              </section>
-            ) : (
-              <EmptyState title="Selecione um servico" description="Escolha um item publicado para montar o pedido de teste." />
-            )}
-          </AdminSectionCard>
-        </section>
+                <dl className="detail-list">
+                  <div>
+                    <dt>Descricao</dt>
+                    <dd>{selectedService.description || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt>Rede social</dt>
+                    <dd>{selectedService.socialNetwork}</dd>
+                  </div>
+                  <div>
+                    <dt>Categoria</dt>
+                    <dd>{selectedService.category}</dd>
+                  </div>
+                  <div>
+                    <dt>Tipo</dt>
+                    <dd>{selectedService.type}</dd>
+                  </div>
+                  <div>
+                    <dt>Minimo / maximo</dt>
+                    <dd>
+                      {selectedService.minQuantity} - {selectedService.maxQuantity}
+                    </dd>
+                  </div>
+                  {selectedService.estimatedDeliveryTime ? (
+                    <div>
+                      <dt>Tempo estimado</dt>
+                      <dd>{selectedService.estimatedDeliveryTime}</dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt>Preco publico</dt>
+                    <dd>{formatMoney(selectedService.publicPrice)}</dd>
+                  </div>
+                  <div>
+                    <dt>Preco de teste</dt>
+                    <dd>{renderTestPrice(selectedService)}</dd>
+                  </div>
+                </dl>
+              </article>
+
+              {!selectedService.availability.isPurchasable ? (
+                <div className="auth-notice auth-notice-warning" role="status">
+                  <strong>Disponibilidade com atencao</strong>
+                  <p>O backend pode recusar o envio conforme o estado atual do fornecedor.</p>
+                </div>
+              ) : null}
+
+              <AdminTestOrderForm service={selectedService} returnTo={returnTo} />
+            </section>
+          </AdminSlideOver>
+        ) : null}
       </main>
     );
   } catch (error) {
@@ -279,6 +303,14 @@ function renderTestPrice(service: CatalogServiceResource) {
       {warning ? ` / ${warning}` : ''}
     </span>
   );
+}
+
+function formatSupplierBalance(provider: SupplierProviderStatusResource) {
+  if (!provider.balance) {
+    return '-';
+  }
+
+  return formatMoney(provider.balance);
 }
 
 function buildSelectServicePath(filters: AdminCatalogListParams, serviceId: string, page: number, pageSize: number) {

@@ -2,6 +2,8 @@
 
 ## Latest Update
 
+- [x] `/admin/test-orders` passou a mostrar saldo/status dos fornecedores acima da lista de servicos para orientar pedidos de teste
+- [x] `/admin/test-orders` ficou mais direto: saiu resumo de metricas, a tabela perdeu coluna de disponibilidade e o pedido de teste passou a abrir em drawer ao selecionar servico
 - [x] `/admin/test-orders` criado para selecionar servico publicado, revisar disponibilidade/custo do fornecedor e enviar pedido real de teste sem debitar carteira de cliente
 - [x] mobile de `/admin/support` ganhou padding/gap no breadcrumb e titulo para nao encostar no form de busca
 - [x] mobile de `/admin/support` voltou a exibir breadcrumb `Admin / suporte` e titulo `Tickets` maior sem reabrir altura excessiva do header

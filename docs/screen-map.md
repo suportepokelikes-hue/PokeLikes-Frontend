@@ -112,9 +112,10 @@
 - `/admin/orders/[orderId]`
   - detalhe dedicado
 - `/admin/test-orders`
+  - mostra saldo/status atual dos fornecedores para orientar quantos testes ainda cabem na operacao
   - listagem filtravel de servicos publicados
-  - selecao de servico com dados de catalogo, disponibilidade, preco publico e custo original do fornecedor
-  - envio de pedido real de teste por `POST /admin/test-orders`, sem debitar carteira de cliente
+  - selecao de servico abre drawer lateral com dados de catalogo, disponibilidade, preco publico e custo original do fornecedor
+  - envio de pedido real de teste pelo drawer por `POST /admin/test-orders`, sem debitar carteira de cliente
 - `/admin/support`
   - fila de tickets do cliente
   - filtros por `status`, `search` e `userId`
