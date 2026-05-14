@@ -699,7 +699,6 @@ paths:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Search'
-        - $ref: '#/components/parameters/SortOrder'
         - name: status
           in: query
           schema:
@@ -1291,6 +1290,39 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         '409':
           $ref: '#/components/responses/ConflictError'
+  /admin/test-orders:
+    post:
+      tags: [Orders]
+      summary: Create admin test order
+      description: |
+        Creates a real supplier order for operational testing from an active catalog service.
+        This endpoint does not debit wallet balance and does not create affiliate commissions.
+        The authenticated admin is stored as the local order user for auditability.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdminTestOrderRequest'
+      responses:
+        '201':
+          description: Admin test order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminOrderResource'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
   /admin/orders:
     get:
       tags: [Orders]
@@ -1379,7 +1411,6 @@ paths:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/Search'
-        - $ref: '#/components/parameters/SortOrder'
         - name: status
           in: query
           schema:
@@ -3067,6 +3098,34 @@ components:
         affiliateCode:
           type: string
           description: Optional affiliate public code. Invalid codes do not block checkout.
+      required: [catalogServiceId, link]
+    CreateAdminTestOrderRequest:
+      type: object
+      properties:
+        catalogServiceId:
+          type: integer
+          minimum: 1
+        link:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+          description: Required for quantity-based services. Not used for `Package`.
+        runs:
+          type: integer
+          minimum: 1
+        interval:
+          type: integer
+          minimum: 1
+        comments:
+          type: array
+          items:
+            type: string
+          description: Used for `Custom Comments` services. Quantity is derived from the number of comments.
+        answerNumber:
+          oneOf:
+            - type: string
+            - type: integer
       required: [catalogServiceId, link]
     CreateSupportTicketRequest:
       type: object

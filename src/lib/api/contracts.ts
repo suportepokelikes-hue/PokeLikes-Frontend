@@ -463,6 +463,16 @@ export type AdminOrderResource = OrderResource & {
   user: UserReference | null;
 };
 
+export type AdminCreateTestOrderRequest = {
+  catalogServiceId: number;
+  link: string;
+  quantity: number;
+  runs?: number;
+  interval?: number;
+  comments?: string[];
+  answerNumber?: string | number;
+};
+
 export type CreateOrderRequest = {
   catalogServiceId: number;
   link: string;

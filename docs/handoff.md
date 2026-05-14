@@ -85,6 +85,7 @@ Toda nova sessao do Codex neste repositorio deve ler:
 - catalogo com publicacao via `SupplierService`, edicao e affiliate settings em drawers
 - pagamentos com conciliacao
 - pedidos com sync
+- testes de pedidos em `/admin/test-orders`, usando servicos publicados e custo original do fornecedor sem carteira de cliente
 - suporte com fila de tickets, chat, resposta e fechamento
 - fornecedores com refresh e sync
 - alertas com resolve

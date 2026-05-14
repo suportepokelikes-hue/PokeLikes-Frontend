@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] `/admin/test-orders` criado para selecionar servico publicado, revisar disponibilidade/custo do fornecedor e enviar pedido real de teste sem debitar carteira de cliente
 - [x] mobile de `/admin/support` ganhou padding/gap no breadcrumb e titulo para nao encostar no form de busca
 - [x] mobile de `/admin/support` voltou a exibir breadcrumb `Admin / suporte` e titulo `Tickets` maior sem reabrir altura excessiva do header
 - [x] corrigido excesso de altura do header mobile de `/admin/support`, removendo flex-basis herdado do copy/actions e deixando o bloco depender apenas do conteudo real

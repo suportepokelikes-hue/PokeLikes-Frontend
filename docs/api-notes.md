@@ -53,6 +53,7 @@
 - `GET /admin/orders/:id`
 - `POST /admin/orders/sync`
 - `POST /admin/orders/:id/sync`
+- `POST /admin/test-orders`
 - `GET /admin/support/tickets`
 - `GET /admin/support/tickets/:ticketId`
 - `POST /admin/support/tickets/:ticketId/messages`

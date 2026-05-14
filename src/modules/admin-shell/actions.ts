@@ -9,6 +9,7 @@ import {
   createAdminAffiliatePayout,
   createAdminCatalogService,
   createAdminSupportTicketMessage,
+  createAdminTestOrder,
   createAdminWalletAdjustment,
   createAdminUser,
   reconcileAdminPayment,
@@ -26,6 +27,7 @@ import {
   updateAdminUser,
 } from '@/lib/api/admin';
 import type {
+  AdminCreateTestOrderRequest,
   AdminUpdateUserRequest,
 } from '@/lib/api/contracts';
 import { getServerSession } from '@/lib/auth/cookies';
@@ -48,6 +50,10 @@ import {
 } from '@/modules/admin-shell/action-helpers';
 
 export type { AdminActionState } from '@/modules/admin-shell/action-helpers';
+
+export type AdminTestOrderActionState = AdminActionState & {
+  orderId?: string;
+};
 
 export async function createUserAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
   const session = await requireAuthenticatedAdmin(formData);
@@ -225,6 +231,34 @@ export async function updateCatalogAffiliateSettingsAction(_: AdminActionState, 
     status: 'success',
     message: 'Configuracao de afiliacao atualizada com sucesso.',
   };
+}
+
+export async function createAdminTestOrderAction(
+  _: AdminTestOrderActionState,
+  formData: FormData,
+): Promise<AdminTestOrderActionState> {
+  const session = await requireAuthenticatedAdmin(formData);
+  const payload = parseAdminTestOrderPayload(formData);
+
+  if ('error' in payload) {
+    return payload.error;
+  }
+
+  try {
+    const order = await createAdminTestOrder(session.accessToken, payload.value);
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/orders');
+    revalidatePath('/admin/test-orders');
+
+    return {
+      status: 'success',
+      message: `Pedido de teste ${order.id} enviado ao fornecedor.`,
+      orderId: order.id,
+    };
+  } catch (error) {
+    return mapAdminActionError(error, 'Nao foi possivel enviar o pedido de teste agora.');
+  }
 }
 
 export async function createWalletAdjustmentAction(_: AdminActionState, formData: FormData): Promise<AdminActionState> {
@@ -616,6 +650,69 @@ export async function syncOrderAction(_: AdminActionState, formData: FormData): 
   } catch (error) {
     return mapAdminActionError(error, 'Nao foi possivel sincronizar o pedido agora.');
   }
+}
+
+function parseAdminTestOrderPayload(formData: FormData):
+  | { value: AdminCreateTestOrderRequest }
+  | { error: AdminTestOrderActionState } {
+  const catalogServiceId = readPositiveInteger(readRequiredString(formData, 'catalogServiceId'));
+  const link = readRequiredString(formData, 'link');
+  const quantity = readPositiveInteger(readRequiredString(formData, 'quantity'));
+  const minQuantity = readPositiveInteger(readRequiredString(formData, 'minQuantity'));
+  const maxQuantity = readPositiveInteger(readRequiredString(formData, 'maxQuantity'));
+
+  if (!catalogServiceId) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Selecione um servico publicado valido para testar.',
+      },
+    };
+  }
+
+  if (!link || !quantity) {
+    return {
+      error: {
+        status: 'error',
+        message: 'Informe link e quantidade validos para enviar o pedido de teste.',
+      },
+    };
+  }
+
+  if (minQuantity && quantity < minQuantity) {
+    return {
+      error: {
+        status: 'error',
+        message: `Quantidade abaixo do minimo publicado (${minQuantity}).`,
+      },
+    };
+  }
+
+  if (maxQuantity && quantity > maxQuantity) {
+    return {
+      error: {
+        status: 'error',
+        message: `Quantidade acima do maximo publicado (${maxQuantity}).`,
+      },
+    };
+  }
+
+  return {
+    value: {
+      catalogServiceId,
+      link,
+      quantity,
+    },
+  };
+}
+
+function readPositiveInteger(value: string) {
+  if (!/^\d+$/.test(value)) {
+    return undefined;
+  }
+
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 async function requireAuthenticatedAdmin(formData: FormData) {

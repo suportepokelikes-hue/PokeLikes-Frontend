@@ -10,6 +10,7 @@ import type {
   AdminCatalogServiceUpdateRequest,
   AdminCatalogServiceUpsertRequest,
   AdminCreateAffiliatePayoutRequest,
+  AdminCreateTestOrderRequest,
   AdminCreateUserRequest,
   AdminWalletAdjustmentRequest,
   AdminWalletAdjustmentResponse,
@@ -151,6 +152,15 @@ export function getAdminOrderDetail(accessToken: string, orderId: string) {
   return apiRequest<AdminOrderResource>({
     path: `/admin/orders/${orderId}`,
     accessToken,
+  });
+}
+
+export function createAdminTestOrder(accessToken: string, body: AdminCreateTestOrderRequest) {
+  return apiRequest<AdminOrderResource>({
+    path: '/admin/test-orders',
+    method: 'POST',
+    accessToken,
+    body,
   });
 }
 

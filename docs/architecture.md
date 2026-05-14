@@ -173,6 +173,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - `/admin/payments` lista e concilia pagamentos em lote e por item
 - `/admin/orders` lista e sincroniza pedidos em lote e por item
+- `/admin/test-orders` permite ao admin selecionar servicos publicados e enviar pedido real ao fornecedor pelo custo original, sem debitar carteira de cliente
 - `/admin/transactions` mostra ledger e aplica ajuste manual
 
 ### Suporte admin
@@ -232,7 +233,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 ## Admin Operational Modules
 
-- `users`, `catalog`, `payments`, `orders`, `support`, `supplier`, `alerts`, `audits`, `transactions`, `affiliates`, `affiliate-commissions` e `affiliate-payouts` agora herdam a mesma linguagem visual administrativa
+- `users`, `catalog`, `payments`, `orders`, `test-orders`, `support`, `supplier`, `alerts`, `audits`, `transactions`, `affiliates`, `affiliate-commissions` e `affiliate-payouts` agora herdam a mesma linguagem visual administrativa
 - as telas de lista passaram a usar seções operacionais mais claras ao redor de tabelas e paginação, sem abandonar os filtros por query string
 - drawers e formulários administrativos ganharam contexto curto, blocos internos mais legíveis e acabamento mais consistente para mutações reais
 - detalhes dedicados de pedidos e pagamentos agora seguem a mesma hierarquia visual do dashboard admin, com métricas, blocos contextuais e timeline/eventos mais claros
