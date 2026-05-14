@@ -3,7 +3,6 @@ import { CircleUserRound, CreditCard, MailCheck, Wallet } from 'lucide-react';
 
 import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { getCustomerProfile, getCustomerReferralSummary, getWalletSummary } from '@/lib/api/customer';
 import { ApiClientError } from '@/lib/api/http';
@@ -37,24 +36,6 @@ export async function CustomerProfilePage({
 
     return (
       <main className="page page-customer">
-        <PageHeader
-          eyebrow="Perfil"
-          title="Minha conta"
-          compact
-          actions={
-            <>
-              <Link href={editPath} className="primary-action">
-                <CircleUserRound size={16} strokeWidth={2.15} aria-hidden="true" />
-                Editar dados
-              </Link>
-              <Link href="/app/wallet" className="secondary-action">
-                <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-                Ver carteira
-              </Link>
-            </>
-          }
-        />
-
         {profileUpdated ? (
           <div className="auth-notice auth-notice-success" role="status" aria-live="polite">
             <strong>Perfil atualizado</strong>

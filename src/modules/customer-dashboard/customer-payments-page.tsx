@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import { QrCode, Wallet } from 'lucide-react';
+import { QrCode } from 'lucide-react';
 
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { getCustomerPaymentDetail, getWalletSummary, listCustomerPayments } from '@/lib/api/customer';
@@ -53,18 +52,6 @@ export async function CustomerPaymentsPage({ session, activePaymentId, page }: C
     const activePaymentQrImageSrc = activePayment ? getPaymentQrImageSrc(activePayment.brCodeBase64) : null;
     return (
       <main className="page page-customer">
-        <PageHeader
-          eyebrow="Pagamentos"
-          title="Adicionar saldo com PIX"
-          compact
-          actions={
-            <Link href="/app/wallet" className="secondary-action">
-              <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-              Ver carteira
-            </Link>
-          }
-        />
-
         <section className="customer-dashboard-hero">
           <div className="customer-dashboard-side customer-dashboard-side-wide">
             {latestPendingPayment ? (

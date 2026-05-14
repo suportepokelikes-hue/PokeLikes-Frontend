@@ -4,7 +4,6 @@ import { ArrowDownLeft, ArrowUpRight, CreditCard } from 'lucide-react';
 import { CustomerMetricCard, CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { getWalletSummary, listWalletTransactions } from '@/lib/api/customer';
@@ -27,23 +26,6 @@ export async function CustomerWalletPage({ session }: CustomerWalletPageProps) {
 
     return (
       <main className="page page-customer">
-        <PageHeader
-          eyebrow="Carteira"
-          title="Carteira"
-          compact
-          actions={
-            <>
-              <Link href="/app/payments" className="primary-action">
-                <CreditCard size={16} strokeWidth={2.15} aria-hidden="true" />
-                Adicionar saldo
-              </Link>
-              <Link href="/app/orders" className="secondary-action">
-                Ver pedidos
-              </Link>
-            </>
-          }
-        />
-
         <section className="customer-dashboard-hero">
           <article className="customer-dashboard-command customer-wallet-command">
             <div className="customer-dashboard-command-head">

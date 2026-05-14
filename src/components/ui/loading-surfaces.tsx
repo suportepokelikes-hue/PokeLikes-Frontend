@@ -68,15 +68,19 @@ export function AreaSurfaceLoading({
   metrics = 3,
   details = 1,
 }: AreaSurfaceLoadingProps) {
+  const showHeader = area === 'admin';
+
   return (
     <main className={`page page-${area}`}>
-      <section className="section-header">
-        <div>
-          <p className="eyebrow">{eyebrow}</p>
-          <h1>{title}</h1>
-          {description ? <p className="section-copy">{description}</p> : null}
-        </div>
-      </section>
+      {showHeader ? (
+        <section className="section-header">
+          <div>
+            <p className="eyebrow">{eyebrow}</p>
+            <h1>{title}</h1>
+            {description ? <p className="section-copy">{description}</p> : null}
+          </div>
+        </section>
+      ) : null}
 
       {metrics > 0 ? (
         <section className="metric-list">

@@ -1,6 +1,5 @@
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { appendAffiliateCodeToPath } from '@/lib/affiliate-code';
 import { listCatalogServicesForOrderForm } from '@/lib/api/catalog';
 import { ApiClientError } from '@/lib/api/http';
@@ -42,7 +41,6 @@ export async function CustomerNewOrderPage({
     return (
       <main className="page page-customer">
         <AffiliateCodeCapture initialAffiliateCode={affiliateCodeFromUrl} />
-        <PageHeader eyebrow="Novo pedido" title="Novo pedido" compact />
 
         {serializableServices.length === 0 ? (
           <EmptyState

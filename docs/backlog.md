@@ -2,6 +2,9 @@
 
 ## Latest Update
 
+- [x] suporte do cliente ganhou mais respiro abaixo dos titulos `Abrir ticket`, `Como agilizar` e `Seus tickets`
+- [x] suporte do cliente recebeu ajuste fino: dicas de `Como agilizar` agora empilham no desktop com mais respiro, filtro de tickets ficou em duas colunas no desktop e a badge redundante `sem upload` saiu
+- [x] headers internos `section-header` das paginas do cliente foram removidos do codigo tambem no desktop, mantendo CTAs essenciais dentro dos cards quando necessario
 - [x] area admin de `/admin/support` entregue com fila filtravel, detalhe em chat, resposta do admin, fechamento de ticket e contrato OpenAPI Support sincronizado
 - [x] primeira versao de `/app/support` entregue para cliente abrir tickets, listar atendimentos e conversar em detalhe dedicado, com resposta bloqueada quando o ticket esta fechado
 - [x] componentes principais receberam um azul mais claro e sombra mais suave para reduzir a sensacao visual pesada sem alterar fundo geral ou sidebar

@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import { Headphones, MessageCircle, Search } from 'lucide-react';
+import { Headphones, Search } from 'lucide-react';
 
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import type { SupportTicketStatus } from '@/lib/api/contracts';
@@ -41,21 +40,9 @@ export async function CustomerSupportPage({ session, page, status, search }: Cus
 
     return (
       <main className="page page-customer customer-support-page">
-        <PageHeader
-          title="Suporte"
-          compact
-          actions={
-            <Link href="/app/orders" className="secondary-action">
-              <MessageCircle size={16} strokeWidth={2.15} aria-hidden="true" />
-              Pedidos
-            </Link>
-          }
-        />
-
         <section className="customer-support-grid">
           <CustomerSectionCard
             title="Abrir ticket"
-            meta={<StatusBadge label="sem upload" tone="info" />}
             className="customer-support-form-card"
           >
             <SupportTicketForm returnTo="/app/support" />

@@ -4,7 +4,6 @@ import { ArrowLeft, Lock } from 'lucide-react';
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import type { SupportTicketMessageResource } from '@/lib/api/contracts';
 import { getCustomerSupportTicketDetail } from '@/lib/api/customer';
@@ -28,21 +27,15 @@ export async function CustomerSupportDetailPage({ session, ticketId }: CustomerS
 
     return (
       <main className="page page-customer customer-support-detail-page">
-        <PageHeader
-          eyebrow="Suporte"
+        <CustomerSectionCard
           title={ticket.subject}
-          compact
+          meta={<StatusBadge label={statusView.label} tone={statusView.tone} />}
           actions={
             <Link href="/app/support" className="secondary-action">
               <ArrowLeft size={16} strokeWidth={2.15} aria-hidden="true" />
               Voltar
             </Link>
           }
-        />
-
-        <CustomerSectionCard
-          title="Status do ticket"
-          meta={<StatusBadge label={statusView.label} tone={statusView.tone} />}
         >
           <div className="customer-dashboard-inline-stats">
             <div>

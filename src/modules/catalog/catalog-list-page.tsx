@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -73,7 +73,7 @@ export async function CatalogListPage({ variant = 'public', accessToken, searchP
   } catch (error) {
     const errorContent = (
       <main className={variant === 'customer' ? 'page page-customer' : 'page page-public'}>
-        <PageHeader eyebrow={variant === 'customer' ? 'Servicos' : 'Catalogo'} title={variant === 'customer' ? 'Servicos' : 'Catalogo'} />
+        {variant === 'public' ? <PageHeader eyebrow="Catalogo" title="Catalogo" /> : null}
         <ErrorState
           title={variant === 'customer' ? 'Nao foi possivel carregar os servicos' : 'Nao foi possivel carregar o catalogo'}
           description={getErrorMessage(error, 'Tente novamente em instantes.')}
@@ -195,19 +195,6 @@ function CustomerCatalogListContent({
   return (
     <main className="page page-customer">
       <AffiliateCodeCapture initialAffiliateCode={affiliateCodeFromUrl} />
-      <PageHeader
-        eyebrow="Servicos"
-        title="Servicos"
-        compact
-        actions={
-          <>
-            <Link href="/app/orders" className="secondary-action">
-              <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
-              Ver pedidos
-            </Link>
-          </>
-        }
-      />
 
       <section className="customer-section-card">
         <CatalogFilterBar

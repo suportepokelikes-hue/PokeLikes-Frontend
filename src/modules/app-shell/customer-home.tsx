@@ -36,17 +36,6 @@ export function CustomerHome({ user }: CustomerHomeProps) {
 
   return (
     <main className="page page-customer">
-      <section className="section-header">
-        <div>
-          <p className="eyebrow">Cliente autenticado</p>
-          <h1>Area do cliente pronta para crescimento por dominio.</h1>
-        </div>
-        <p className="section-copy">
-          O shell do cliente ja reconhece a sessao bootstrapada e separa a futura implementacao de wallet,
-          pagamentos e pedidos em modulos independentes.
-        </p>
-      </section>
-
       <section className="metric-list">
         {metrics.map((metric) => (
           <article key={metric.label} className={`metric-card metric-${metric.tone ?? 'default'}`}>

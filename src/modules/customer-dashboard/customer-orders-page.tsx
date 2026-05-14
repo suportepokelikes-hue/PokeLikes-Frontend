@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import { ExternalLink, ShoppingBag, Wallet } from 'lucide-react';
+import { ExternalLink, ShoppingBag } from 'lucide-react';
 
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable } from '@/components/ui/table';
 import { getCustomerOrderDetail, listCustomerOrders } from '@/lib/api/customer';
@@ -65,26 +64,15 @@ export async function CustomerOrdersPage({ session, activeOrderId, page, status,
 
     return (
       <main className="page page-customer">
-        <PageHeader
-          title="Pedidos"
-          compact
-          actions={
-            <>
-              <Link href="/app/new-order" className="primary-action">
-                <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
-                Novo pedido
-              </Link>
-              <Link href="/app/wallet" className="secondary-action">
-                <Wallet size={16} strokeWidth={2.15} aria-hidden="true" />
-                Carteira
-              </Link>
-            </>
-          }
-        />
-
         <CustomerSectionCard
           title="Historico de pedidos"
           meta={<span className="panel-meta">{orders.totalItems} registro(s)</span>}
+          actions={
+            <Link href="/app/new-order" className="primary-action">
+              <ShoppingBag size={16} strokeWidth={2.15} aria-hidden="true" />
+              Novo pedido
+            </Link>
+          }
         >
           <div className="customer-orders-filters">
             <form action="/app/orders" className="customer-orders-filter-form">

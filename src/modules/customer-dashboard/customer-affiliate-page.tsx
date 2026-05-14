@@ -1,7 +1,4 @@
-import Link from 'next/link';
-
 import { CustomerSectionCard } from '@/components/ui/customer-surfaces';
-import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import type { SessionState } from '@/lib/auth/session';
 
@@ -14,22 +11,6 @@ export async function CustomerAffiliatePage({ session }: CustomerAffiliatePagePr
 
   return (
     <main className="page page-customer">
-      <PageHeader
-        eyebrow="Afiliados"
-        title="Programa de afiliados"
-        compact
-        actions={
-          <>
-            <Link href="/app/services" className="primary-action">
-              Ver servicos
-            </Link>
-            <Link href="/app/profile" className="secondary-action">
-              Ver perfil
-            </Link>
-          </>
-        }
-      />
-
       <section className="customer-dashboard-hero">
         <CustomerSectionCard title="Programa de afiliados" meta={<StatusBadge label="Em breve" tone="warning" />}>
           <div className="customer-dashboard-command-copy">
