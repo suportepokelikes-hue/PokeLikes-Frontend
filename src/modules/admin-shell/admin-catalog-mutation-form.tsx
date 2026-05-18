@@ -1,5 +1,6 @@
 import type { CatalogServiceResource } from '@/lib/api/contracts';
 import { AdminActionForm } from '@/modules/admin-shell/admin-action-form';
+import { AdminCatalogCategoryField } from '@/modules/admin-shell/admin-catalog-category-field';
 import type { AdminActionState } from '@/modules/admin-shell/actions';
 import {
   buildEstimatedMarginText,
@@ -18,6 +19,7 @@ type AdminCatalogMutationFormProps = {
   returnTo: string;
   service?: CatalogServiceResource;
   creationDraft?: AdminCatalogCreationDraft;
+  publicCategories?: string[];
 };
 
 const socialNetworkOptions = [
@@ -35,6 +37,7 @@ export function AdminCatalogMutationForm({
   returnTo,
   service,
   creationDraft,
+  publicCategories = [],
 }: AdminCatalogMutationFormProps) {
   const isCreate = mode === 'create';
   const inheritedService = service
@@ -45,8 +48,8 @@ export function AdminCatalogMutationForm({
         rateInfo: service.supplierService.rateInfo,
         supplierEstimatedDeliveryTime: service.supplierService.estimatedDeliveryTime,
         estimatedDeliveryTime: service.estimatedDeliveryTime,
-        category: service.category,
-        type: service.type,
+        category: service.supplierService.category ?? '',
+        type: service.supplierService.type ?? service.type,
         minQuantity: service.minQuantity,
         maxQuantity: service.maxQuantity,
       }
@@ -81,7 +84,6 @@ export function AdminCatalogMutationForm({
       ? [
           { name: 'supplierServiceId', value: String(creationDraft.supplierServiceId) },
           { name: 'supplierName', value: creationDraft.supplierName },
-          { name: 'category', value: creationDraft.category },
           { name: 'type', value: creationDraft.type },
           { name: 'minQuantity', value: String(creationDraft.minQuantity) },
           { name: 'maxQuantity', value: String(creationDraft.maxQuantity) },
@@ -100,7 +102,11 @@ export function AdminCatalogMutationForm({
       <div className="admin-catalog-form">
         <div className="admin-form-note">
           <strong>{isCreate ? 'Publicacao com base sincronizada' : 'Edicao do servico publicado'}</strong>
-          <p>{isCreate ? 'Os dados de fornecedor permanecem herdados; ajuste apenas a superficie publica.' : 'Revise nome, descricao, preco e status sem perder o vinculo com o servico sincronizado.'}</p>
+          <p>
+            {isCreate
+              ? 'Os dados do fornecedor ficam como referencia interna; escolha a categoria publica que o cliente vera no catalogo.'
+              : 'Revise nome, descricao, preco, categoria publica e status sem perder o vinculo com o servico sincronizado.'}
+          </p>
         </div>
 
         {inheritedService ? (
@@ -134,7 +140,7 @@ export function AdminCatalogMutationForm({
                 </div>
               ) : null}
               <div>
-                <dt>Categoria</dt>
+                <dt>Categoria do fornecedor</dt>
                 <dd>{inheritedService.category}</dd>
               </div>
               <div>
@@ -212,6 +218,12 @@ export function AdminCatalogMutationForm({
             ))}
           </select>
         </label>
+
+        <AdminCatalogCategoryField
+          categories={publicCategories}
+          defaultValue={service?.category}
+          suggestion={creationDraft?.category ?? service?.supplierService.category ?? undefined}
+        />
 
         <label className="admin-user-field">
           <span>Status</span>

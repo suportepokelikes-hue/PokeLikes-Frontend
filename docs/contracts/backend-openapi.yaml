@@ -881,6 +881,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdminCatalogServiceResource'
+  /admin/catalog/categories:
+    get:
+      tags: [Catalog]
+      summary: Admin catalog category list
+      description: |
+        Lists unique non-empty public catalog categories already used by `CatalogService.category`.
+        These categories are manually managed by admins and are independent from supplier
+        service categories.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Catalog categories ordered by name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCatalogCategoriesResponse'
   /admin/catalog/affiliate-settings:
     get:
       tags: [Catalog]
@@ -2886,6 +2903,20 @@ components:
               nullable: true
               description: Human-readable percentage. `30.00` means `30%`.
           required: [isAffiliateEnabled, affiliateCommissionPercent]
+    AdminCatalogCategoryResource:
+      type: object
+      properties:
+        name:
+          type: string
+      required: [name]
+    AdminCatalogCategoriesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminCatalogCategoryResource'
+      required: [items]
     AdminCatalogServiceUpsertRequest:
       type: object
       properties:

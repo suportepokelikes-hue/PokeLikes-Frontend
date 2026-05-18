@@ -165,6 +165,7 @@ Evitar `fetch` diretamente em paginas e componentes de tela.
 
 - lista publicada por `GET /admin/catalog/services`
 - publicacao parte da lista sincronizada de `GET /admin/supplier/services`
+- drawer de criacao/edicao escolhe a `Categoria publica` gravada em `CatalogService.category`, usando categorias publicas existentes de `GET /admin/catalog/categories` ou uma nova; a categoria do fornecedor fica apenas como referencia interna em `Dados herdados`
 - criacao por `POST /admin/catalog/services`
 - edicao por `PATCH /admin/catalog/services/{serviceId}`
 - affiliate settings por `GET /admin/catalog/affiliate-settings` e `PATCH /admin/catalog/{serviceId}/affiliate-settings`

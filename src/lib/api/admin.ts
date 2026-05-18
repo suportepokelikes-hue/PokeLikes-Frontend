@@ -7,6 +7,7 @@ import type {
   AdminCatalogAffiliateSettingsListParams,
   AdminCatalogAffiliateSettingsResource,
   AdminCatalogAffiliateSettingsUpdateRequest,
+  AdminCatalogCategoriesResponse,
   AdminCatalogServiceUpdateRequest,
   AdminCatalogServiceUpsertRequest,
   AdminCreateAffiliatePayoutRequest,
@@ -236,6 +237,13 @@ export function syncAdminOrder(accessToken: string, orderId: string) {
 export function listAdminCatalogServices(accessToken: string, params: AdminCatalogListParams = {}) {
   return apiRequest<PaginatedResponse<CatalogServiceResource>>({
     path: buildAdminPath('/admin/catalog/services', { page: 1, pageSize: 10, ...params }),
+    accessToken,
+  });
+}
+
+export function listAdminCatalogCategories(accessToken: string) {
+  return apiRequest<AdminCatalogCategoriesResponse>({
+    path: '/admin/catalog/categories',
     accessToken,
   });
 }

@@ -10,6 +10,7 @@ import { DataTable } from '@/components/ui/table';
 import { AdminSectionCard } from '@/components/ui/admin-surfaces';
 import {
   listAdminCatalogAffiliateSettings,
+  listAdminCatalogCategories,
   listAdminCatalogServices,
   listSupplierProviders,
   listSupplierServices,
@@ -64,10 +65,11 @@ export async function AdminCatalogPage({
   activeAffiliateServiceId,
 }: AdminCatalogPageProps) {
   try {
-    const [catalog, providerStatuses, supplierServices] = await Promise.all([
+    const [catalog, providerStatuses, supplierServices, catalogCategories] = await Promise.all([
       listAdminCatalogServices(session.accessToken, filters),
       listSupplierProviders(session.accessToken),
       listSupplierServices(session.accessToken, supplierServiceFilters),
+      listAdminCatalogCategories(session.accessToken),
     ]);
 
     const currentCatalogPage = filters.page ?? catalog.page;
@@ -86,6 +88,7 @@ export async function AdminCatalogPage({
       .map((provider) => provider.supplierName)
       .filter((name, index, items) => items.indexOf(name) === index)
       .sort((left, right) => left.localeCompare(right, 'pt-BR'));
+    const publicCategories = catalogCategories.items.map((category) => category.name);
     const selectedSupplierName = supplierServiceFilters.supplierName;
     const resolvedCreationDraft = creationDraft ?? resolveCatalogCreationDraft(createSupplierServiceId, supplierServices.items);
     const creationDraftError =
@@ -391,6 +394,7 @@ export async function AdminCatalogPage({
               action={createCatalogServiceAction}
               returnTo={returnTo}
               creationDraft={resolvedCreationDraft}
+              publicCategories={publicCategories}
             />
           </AdminSlideOver>
         ) : creationDraftError ? (
@@ -420,7 +424,13 @@ export async function AdminCatalogPage({
                     />
                   </div>
                 </div>
-                <AdminCatalogMutationForm mode="update" action={updateCatalogServiceAction} returnTo={returnTo} service={activeService} />
+                <AdminCatalogMutationForm
+                  mode="update"
+                  action={updateCatalogServiceAction}
+                  returnTo={returnTo}
+                  service={activeService}
+                  publicCategories={publicCategories}
+                />
               </article>
             </section>
           </AdminSlideOver>

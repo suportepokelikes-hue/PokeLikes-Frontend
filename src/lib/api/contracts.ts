@@ -341,6 +341,14 @@ export type AdminCatalogServiceUpdateRequest = {
   metadata?: unknown;
 };
 
+export type AdminCatalogCategoryResource = {
+  name: string;
+};
+
+export type AdminCatalogCategoriesResponse = {
+  items: AdminCatalogCategoryResource[];
+};
+
 export type CatalogServiceReference = {
   id: string;
   name: string;

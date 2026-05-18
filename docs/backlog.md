@@ -2,6 +2,7 @@
 
 ## Latest Update
 
+- [x] drawer de criacao/edicao do catalogo admin passou a escolher Categoria publica por lista existente ou nova entrada, sem herdar automaticamente a categoria do fornecedor
 - [x] `/admin/test-orders` passou a mostrar saldo/status dos fornecedores acima da lista de servicos para orientar pedidos de teste
 - [x] `/admin/test-orders` ficou mais direto: saiu resumo de metricas, a tabela perdeu coluna de disponibilidade e o pedido de teste passou a abrir em drawer ao selecionar servico
 - [x] `/admin/test-orders` criado para selecionar servico publicado, revisar disponibilidade/custo do fornecedor e enviar pedido real de teste sem debitar carteira de cliente
