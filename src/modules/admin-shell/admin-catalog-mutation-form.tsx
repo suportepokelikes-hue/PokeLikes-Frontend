@@ -100,70 +100,9 @@ export function AdminCatalogMutationForm({
       hiddenFields={hiddenFields}
     >
       <div className="admin-catalog-form">
-        <div className="admin-form-note">
-          <strong>{isCreate ? 'Publicacao com base sincronizada' : 'Edicao do servico publicado'}</strong>
-          <p>
-            {isCreate
-              ? 'Os dados do fornecedor ficam como referencia interna; escolha a categoria publica que o cliente vera no catalogo.'
-              : 'Revise nome, descricao, preco, categoria publica e status sem perder o vinculo com o servico sincronizado.'}
-          </p>
-        </div>
+        {inheritedService ? <SupplierReference service={inheritedService} deliveryTime={inheritedDeliveryTime} /> : null}
 
-        {inheritedService ? (
-          <div className="detail-card detail-card-wide">
-            <h2>Dados herdados</h2>
-            <dl className="detail-list">
-              <div>
-                <dt>Fornecedor</dt>
-                <dd>{inheritedService.supplierName}</dd>
-              </div>
-              <div>
-                <dt>SID</dt>
-                <dd>{inheritedService.supplierServiceId}</dd>
-              </div>
-              {originalRateText ? (
-                <div>
-                  <dt>Rate original do fornecedor</dt>
-                  <dd>{originalRateText}</dd>
-                </div>
-              ) : null}
-              {rateBrlText ? (
-                <div>
-                  <dt>Rate estimado em BRL</dt>
-                  <dd>{rateBrlText}</dd>
-                </div>
-              ) : null}
-              {rateConversionWarning ? (
-                <div>
-                  <dt>Conversao</dt>
-                  <dd>{rateConversionWarning}</dd>
-                </div>
-              ) : null}
-              <div>
-                <dt>Categoria do fornecedor</dt>
-                <dd>{inheritedService.category}</dd>
-              </div>
-              <div>
-                <dt>Tipo</dt>
-                <dd>{inheritedService.type}</dd>
-              </div>
-              <div>
-                <dt>Faixa</dt>
-                <dd>
-                  {inheritedService.minQuantity} - {inheritedService.maxQuantity}
-                </dd>
-              </div>
-              {inheritedDeliveryTime ? (
-                <div>
-                  <dt>Tempo do fornecedor</dt>
-                  <dd>{inheritedDeliveryTime}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </div>
-        ) : null}
-
-        <label className="admin-user-field admin-user-field-wide">
+        <label className="admin-user-field">
           <span>Nome publico</span>
           <input
             type="text"
@@ -173,26 +112,16 @@ export function AdminCatalogMutationForm({
           />
         </label>
 
-        <label className="admin-user-field admin-user-field-wide">
-          <span>Descricao</span>
-          <textarea
-            name="description"
-            defaultValue={service?.description ?? ''}
-            className="admin-catalog-textarea"
-            placeholder="Descricao publica"
-          />
-        </label>
-
         <label className="admin-user-field">
           <span>Preco publico</span>
           <input type="text" name="publicPrice" defaultValue={service?.publicPrice.amount ?? ''} placeholder="12.90" />
           {originalRateText ? (
             <small className="panel-meta">
-              Rate original do fornecedor: {originalRateText}
-              {rateBrlText ? ` - Rate estimado em BRL: ${rateBrlText}` : ''}
+              Fornecedor: {originalRateText}
+              {rateBrlText ? ` / BRL: ${rateBrlText}` : ''}
               {marginText
-                ? ` - ${marginText}`
-                : ` - ${rateConversionWarning ?? 'sem rate convertido para BRL'}; calcule a margem manualmente`}
+                ? ` / ${marginText}`
+                : ` / ${rateConversionWarning ?? 'sem rate convertido para BRL'}`}
             </small>
           ) : null}
         </label>
@@ -222,7 +151,6 @@ export function AdminCatalogMutationForm({
         <AdminCatalogCategoryField
           categories={publicCategories}
           defaultValue={service?.category}
-          suggestion={creationDraft?.category ?? service?.supplierService.category ?? undefined}
         />
 
         <label className="admin-user-field">
@@ -232,8 +160,40 @@ export function AdminCatalogMutationForm({
             <option value="inactive">Inativo</option>
           </select>
         </label>
+
+        <label className="admin-user-field admin-user-field-wide">
+          <span>Descricao</span>
+          <textarea
+            name="description"
+            defaultValue={service?.description ?? ''}
+            className="admin-catalog-textarea"
+            placeholder="Descricao publica"
+          />
+        </label>
       </div>
     </AdminActionForm>
+  );
+}
+
+function SupplierReference({
+  service,
+  deliveryTime,
+}: {
+  service: {
+    supplierName: string;
+    supplierServiceId: number;
+    category: string;
+    minQuantity: number;
+    maxQuantity: number;
+  };
+  deliveryTime?: string | null;
+}) {
+  return (
+    <p className="panel-meta admin-user-field-wide">
+      Fornecedor: {service.supplierName} / SID {service.supplierServiceId} / Categoria do fornecedor: {service.category || '-'} / Faixa:{' '}
+      {service.minQuantity} - {service.maxQuantity}
+      {deliveryTime ? ` / Tempo: ${deliveryTime}` : ''}
+    </p>
   );
 }
 

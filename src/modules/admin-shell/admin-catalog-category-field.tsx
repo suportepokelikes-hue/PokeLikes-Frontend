@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react';
 type AdminCatalogCategoryFieldProps = {
   categories: string[];
   defaultValue?: string;
-  suggestion?: string;
 };
 
 const NEW_CATEGORY_VALUE = '__new_category__';
@@ -13,7 +12,6 @@ const NEW_CATEGORY_VALUE = '__new_category__';
 export function AdminCatalogCategoryField({
   categories,
   defaultValue,
-  suggestion,
 }: AdminCatalogCategoryFieldProps) {
   const options = useMemo(() => normalizeCategoryOptions(categories, defaultValue), [categories, defaultValue]);
   const initialCategory = defaultValue?.trim() ?? '';
@@ -23,7 +21,7 @@ export function AdminCatalogCategoryField({
   const finalCategory = mode === NEW_CATEGORY_VALUE ? newCategory.trim() : mode;
 
   return (
-    <div className="admin-user-field admin-user-field-wide">
+    <div className="admin-user-field">
       <span>Categoria publica</span>
       <input type="hidden" name="category" value={finalCategory} />
       <select value={mode} onChange={(event) => setMode(event.target.value)} aria-label="Categoria publica vista pelo cliente">
@@ -46,10 +44,6 @@ export function AdminCatalogCategoryField({
           aria-label="Nova categoria publica"
         />
       ) : null}
-      <small className="panel-meta">
-        Categoria vista pelo cliente no catalogo e nos filtros.
-        {suggestion ? ` Categoria do fornecedor apenas como referencia: ${suggestion}.` : ''}
-      </small>
     </div>
   );
 }

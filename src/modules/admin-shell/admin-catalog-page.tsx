@@ -409,30 +409,13 @@ export async function AdminCatalogPage({
             title={activeService.name}
             closeHref={returnTo}
           >
-            <section className="admin-drawer-stack">
-              <article className="admin-inline-panel">
-                <div className="panel-heading">
-                  <div>
-                    <p className="eyebrow">Editar servico</p>
-                    <h3>Dados publicos</h3>
-                  </div>
-                  <div className="feedback-actions">
-                    <StatusBadge label={activeService.status} tone={mapCatalogStatusTone(activeService.status)} />
-                    <StatusBadge
-                      label={activeService.availability.isPurchasable ? 'compravel' : 'indisponivel'}
-                      tone={activeService.availability.isPurchasable ? 'success' : 'danger'}
-                    />
-                  </div>
-                </div>
-                <AdminCatalogMutationForm
-                  mode="update"
-                  action={updateCatalogServiceAction}
-                  returnTo={returnTo}
-                  service={activeService}
-                  publicCategories={publicCategories}
-                />
-              </article>
-            </section>
+            <AdminCatalogMutationForm
+              mode="update"
+              action={updateCatalogServiceAction}
+              returnTo={returnTo}
+              service={activeService}
+              publicCategories={publicCategories}
+            />
           </AdminSlideOver>
         ) : activeServiceError ? (
           <AdminSlideOver eyebrow="Catalogo publicado" title="Servico indisponivel" description={activeServiceError} closeHref={returnTo}>

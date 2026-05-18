@@ -2,6 +2,8 @@
 
 ## Latest Update
 
+- [x] campo de Categoria publica no drawer do catalogo admin perdeu helper textual e os campos foram reorganizados em pares por linha
+- [x] drawer de servico do catalogo admin foi enxugado, removendo secoes internas de dados publicos/herdados e deixando so campos e referencia compacta do fornecedor
 - [x] drawer de criacao/edicao do catalogo admin passou a escolher Categoria publica por lista existente ou nova entrada, sem herdar automaticamente a categoria do fornecedor
 - [x] `/admin/test-orders` passou a mostrar saldo/status dos fornecedores acima da lista de servicos para orientar pedidos de teste
 - [x] `/admin/test-orders` ficou mais direto: saiu resumo de metricas, a tabela perdeu coluna de disponibilidade e o pedido de teste passou a abrir em drawer ao selecionar servico
